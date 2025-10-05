@@ -7,7 +7,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { usePathname } from "next/navigation"
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const shouldRenderSidebar = usePathname() !== "/login"
+  const isStandalonePage = usePathname() !== "/login"
   return (
     <NextThemesProvider
       attribute="class"
@@ -16,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableColorScheme
     >
-      <SidebarProvider defaultOpen={shouldRenderSidebar}>
+      <SidebarProvider defaultOpen={isStandalonePage}>
         <AppSidebar />
         {children}
       </SidebarProvider>
