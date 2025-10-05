@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google"
-
+import { Metadata } from "next"
 import "@workspace/ui/globals.css"
 import { Providers } from "@/components/providers"
 
@@ -12,6 +12,11 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 })
+
+export const metadata: Metadata = {
+  title: "MedExe - Admin",
+  description: "Admin Portal",
+}
 
 export default function RootLayout({
   children,

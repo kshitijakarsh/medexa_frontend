@@ -2,17 +2,24 @@
 
 import * as React from "react"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { SidebarProvider } from "@workspace/ui/components/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { usePathname } from "next/navigation"
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const shouldRenderSidebar = usePathname() !== "/login"
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="light"
       enableSystem
       disableTransitionOnChange
       enableColorScheme
     >
-      {children}
+      <SidebarProvider defaultOpen={shouldRenderSidebar}>
+        <AppSidebar />
+        {children}
+      </SidebarProvider>
     </NextThemesProvider>
   )
 }
