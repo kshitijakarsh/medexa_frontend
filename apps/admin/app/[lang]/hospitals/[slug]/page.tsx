@@ -1,14 +1,18 @@
 import { Header } from "@/components/header"
 import { Button } from "@workspace/ui/components/button"
 import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { LocaleLink } from "@/components/locale-link"
+import { getDictionary } from "@/i18n/get-dictionary"
+import type { Locale } from "@/i18n/locales"
 
 const HospitalPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; lang: Locale }>
 }) => {
-  const { slug } = await params
+  const { slug, lang } = await params
+  const dict = await getDictionary(lang)
+
   return (
     <main className="min-h-svh w-full">
       <Header />
@@ -17,16 +21,16 @@ const HospitalPage = async ({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="secondary" asChild>
-              <Link href="/hospitals">
+              <LocaleLink href="/hospitals">
                 <ArrowLeft className="size-4" />
-                Back
-              </Link>
+                {dict.common.back}
+              </LocaleLink>
             </Button>
             <h1 className="text-2xl font-bold">Hospital Information {slug}</h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">Edit</Button>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="outline">{dict.common.edit}</Button>
+            <Button variant="destructive">{dict.common.delete}</Button>
           </div>
         </div>
 

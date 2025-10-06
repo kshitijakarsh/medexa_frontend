@@ -6,8 +6,24 @@ import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { usePathname } from "next/navigation"
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  const isStandalonePage = usePathname() !== "/login"
+interface ProvidersProps {
+  children: React.ReactNode
+  dict: {
+    nav: {
+      overview: string
+      hospitals: string
+      support: string
+      activityLog: string
+      application: string
+    }
+  }
+}
+
+export function Providers({ children, dict }: ProvidersProps) {
+  const pathname = usePathname()
+  // Check if the path (without locale) is /login
+  const isStandalonePage = !pathname.includes("/login")
+
   return (
     <NextThemesProvider
       attribute="class"
@@ -17,7 +33,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <SidebarProvider defaultOpen={isStandalonePage}>
-        <AppSidebar />
+        <AppSidebar isStandalonePage={isStandalonePage} dict={dict} />
         {children}
       </SidebarProvider>
     </NextThemesProvider>
