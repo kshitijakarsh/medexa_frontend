@@ -4,7 +4,6 @@
 
 // export default LoginPage
 
-
 // "use client";
 
 // import { useForm } from "react-hook-form";
@@ -168,9 +167,8 @@
 
 // export default LoginPage;
 
-
-import { LoginLayout } from "@/components/login/LoginLayout";
+import { LoginLayout } from "./_components/layout"
 
 export default function LoginPage() {
-  return <LoginLayout />;
+  return <LoginLayout />
 }

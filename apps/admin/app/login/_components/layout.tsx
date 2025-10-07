@@ -32,10 +32,9 @@
 //   );
 // }
 
-
-import Image from "next/image";
-import { IMAGES } from "@/lib/images";
-import { LoginCard } from "./card";
+import Image from "next/image"
+import { IMAGES } from "@/lib/images"
+import { LoginCard } from "./card"
 
 export function LoginLayout() {
   return (
@@ -81,11 +80,10 @@ export function LoginLayout() {
         </div> */}
       </div>
 
-
       {/* Right Section */}
       <div className="flex-1 flex items-center justify-center p-6">
         <LoginCard />
       </div>
     </div>
-  );
+  )
 }

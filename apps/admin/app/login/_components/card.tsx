@@ -55,17 +55,16 @@
 //   );
 // }
 
+"use client"
 
-"use client";
-
-import Image from "next/image";
-import { Card, CardContent } from "@workspace/ui/components/card";
-import { LoginForm } from "./LoginForm";
-import { LOGOS } from "@/lib/logos";
+import Image from "next/image"
+import { Card, CardContent } from "@workspace/ui/components/card"
+import { LoginForm } from "../_components/form"
+import { LOGOS } from "@/lib/logos"
 
 export function LoginCard() {
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
+    <div className="relative flex items-center justify-center overflow-hidden">
       {/* Background Decorative Shape */}
       {/* <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[480px] h-[260px] bg-green-500 rounded-b-[60px] shadow-lg" /> */}
 
@@ -95,5 +94,5 @@ export function LoginCard() {
       {/* Subtle bottom blur for depth */}
       {/* <div className="absolute bottom-0 w-full h-[200px] bg-gradient-to-t from-blue-100 to-transparent" /> */}
     </div>
-  );
+  )
 }
