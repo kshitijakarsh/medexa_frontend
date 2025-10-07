@@ -38,6 +38,15 @@
         "billingStatus": "Billing Status",
         "lastLogin": "Last Login",
         "action": "Action"
+      },
+      "information": {
+        "title": "Hospital Information",
+        "overview": "Overview",
+        "logo": "Logo",
+        "businessDetails": "Business Details",
+        "adminDetails": "Admin Details",
+        "modulesAssigned": "Modules Assigned",
+        "credentials": "Credentials/Access"
       }
     },
     "support": {

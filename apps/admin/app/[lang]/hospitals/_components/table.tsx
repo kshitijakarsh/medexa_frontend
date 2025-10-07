@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { EllipsisVertical, SearchIcon } from "lucide-react"
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 
 const items = [
   {
@@ -85,31 +86,7 @@ const items = [
   },
 ]
 
-interface HospitalsTableProps {
-  dict: {
-    common: { search: string }
-    pages: {
-      hospitals: {
-        table: {
-          activeHospitals: string
-          onboardNew: string
-          searchPlaceholder: string
-          id: string
-          hospitalName: string
-          email: string
-          phone: string
-          modules: string
-          subscriptionPlan: string
-          billingStatus: string
-          lastLogin: string
-          action: string
-        }
-      }
-    }
-  }
-}
-
-export default function HospitalsTable({ dict }: HospitalsTableProps) {
+export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
   const t = dict.pages.hospitals.table
 
   return (

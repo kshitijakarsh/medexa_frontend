@@ -5,18 +5,11 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { usePathname } from "next/navigation"
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 
 interface ProvidersProps {
   children: React.ReactNode
-  dict: {
-    nav: {
-      overview: string
-      hospitals: string
-      support: string
-      activityLog: string
-      application: string
-    }
-  }
+  dict: DictionaryType
 }
 
 export function Providers({ children, dict }: ProvidersProps) {

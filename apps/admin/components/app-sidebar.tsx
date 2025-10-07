@@ -13,17 +13,10 @@ import {
 } from "@workspace/ui/components/sidebar"
 import { usePathname } from "next/navigation"
 import { LocaleLink } from "./locale-link"
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 
 interface AppSidebarProps {
-  dict: {
-    nav: {
-      overview: string
-      hospitals: string
-      support: string
-      activityLog: string
-      application: string
-    }
-  }
+  dict: DictionaryType
   isStandalonePage: boolean
 }
 

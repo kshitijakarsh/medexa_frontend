@@ -38,6 +38,15 @@
         "billingStatus": "Factureringsstatus",
         "lastLogin": "Laatste Inloggen",
         "action": "Actie"
+      },
+      "information": {
+        "title": "Ziekenhuisinformatie",
+        "overview": "Overzicht",
+        "logo": "Logo",
+        "businessDetails": "Ziekenhuisdetails",
+        "adminDetails": "Admindetails",
+        "modulesAssigned": "Modules toegewezen",
+        "credentials": "Referenties/Toegang"
       }
     },
     "support": {
