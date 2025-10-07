@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google"
 import { Metadata } from "next"
-import "@workspace/ui/globals.css"
+import "@workspace/ui/styles/admin.css"
 import { Providers } from "@/components/providers"
 import { CustomToaster } from "@/components/ui/custom-toaster"
 

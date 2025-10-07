@@ -1,4 +1,5 @@
-import { PanelsTopLeft, Hospital, Handshake, Activity } from "lucide-react"
+"use client"
+import { Hospital, Handshake, Activity, LayoutDashboard } from "lucide-react"
 
 import {
   Sidebar,
@@ -10,13 +11,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar"
+import { usePathname } from "next/navigation"
 
 // Menu items.
 const items = [
   {
     title: "Overview",
     url: "/",
-    icon: PanelsTopLeft,
+    icon: LayoutDashboard,
   },
   {
     title: "Hospitals",
@@ -36,8 +38,12 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const pathname = usePathname()
+  const isActive = (url: string) =>
+    url === "/" ? pathname === url : pathname.startsWith(url)
+
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -45,7 +51,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
