@@ -35,7 +35,7 @@
 
 import Image from "next/image";
 import { IMAGES } from "@/lib/images";
-import { LoginCard } from "./LoginCard";
+import { LoginCard } from "./card";
 
 export function LoginLayout() {
   return (
