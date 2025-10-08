@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { EllipsisVertical, SearchIcon } from "lucide-react"
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 
 const items = [
   {
@@ -85,28 +86,30 @@ const items = [
   },
 ]
 
-export default function HospitalsTable() {
+export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
+  const t = dict.pages.hospitals.table
+
   return (
     <div className="space-y-4 border rounded-xl p-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-medium">Active Hospitals</h2>
+        <h2 className="text-lg font-medium">{t.activeHospitals}</h2>
         <div className="flex items-center gap-4">
-          <FilterInput />
-          <Button>Onboard New</Button>
+          <FilterInput placeholder={t.searchPlaceholder} />
+          <Button>{t.onboardNew}</Button>
         </div>
       </div>
       <Table>
         <TableHeader className="bg-background [&_tr]:border-none">
           <TableRow className="hover:bg-transparent">
-            <TableHead>ID</TableHead>
-            <TableHead>Hospital Name</TableHead>
-            <TableHead>H.Email</TableHead>
-            <TableHead>H.Phone</TableHead>
-            <TableHead>Modules</TableHead>
-            <TableHead>Subscription Plan</TableHead>
-            <TableHead>Billing Status</TableHead>
-            <TableHead>Last Login</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+            <TableHead>{t.id}</TableHead>
+            <TableHead>{t.hospitalName}</TableHead>
+            <TableHead>{t.email}</TableHead>
+            <TableHead>{t.phone}</TableHead>
+            <TableHead>{t.modules}</TableHead>
+            <TableHead>{t.subscriptionPlan}</TableHead>
+            <TableHead>{t.billingStatus}</TableHead>
+            <TableHead>{t.lastLogin}</TableHead>
+            <TableHead className="text-right">{t.action}</TableHead>
           </TableRow>
         </TableHeader>
         <tbody aria-hidden="true" className="table-row h-2"></tbody>
@@ -143,7 +146,7 @@ export default function HospitalsTable() {
   )
 }
 
-const FilterInput = () => {
+const FilterInput = ({ placeholder }: { placeholder: string }) => {
   return (
     <div className="*:not-first:mt-2">
       <div className="relative">
@@ -152,7 +155,7 @@ const FilterInput = () => {
           className="peer ps-10"
           value={""}
           onChange={(e) => {}}
-          placeholder="Search by hospital name"
+          placeholder={placeholder}
           type="text"
         />
         <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">

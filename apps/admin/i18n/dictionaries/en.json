@@ -1,0 +1,66 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading...",
+    "back": "Back"
+  },
+  "nav": {
+    "overview": "Overview",
+    "hospitals": "Hospitals",
+    "support": "Support",
+    "activityLog": "Activity Log",
+    "application": "Application"
+  },
+  "pages": {
+    "overview": {
+      "title": "Overview"
+    },
+    "hospitals": {
+      "title": "Hospitals Management",
+      "name": "Name",
+      "location": "Location",
+      "status": "Status",
+      "actions": "Actions",
+      "table": {
+        "activeHospitals": "Active Hospitals",
+        "onboardNew": "Onboard New",
+        "searchPlaceholder": "Search by hospital name",
+        "id": "ID",
+        "hospitalName": "Hospital Name",
+        "email": "H.Email",
+        "phone": "H.Phone",
+        "modules": "Modules",
+        "subscriptionPlan": "Subscription Plan",
+        "billingStatus": "Billing Status",
+        "lastLogin": "Last Login",
+        "action": "Action"
+      },
+      "information": {
+        "title": "Hospital Information",
+        "overview": "Overview",
+        "logo": "Logo",
+        "businessDetails": "Business Details",
+        "adminDetails": "Admin Details",
+        "modulesAssigned": "Modules Assigned",
+        "credentials": "Credentials/Access"
+      }
+    },
+    "support": {
+      "title": "Support"
+    },
+    "activityLog": {
+      "title": "Activity Log"
+    },
+    "login": {
+      "title": "Login"
+    }
+  },
+  "metadata": {
+    "title": "MedExe - Admin",
+    "description": "Admin Portal"
+  }
+}
