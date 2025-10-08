@@ -26,7 +26,7 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
   const items = [
     {
       title: dict.nav.overview,
-      url: "/",
+      url: "/overview",
       icon: LayoutDashboard,
     },
     {
