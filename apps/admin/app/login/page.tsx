@@ -2,7 +2,9 @@
 //   return <div>LoginPage</div>
 // }
 
+
 // export default LoginPage
+
 
 // "use client";
 
@@ -167,7 +169,7 @@
 
 // export default LoginPage;
 
-import { LoginLayout } from "./_components/layout"
+import { LoginLayout } from "./_components/layout";
 
 export default function LoginPage() {
   return <LoginLayout />

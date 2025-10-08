@@ -472,13 +472,14 @@ export function LoginForm() {
         aria-label="Login form"
       >
         {/* Fingerprint Icon */}
-        <div className="flex justify-center mb-2">
-          <Fingerprint className="h-8 w-8 text-green-600" />
+        <div className="flex justify-start item-center">
+          <div className="flex justify-center mb-2">
+            <Fingerprint className="h-8 w-8 text-green-600" />
+          </div>
+          <h2 className="text-center text-2xl font-semibold text-gray-800 ps-3">
+            Login
+          </h2>
         </div>
-        <h2 className="text-center text-2xl font-semibold text-gray-800">
-          Login
-        </h2>
-
         {/* Username Field */}
         <FormField
           control={form.control}
