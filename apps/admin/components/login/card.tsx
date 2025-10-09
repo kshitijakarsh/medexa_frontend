@@ -55,13 +55,12 @@
 //   );
 // }
 
+"use client"
 
-"use client";
-
-import Image from "next/image";
-import { Card, CardContent } from "@workspace/ui/components/card";
-import { LOGOS } from "@/lib/logos";
-import { LoginForm } from "@/app/login/_components/form";
+import Image from "next/image"
+import { Card, CardContent } from "@workspace/ui/components/card"
+import { LOGOS } from "@/lib/logos"
+import { LoginForm } from "@/app/[lang]/login/_components/form"
 
 export function LoginCard() {
   return (
@@ -95,5 +94,5 @@ export function LoginCard() {
       {/* Subtle bottom blur for depth */}
       {/* <div className="absolute bottom-0 w-full h-[200px] bg-gradient-to-t from-blue-100 to-transparent" /> */}
     </div>
-  );
+  )
 }

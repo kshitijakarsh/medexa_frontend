@@ -59,7 +59,7 @@
 
 import Image from "next/image"
 import { Card, CardContent } from "@workspace/ui/components/card"
-import { LoginForm } from "../_components/form"
+import { LoginForm } from "./form"
 import { LOGOS } from "@/lib/logos"
 
 export function LoginCard() {
@@ -70,7 +70,6 @@ export function LoginCard() {
 
       {/* Main Card Container */}
       <div className="relative z-10 w-full max-w-sm">
-
         <div className="bg-green-500 rounded-3xl shadow-lg pt-10">
           {/* Top Logo Panel */}
           <div className="absolute -top-[43px] left-1/2 -translate-x-1/2 bg-[#023D5F] rounded-t-2xl px-8 py-3 shadow-md min-w-[250px] border-1 border-b-0 border-green-500">

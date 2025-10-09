@@ -38,6 +38,7 @@ import { LoginCard } from "./card"
 import { LOGOS } from "@/lib/logos"
 
 export function LoginLayout() {
+  console.log(IMAGES.illustrationLatest)
   return (
     <div className="w-full min-h-screen flex flex-col md:flex-row">
       {/* Background Illustration */}
@@ -111,7 +112,6 @@ export function LoginLayout() {
             <p className="text-lg max-w-8/12 font-medium">Trusted Digital Healthcare Ecosystem</p>
           </div> */}
 
-
           <div className="flex flex-col items-center justify-center relative">
             {/* Top Section — Layered Illustration */}
             <div className="relative w-[422px] h-[275px] flex justify-center items-center z-0 overflow-visible rounded-t-2xl shadow-md">
@@ -154,9 +154,7 @@ export function LoginLayout() {
                 Trusted Digital Healthcare Ecosystem
               </p>
             </div>
-
           </div>
-
         </div>
         {/* <div className="text-center mt-6">
           <div className="text-3xl font-bold">MedExa</div>
