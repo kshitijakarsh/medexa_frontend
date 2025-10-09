@@ -6,6 +6,7 @@ import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { usePathname } from "next/navigation"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
+import { Toaster } from "@workspace/ui/components/sonner"
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -25,6 +26,7 @@ export function Providers({ children, dict }: ProvidersProps) {
       disableTransitionOnChange
       enableColorScheme
     >
+      <Toaster position="top-right" richColors closeButton expand />
       <SidebarProvider defaultOpen={isStandalonePage}>
         <AppSidebar isStandalonePage={isStandalonePage} dict={dict} />
         {children}
