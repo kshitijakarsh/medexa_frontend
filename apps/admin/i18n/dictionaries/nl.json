@@ -1,0 +1,66 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "search": "Zoeken",
+    "loading": "Laden...",
+    "back": "Terug"
+  },
+  "nav": {
+    "overview": "Overzicht",
+    "hospitals": "Ziekenhuizen",
+    "support": "Ondersteuning",
+    "activityLog": "Activiteitenlogboek",
+    "application": "Toepassing"
+  },
+  "pages": {
+    "overview": {
+      "title": "Overzicht"
+    },
+    "hospitals": {
+      "title": "Ziekenhuisbeheer",
+      "name": "Naam",
+      "location": "Locatie",
+      "status": "Status",
+      "actions": "Acties",
+      "table": {
+        "activeHospitals": "Actieve Ziekenhuizen",
+        "onboardNew": "Nieuwe Toevoegen",
+        "searchPlaceholder": "Zoeken op ziekenhuisnaam",
+        "id": "ID",
+        "hospitalName": "Ziekenhuisnaam",
+        "email": "E-mail",
+        "phone": "Telefoon",
+        "modules": "Modules",
+        "subscriptionPlan": "Abonnementsplan",
+        "billingStatus": "Factureringsstatus",
+        "lastLogin": "Laatste Inloggen",
+        "action": "Actie"
+      },
+      "information": {
+        "title": "Ziekenhuisinformatie",
+        "overview": "Overzicht",
+        "logo": "Logo",
+        "businessDetails": "Ziekenhuisdetails",
+        "adminDetails": "Admindetails",
+        "modulesAssigned": "Modules toegewezen",
+        "credentials": "Referenties/Toegang"
+      }
+    },
+    "support": {
+      "title": "Ondersteuning"
+    },
+    "activityLog": {
+      "title": "Activiteitenlogboek"
+    },
+    "login": {
+      "title": "Inloggen"
+    }
+  },
+  "metadata": {
+    "title": "MedExe - Beheer",
+    "description": "Beheerportaal"
+  }
+}

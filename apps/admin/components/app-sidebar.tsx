@@ -12,50 +12,62 @@ import {
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar"
 import { usePathname } from "next/navigation"
+import { LocaleLink } from "./locale-link"
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 
-// Menu items.
-const items = [
-  {
-    title: "Overview",
-    url: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Hospitals",
-    url: "/hospitals",
-    icon: Hospital,
-  },
-  {
-    title: "Support",
-    url: "/support",
-    icon: Handshake,
-  },
-  {
-    title: "Activity Log",
-    url: "/activity-log",
-    icon: Activity,
-  },
-]
+interface AppSidebarProps {
+  dict: DictionaryType
+  isStandalonePage: boolean
+}
 
-export function AppSidebar() {
+export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
   const pathname = usePathname()
-  const isActive = (url: string) =>
-    url === "/" ? pathname === url : pathname.startsWith(url)
+
+  const items = [
+    {
+      title: dict.nav.overview,
+      url: "/overview",
+      icon: LayoutDashboard,
+    },
+    {
+      title: dict.nav.hospitals,
+      url: "/hospitals",
+      icon: Hospital,
+    },
+    {
+      title: dict.nav.support,
+      url: "/support",
+      icon: Handshake,
+    },
+    {
+      title: dict.nav.activityLog,
+      url: "/activity-log",
+      icon: Activity,
+    },
+  ]
+
+  const isActive = (url: string) => {
+    // Remove locale prefix from pathname for comparison
+    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "")
+    return url === "/"
+      ? pathWithoutLocale === "" || pathWithoutLocale === "/"
+      : pathWithoutLocale.startsWith(url)
+  }
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible={isStandalonePage ? "icon" : "offcanvas"}>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>{dict.nav.application}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <a href={item.url}>
+                    <LocaleLink href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </LocaleLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

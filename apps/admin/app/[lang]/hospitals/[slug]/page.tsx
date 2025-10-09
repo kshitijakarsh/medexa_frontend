@@ -1,14 +1,18 @@
 import { Header } from "@/components/header"
 import { Button } from "@workspace/ui/components/button"
 import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { LocaleLink } from "@/components/locale-link"
+import { getDictionary } from "@/i18n/get-dictionary"
+import type { Locale } from "@/i18n/locales"
 
 const HospitalPage = async ({
   params,
 }: {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string; lang: Locale }>
 }) => {
-  const { slug } = await params
+  const { slug, lang } = await params
+  const dict = await getDictionary(lang)
+
   return (
     <main className="min-h-svh w-full">
       <Header />
@@ -17,16 +21,18 @@ const HospitalPage = async ({
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="secondary" asChild>
-              <Link href="/hospitals">
+              <LocaleLink href="/hospitals">
                 <ArrowLeft className="size-4" />
-                Back
-              </Link>
+                {dict.common.back}
+              </LocaleLink>
             </Button>
-            <h1 className="text-2xl font-bold">Hospital Information {slug}</h1>
+            <h1 className="text-2xl font-bold">
+              {dict.pages.hospitals.information.title} {slug}
+            </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">Edit</Button>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="outline">{dict.common.edit}</Button>
+            <Button variant="destructive">{dict.common.delete}</Button>
           </div>
         </div>
 
@@ -35,7 +41,9 @@ const HospitalPage = async ({
           {/* Row 1: Hospital Overview (larger) + Hospital Logo (smaller) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Hospital Overview</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {dict.pages.hospitals.information.overview}
+              </h2>
               <div className="space-y-3">
                 <div className="grid grid-cols-[180px_1fr] gap-4">
                   <span className="text-sm text-muted-foreground">
@@ -81,9 +89,13 @@ const HospitalPage = async ({
             </div>
 
             <div className="rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Hospital Logo</h2>
-              <div className="w-32 h-32 bg-gray-50 rounded-lg flex items-center justify-center border">
-                <span className="text-xs text-gray-400">Logo</span>
+              <h2 className="text-lg font-semibold mb-4">
+                {dict.pages.hospitals.information.logo}
+              </h2>
+              <div className="flex items-center justify-center w-full h-[calc(100%-24px)]">
+                <div className="w-32 h-32 bg-gray-50 rounded-lg flex items-center justify-center border">
+                  <span className="text-xs text-gray-400">Logo</span>
+                </div>
               </div>
             </div>
           </div>
@@ -91,7 +103,9 @@ const HospitalPage = async ({
           {/* Row 2: Business Details + Admin Details + Modules Assigned (equal size) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Hospital Overview</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {dict.pages.hospitals.information.businessDetails}
+              </h2>
               <div className="space-y-3">
                 <div className="grid grid-cols-[140px_1fr] gap-2">
                   <span className="text-sm text-muted-foreground">
@@ -121,7 +135,9 @@ const HospitalPage = async ({
             </div>
 
             <div className="rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Admin Details</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {dict.pages.hospitals.information.adminDetails}
+              </h2>
               <div className="space-y-3">
                 <div className="grid grid-cols-[140px_1fr] gap-2">
                   <span className="text-sm text-muted-foreground">
@@ -161,7 +177,9 @@ const HospitalPage = async ({
             </div>
 
             <div className="rounded-lg border p-6">
-              <h2 className="text-lg font-semibold mb-4">Modules Assigned</h2>
+              <h2 className="text-lg font-semibold mb-4">
+                {dict.pages.hospitals.information.modulesAssigned}
+              </h2>
               <div className="space-y-2">
                 <div className="inline-block bg-blue-50 text-blue-700 text-xs px-3 py-1.5 rounded-full mr-2 mb-2">
                   In-Patient Department (IPD)
@@ -187,7 +205,9 @@ const HospitalPage = async ({
 
           {/* Row 3: Credentials/Access (full width) */}
           <div className="rounded-lg border w-fit p-6">
-            <h2 className="text-lg font-semibold mb-4">Credentials / Access</h2>
+            <h2 className="text-lg font-semibold mb-4">
+              {dict.pages.hospitals.information.credentials}
+            </h2>
             <div className="space-y-3">
               <div className="grid grid-cols-[140px_1fr] gap-2">
                 <span className="text-sm text-muted-foreground">
