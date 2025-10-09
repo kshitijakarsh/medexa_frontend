@@ -12,18 +12,30 @@ interface FormActionsSectionProps {
   isEdit?: boolean | string | number | null;
 }
 
-export const FormActionsSection = ({ serverError, loading, onReset, isEdit }: FormActionsSectionProps) => {
+export const FormActionsSection = ({
+  serverError,
+  loading,
+  onReset,
+  isEdit,
+}: FormActionsSectionProps) => {
   return (
-    <div className="flex items-center justify-between gap-4 bg-white/80 rounded-lg p-4 md:p-6 shadow-sm border border-slate-100">
-      {serverError && <div className="text-sm text-red-600">{serverError}</div>}
+    <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center relative">
+      
+      {/* Error Message */}
+      {serverError && (
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
+          {serverError}
+        </div>
+      )}
 
-      <div className="flex items-center gap-3">
+      {/* Buttons */}
+      <div className="ml-auto flex gap-3 items-center">
         <Button
           type="button"
           variant="ghost"
           onClick={onReset}
           disabled={loading}
-          className="px-4 py-2"
+          className="px-4 py-2 cursor-pointer"
         >
           Reset
         </Button>
