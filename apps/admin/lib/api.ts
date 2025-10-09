@@ -1,18 +1,4 @@
-// // export async function loginUser(username: string, password: string) {
-// //   console.log("Simulated API call:", { username, password });
-
-// //   return new Promise<{ success: boolean; message: string }>((resolve) => {
-// //     setTimeout(() => {
-// //       if (username === "admin" && password === "1234") {
-// //         resolve({ success: true, message: "Login successful!" });
-// //       } else {
-// //         resolve({ success: false, message: "Invalid credentials" });
-// //       }
-// //     }, 1200); // simulate API delay
-// //   });
-// // }
-
-
+// This is the cognito login code setup
 
 // import {
 //   CognitoUser,

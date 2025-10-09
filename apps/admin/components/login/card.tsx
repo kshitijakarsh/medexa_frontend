@@ -60,8 +60,8 @@
 
 import Image from "next/image";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { LoginForm } from "./form";
 import { LOGOS } from "@/lib/logos";
+import { LoginForm } from "@/app/login/_components/form";
 
 export function LoginCard() {
   return (
