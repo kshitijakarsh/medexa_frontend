@@ -10,10 +10,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarHeader,
 } from "@workspace/ui/components/sidebar"
 import { usePathname } from "next/navigation"
 import { LocaleLink } from "./locale-link"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
+import { LOGOS } from "@/lib/logos"
+import Image from "next/image"
+import { useSidebar } from "@workspace/ui/components/sidebar"
 
 interface AppSidebarProps {
   dict: DictionaryType
@@ -54,8 +58,38 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
       : pathWithoutLocale.startsWith(url)
   }
 
+  const sidebarState = useSidebar().state
+
   return (
     <Sidebar collapsible={isStandalonePage ? "icon" : "offcanvas"}>
+      <SidebarHeader className="flex items-center justify-center py-4">
+        <div className="relative w-full flex items-center justify-center overflow-hidden">
+          <Image
+            src={LOGOS.main}
+            alt="MedExe"
+            width={130}
+            height={50}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "expanded"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
+            priority
+          />
+          <Image
+            src={LOGOS.small}
+            alt="MedExe"
+            width={30}
+            height={25}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "collapsed"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
+            priority
+          />
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>{dict.nav.application}</SidebarGroupLabel>

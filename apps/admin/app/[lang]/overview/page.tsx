@@ -4,6 +4,8 @@ import type { Locale } from "@/i18n/locales"
 import { ChartAreaGradient } from "./_components/chart-area"
 import { ChartRadialText } from "./_components/radial-chart"
 import { SectionCards } from "./_components/section-cards"
+import RecentActivityCard from "./_components/recent-activity"
+import { RecentTicketsCard } from "./_components/recent-tickets"
 
 export default async function Page({
   params,
@@ -25,6 +27,10 @@ export default async function Page({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <ChartAreaGradient className="lg:col-span-2 col-span-full" />
                 <ChartRadialText className="lg:col-span-1 col-span-full" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <RecentActivityCard />
+                <RecentTicketsCard />
               </div>
             </div>
           </div>
