@@ -17,6 +17,8 @@ export type AuditLog = {
   type: AuditLogType
   status: AuditLogStatus
   timestamp: string // ISO timestamp
+  description?: string
+  ipAddress?: string
 }
 
 function iso(minutesAgo: number): string {
@@ -33,6 +35,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Create",
     status: "Success",
     timestamp: iso(5),
+    description: "Hospital onboarded with default modules assigned.",
+    ipAddress: "192.168.1.15",
   },
   {
     id: "2",
@@ -42,6 +46,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Update",
     status: "Success",
     timestamp: iso(12),
+    description: "Enabled Radiology module and updated permissions.",
+    ipAddress: "192.168.1.20",
   },
   {
     id: "3",
@@ -51,6 +57,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "HIE",
     status: "Failed",
     timestamp: iso(22),
+    description: "Timeout while pushing batch to HIE gateway.",
+    ipAddress: "10.10.0.5",
   },
   {
     id: "4",
@@ -60,6 +68,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Admin",
     status: "Success",
     timestamp: iso(37),
+    description: "Created new admin user with limited privileges.",
+    ipAddress: "172.16.0.2",
   },
   {
     id: "5",
@@ -69,6 +79,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Suspend",
     status: "Success",
     timestamp: iso(49),
+    description: "Suspended due to billing issues.",
+    ipAddress: "172.16.0.3",
   },
   {
     id: "6",
@@ -78,6 +90,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Login",
     status: "Failed",
     timestamp: iso(63),
+    description: "Invalid password provided during login attempt.",
+    ipAddress: "203.0.113.45",
   },
   {
     id: "7",
@@ -87,6 +101,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "HIE",
     status: "Success",
     timestamp: iso(78),
+    description: "Completed daily HIE synchronization.",
+    ipAddress: "10.10.0.5",
   },
   {
     id: "8",
@@ -96,6 +112,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Update",
     status: "Success",
     timestamp: iso(105),
+    description: "Updated hospital contact information.",
+    ipAddress: "192.168.1.33",
   },
   {
     id: "9",
@@ -105,6 +123,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "System",
     status: "Success",
     timestamp: iso(140),
+    description: "Planned maintenance completed without incidents.",
+    ipAddress: "127.0.0.1",
   },
   {
     id: "10",
@@ -114,6 +134,8 @@ export const AUDIT_LOGS: AuditLog[] = [
     type: "Update",
     status: "Success",
     timestamp: iso(180),
+    description: "Reactivated subscription after payment.",
+    ipAddress: "192.168.1.55",
   },
 ]
 

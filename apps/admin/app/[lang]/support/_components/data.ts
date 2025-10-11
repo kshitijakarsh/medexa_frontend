@@ -1,6 +1,13 @@
 export type TicketStatus = "Open" | "Pending" | "Resolved" | "Closed"
 export type TicketPriority = "Low" | "Medium" | "High" | "Critical"
 
+export type TicketComment = {
+  id: string
+  author: string
+  message: string
+  createdAt: string // ISO timestamp
+}
+
 export type SupportTicket = {
   id: string
   issue: string
@@ -8,6 +15,9 @@ export type SupportTicket = {
   status: TicketStatus
   priority: TicketPriority
   createdAt: string // ISO timestamp
+  reportedBy: { name: string; email: string }
+  description: string
+  comments?: TicketComment[]
 }
 
 function iso(minutesAgo: number): string {
@@ -23,6 +33,17 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Open",
     priority: "Critical",
     createdAt: iso(15),
+    reportedBy: { name: "Sarah Ali", email: "s.ali@alhayat.qa" },
+    description:
+      "When attempting to open the patient records module, users receive a 403 error. Affected for multiple admins since 5PM yesterday.",
+    comments: [
+      {
+        id: "c1",
+        author: "Sarah Ali",
+        message: "Issue started after permission changes.",
+        createdAt: iso(14),
+      },
+    ],
   },
   {
     id: "TKT-1002",
@@ -31,6 +52,9 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Pending",
     priority: "High",
     createdAt: iso(45),
+    reportedBy: { name: "Mohammed Khan", email: "mkhan@dmc.qa" },
+    description:
+      "Totals on the monthly billing report do not match itemized line items. Appears to be rounding issue.",
   },
   {
     id: "TKT-1003",
@@ -39,6 +63,9 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Open",
     priority: "High",
     createdAt: iso(90),
+    reportedBy: { name: "Huda Nasser", email: "huda@alnoor.qa" },
+    description:
+      "Outbound HL7 interface queue shows retries with 504 gateway timeout.",
   },
   {
     id: "TKT-1004",
@@ -47,6 +74,9 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Resolved",
     priority: "Medium",
     createdAt: iso(180),
+    reportedBy: { name: "Omar Saleh", email: "omar@arhc.qa" },
+    description:
+      "Admin role could not edit modules. Fixed after role policy sync.",
   },
   {
     id: "TKT-1005",
@@ -55,6 +85,9 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Open",
     priority: "Critical",
     createdAt: iso(240),
+    reportedBy: { name: "Fatima Al-Ansari", email: "fatima@mediq.qa" },
+    description:
+      "Spike in response times between 10-12am. Possibly related to report exports.",
   },
   {
     id: "TKT-1006",
@@ -63,6 +96,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Pending",
     priority: "Medium",
     createdAt: iso(320),
+    reportedBy: { name: "Dr. Ahmed", email: "ahmed@alhayatmed.qa" },
+    description: "Password reset emails not received by users.",
   },
   {
     id: "TKT-1007",
@@ -71,6 +106,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Resolved",
     priority: "Low",
     createdAt: iso(480),
+    reportedBy: { name: "Support Bot", email: "bot@dgh.qa" },
+    description: "Widget cache invalidation fixed.",
   },
   {
     id: "TKT-1008",
@@ -79,6 +116,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Pending",
     priority: "High",
     createdAt: iso(600),
+    reportedBy: { name: "Laila Faris", email: "laila@qmc.qa" },
+    description: "Report job fails with 500 error.",
   },
   {
     id: "TKT-1009",
@@ -87,6 +126,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Closed",
     priority: "Medium",
     createdAt: iso(720),
+    reportedBy: { name: "QA Team", email: "qa@awmc.qa" },
+    description: "Patched in v2.1.1.",
   },
   {
     id: "TKT-1010",
@@ -95,6 +136,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Open",
     priority: "Low",
     createdAt: iso(900),
+    reportedBy: { name: "HR Desk", email: "hr@sidra.qa" },
+    description: "Requesting onboarding session next week.",
   },
   {
     id: "TKT-1011",
@@ -103,6 +146,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Resolved",
     priority: "Medium",
     createdAt: iso(1080),
+    reportedBy: { name: "Reception", email: "reception@hgh.qa" },
+    description: "Fixed by adjusting time slot overlap rules.",
   },
   {
     id: "TKT-1012",
@@ -111,6 +156,8 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     status: "Open",
     priority: "High",
     createdAt: iso(1200),
+    reportedBy: { name: "IT Desk", email: "it@tch.qa" },
+    description: "Export worker crashes intermittently.",
   },
 ]
 
