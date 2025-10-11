@@ -1,5 +1,11 @@
 "use client"
-import { Hospital, Handshake, Activity, LayoutDashboard } from "lucide-react"
+import {
+  Hospital,
+  Handshake,
+  Activity,
+  LayoutDashboard,
+  Monitor,
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -47,6 +53,11 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
       title: dict.nav.activityLog,
       url: "/activity-log",
       icon: Activity,
+    },
+    {
+      title: dict.nav.monitoring,
+      url: "/monitoring",
+      icon: Monitor,
     },
   ]
 

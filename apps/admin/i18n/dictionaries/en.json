@@ -13,7 +13,8 @@
     "hospitals": "Hospitals",
     "support": "Support",
     "activityLog": "Activity Log",
-    "application": "Application"
+    "application": "Application",
+    "monitoring": "Monitoring"
   },
   "pages": {
     "overview": {
@@ -54,6 +55,9 @@
     },
     "activityLog": {
       "title": "Activity Log"
+    },
+    "monitoring": {
+      "title": "Monitoring"
     },
     "login": {
       "title": "Login"
