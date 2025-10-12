@@ -13,6 +13,8 @@ import {
 import type { AuditLog } from "./data"
 import { AUDIT_LOGS } from "./data"
 import { FilterInput } from "@/components/filter-input"
+import { useState } from "react"
+import { LogSheet } from "./log-sheet"
 
 function StatusBadge({ status }: { status: AuditLog["status"] }) {
   if (status === "Failed") {
@@ -29,6 +31,8 @@ export function AuditLogTable() {
   const rows = AUDIT_LOGS.slice().sort(
     (a, b) => +new Date(b.timestamp) - +new Date(a.timestamp)
   )
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState<AuditLog | null>(null)
 
   return (
     <div className="space-y-4 border rounded-xl p-4">
@@ -71,7 +75,14 @@ export function AuditLogTable() {
                 <StatusBadge status={log.status} />
               </TableCell>
               <TableCell className="py-2.5 text-right">
-                <Button variant="link" size="sm">
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    setSelected(log)
+                    setOpen(true)
+                  }}
+                >
                   View
                 </Button>
               </TableCell>
@@ -79,6 +90,7 @@ export function AuditLogTable() {
           ))}
         </TableBody>
       </Table>
+      <LogSheet open={open} onOpenChange={setOpen} log={selected} />
     </div>
   )
 }
