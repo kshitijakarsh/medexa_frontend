@@ -3,6 +3,7 @@ import "@workspace/ui/styles/admin.css"
 import { Providers } from "@/components/providers"
 import { getDictionary } from "@/i18n/get-dictionary"
 import { locales, type Locale } from "@/i18n/locales"
+import { CognitoAuthProvider } from "@/auth/AuthProvider"
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -47,7 +48,9 @@ export default async function RootLayout({
       <body
         className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
       >
+        <CognitoAuthProvider>
         <Providers dict={dict}>{children}</Providers>
+        </CognitoAuthProvider>
       </body>
     </html>
   )
