@@ -1,6 +1,7 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { Suspense } from "react"
 import Link from "next/link"
 import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
@@ -18,7 +19,7 @@ interface OnboardingShellProps {
   children: ReactNode
 }
 
-export function OnboardingShell({ children }: OnboardingShellProps) {
+function OnboardingShellContent({ children }: OnboardingShellProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const hospitalId = searchParams.get("hospitalId") || ""
@@ -105,7 +106,7 @@ export function OnboardingShell({ children }: OnboardingShellProps) {
               })}
             </div>
             <div className="text-center mt-2 text-sm text-slate-600">
-              Step {Math.min(currentIndex + 1, STEPS.length)} of {STEPS.length}: {" "}
+              Step {Math.min(currentIndex + 1, STEPS.length)} of {STEPS.length}:{" "}
               {currentStep?.label}
             </div>
           </div>
@@ -116,5 +117,22 @@ export function OnboardingShell({ children }: OnboardingShellProps) {
         </div>
       </div>
     </main>
+  )
+}
+
+export function OnboardingShell({ children }: OnboardingShellProps) {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-svh w-full">
+          <Header />
+          <div className="flex items-center justify-center p-8">
+            <div className="text-slate-600">Loading...</div>
+          </div>
+        </main>
+      }
+    >
+      <OnboardingShellContent>{children}</OnboardingShellContent>
+    </Suspense>
   )
 }
