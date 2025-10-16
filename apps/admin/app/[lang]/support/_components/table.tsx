@@ -50,7 +50,7 @@ export function SupportTable() {
   const [selected, setSelected] = useState<SupportTicket | null>(null)
 
   return (
-    <div className="space-y-4 border rounded-xl p-4">
+    <div className="space-y-4 border rounded-xl p-4 bg-white">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Support Tickets</h2>
         <div className="flex items-center gap-4">

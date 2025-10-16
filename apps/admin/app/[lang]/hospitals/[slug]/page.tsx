@@ -20,7 +20,7 @@ const HospitalPage = async ({
         {/* Header Section */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="secondary" asChild>
+            <Button variant="outline" asChild>
               <LocaleLink href="/hospitals">
                 <ArrowLeft className="size-4" />
                 {dict.common.back}
@@ -40,7 +40,7 @@ const HospitalPage = async ({
         <div className="grid gap-6">
           {/* Row 1: Hospital Overview (larger) + Hospital Logo (smaller) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 rounded-lg border p-6">
+            <div className="lg:col-span-2 rounded-lg border p-6 bg-white">
               <h2 className="text-lg font-semibold mb-4">
                 {dict.pages.hospitals.information.overview}
               </h2>
@@ -88,7 +88,7 @@ const HospitalPage = async ({
               </div>
             </div>
 
-            <div className="rounded-lg border p-6">
+            <div className="rounded-lg border p-6 bg-white">
               <h2 className="text-lg font-semibold mb-4">
                 {dict.pages.hospitals.information.logo}
               </h2>
@@ -102,7 +102,7 @@ const HospitalPage = async ({
 
           {/* Row 2: Business Details + Admin Details + Modules Assigned (equal size) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-lg border p-6">
+            <div className="rounded-lg border p-6 bg-white">
               <h2 className="text-lg font-semibold mb-4">
                 {dict.pages.hospitals.information.businessDetails}
               </h2>
@@ -134,7 +134,7 @@ const HospitalPage = async ({
               </div>
             </div>
 
-            <div className="rounded-lg border p-6">
+            <div className="rounded-lg border p-6 bg-white">
               <h2 className="text-lg font-semibold mb-4">
                 {dict.pages.hospitals.information.adminDetails}
               </h2>
@@ -176,7 +176,7 @@ const HospitalPage = async ({
               </div>
             </div>
 
-            <div className="rounded-lg border p-6">
+            <div className="rounded-lg border p-6 bg-white">
               <h2 className="text-lg font-semibold mb-4">
                 {dict.pages.hospitals.information.modulesAssigned}
               </h2>
@@ -204,7 +204,7 @@ const HospitalPage = async ({
           </div>
 
           {/* Row 3: Credentials/Access (full width) */}
-          <div className="rounded-lg border w-fit p-6">
+          <div className="rounded-lg border w-fit p-6 bg-white">
             <h2 className="text-lg font-semibold mb-4">
               {dict.pages.hospitals.information.credentials}
             </h2>
