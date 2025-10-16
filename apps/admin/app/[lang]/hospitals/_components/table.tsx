@@ -12,7 +12,7 @@ import {
 import { EllipsisVertical } from "lucide-react"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 import { FilterInput } from "@/components/filter-input"
-import Link from "next/link"
+import { LocaleLink } from "@/components/locale-link"
 
 const items = [
   {
@@ -97,10 +97,10 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
         <div className="flex items-center gap-4">
           <FilterInput placeholder={t.searchPlaceholder} />
           <Button
-            className=" bg-gradient-to-r from-green-500 to-green-600
-      hover:from-green-600 hover:to-green-700"
+            className=" bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            asChild
           >
-            <Link href="onboarding">{t.onboardNew}</Link>
+            <LocaleLink href="/create-hospital">{t.onboardNew}</LocaleLink>
           </Button>
         </div>
       </div>

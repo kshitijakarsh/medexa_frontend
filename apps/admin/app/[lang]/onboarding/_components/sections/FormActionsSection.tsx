@@ -2,6 +2,7 @@
 "use client"
 
 import React from "react"
+import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 import { SubmitButton } from "../ui/SubmitButton"
 import { ArrowLeft } from "lucide-react"
@@ -18,6 +19,9 @@ interface FormActionsSectionProps {
   onPrimary?: () => void
   primaryLabel?: string
   showReset?: boolean
+  backHref?: string
+  submitLabel?: string
+  submitLoadingLabel?: string
 }
 
 export const FormActionsSection = ({
@@ -31,6 +35,9 @@ export const FormActionsSection = ({
   onPrimary,
   primaryLabel,
   showReset = true,
+  backHref,
+  submitLabel,
+  submitLoadingLabel,
 }: FormActionsSectionProps) => {
   // Determine if we're in wizard mode
   const isWizardMode = stepIndex !== undefined && totalSteps !== undefined
@@ -60,6 +67,21 @@ export const FormActionsSection = ({
           </Button>
         )}
 
+        {/* Back hyperlink for standalone pages */}
+        {!isWizardMode && backHref && (
+          <Button
+            type="button"
+            variant="outline"
+            asChild
+            className="px-4 py-2 cursor-pointer flex items-center gap-2"
+          >
+            <Link href={backHref}>
+              <ArrowLeft className="size-4" />
+              Back
+            </Link>
+          </Button>
+        )}
+
         {/* Reset button (non-wizard or when showReset is true) */}
         {showReset && onReset && (
           <Button
@@ -84,7 +106,12 @@ export const FormActionsSection = ({
             {loading ? "Processing..." : primaryLabel || "Next"}
           </Button>
         ) : (
-          <SubmitButton loading={loading} isEdit={!!isEdit} />
+          <SubmitButton
+            loading={loading}
+            isEdit={!!isEdit}
+            label={submitLabel}
+            loadingLabel={submitLoadingLabel}
+          />
         )}
       </div>
     </div>

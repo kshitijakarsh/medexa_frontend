@@ -1,18 +1,7 @@
-import { Geist, Geist_Mono } from "next/font/google"
-import "@workspace/ui/styles/admin.css"
+import type { ReactNode } from "react"
 import { Providers } from "@/components/providers"
 import { getDictionary } from "@/i18n/get-dictionary"
 import { locales, type Locale } from "@/i18n/locales"
-
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
 
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }))
@@ -32,23 +21,15 @@ export async function generateMetadata({
   }
 }
 
-export default async function RootLayout({
+export default async function LangLayout({
   children,
   params,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
   params: Promise<{ lang: Locale }>
 }>) {
   const { lang } = await params
   const dict = await getDictionary(lang)
 
-  return (
-    <html lang={lang} suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
-        <Providers dict={dict}>{children}</Providers>
-      </body>
-    </html>
-  )
+  return <Providers dict={dict}>{children}</Providers>
 }
