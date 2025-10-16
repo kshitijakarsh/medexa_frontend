@@ -1,7 +1,5 @@
-// // components/OnboardHospitalForm.tsx
-// "use client";
-
-import OnboardHospitalForm from "./_components/OnboardHospitalForm";
+// Onboarding Page - Multi-step Wizard
+import OnboardWizard from "./_components/OnboardWizard"
 
 // import React, { useEffect, useState } from "react";
 // import { z } from "@workspace/ui/lib/zod";
@@ -562,7 +560,6 @@ import OnboardHospitalForm from "./_components/OnboardHospitalForm";
 //                     </div> */}
 //                                 </section>
 
-
 //                                 {/* User Credential */}
 //                                 <section className="bg-white/80 rounded-lg p-4 md:p-6 shadow-sm border border-slate-100">
 //                                     <h3 className="text-md font-medium text-slate-700 mb-4">
@@ -610,7 +607,6 @@ import OnboardHospitalForm from "./_components/OnboardHospitalForm";
 
 //                                     <div className="flex items-center gap-3">
 
-
 //                                         <Button
 //                                             type="button"
 //                                             variant="ghost"
@@ -652,9 +648,6 @@ import OnboardHospitalForm from "./_components/OnboardHospitalForm";
 //     );
 // }
 
-
-
-
-export default function LoginPage() {
-  return <OnboardHospitalForm />
+export default function OnboardingPage() {
+  return <OnboardWizard />
 }

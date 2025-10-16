@@ -35,7 +35,7 @@ export function AuditLogTable() {
   const [selected, setSelected] = useState<AuditLog | null>(null)
 
   return (
-    <div className="space-y-4 border rounded-xl p-4">
+    <div className="space-y-4 border rounded-xl p-4 bg-white">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Activity Log</h2>
         <div className="flex items-center gap-4">
