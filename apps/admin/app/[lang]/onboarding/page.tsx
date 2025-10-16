@@ -1,5 +1,6 @@
 // Onboarding Page - Multi-step Wizard
-import OnboardWizard from "./_components/OnboardWizard"
+import { redirect } from "next/navigation"
+import type { Locale } from "@/i18n/locales"
 
 // import React, { useEffect, useState } from "react";
 // import { z } from "@workspace/ui/lib/zod";
@@ -648,6 +649,11 @@ import OnboardWizard from "./_components/OnboardWizard"
 //     );
 // }
 
-export default function OnboardingPage() {
-  return <OnboardWizard />
+export default async function OnboardingPage({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>
+}) {
+  const { lang } = await params
+  redirect(`/${lang}/create-hospital`)
 }
