@@ -1,17 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
+import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Form } from "@workspace/ui/components/form"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
+import { Button } from "@workspace/ui/components/button"
 import { ModuleAssignmentSection } from "@/app/[lang]/onboarding/_components/sections/ModulesAssignmentSection"
-import { FormActionsSection } from "@/app/[lang]/onboarding/_components/sections/FormActionsSection"
 import {
   step2Schema,
   type Step2Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import { updateHospitalModules } from "@/lib/hospitals"
+import {
+  getModules,
+  updateTenantModules,
+} from "@/lib/api/mock/modules"
+import { useOnboardingStore } from "@/stores/onboarding"
+import { ArrowLeft } from "lucide-react"
 
 const defaultValues: Step2Values = {
   modules: [],
@@ -21,10 +28,14 @@ export function ModuleStepForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
+  const queryClient = useQueryClient()
+  
   const lang = params?.lang ?? "en"
   const onboardingBase = `/${lang}/onboarding`
   const createHospitalPath = `/${lang}/create-hospital`
-  const hospitalId = searchParams.get("hospitalId") || ""
+  const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
+
+  const { modules: moduleState, setModules, saveModules, skipModules } = useOnboardingStore()
 
   useEffect(() => {
     if (!hospitalId) {
@@ -32,61 +43,132 @@ export function ModuleStepForm() {
     }
   }, [hospitalId, router, createHospitalPath])
 
-  const [loading, setLoading] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const { data: modules = [], isLoading: isLoadingModules } = useQuery({
+    queryKey: ["modules"],
+    queryFn: getModules,
+  })
+
+  const mutation = useMutation({
+    mutationKey: ["tenant", "modules"],
+    mutationFn: (selectedIds: string[]) =>
+      updateTenantModules(hospitalId, { selectedIds }),
+    onMutate: async (selectedIds) => {
+      await queryClient.cancelQueries({ queryKey: ["tenant", "modules"] })
+      setModules(selectedIds)
+      return { selectedIds }
+    },
+    onSuccess: () => {
+      saveModules()
+      router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
+    },
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : "Failed to save modules"
+      console.error("[ModuleStepForm] Error:", message)
+    },
+  })
 
   const form = useForm<Step2Values>({
     resolver: zodResolver(step2Schema),
-    defaultValues,
+    defaultValues: {
+      modules: moduleState.selectedIds,
+    },
   })
+
+  useEffect(() => {
+    if (moduleState.selectedIds.length > 0) {
+      form.setValue("modules", moduleState.selectedIds)
+    }
+  }, [moduleState.selectedIds, form])
+
+  const handleSave = async () => {
+    const isValid = await form.trigger()
+    if (!isValid) return
+
+    const values = form.getValues()
+    mutation.mutate(values.modules || [])
+  }
+
+  const handleSkip = () => {
+    skipModules()
+    router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
+  }
 
   const handleReset = () => {
     form.reset(defaultValues)
-    setServerError(null)
-  }
-
-  const onSubmit = async (values: Step2Values) => {
-    if (!hospitalId) return
-
-    setLoading(true)
-    setServerError(null)
-
-    try {
-      await updateHospitalModules(hospitalId, {
-        modules: values.modules || [],
-      })
-
-      router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to save modules"
-      setServerError(message)
-    } finally {
-      setLoading(false)
-    }
   }
 
   if (!hospitalId) {
     return null
   }
 
+  if (isLoadingModules) {
+    return (
+      <div className="space-y-4">
+        <div className="bg-white/80 rounded-lg p-4 md:p-6">
+          <p className="text-center text-muted-foreground">Loading modules...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4"
-        noValidate
-      >
-        <ModuleAssignmentSection form={form} />
+      <form className="space-y-4" noValidate>
+        <ModuleAssignmentSection form={form} modules={modules} />
 
-        <FormActionsSection
-          serverError={serverError}
-          loading={loading}
-          onReset={handleReset}
-          backHref={createHospitalPath}
-          submitLabel="Save & Continue"
-          submitLoadingLabel="Saving..."
-        />
+        <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center relative">
+          {mutation.isError && (
+            <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
+              {mutation.error instanceof Error
+                ? mutation.error.message
+                : "Failed to save modules"}
+            </div>
+          )}
+
+          <div className="ml-auto flex gap-3 items-center">
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+              className="px-4 py-2 cursor-pointer flex items-center gap-2"
+            >
+              <Link href={createHospitalPath}>
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleReset}
+              disabled={mutation.isPending}
+              className="px-4 py-2 cursor-pointer"
+            >
+              Reset
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSkip}
+              disabled={mutation.isPending}
+              className="px-4 py-2 cursor-pointer"
+            >
+              Skip
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleSave}
+              disabled={mutation.isPending}
+              className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
+            >
+              {mutation.isPending ? "Saving..." : "Save & Continue"}
+            </Button>
+          </div>
+        </div>
       </form>
     </Form>
   )
