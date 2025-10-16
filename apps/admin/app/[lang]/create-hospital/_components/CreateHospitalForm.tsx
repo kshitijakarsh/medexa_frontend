@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import { Form } from "@workspace/ui/components/form"
@@ -35,6 +35,10 @@ const defaultValues: Step1Values = {
 
 export function CreateHospitalForm() {
   const router = useRouter()
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang ?? "en"
+  const onboardingModulesPath = `/${lang}/onboarding/modules`
+  const hospitalsPath = `/${lang}/hospitals`
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -73,7 +77,7 @@ export function CreateHospitalForm() {
 
     try {
       const result = await createHospital(values, logoFile)
-      router.push(`/onboarding/modules?hospitalId=${result.id}`)
+      router.push(`${onboardingModulesPath}?hospitalId=${result.id}`)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to create hospital"
@@ -87,7 +91,7 @@ export function CreateHospitalForm() {
     <main className="min-h-svh w-full">
       <Header />
       <div className="flex flex-col items-start justify-between mb-6">
-        <FormHeader title="Create Hospital" backHref="/hospitals" />
+        <FormHeader title="Create Hospital" backHref={hospitalsPath} />
         <div className="p-4 w-full py-3">
           <Form {...form}>
             <form
@@ -108,6 +112,7 @@ export function CreateHospitalForm() {
                 serverError={serverError}
                 loading={loading}
                 onReset={handleReset}
+                backHref={hospitalsPath}
                 submitLabel="Save & Continue"
                 submitLoadingLabel="Saving..."
               />

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { useParams, usePathname, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { FormHeader } from "@/app/[lang]/onboarding/_components/ui/FormHeader"
 import { cn } from "@workspace/ui/lib/utils"
@@ -22,6 +22,9 @@ export function OnboardingShell({ children }: OnboardingShellProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const hospitalId = searchParams.get("hospitalId") || ""
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang ?? "en"
+  const basePath = `/${lang}/onboarding`
 
   const currentIndex = Math.max(
     STEPS.findIndex((step) => pathname?.includes(`/onboarding/${step.slug}`)),
@@ -30,9 +33,10 @@ export function OnboardingShell({ children }: OnboardingShellProps) {
   const currentStep = STEPS[currentIndex] ?? STEPS[0]
 
   const buildHref = (slug: string) => {
-    if (!hospitalId) return `/onboarding/${slug}`
-    const params = new URLSearchParams({ hospitalId })
-    return `/onboarding/${slug}?${params.toString()}`
+    const path = `${basePath}/${slug}`
+    if (!hospitalId) return path
+    const query = new URLSearchParams({ hospitalId })
+    return `${path}?${query.toString()}`
   }
 
   return (
@@ -40,7 +44,10 @@ export function OnboardingShell({ children }: OnboardingShellProps) {
       <Header />
       <div className="">
         <div className="flex flex-col items-start justify-between mb-6">
-          <FormHeader title="Hospital Onboarding" backHref="/hospitals" />
+          <FormHeader
+            title="Hospital Onboarding"
+            backHref={`/${lang}/hospitals`}
+          />
 
           <div className="w-full px-4 pb-3 pt-7">
             <div className="flex items-center justify-center gap-2">

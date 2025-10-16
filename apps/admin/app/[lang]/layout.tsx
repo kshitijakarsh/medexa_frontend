@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import { Providers } from "@/components/providers"
 import { getDictionary } from "@/i18n/get-dictionary"
 import { locales, type Locale } from "@/i18n/locales"
@@ -24,7 +25,7 @@ export default async function LangLayout({
   children,
   params,
 }: Readonly<{
-  children: React.ReactNode
+  children: ReactNode
   params: Promise<{ lang: Locale }>
 }>) {
   const { lang } = await params

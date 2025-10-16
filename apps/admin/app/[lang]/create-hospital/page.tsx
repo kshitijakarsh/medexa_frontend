@@ -1,4 +1,4 @@
-import { CreateHospitalForm } from "@/app/create-hospital/_components/CreateHospitalForm"
+import { CreateHospitalForm } from "./_components/CreateHospitalForm"
 
 export default function LocalizedCreateHospitalPage() {
   return <CreateHospitalForm />

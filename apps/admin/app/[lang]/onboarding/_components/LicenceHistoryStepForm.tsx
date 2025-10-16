@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Form } from "@workspace/ui/components/form"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
@@ -26,13 +26,17 @@ const defaultValues: Step4Values = {
 export function LicenceHistoryStepForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang ?? "en"
+  const onboardingBase = `/${lang}/onboarding`
+  const createHospitalPath = `/${lang}/create-hospital`
   const hospitalId = searchParams.get("hospitalId") || ""
 
   useEffect(() => {
     if (!hospitalId) {
-      router.replace("/create-hospital")
+      router.replace(createHospitalPath)
     }
-  }, [hospitalId, router])
+  }, [hospitalId, router, createHospitalPath])
 
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -58,7 +62,7 @@ export function LicenceHistoryStepForm() {
         ...values,
         end_date: values.end_date || undefined,
       })
-      router.push(`/onboarding/regulatory-docs?hospitalId=${hospitalId}`)
+      router.push(`${onboardingBase}/regulatory-docs?hospitalId=${hospitalId}`)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to save licence"
@@ -72,7 +76,7 @@ export function LicenceHistoryStepForm() {
     return null
   }
 
-  const previousStepHref = `/onboarding/payment?hospitalId=${hospitalId}`
+  const previousStepHref = `${onboardingBase}/payment?hospitalId=${hospitalId}`
 
   return (
     <Form {...form}>

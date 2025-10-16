@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Form } from "@workspace/ui/components/form"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
@@ -20,13 +20,17 @@ const defaultValues: Step2Values = {
 export function ModuleStepForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang ?? "en"
+  const onboardingBase = `/${lang}/onboarding`
+  const createHospitalPath = `/${lang}/create-hospital`
   const hospitalId = searchParams.get("hospitalId") || ""
 
   useEffect(() => {
     if (!hospitalId) {
-      router.replace("/create-hospital")
+      router.replace(createHospitalPath)
     }
-  }, [hospitalId, router])
+  }, [hospitalId, router, createHospitalPath])
 
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
@@ -52,7 +56,7 @@ export function ModuleStepForm() {
         modules: values.modules || [],
       })
 
-      router.push(`/onboarding/payment?hospitalId=${hospitalId}`)
+      router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to save modules"
@@ -79,7 +83,7 @@ export function ModuleStepForm() {
           serverError={serverError}
           loading={loading}
           onReset={handleReset}
-          backHref="/create-hospital"
+          backHref={createHospitalPath}
           submitLabel="Save & Continue"
           submitLoadingLabel="Saving..."
         />
