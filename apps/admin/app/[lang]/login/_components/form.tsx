@@ -760,10 +760,17 @@ export function LoginForm() {
           {isPending
             ? "Processing..."
             : showNewPassword
-            ? "Update Password & Login"
-            : "Login"}
+              ? "Update Password & Login"
+              : "Login"}
         </Button>
-
+        <div className="text-center mt-2">
+          <a
+            href="#"
+            className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1"
+          >
+            Need Help?
+          </a>
+        </div>
         {/* Footer */}
         {!showNewPassword && (
           <div className="text-center text-xs text-gray-400 mt-4">
