@@ -38,7 +38,6 @@ export function CreateHospitalForm() {
   const params = useParams<{ lang: string }>()
   const lang = params?.lang ?? "en"
   const onboardingModulesPath = `/${lang}/onboarding/modules`
-  const hospitalsPath = `/${lang}/hospitals`
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -64,13 +63,6 @@ export function CreateHospitalForm() {
     reader.readAsDataURL(file)
   }
 
-  const handleReset = () => {
-    form.reset(defaultValues)
-    setLogoFile(null)
-    setLogoPreview(null)
-    setServerError(null)
-  }
-
   const onSubmit = async (values: Step1Values) => {
     setLoading(true)
     setServerError(null)
@@ -91,7 +83,7 @@ export function CreateHospitalForm() {
     <main className="min-h-svh w-full">
       <Header />
       <div className="flex flex-col items-start justify-between mb-6">
-        <FormHeader title="Create Hospital" backHref={hospitalsPath} />
+        <FormHeader title="Create Hospital" />
         <div className="p-4 w-full py-3">
           <Form {...form}>
             <form
@@ -111,8 +103,7 @@ export function CreateHospitalForm() {
               <FormActionsSection
                 serverError={serverError}
                 loading={loading}
-                onReset={handleReset}
-                backHref={hospitalsPath}
+                showReset={false}
                 submitLabel="Save & Continue"
                 submitLoadingLabel="Saving..."
               />
