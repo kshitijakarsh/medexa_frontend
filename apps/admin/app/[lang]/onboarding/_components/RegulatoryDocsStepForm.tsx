@@ -52,13 +52,6 @@ export function RegulatoryDocsStepForm() {
     defaultValues,
   })
 
-  const handleReset = () => {
-    form.reset(defaultValues)
-    setServerError(null)
-    setDocFile(null)
-    setDocPreview(null)
-  }
-
   const onSubmit = async (values: Step5Values) => {
     if (!hospitalId) return
 
@@ -114,7 +107,7 @@ export function RegulatoryDocsStepForm() {
         <FormActionsSection
           serverError={serverError}
           loading={loading}
-          onReset={handleReset}
+          showReset={false}
           backHref={previousStepHref}
           submitLabel="Complete Onboarding"
           submitLoadingLabel="Submitting..."

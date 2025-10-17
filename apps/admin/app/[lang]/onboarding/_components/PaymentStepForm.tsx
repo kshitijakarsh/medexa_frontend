@@ -48,11 +48,6 @@ export function PaymentStepForm() {
     defaultValues,
   })
 
-  const handleReset = () => {
-    form.reset(defaultValues)
-    setServerError(null)
-  }
-
   const onSubmit = async (values: Step3Values) => {
     if (!hospitalId) return
 
@@ -89,7 +84,7 @@ export function PaymentStepForm() {
         <FormActionsSection
           serverError={serverError}
           loading={loading}
-          onReset={handleReset}
+          showReset={false}
           backHref={previousStepHref}
           submitLabel="Save & Continue"
           submitLoadingLabel="Saving..."

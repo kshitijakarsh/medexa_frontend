@@ -46,11 +46,6 @@ export function LicenceHistoryStepForm() {
     defaultValues,
   })
 
-  const handleReset = () => {
-    form.reset(defaultValues)
-    setServerError(null)
-  }
-
   const onSubmit = async (values: Step4Values) => {
     if (!hospitalId) return
 
@@ -90,7 +85,7 @@ export function LicenceHistoryStepForm() {
         <FormActionsSection
           serverError={serverError}
           loading={loading}
-          onReset={handleReset}
+          showReset={false}
           backHref={previousStepHref}
           submitLabel="Save & Continue"
           submitLoadingLabel="Saving..."

@@ -13,10 +13,7 @@ import {
   step2Schema,
   type Step2Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import {
-  getModules,
-  updateTenantModules,
-} from "@/lib/api/mock/modules"
+import { getModules, updateTenantModules } from "@/lib/api/mock/modules"
 import { useOnboardingStore } from "@/stores/onboarding"
 import { ArrowLeft } from "lucide-react"
 
@@ -29,13 +26,13 @@ export function ModuleStepForm() {
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
   const queryClient = useQueryClient()
-  
+
   const lang = params?.lang ?? "en"
   const onboardingBase = `/${lang}/onboarding`
   const createHospitalPath = `/${lang}/create-hospital`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
 
-  const { modules: moduleState, setModules, saveModules, skipModules } = useOnboardingStore()
+  const { modules: moduleState, setModules, saveModules } = useOnboardingStore()
 
   useEffect(() => {
     if (!hospitalId) {
@@ -89,15 +86,6 @@ export function ModuleStepForm() {
     mutation.mutate(values.modules || [])
   }
 
-  const handleSkip = () => {
-    skipModules()
-    router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
-  }
-
-  const handleReset = () => {
-    form.reset(defaultValues)
-  }
-
   if (!hospitalId) {
     return null
   }
@@ -106,7 +94,9 @@ export function ModuleStepForm() {
     return (
       <div className="space-y-4">
         <div className="bg-white/80 rounded-lg p-4 md:p-6">
-          <p className="text-center text-muted-foreground">Loading modules...</p>
+          <p className="text-center text-muted-foreground">
+            Loading modules...
+          </p>
         </div>
       </div>
     )
@@ -131,32 +121,12 @@ export function ModuleStepForm() {
               type="button"
               variant="outline"
               asChild
-              className="px-4 py-2 cursor-pointer flex items-center gap-2"
+              className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
             >
               <Link href={createHospitalPath}>
                 <ArrowLeft className="size-4" />
                 Back
               </Link>
-            </Button>
-
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleReset}
-              disabled={mutation.isPending}
-              className="px-4 py-2 cursor-pointer"
-            >
-              Reset
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleSkip}
-              disabled={mutation.isPending}
-              className="px-4 py-2 cursor-pointer"
-            >
-              Skip
             </Button>
 
             <Button

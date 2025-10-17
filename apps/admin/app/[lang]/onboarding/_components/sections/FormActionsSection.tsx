@@ -60,7 +60,7 @@ export const FormActionsSection = ({
             variant="outline"
             onClick={onBack}
             disabled={loading}
-            className="px-4 py-2 cursor-pointer flex items-center gap-2"
+            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
             <ArrowLeft className="size-4" />
             Back
@@ -73,7 +73,7 @@ export const FormActionsSection = ({
             type="button"
             variant="outline"
             asChild
-            className="px-4 py-2 cursor-pointer flex items-center gap-2"
+            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
             <Link href={backHref}>
               <ArrowLeft className="size-4" />
