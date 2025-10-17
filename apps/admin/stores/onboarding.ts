@@ -1,6 +1,8 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import type { PaymentConfig } from "@/lib/api/mock/payment"
+import type { LicenceHistory } from "@/lib/api/mock/licence"
+import type { RegulatoryDoc } from "@/lib/api/mock/regulatory"
 
 export type StepStatus = "idle" | "saved" | "skipped"
 
@@ -11,6 +13,16 @@ interface ModulesState {
 
 interface PaymentState {
   items: PaymentConfig[]
+  status: StepStatus
+}
+
+interface LicenceState {
+  items: LicenceHistory[]
+  status: StepStatus
+}
+
+interface RegulatoryState {
+  items: RegulatoryDoc[]
   status: StepStatus
 }
 
@@ -25,6 +37,16 @@ interface OnboardingState {
   savePayment: () => void
   skipPayment: () => void
   resetPayment: () => void
+  licence: LicenceState
+  setLicenceItems: (items: LicenceHistory[]) => void
+  saveLicence: () => void
+  skipLicence: () => void
+  resetLicence: () => void
+  regulatory: RegulatoryState
+  setRegulatoryItems: (items: RegulatoryDoc[]) => void
+  saveRegulatory: () => void
+  skipRegulatory: () => void
+  resetRegulatory: () => void
 }
 
 const initialModulesState: ModulesState = {
@@ -37,11 +59,21 @@ const initialPaymentState: PaymentState = {
   status: "idle",
 }
 
+const initialLicenceState: LicenceState = {
+  items: [],
+  status: "idle",
+}
+
+const initialRegulatoryState: RegulatoryState = {
+  items: [],
+  status: "idle",
+}
+
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set) => ({
       modules: initialModulesState,
-      
+
       setModules: (selectedIds: string[]) =>
         set((state) => ({
           modules: {
@@ -49,7 +81,7 @@ export const useOnboardingStore = create<OnboardingState>()(
             selectedIds,
           },
         })),
-      
+
       saveModules: () =>
         set((state) => ({
           modules: {
@@ -57,7 +89,7 @@ export const useOnboardingStore = create<OnboardingState>()(
             status: "saved",
           },
         })),
-      
+
       skipModules: () =>
         set((state) => ({
           modules: {
@@ -65,14 +97,14 @@ export const useOnboardingStore = create<OnboardingState>()(
             status: "skipped",
           },
         })),
-      
+
       resetModules: () =>
         set({
           modules: initialModulesState,
         }),
-      
+
       payment: initialPaymentState,
-      
+
       setPaymentItems: (items: PaymentConfig[]) =>
         set((state) => ({
           payment: {
@@ -80,7 +112,7 @@ export const useOnboardingStore = create<OnboardingState>()(
             items,
           },
         })),
-      
+
       savePayment: () =>
         set((state) => ({
           payment: {
@@ -88,7 +120,7 @@ export const useOnboardingStore = create<OnboardingState>()(
             status: "saved",
           },
         })),
-      
+
       skipPayment: () =>
         set((state) => ({
           payment: {
@@ -96,10 +128,72 @@ export const useOnboardingStore = create<OnboardingState>()(
             status: "skipped",
           },
         })),
-      
+
       resetPayment: () =>
         set({
           payment: initialPaymentState,
+        }),
+
+      licence: initialLicenceState,
+
+      setLicenceItems: (items: LicenceHistory[]) =>
+        set((state) => ({
+          licence: {
+            ...state.licence,
+            items,
+          },
+        })),
+
+      saveLicence: () =>
+        set((state) => ({
+          licence: {
+            ...state.licence,
+            status: "saved",
+          },
+        })),
+
+      skipLicence: () =>
+        set((state) => ({
+          licence: {
+            ...state.licence,
+            status: "skipped",
+          },
+        })),
+
+      resetLicence: () =>
+        set({
+          licence: initialLicenceState,
+        }),
+
+      regulatory: initialRegulatoryState,
+
+      setRegulatoryItems: (items: RegulatoryDoc[]) =>
+        set((state) => ({
+          regulatory: {
+            ...state.regulatory,
+            items,
+          },
+        })),
+
+      saveRegulatory: () =>
+        set((state) => ({
+          regulatory: {
+            ...state.regulatory,
+            status: "saved",
+          },
+        })),
+
+      skipRegulatory: () =>
+        set((state) => ({
+          regulatory: {
+            ...state.regulatory,
+            status: "skipped",
+          },
+        })),
+
+      resetRegulatory: () =>
+        set({
+          regulatory: initialRegulatoryState,
         }),
     }),
     {
