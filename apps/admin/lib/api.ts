@@ -180,6 +180,21 @@ export function refreshCognitoToken(): Promise<CognitoUserSession> {
 }
 
 
+// lib/api.ts
+
+export function logoutCognitoUser(): void {
+  const user: CognitoUser | null = userPool.getCurrentUser();
+  if (!user) {
+    console.warn("No user is currently logged in");
+    return;
+  }
+
+  user.signOut();
+  console.log("User logged out successfully");
+}
+
+
+
 // To ge the token here 
 //  useEffect(() => {
 //     async function getToken() {
