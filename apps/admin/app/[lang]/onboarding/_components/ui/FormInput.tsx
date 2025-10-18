@@ -168,7 +168,7 @@ export const FormInput = ({
                     const numericValue = e.target.value.replace(/\D/g, "")
                     field.onChange(numericValue)
                   } else {
-                    field.onChange(e)
+                    field.onChange(e.target.value)
                   }
                 }}
               />

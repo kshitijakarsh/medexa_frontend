@@ -1,8 +1,8 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
-import type { PaymentConfig } from "@/lib/api/mock/payment"
-import type { LicenceHistory } from "@/lib/api/mock/licence"
-import type { RegulatoryDoc } from "@/lib/api/mock/regulatory"
+import type { PaymentConfigResponse } from "@/lib/api/payment"
+import type { License } from "@/lib/api/license"
+import type { Document } from "@/lib/api/regulatory"
 
 export type StepStatus = "idle" | "saved" | "skipped"
 
@@ -12,17 +12,17 @@ interface ModulesState {
 }
 
 interface PaymentState {
-  items: PaymentConfig[]
+  items: PaymentConfigResponse[]
   status: StepStatus
 }
 
 interface LicenceState {
-  items: LicenceHistory[]
+  items: License[]
   status: StepStatus
 }
 
 interface RegulatoryState {
-  items: RegulatoryDoc[]
+  items: Document[]
   status: StepStatus
 }
 
@@ -33,17 +33,17 @@ interface OnboardingState {
   skipModules: () => void
   resetModules: () => void
   payment: PaymentState
-  setPaymentItems: (items: PaymentConfig[]) => void
+  setPaymentItems: (items: PaymentConfigResponse[]) => void
   savePayment: () => void
   skipPayment: () => void
   resetPayment: () => void
   licence: LicenceState
-  setLicenceItems: (items: LicenceHistory[]) => void
+  setLicenceItems: (items: License[]) => void
   saveLicence: () => void
   skipLicence: () => void
   resetLicence: () => void
   regulatory: RegulatoryState
-  setRegulatoryItems: (items: RegulatoryDoc[]) => void
+  setRegulatoryItems: (items: Document[]) => void
   saveRegulatory: () => void
   skipRegulatory: () => void
   resetRegulatory: () => void
@@ -105,7 +105,7 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       payment: initialPaymentState,
 
-      setPaymentItems: (items: PaymentConfig[]) =>
+      setPaymentItems: (items: PaymentConfigResponse[]) =>
         set((state) => ({
           payment: {
             ...state.payment,
@@ -136,7 +136,7 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       licence: initialLicenceState,
 
-      setLicenceItems: (items: LicenceHistory[]) =>
+      setLicenceItems: (items: License[]) =>
         set((state) => ({
           licence: {
             ...state.licence,
@@ -167,7 +167,7 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       regulatory: initialRegulatoryState,
 
-      setRegulatoryItems: (items: RegulatoryDoc[]) =>
+      setRegulatoryItems: (items: Document[]) =>
         set((state) => ({
           regulatory: {
             ...state.regulatory,

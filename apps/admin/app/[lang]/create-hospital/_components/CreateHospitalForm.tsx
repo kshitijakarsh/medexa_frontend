@@ -13,24 +13,27 @@ import {
   step1Schema,
   type Step1Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import { createHospital } from "@/lib/hospitals"
+import { createTenantApiClient } from "@/lib/api/tenant"
 
 const defaultValues: Step1Values = {
-  hospitalName: "",
-  mophLicenseNumber: "",
-  tradeLicense: "",
-  taxRegistrationNumber: "",
-  contactEmail: "",
-  contactPhone: "",
-  emergencyContactNumber: "",
-  city: "",
-  fullAddress: "",
-  adminFullName: "",
-  adminDesignation: "",
-  adminEmail: "",
-  adminPhone: "",
-  userFullName: "",
-  userPassword: "",
+  tenant_key: "",
+  external_id: "",
+  name_en: "",
+  name_local: "",
+  country_id: 0,
+  regulatory_authority_id: 0,
+  license_number: "",
+  license_expiry: "",
+  license_type: "",
+  commercial_reg_no: "",
+  primary_admin_name: "",
+  primary_admin_email: "",
+  primary_admin_id_no: "",
+  currency_code: "",
+  vat_registered: false,
+  vat_number: "",
+  user_full_name: "",
+  user_password: "",
 }
 
 export function CreateHospitalForm() {
@@ -68,11 +71,13 @@ export function CreateHospitalForm() {
     setServerError(null)
 
     try {
-      const result = await createHospital(values, logoFile)
-      router.push(`${onboardingModulesPath}?hospitalId=${result.id}`)
+      const tenantApiClient = createTenantApiClient({ authToken: "" })
+      const response = await tenantApiClient.createTenant(values)
+      const tenantId = String(response.data.data.id)
+      router.push(`${onboardingModulesPath}?hospitalId=${tenantId}`)
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Failed to create hospital"
+        error instanceof Error ? error.message : "Failed to create tenant"
       setServerError(message)
     } finally {
       setLoading(false)
@@ -83,7 +88,7 @@ export function CreateHospitalForm() {
     <main className="min-h-svh w-full">
       <Header />
       <div className="flex flex-col items-start justify-between mb-6">
-        <FormHeader title="Create Hospital" />
+        <FormHeader title="Create Tenant / Hospital" />
         <div className="p-4 w-full py-3">
           <Form {...form}>
             <form

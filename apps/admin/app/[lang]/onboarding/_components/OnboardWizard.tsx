@@ -25,21 +25,26 @@ import {
   Step4Values,
   Step5Values,
 } from "./schemas"
-import {
-  createHospital,
-  updateHospitalModules,
-  saveHospitalPayment,
-  saveHospitalLicense,
-  uploadRegulatoryDoc,
-} from "@/lib/hospitals"
+import { createTenantApiClient } from "@/lib/api/tenant"
+import { createModulesApiClient } from "@/lib/api/modules"
+import { createPaymentConfigApiClient } from "@/lib/api/payment"
+import { createLicenseApiClient } from "@/lib/api/license"
+import { createRegulatoryApiClient } from "@/lib/api/regulatory"
 
 const TOTAL_STEPS = 5
 
 export default function OnboardWizard() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [hospitalId, setHospitalId] = useState<string | null>(null)
+  const [tenantId, setTenantId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+
+  // Create API clients
+  const tenantApiClient = createTenantApiClient({ authToken: "" })
+  const modulesApiClient = createModulesApiClient({ authToken: "" })
+  const paymentApiClient = createPaymentConfigApiClient({ authToken: "" })
+  const licenseApiClient = createLicenseApiClient({ authToken: "" })
+  const regulatoryApiClient = createRegulatoryApiClient({ authToken: "" })
 
   // Step 1: Hospital Base
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -48,21 +53,24 @@ export default function OnboardWizard() {
   const step1Form = useForm<Step1Values>({
     resolver: zodResolver(step1Schema),
     defaultValues: {
-      hospitalName: "",
-      mophLicenseNumber: "",
-      tradeLicense: "",
-      taxRegistrationNumber: "",
-      contactEmail: "",
-      contactPhone: "",
-      emergencyContactNumber: "",
-      city: "",
-      fullAddress: "",
-      adminFullName: "",
-      adminDesignation: "",
-      adminEmail: "",
-      adminPhone: "",
-      userFullName: "",
-      userPassword: "",
+      tenant_key: "",
+      external_id: "",
+      name_en: "",
+      name_local: "",
+      country_id: 0,
+      regulatory_authority_id: 0,
+      license_number: "",
+      license_expiry: "",
+      license_type: "",
+      commercial_reg_no: "",
+      primary_admin_name: "",
+      primary_admin_email: "",
+      primary_admin_id_no: "",
+      currency_code: "",
+      vat_registered: false,
+      vat_number: "",
+      user_full_name: "",
+      user_password: "",
     },
   })
 
@@ -78,7 +86,7 @@ export default function OnboardWizard() {
   const step3Form = useForm<Step3Values>({
     resolver: zodResolver(step3Schema),
     defaultValues: {
-      gateway_id: "",
+      gateway_id: 0,
       merchant_id: "",
       terminal_key: "",
       vault_path: "",
@@ -87,6 +95,7 @@ export default function OnboardWizard() {
       vat_registered: false,
       vat_number: "",
       currency_code: "",
+      active: true,
     },
   })
 
@@ -112,15 +121,14 @@ export default function OnboardWizard() {
     resolver: zodResolver(step5Schema),
     defaultValues: {
       doc_type: "",
-      authority_id: "",
+      authority_id: 0,
       doc_number: "",
       issue_date: "",
       expiry_date: "",
       file_url: "",
-      uploaded_by: "",
-      verified_by: "",
-      verified_at: "",
-      status: "pending",
+      uploaded_by: 0,
+      verified_by: undefined,
+      status: undefined,
       notes: "",
     },
   })
@@ -171,20 +179,22 @@ export default function OnboardWizard() {
     try {
       switch (currentStep) {
         case 0: {
-          // Step 1: Create Hospital
+          // Step 1: Create Tenant
           const values = step1Form.getValues()
-          const result = await createHospital(values, logoFile)
-          setHospitalId(result.id)
+          const response = await tenantApiClient.createTenant(values)
+          const newTenantId = String(response.data.data.id)
+          setTenantId(newTenantId)
           setCurrentStep(1)
           break
         }
 
         case 1: {
           // Step 2: Update Modules
-          if (!hospitalId) throw new Error("Hospital ID not found")
+          if (!tenantId) throw new Error("Tenant ID not found")
           const values = step2Form.getValues()
-          await updateHospitalModules(hospitalId, {
-            modules: values.modules || [],
+          const moduleIds = values.modules?.map(Number) || []
+          await modulesApiClient.updateModules(tenantId, {
+            moduleIds,
           })
           setCurrentStep(2)
           break
@@ -192,49 +202,31 @@ export default function OnboardWizard() {
 
         case 2: {
           // Step 3: Save Payment Details
-          if (!hospitalId) throw new Error("Hospital ID not found")
+          if (!tenantId) throw new Error("Tenant ID not found")
           const values = step3Form.getValues()
-          await saveHospitalPayment(hospitalId, values)
+          await paymentApiClient.createPaymentConfig(tenantId, values)
           setCurrentStep(3)
           break
         }
 
         case 3: {
           // Step 4: Save License History
-          if (!hospitalId) throw new Error("Hospital ID not found")
+          if (!tenantId) throw new Error("Tenant ID not found")
           const values = step4Form.getValues()
-          // Dates are already strings from the form
-          const payload = {
-            ...values,
-            start_date: values.start_date,
-            end_date: values.end_date,
-          }
-          await saveHospitalLicense(hospitalId, payload)
+          await licenseApiClient.createLicense(tenantId, values)
           setCurrentStep(4)
           break
         }
 
         case 4: {
           // Step 5: Upload Regulatory Document
-          if (!hospitalId) throw new Error("Hospital ID not found")
+          if (!tenantId) throw new Error("Tenant ID not found")
           const values = step5Form.getValues()
-
-          const formData = new FormData()
-          Object.entries(values).forEach(([k, v]) => {
-            if (v !== undefined && v !== null && v !== "") {
-              formData.append(k, String(v))
-            }
-          })
-
-          if (docFile) {
-            formData.append("document", docFile)
-          }
-
-          await uploadRegulatoryDoc(hospitalId, formData)
+          await regulatoryApiClient.createDocument(tenantId, values)
 
           // Success! Optionally redirect or show success message
-          alert("Hospital onboarded successfully!")
-          // TODO: Redirect to hospital list or detail page
+          alert("Tenant onboarded successfully!")
+          // TODO: Redirect to tenant/hospital list or detail page
           window.location.href = "/hospitals"
           break
         }
@@ -354,7 +346,7 @@ export default function OnboardWizard() {
             </div>
             <div className="text-center mt-2 text-sm text-slate-600">
               Step {currentStep + 1} of {TOTAL_STEPS}:{" "}
-              {currentStep === 0 && "Hospital Information"}
+              {currentStep === 0 && "Tenant Information"}
               {currentStep === 1 && "Module Assignment"}
               {currentStep === 2 && "Payment Details"}
               {currentStep === 3 && "License History"}

@@ -29,11 +29,7 @@ import {
   step4Schema,
   type Step4Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import {
-  createLicenceHistory,
-  updateLicenceHistory,
-  type LicenceHistory,
-} from "@/lib/api/mock/licence"
+import { createLicenseApiClient, type License } from "@/lib/api/license"
 import { useOnboardingStore } from "@/stores/onboarding"
 
 const defaultValues: Step4Values = {
@@ -41,7 +37,7 @@ const defaultValues: Step4Values = {
   seats: 0,
   storage_quota_mb: 10240,
   start_date: "",
-  end_date: undefined,
+  end_date: "",
   auto_renew: true,
   status: "active",
 }
@@ -65,7 +61,7 @@ export function LicenceHistoryStepForm() {
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<LicenceHistory | null>(null)
+  const [editingItem, setEditingItem] = useState<License | null>(null)
 
   useEffect(() => {
     if (!hospitalId) {
@@ -74,8 +70,13 @@ export function LicenceHistoryStepForm() {
   }, [hospitalId, router, lang])
 
   const createMutation = useMutation({
-    mutationFn: (payload: Omit<LicenceHistory, "id">) =>
-      createLicenceHistory(hospitalId, payload),
+    mutationFn: async (
+      payload: Omit<License, "id" | "tenant_id" | "created_at" | "updated_at">
+    ) => {
+      const client = createLicenseApiClient({ authToken: "dev-token" })
+      const response = await client.createLicense(hospitalId, payload)
+      return response.data.data
+    },
     onSuccess: (newLicence) => {
       const updatedItems = [...licenceState.items, newLicence]
       setLicenceItems(updatedItems)
@@ -86,8 +87,11 @@ export function LicenceHistoryStepForm() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...payload }: LicenceHistory) =>
-      updateLicenceHistory(id, { id, ...payload }),
+    mutationFn: async ({ id, ...payload }: { id: string } & Step4Values) => {
+      const client = createLicenseApiClient({ authToken: "dev-token" })
+      const response = await client.updateLicense(id, payload)
+      return response.data.data
+    },
     onSuccess: (updatedLicence) => {
       const updatedItems = licenceState.items.map((item) =>
         item.id === updatedLicence.id ? updatedLicence : item
@@ -111,16 +115,16 @@ export function LicenceHistoryStepForm() {
     setIsDialogOpen(true)
   }
 
-  const handleEdit = (item: LicenceHistory) => {
+  const handleEdit = (item: License) => {
     setEditingItem(item)
     form.reset({
       plan_key: item.plan_key,
-      seats: item.seats || 0,
-      storage_quota_mb: item.storage_quota_mb || 10240,
+      seats: item.seats,
+      storage_quota_mb: item.storage_quota_mb,
       start_date: item.start_date,
-      end_date: item.end_date || undefined,
-      auto_renew: item.auto_renew ?? true,
-      status: item.status || "active",
+      end_date: item.end_date,
+      auto_renew: item.auto_renew,
+      status: item.status,
     })
     setIsDialogOpen(true)
   }
@@ -197,9 +201,9 @@ export function LicenceHistoryStepForm() {
                     {item.plan_key}
                   </div>
                   <div className="text-sm text-slate-600 mt-1 space-y-1">
-                    {item.seats !== undefined && <div>Seats: {item.seats}</div>}
+                    <div>Seats: {item.seats}</div>
                     <div>Start Date: {item.start_date}</div>
-                    {item.status && <div>Status: {item.status}</div>}
+                    <div>Status: {item.status}</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -306,7 +310,7 @@ export function LicenceHistoryStepForm() {
                   name="seats"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Seats</Label>
+                      <Label>Seats *</Label>
                       <FormControl>
                         <Input
                           type="number"
@@ -328,7 +332,7 @@ export function LicenceHistoryStepForm() {
                   name="storage_quota_mb"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Storage Quota (MB)</Label>
+                      <Label>Storage Quota (MB) *</Label>
                       <FormControl>
                         <Input
                           type="number"
@@ -370,7 +374,7 @@ export function LicenceHistoryStepForm() {
                   name="end_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>End Date</Label>
+                      <Label>End Date *</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -414,7 +418,7 @@ export function LicenceHistoryStepForm() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Status</Label>
+                      <Label>Status *</Label>
                       <FormControl>
                         <Input placeholder="active" {...field} />
                       </FormControl>

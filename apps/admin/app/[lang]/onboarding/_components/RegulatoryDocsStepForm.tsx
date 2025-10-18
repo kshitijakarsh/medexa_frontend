@@ -30,23 +30,18 @@ import {
   step5Schema,
   type Step5Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import {
-  createRegulatoryDoc,
-  updateRegulatoryDoc,
-  type RegulatoryDoc,
-} from "@/lib/api/mock/regulatory"
+import { createRegulatoryApiClient, type Document } from "@/lib/api/regulatory"
 import { useOnboardingStore } from "@/stores/onboarding"
 
 const defaultValues: Step5Values = {
   doc_type: "",
-  authority_id: "",
+  authority_id: 0,
   doc_number: "",
   issue_date: "",
   expiry_date: "",
   file_url: "",
-  uploaded_by: "",
-  verified_by: "",
-  verified_at: "",
+  uploaded_by: 0,
+  verified_by: 0,
   status: "pending",
   notes: "",
 }
@@ -70,7 +65,7 @@ export function RegulatoryDocsStepForm() {
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<RegulatoryDoc | null>(null)
+  const [editingItem, setEditingItem] = useState<Document | null>(null)
   const [docFile, setDocFile] = useState<File | null>(null)
   const [docPreview, setDocPreview] = useState<string | null>(null)
 
@@ -81,8 +76,13 @@ export function RegulatoryDocsStepForm() {
   }, [hospitalId, router, lang])
 
   const createMutation = useMutation({
-    mutationFn: (payload: Omit<RegulatoryDoc, "id">) =>
-      createRegulatoryDoc(hospitalId, payload),
+    mutationFn: async (
+      payload: Omit<Document, "id" | "tenant_id" | "created_at" | "updated_at">
+    ) => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const response = await client.createDocument(hospitalId, payload)
+      return response.data.data
+    },
     onSuccess: (newDoc) => {
       const updatedItems = [...regulatoryState.items, newDoc]
       setRegulatoryItems(updatedItems)
@@ -95,8 +95,11 @@ export function RegulatoryDocsStepForm() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...payload }: RegulatoryDoc) =>
-      updateRegulatoryDoc(id, { id, ...payload }),
+    mutationFn: async ({ id, ...payload }: { id: string } & Step5Values) => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const response = await client.updateDocument(id, payload)
+      return response.data.data
+    },
     onSuccess: (updatedDoc) => {
       const updatedItems = regulatoryState.items.map((item) =>
         item.id === updatedDoc.id ? updatedDoc : item
@@ -124,20 +127,19 @@ export function RegulatoryDocsStepForm() {
     setIsDialogOpen(true)
   }
 
-  const handleEdit = (item: RegulatoryDoc) => {
+  const handleEdit = (item: Document) => {
     setEditingItem(item)
     form.reset({
       doc_type: item.doc_type,
-      authority_id: item.authority_id || "",
-      doc_number: item.doc_number || "",
-      issue_date: item.issue_date || "",
-      expiry_date: item.expiry_date || "",
+      authority_id: item.authority_id,
+      doc_number: item.doc_number,
+      issue_date: item.issue_date,
+      expiry_date: item.expiry_date,
       file_url: item.file_url,
-      uploaded_by: item.uploaded_by || "",
-      verified_by: item.verified_by || "",
-      verified_at: item.verified_at || "",
-      status: item.status || "pending",
-      notes: item.notes || "",
+      uploaded_by: item.uploaded_by,
+      verified_by: item.verified_by,
+      status: item.status,
+      notes: item.notes,
     })
     setDocFile(null)
     setDocPreview(item.file_url || null)
@@ -179,6 +181,7 @@ export function RegulatoryDocsStepForm() {
       createMutation.mutate({
         ...values,
         file_url: fileUrl,
+        status: values.status || "pending",
       })
     }
   }
@@ -364,9 +367,16 @@ export function RegulatoryDocsStepForm() {
                   name="authority_id"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Authority ID</Label>
+                      <Label>Authority ID *</Label>
                       <FormControl>
-                        <Input placeholder="Issuing authority ID" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Issuing authority ID"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value) || 0)
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -378,7 +388,7 @@ export function RegulatoryDocsStepForm() {
                   name="doc_number"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Document Number</Label>
+                      <Label>Document Number *</Label>
                       <FormControl>
                         <Input placeholder="Document number" {...field} />
                       </FormControl>
@@ -394,7 +404,7 @@ export function RegulatoryDocsStepForm() {
                   name="issue_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Issue Date</Label>
+                      <Label>Issue Date *</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -412,7 +422,7 @@ export function RegulatoryDocsStepForm() {
                   name="expiry_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Expiry Date</Label>
+                      <Label>Expiry Date *</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -458,9 +468,16 @@ export function RegulatoryDocsStepForm() {
                   name="uploaded_by"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Uploaded By</Label>
+                      <Label>Uploaded By *</Label>
                       <FormControl>
-                        <Input placeholder="Uploader name" {...field} />
+                        <Input
+                          type="number"
+                          placeholder="Uploader ID"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value) || 0)
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -1,12 +1,12 @@
 // components/onboard-hospital/sections/UserCredentialSection.tsx
-"use client";
+"use client"
 
-import React from "react";
-import { FormSection } from "../ui/FormSection";
-import { FormInput } from "../ui/FormInput";
+import React from "react"
+import { FormSection } from "../ui/FormSection"
+import { FormInput } from "../ui/FormInput"
 
 interface UserCredentialSectionProps {
-  form: any; // react-hook-form instance
+  form: any // react-hook-form instance
 }
 
 export const UserCredentialSection = ({ form }: UserCredentialSectionProps) => {
@@ -15,18 +15,19 @@ export const UserCredentialSection = ({ form }: UserCredentialSectionProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <FormInput
           control={form.control}
-          name="userFullName"
+          name="user_full_name"
           label="Full Name"
           placeholder="User name"
+          type="text"
         />
         <FormInput
           control={form.control}
-          name="userPassword"
+          name="user_password"
           label="Password"
           placeholder="Password"
           type="password"
         />
       </div>
     </FormSection>
-  );
-};
+  )
+}

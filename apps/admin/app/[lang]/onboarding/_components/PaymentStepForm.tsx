@@ -4,7 +4,13 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Form, FormField, FormItem, FormControl, FormMessage } from "@workspace/ui/components/form"
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@workspace/ui/components/form"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import { Button } from "@workspace/ui/components/button"
@@ -26,17 +32,21 @@ import {
 import { Label } from "@workspace/ui/components/label"
 import { Input } from "@workspace/ui/components/input"
 import { ArrowLeft, Edit, Plus, Trash2 } from "lucide-react"
-import { step3Schema, type Step3Values } from "@/app/[lang]/onboarding/_components/schemas"
 import {
-  getPaymentGateways,
-  createPaymentConfig,
-  updatePaymentConfig,
-  type PaymentConfig,
-} from "@/lib/api/mock/payment"
+  step3Schema,
+  type Step3Values,
+} from "@/app/[lang]/onboarding/_components/schemas"
+import {
+  createPaymentConfigApiClient,
+  type PaymentGateway,
+  type PaymentConfigResponse,
+  type CreatePaymentConfigParams,
+  type UpdatePaymentConfigParams,
+} from "@/lib/api/payment"
 import { useOnboardingStore } from "@/stores/onboarding"
 
 const defaultValues: Step3Values = {
-  gateway_id: "",
+  gateway_id: 0,
   merchant_id: "",
   terminal_key: "",
   vault_path: "",
@@ -45,6 +55,7 @@ const defaultValues: Step3Values = {
   vat_registered: false,
   vat_number: "",
   currency_code: "",
+  active: true,
 }
 
 export function PaymentStepForm() {
@@ -58,10 +69,22 @@ export function PaymentStepForm() {
   const modulesPath = `${onboardingBase}/modules`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
 
-  const { payment: paymentState, setPaymentItems, savePayment, skipPayment } = useOnboardingStore()
+  const {
+    payment: paymentState,
+    setPaymentItems,
+    savePayment,
+    skipPayment,
+  } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<PaymentConfig | null>(null)
+  const [editingItem, setEditingItem] = useState<PaymentConfigResponse | null>(
+    null
+  )
+
+  // Create API client instance
+  const paymentApiClient = createPaymentConfigApiClient({
+    authToken: "", // TODO: Get from auth context
+  })
 
   useEffect(() => {
     if (!hospitalId) {
@@ -71,12 +94,20 @@ export function PaymentStepForm() {
 
   const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
     queryKey: ["gateways"],
-    queryFn: getPaymentGateways,
+    queryFn: async () => {
+      const response = await paymentApiClient.getPaymentGateways()
+      return response.data
+    },
   })
 
   const createMutation = useMutation({
-    mutationFn: (payload: Omit<PaymentConfig, "id">) =>
-      createPaymentConfig(hospitalId, payload),
+    mutationFn: async (payload: CreatePaymentConfigParams) => {
+      const response = await paymentApiClient.createPaymentConfig(
+        hospitalId,
+        payload
+      )
+      return response.data
+    },
     onSuccess: (newConfig) => {
       const updatedItems = [...paymentState.items, newConfig]
       setPaymentItems(updatedItems)
@@ -87,8 +118,13 @@ export function PaymentStepForm() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, ...payload }: PaymentConfig) =>
-      updatePaymentConfig(id, { id, ...payload }),
+    mutationFn: async ({
+      id,
+      ...payload
+    }: { id: string } & UpdatePaymentConfigParams) => {
+      const response = await paymentApiClient.updatePaymentConfig(id, payload)
+      return response.data
+    },
     onSuccess: (updatedConfig) => {
       const updatedItems = paymentState.items.map((item) =>
         item.id === updatedConfig.id ? updatedConfig : item
@@ -112,18 +148,19 @@ export function PaymentStepForm() {
     setIsDialogOpen(true)
   }
 
-  const handleEdit = (item: PaymentConfig) => {
+  const handleEdit = (item: PaymentConfigResponse) => {
     setEditingItem(item)
     form.reset({
       gateway_id: item.gateway_id,
-      merchant_id: item.merchant_id || "",
-      terminal_key: item.terminal_key || "",
-      vault_path: item.vault_path || "",
-      bank_name: item.bank_name || "",
-      bank_account_no: item.bank_account_no || "",
-      vat_registered: item.vat_registered || false,
-      vat_number: item.vat_number || "",
-      currency_code: item.currency_code || "",
+      merchant_id: item.merchant_id,
+      terminal_key: item.terminal_key,
+      vault_path: item.vault_path,
+      bank_name: item.bank_name,
+      bank_account_no: item.bank_account_no,
+      vat_registered: item.vat_registered,
+      vat_number: item.vat_number,
+      currency_code: item.currency_code,
+      active: item.active,
     })
     setIsDialogOpen(true)
   }
@@ -178,7 +215,9 @@ export function PaymentStepForm() {
       <div className="bg-white/80 rounded-lg p-4 md:p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">Payment Details</h2>
+            <h2 className="text-xl font-semibold text-slate-900">
+              Payment Details
+            </h2>
             <p className="text-sm text-slate-600 mt-1">
               Configure payment gateways and banking details
             </p>
@@ -195,12 +234,15 @@ export function PaymentStepForm() {
 
         {paymentState.items.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
-            No payment configurations added yet. Click &quot;Add Payment Config&quot; to get started.
+            No payment configurations added yet. Click &quot;Add Payment
+            Config&quot; to get started.
           </div>
         ) : (
           <div className="space-y-3">
             {paymentState.items.map((item) => {
-              const gateway = gateways.find((g) => g.id === item.gateway_id)
+              const gateway = gateways.find(
+                (g) => Number(g.id) === item.gateway_id
+              )
               return (
                 <div
                   key={item.id}
@@ -208,7 +250,7 @@ export function PaymentStepForm() {
                 >
                   <div className="flex-1">
                     <div className="font-medium text-slate-900">
-                      {gateway?.name || item.gateway_id}
+                      {gateway?.name || `Gateway #${item.gateway_id}`}
                     </div>
                     <div className="text-sm text-slate-600 mt-1 space-y-1">
                       {item.merchant_id && (
@@ -301,7 +343,10 @@ export function PaymentStepForm() {
           </DialogHeader>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSaveItem)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(handleSaveItem)}
+              className="space-y-4"
+            >
               <FormField
                 control={form.control}
                 name="gateway_id"
@@ -309,8 +354,8 @@ export function PaymentStepForm() {
                   <FormItem>
                     <Label>Payment Gateway *</Label>
                     <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={String(field.value)}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -449,13 +494,33 @@ export function PaymentStepForm() {
                 name="currency_code"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Currency Code</Label>
+                    <Label>Currency Code *</Label>
                     <FormControl>
-                      <Input
-                        placeholder="USD"
-                        maxLength={3}
-                        {...field}
-                      />
+                      <Input placeholder="USD" maxLength={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="active"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Active Status</Label>
+                    <FormControl>
+                      <div className="flex items-center gap-2 h-10">
+                        <input
+                          type="checkbox"
+                          checked={field.value}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <span className="text-sm text-slate-600">
+                          {field.value ? "Active" : "Inactive"}
+                        </span>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

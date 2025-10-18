@@ -13,7 +13,7 @@ import {
   step2Schema,
   type Step2Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import { getModules, updateTenantModules } from "@/lib/api/mock/modules"
+import { createModulesApiClient } from "@/lib/api/modules"
 import { useOnboardingStore } from "@/stores/onboarding"
 import { ArrowLeft } from "lucide-react"
 
@@ -42,23 +42,38 @@ export function ModuleStepForm() {
 
   const { data: modules = [], isLoading: isLoadingModules } = useQuery({
     queryKey: ["modules"],
-    queryFn: getModules,
+    queryFn: async () => {
+      const client = createModulesApiClient({ authToken: "dev-token" })
+      const response = await client.getModules()
+      return response.data.data // Extract data array from paginated response
+    },
   })
 
   const mutation = useMutation({
     mutationKey: ["tenant", "modules"],
-    mutationFn: (selectedIds: string[]) =>
-      updateTenantModules(hospitalId, { selectedIds }),
+    mutationFn: async (selectedIds: string[]) => {
+      const client = createModulesApiClient({ authToken: "dev-token" })
+      // Convert string IDs to numbers for the API
+      const moduleIds = selectedIds
+        .map((id) => parseInt(id, 10))
+        .filter((id) => !isNaN(id))
+      return await client.updateModules(hospitalId, { moduleIds })
+    },
     onMutate: async (selectedIds) => {
       await queryClient.cancelQueries({ queryKey: ["tenant", "modules"] })
+      const previousSelectedIds = moduleState.selectedIds
       setModules(selectedIds)
-      return { selectedIds }
+      return { previousSelectedIds }
     },
     onSuccess: () => {
       saveModules()
       router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
     },
-    onError: (error) => {
+    onError: (error, _variables, context) => {
+      // Rollback optimistic update
+      if (context?.previousSelectedIds) {
+        setModules(context.previousSelectedIds)
+      }
       const message =
         error instanceof Error ? error.message : "Failed to save modules"
       console.error("[ModuleStepForm] Error:", message)
