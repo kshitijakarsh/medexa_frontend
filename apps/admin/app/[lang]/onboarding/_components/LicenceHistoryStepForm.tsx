@@ -54,7 +54,7 @@ function dateToISODateTime(dateString: string): string {
 function isoDateTimeToDate(isoString: string): string {
   if (!isoString) return ""
   // Extract just the date part (YYYY-MM-DD)
-  return isoString.split("T")[0]
+  return isoString?.split("T")[0] ?? ""
 }
 
 export function LicenceHistoryStepForm() {
