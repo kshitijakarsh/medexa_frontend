@@ -71,8 +71,19 @@ export function CreateHospitalForm() {
     setServerError(null)
 
     try {
+      // Transform data to meet API requirements
+      const transformedValues = {
+        ...values,
+        // Convert datetime-local format to ISO 8601 with timezone
+        license_expiry: values.license_expiry.includes("T")
+          ? `${values.license_expiry}:00Z`
+          : `${values.license_expiry}T00:00:00Z`,
+        // Ensure currency_code is uppercase
+        currency_code: values.currency_code.toUpperCase(),
+      }
+
       const tenantApiClient = createTenantApiClient({ authToken: "" })
-      const response = await tenantApiClient.createTenant(values)
+      const response = await tenantApiClient.createTenant(transformedValues)
       const tenantId = String(response.data.data.id)
       router.push(`${onboardingModulesPath}?hospitalId=${tenantId}`)
     } catch (error) {

@@ -117,11 +117,18 @@ export const HospitalInfoSection = ({
               label="License Number *"
               placeholder="Enter license number"
             />
-            <FormInput
+            <FormField
               control={form.control}
               name="license_expiry"
-              label="License Expiry *"
-              placeholder="YYYY-MM-DD"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>License Expiry *</Label>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormInput
               control={form.control}
@@ -141,12 +148,25 @@ export const HospitalInfoSection = ({
 
           {/* Currency and VAT */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <FormInput
+            <FormField
               control={form.control}
               name="currency_code"
-              label="Currency Code *"
-              placeholder="USD"
-              maxLength={3}
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Currency Code *</Label>
+                  <FormControl>
+                    <Input
+                      placeholder="USD"
+                      maxLength={3}
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(e.target.value.toUpperCase())
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}

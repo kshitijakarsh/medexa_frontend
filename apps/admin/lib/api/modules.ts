@@ -7,15 +7,21 @@ interface ApiConfig {
 
 interface Module {
   id: string
-  tenant_id: string
-  module_id: string
-  is_enabled: boolean
-  billing_included: boolean
-  selected_by: string
-  selected_at: string
-  notes: string
-  effective_from: string
-  effective_to: string
+  module_key: string
+  name_en: string
+  name_local: string
+  description: string
+  category: string | null
+  version: string
+  icon_url: string | null
+  default_enabled: boolean
+  is_billable: boolean
+  monthly_price: {
+    s: number
+    e: number
+    d: number[]
+  }
+  active: boolean
   created_at: string
   updated_at: string
 }
