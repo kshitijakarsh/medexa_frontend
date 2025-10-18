@@ -39,12 +39,12 @@ import {
 import {
   createPaymentConfigApiClient,
   type PaymentGateway,
-  type PaymentConfigResponse,
+  type PaymentConfig,
   type CreatePaymentConfigParams,
   type UpdatePaymentConfigParams,
 } from "@/lib/api/payment"
-import { useOnboardingStore } from "@/stores/onboarding"
 import { createTenantApiClient, type Country } from "@/lib/api/tenant"
+import { useOnboardingStore } from "@/stores/onboarding"
 
 const defaultValues: Step3Values = {
   gateway_id: 0,
@@ -73,13 +73,12 @@ export function PaymentStepForm() {
   const {
     payment: paymentState,
     setPaymentItems,
+    setPaymentCountryId,
     savePayment,
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<PaymentConfigResponse | null>(
-    null
-  )
+  const [editingItem, setEditingItem] = useState<PaymentConfig | null>(null)
 
   // Create API client instance
   const paymentApiClient = createPaymentConfigApiClient({
@@ -92,22 +91,21 @@ export function PaymentStepForm() {
     }
   }, [hospitalId, router, lang])
 
+  const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
+    queryKey: ["gateways"],
+    queryFn: async () => {
+      const response = await paymentApiClient.getPaymentGateways()
+      return response.data.data
+    },
+  })
+
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery<
     Country[]
   >({
     queryKey: ["countries"],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const client = createTenantApiClient({ authToken: "" })
       const response = await client.getCountriesList()
-      return response.data.data // Extract data array from response
-    },
-  })
-
-
-  const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
-    queryKey: ["gateways"],
-    queryFn: async () => {
-      const response = await paymentApiClient.getPaymentGateways()
       return response.data.data
     },
   })
@@ -118,10 +116,11 @@ export function PaymentStepForm() {
         hospitalId,
         payload
       )
-      return response.data
+      return response.data.data
     },
     onSuccess: (newConfig) => {
-      const updatedItems = [...paymentState.items, newConfig]
+      const gg = Array.isArray(newConfig) ? newConfig : [newConfig]
+      const updatedItems = [...paymentState.items, ...gg]
       setPaymentItems(updatedItems)
       queryClient.setQueryData(["tenant", "payment-config"], updatedItems)
       setIsDialogOpen(false)
@@ -160,7 +159,7 @@ export function PaymentStepForm() {
     setIsDialogOpen(true)
   }
 
-  const handleEdit = (item: PaymentConfigResponse) => {
+  const handleEdit = (item: PaymentConfig) => {
     setEditingItem(item)
     form.reset({
       gateway_id: item.gateway_id,
@@ -252,7 +251,7 @@ export function PaymentStepForm() {
               )
               return (
                 <div
-                  key={item.id}
+                  key={item.gateway_id}
                   className="border border-slate-200 rounded-lg p-4 flex items-start justify-between"
                 >
                   <div className="flex-1">
@@ -488,31 +487,30 @@ export function PaymentStepForm() {
                 />
               </div>
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="currency_code"
                 render={({ field }) => (
                   <FormItem>
                     <Label>Currency Code *</Label>
                     <FormControl>
-                      <Input placeholder="USD" maxLength={3} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
-              <FormField
-                control={form.control}
-                name="currency_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <Label>Currency Code*</Label>
-                    <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger className="w-full max-w-full truncate">
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value)
+                          // Find the country and store its ID in session
+                          const selectedCountry = countries.find(
+                            (c) => c.currency_code === value
+                          )
+                          if (selectedCountry) {
+                            setPaymentCountryId(selectedCountry.id)
+                          }
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select Currency" />
                         </SelectTrigger>
-                        <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                        <SelectContent>
                           {isLoadingCountries ? (
                             <div className="py-2 px-3 text-sm text-muted-foreground">
                               Loading...
@@ -584,8 +582,8 @@ export function PaymentStepForm() {
               </DialogFooter>
             </form>
           </Form>
-        </DialogContent >
-      </Dialog >
-    </div >
+        </DialogContent>
+      </Dialog>
+    </div>
   )
 }

@@ -205,6 +205,27 @@ class TenantApiClient {
     }
   }
 
+  async activateTenant(
+    tenantId: string
+  ): Promise<AxiosResponse<{ success: boolean; message?: string }>> {
+    try {
+      return await axios.get<{ success: boolean; message?: string }>(
+        `${this.baseUrl}/api/v1/tenant/activateTenant/${tenantId}`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Activate tenant error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   updateAuthToken(newToken: string) {
     this.authToken = newToken
   }

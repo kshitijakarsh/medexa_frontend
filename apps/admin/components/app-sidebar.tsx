@@ -5,6 +5,8 @@ import {
   Activity,
   LayoutDashboard,
   Monitor,
+  User2,
+  ChevronUp,
 } from "lucide-react"
 
 import {
@@ -17,6 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
+  SidebarFooter,
 } from "@workspace/ui/components/sidebar"
 import { usePathname } from "next/navigation"
 import { LocaleLink } from "./locale-link"
@@ -24,6 +27,12 @@ import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 import { LOGOS } from "@/lib/logos"
 import Image from "next/image"
 import { useSidebar } from "@workspace/ui/components/sidebar"
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
+import { DropdownMenu } from "@workspace/ui/components/dropdown-menu"
 
 interface AppSidebarProps {
   dict: DictionaryType
@@ -120,6 +129,34 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton>
+                  <User2 /> Username
+                  <ChevronUp className="ml-auto" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                className="w-[--radix-popper-anchor-width]"
+              >
+                <DropdownMenuItem>
+                  <span>Account</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span>Billing</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   )
 }

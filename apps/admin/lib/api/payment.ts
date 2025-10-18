@@ -56,7 +56,7 @@ interface UpdatePaymentConfigParams {
   active: boolean
 }
 
-interface PaymentConfigResponse {
+export interface PaymentConfig {
   id: string
   tenant_id: string
   gateway_id: number
@@ -71,6 +71,12 @@ interface PaymentConfigResponse {
   active: boolean
   created_at: string
   updated_at: string
+}
+
+interface PaymentConfigResponse {
+  data: PaymentConfig[]
+  success: boolean
+  pagination: PaginationMeta
 }
 
 class PaymentConfigApiClient {
@@ -137,9 +143,9 @@ class PaymentConfigApiClient {
   async updatePaymentConfig(
     configId: string,
     params: UpdatePaymentConfigParams
-  ): Promise<AxiosResponse<PaymentConfigResponse>> {
+  ): Promise<AxiosResponse<PaymentConfig>> {
     try {
-      return await axios.put<PaymentConfigResponse>(
+      return await axios.put<PaymentConfig>(
         `${this.baseUrl}/api/v1/tenants/payment-config/${configId}`,
         params,
         this.getJsonRequestConfig()

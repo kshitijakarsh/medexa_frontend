@@ -35,6 +35,7 @@ import {
   type Authority,
   type Document,
 } from "@/lib/api/regulatory"
+import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
 import {
   Select,
@@ -77,6 +78,8 @@ export function RegulatoryDocsStepForm() {
   const [editingItem, setEditingItem] = useState<Document | null>(null)
   const [docFile, setDocFile] = useState<File | null>(null)
   const [docPreview, setDocPreview] = useState<string | null>(null)
+  const [isActivating, setIsActivating] = useState(false)
+  const [activationError, setActivationError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!hospitalId) {
@@ -212,8 +215,6 @@ export function RegulatoryDocsStepForm() {
       file_url: fileUrl,
     }
 
-    console.log("📤 Sending to API:", formattedData)
-
     if (editingItem) {
       updateMutation.mutate({
         id: editingItem.id,
@@ -227,11 +228,27 @@ export function RegulatoryDocsStepForm() {
     }
   }
 
-  const handleCompleteOnboarding = () => {
-    saveRegulatory()
-    resetAll()
-    alert("Hospital onboarded successfully!")
-    router.push(`/${lang}/hospitals`)
+  const handleCompleteOnboarding = async () => {
+    try {
+      setIsActivating(true)
+      setActivationError(null)
+
+      // Create tenant API client and activate tenant
+      const tenantApiClient = createTenantApiClient({ authToken: "" })
+      await tenantApiClient.activateTenant(hospitalId)
+
+      // Save state and reset
+      saveRegulatory()
+      resetAll()
+
+      router.push(`/${lang}/hospitals`)
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to activate tenant"
+      setActivationError(errorMessage)
+    } finally {
+      setIsActivating(false)
+    }
   }
 
   if (!hospitalId) {
@@ -322,13 +339,16 @@ export function RegulatoryDocsStepForm() {
       </div>
 
       <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
-        {(createMutation.isError || updateMutation.isError) && (
+        {(createMutation.isError ||
+          updateMutation.isError ||
+          activationError) && (
           <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
-            {createMutation.error instanceof Error
-              ? createMutation.error.message
-              : updateMutation.error instanceof Error
-                ? updateMutation.error.message
-                : "An error occurred"}
+            {activationError ||
+              (createMutation.error instanceof Error
+                ? createMutation.error.message
+                : updateMutation.error instanceof Error
+                  ? updateMutation.error.message
+                  : "An error occurred")}
           </div>
         )}
 
@@ -350,9 +370,10 @@ export function RegulatoryDocsStepForm() {
           <Button
             type="button"
             onClick={handleCompleteOnboarding}
-            className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
+            disabled={isActivating}
+            className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Complete Onboarding
+            {isActivating ? "Saving..." : "Complete Onboarding"}
           </Button>
         </div>
       </div>

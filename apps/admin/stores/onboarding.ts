@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
-import type { PaymentConfigResponse } from "@/lib/api/payment"
+import type { PaymentConfig, PaymentConfigResponse } from "@/lib/api/payment"
 import type { License } from "@/lib/api/license"
 import type { Document } from "@/lib/api/regulatory"
 
@@ -12,7 +12,8 @@ interface ModulesState {
 }
 
 interface PaymentState {
-  items: PaymentConfigResponse[]
+  items: PaymentConfig[]
+  country_id: number | null
   status: StepStatus
 }
 
@@ -33,7 +34,8 @@ interface OnboardingState {
   skipModules: () => void
   resetModules: () => void
   payment: PaymentState
-  setPaymentItems: (items: PaymentConfigResponse[]) => void
+  setPaymentItems: (items: PaymentConfig[]) => void
+  setPaymentCountryId: (countryId: number) => void
   savePayment: () => void
   skipPayment: () => void
   resetPayment: () => void
@@ -57,6 +59,7 @@ const initialModulesState: ModulesState = {
 
 const initialPaymentState: PaymentState = {
   items: [],
+  country_id: null,
   status: "idle",
 }
 
@@ -106,11 +109,19 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       payment: initialPaymentState,
 
-      setPaymentItems: (items: PaymentConfigResponse[]) =>
+      setPaymentItems: (items: PaymentConfig[]) =>
         set((state) => ({
           payment: {
             ...state.payment,
             items,
+          },
+        })),
+
+      setPaymentCountryId: (countryId: number) =>
+        set((state) => ({
+          payment: {
+            ...state.payment,
+            country_id: countryId,
           },
         })),
 
