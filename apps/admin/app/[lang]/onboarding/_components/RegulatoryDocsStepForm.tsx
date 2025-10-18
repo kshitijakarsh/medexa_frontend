@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   Form,
   FormField,
@@ -32,15 +32,16 @@ import {
 } from "@/app/[lang]/onboarding/_components/schemas"
 import { createRegulatoryApiClient, type Document } from "@/lib/api/regulatory"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 
 const defaultValues: Step5Values = {
   doc_type: "",
-  authority_id: 0,
+  authority_id: null,
   doc_number: "",
   issue_date: "",
   expiry_date: "",
   file_url: "",
-  uploaded_by: 0,
+  // uploaded_by: 0,  
   verified_by: 0,
   status: "pending",
   notes: "",
@@ -74,6 +75,16 @@ export function RegulatoryDocsStepForm() {
       router.replace(`/${lang}/create-hospital`)
     }
   }, [hospitalId, router, lang])
+
+
+  const { data: authorities = [], isLoading: isLoadingAuthorites } = useQuery({
+    queryKey: ["authorites"],
+    queryFn: async () => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const response = await client.getAuthoritesList()
+      return response.data.data // Extract data array from paginated response
+    },
+  })
 
   const createMutation = useMutation({
     mutationFn: async (
@@ -144,7 +155,7 @@ export function RegulatoryDocsStepForm() {
       issue_date: formatISOToDate(item.issue_date),
       expiry_date: formatISOToDate(item.expiry_date),
       file_url: item.file_url,
-      uploaded_by: item.uploaded_by || 0,
+      // uploaded_by: item.uploaded_by || 0,
       verified_by: item.verified_by || 1,
       status: item.status || "pending",
       notes: item.notes || "",
@@ -202,7 +213,7 @@ export function RegulatoryDocsStepForm() {
     } else {
       createMutation.mutate({
         ...formattedData,
-        status: formattedData.status || "pending",
+        status: formattedData?.status || "pending",
       })
     }
   }
@@ -383,7 +394,7 @@ export function RegulatoryDocsStepForm() {
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="authority_id"
                   render={({ field }) => (
@@ -402,7 +413,41 @@ export function RegulatoryDocsStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="authority_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>Authority ID *</Label>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full max-w-full truncate">
+                            <SelectValue placeholder="Select Authority" />
+                          </SelectTrigger>
+                          <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                            {isLoadingAuthorites ? (
+                              <div className="py-2 px-3 text-sm text-muted-foreground">
+                                Loading...
+                              </div>
+                            ) : (
+                              authorities.map((a) => (
+                                <SelectItem key={a.id} value={a.id}>
+                                  {a.name_en} ({a.short_code})
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
+
 
                 <FormField
                   control={form.control}
@@ -483,8 +528,8 @@ export function RegulatoryDocsStepForm() {
                 )}
               />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
+              {/*  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
                   control={form.control}
                   name="uploaded_by"
                   render={({ field }) => (
@@ -503,8 +548,8 @@ export function RegulatoryDocsStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-
+                /> */}
+              {/* 
                 <FormField
                   control={form.control}
                   name="status"
@@ -517,8 +562,35 @@ export function RegulatoryDocsStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-              </div>
+                /> */}
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Status</Label>
+                    <FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full ">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                          <SelectItem value="suspended">Suspended</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* </div> */}
 
               <FormField
                 control={form.control}

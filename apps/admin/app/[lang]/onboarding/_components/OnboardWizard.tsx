@@ -126,7 +126,7 @@ export default function OnboardWizard() {
       issue_date: "",
       expiry_date: "",
       file_url: "",
-      uploaded_by: 0,
+      // uploaded_by: 0,
       verified_by: undefined,
       status: undefined,
       notes: "",
