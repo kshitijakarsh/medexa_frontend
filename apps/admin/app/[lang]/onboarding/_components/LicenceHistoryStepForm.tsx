@@ -31,6 +31,7 @@ import {
 } from "@/app/[lang]/onboarding/_components/schemas"
 import { createLicenseApiClient, type License } from "@/lib/api/license"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 
 const defaultValues: Step4Values = {
   plan_key: "",
@@ -435,7 +436,7 @@ export function LicenceHistoryStepForm() {
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="status"
                   render={({ field }) => (
@@ -447,7 +448,33 @@ export function LicenceHistoryStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>Status</Label>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full ">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                            <SelectItem value="suspended">Suspended</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                  />
               </div>
 
               <DialogFooter>
