@@ -49,7 +49,7 @@ export const loginUserCognito = (
   password: string,
   newPassword?: string
 ) => {
-  return new Promise<{ success: boolean; message: string }>((resolve, reject) => {
+  return new Promise<{ success: boolean; message: string; tokens?: any }>((resolve, reject) => {
     const user = new CognitoUser({ Username: email, Pool: userPool });
     const authDetails = new AuthenticationDetails({
       Username: email,
@@ -57,8 +57,18 @@ export const loginUserCognito = (
     });
 
     user.authenticateUser(authDetails, {
-      onSuccess: () => {
-        resolve({ success: true, message: "Login successful" });
+      onSuccess: (result) => {
+        // ✅ Grab tokens here
+        const tokens = {
+          AccessToken: result.getAccessToken().getJwtToken(),
+          IdToken: result.getIdToken().getJwtToken(),
+          RefreshToken: result.getRefreshToken()?.getToken(),
+        };
+        resolve({
+          success: true,
+          message: "Login successful",
+          tokens,
+        });
       },
       onFailure: (err) => {
         reject(err);
@@ -112,11 +122,23 @@ export const loginUserCognito = (
           newPassword,
           userAttributes,
           {
-            onSuccess: () =>
+            // onSuccess: () =>
+            //   resolve({
+            //     success: true,
+            //     message: "Password updated successfully",
+            //   }),
+            onSuccess: (result) => {
+              const tokens = {
+                AccessToken: result.getAccessToken().getJwtToken(),
+                IdToken: result.getIdToken().getJwtToken(),
+                RefreshToken: result.getRefreshToken()?.getToken(),
+              };
               resolve({
                 success: true,
                 message: "Password updated successfully",
-              }),
+                tokens,
+              });
+            },
             onFailure: (err) => reject(err),
           }
         );
@@ -124,6 +146,8 @@ export const loginUserCognito = (
     });
   });
 };
+
+
 
 
 

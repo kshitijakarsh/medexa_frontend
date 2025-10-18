@@ -618,7 +618,15 @@ export function LoginForm() {
           values.password,
           showNewPassword ? values.newPassword : undefined
         );
+        if (res.success && res.tokens) {
+          // Example: store in localStorage (for testing / SPA)
+          // localStorage.setItem("access_token", res.tokens.AccessToken);
+          // localStorage.setItem("id_token", res.tokens.IdToken);
+          // localStorage.setItem("refresh_token", res.tokens.RefreshToken);
 
+          toast.success("Login successful! Redirecting...");
+          window.open("/overview");
+        }
         if (res.message === "NEW_PASSWORD_REQUIRED") {
           setShowNewPassword(true);
           toast.info("Password update required", {
