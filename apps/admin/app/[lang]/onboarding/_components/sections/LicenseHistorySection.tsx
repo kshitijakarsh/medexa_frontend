@@ -32,7 +32,7 @@ export const LicenseHistorySection = ({ form }: LicenseHistorySectionProps) => {
           <FormField
             control={form.control}
             name="seats"
-            render={({ field }) => (
+            render={({ field: { onChange, value, ...restField } }) => (
               <FormItem>
                 <Label className="block text-sm text-slate-600 mb-1">
                   Seats
@@ -41,10 +41,12 @@ export const LicenseHistorySection = ({ form }: LicenseHistorySectionProps) => {
                   <Input
                     type="number"
                     min="0"
-                    {...field}
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 0)
-                    }
+                    {...restField}
+                    value={value ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      onChange(val === "" ? 0 : Number(val))
+                    }}
                     placeholder="Number of seats"
                   />
                 </FormControl>
@@ -55,7 +57,7 @@ export const LicenseHistorySection = ({ form }: LicenseHistorySectionProps) => {
           <FormField
             control={form.control}
             name="storage_quota_mb"
-            render={({ field }) => (
+            render={({ field: { onChange, value, ...restField } }) => (
               <FormItem>
                 <Label className="block text-sm text-slate-600 mb-1">
                   Storage Quota (MB)
@@ -64,10 +66,12 @@ export const LicenseHistorySection = ({ form }: LicenseHistorySectionProps) => {
                   <Input
                     type="number"
                     min="0"
-                    {...field}
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 10240)
-                    }
+                    {...restField}
+                    value={value ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      onChange(val === "" ? 10240 : Number(val))
+                    }}
                     placeholder="Storage in MB"
                   />
                 </FormControl>

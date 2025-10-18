@@ -47,6 +47,7 @@ interface OnboardingState {
   saveRegulatory: () => void
   skipRegulatory: () => void
   resetRegulatory: () => void
+  resetAll: () => void
 }
 
 const initialModulesState: ModulesState = {
@@ -193,6 +194,14 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       resetRegulatory: () =>
         set({
+          regulatory: initialRegulatoryState,
+        }),
+
+      resetAll: () =>
+        set({
+          modules: initialModulesState,
+          payment: initialPaymentState,
+          licence: initialLicenceState,
           regulatory: initialRegulatoryState,
         }),
     }),

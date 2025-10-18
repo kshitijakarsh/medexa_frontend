@@ -31,7 +31,13 @@ import {
 } from "@/app/[lang]/onboarding/_components/schemas"
 import { createLicenseApiClient, type License } from "@/lib/api/license"
 import { useOnboardingStore } from "@/stores/onboarding"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 const defaultValues: Step4Values = {
   plan_key: "",
@@ -73,7 +79,6 @@ export function LicenceHistoryStepForm() {
     licence: licenceState,
     setLicenceItems,
     saveLicence,
-    skipLicence,
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -121,7 +126,7 @@ export function LicenceHistoryStepForm() {
   })
 
   const form = useForm<Step4Values>({
-    resolver: zodResolver(step4Schema),
+    resolver: zodResolver(step4Schema) as any,
     defaultValues,
   })
 
@@ -171,11 +176,6 @@ export function LicenceHistoryStepForm() {
 
   const handleSaveAndContinue = () => {
     saveLicence()
-    router.push(`${onboardingBase}/regulatory-docs?hospitalId=${hospitalId}`)
-  }
-
-  const handleSkip = () => {
-    skipLicence()
     router.push(`${onboardingBase}/regulatory-docs?hospitalId=${hospitalId}`)
   }
 
@@ -281,14 +281,6 @@ export function LicenceHistoryStepForm() {
         <div className="flex gap-3 items-center mt-4 md:mt-0">
           <Button
             type="button"
-            variant="outline"
-            onClick={handleSkip}
-            className="rounded-full py-3 px-6"
-          >
-            Skip
-          </Button>
-          <Button
-            type="button"
             onClick={handleSaveAndContinue}
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
           >
@@ -331,7 +323,7 @@ export function LicenceHistoryStepForm() {
                 <FormField
                   control={form.control}
                   name="seats"
-                  render={({ field }) => (
+                  render={({ field: { onChange, value, ...restField } }) => (
                     <FormItem>
                       <Label>Seats *</Label>
                       <FormControl>
@@ -339,10 +331,12 @@ export function LicenceHistoryStepForm() {
                           type="number"
                           min="0"
                           placeholder="Number of seats"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value) || 0)
-                          }
+                          {...restField}
+                          value={value ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            onChange(val === "" ? 0 : Number(val))
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -353,7 +347,7 @@ export function LicenceHistoryStepForm() {
                 <FormField
                   control={form.control}
                   name="storage_quota_mb"
-                  render={({ field }) => (
+                  render={({ field: { onChange, value, ...restField } }) => (
                     <FormItem>
                       <Label>Storage Quota (MB) *</Label>
                       <FormControl>
@@ -361,10 +355,12 @@ export function LicenceHistoryStepForm() {
                           type="number"
                           min="0"
                           placeholder="Storage in MB"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value) || 10240)
-                          }
+                          {...restField}
+                          value={value ?? ""}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            onChange(val === "" ? 10240 : Number(val))
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -474,7 +470,7 @@ export function LicenceHistoryStepForm() {
                       <FormMessage />
                     </FormItem>
                   )}
-                  />
+                />
               </div>
 
               <DialogFooter>

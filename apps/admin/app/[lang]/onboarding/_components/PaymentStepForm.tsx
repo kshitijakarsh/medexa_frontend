@@ -44,6 +44,7 @@ import {
   type UpdatePaymentConfigParams,
 } from "@/lib/api/payment"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { createTenantApiClient, type Country } from "@/lib/api/tenant"
 
 const defaultValues: Step3Values = {
   gateway_id: 0,
@@ -73,7 +74,6 @@ export function PaymentStepForm() {
     payment: paymentState,
     setPaymentItems,
     savePayment,
-    skipPayment,
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -91,6 +91,18 @@ export function PaymentStepForm() {
       router.replace(`/${lang}/create-hospital`)
     }
   }, [hospitalId, router, lang])
+
+  const { data: countries = [], isLoading: isLoadingCountries } = useQuery<
+    Country[]
+  >({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getCountriesList()
+      return response.data.data // Extract data array from response
+    },
+  })
+
 
   const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
     queryKey: ["gateways"],
@@ -184,11 +196,6 @@ export function PaymentStepForm() {
 
   const handleSaveAndContinue = () => {
     savePayment()
-    router.push(`${onboardingBase}/licence-history?hospitalId=${hospitalId}`)
-  }
-
-  const handleSkip = () => {
-    skipPayment()
     router.push(`${onboardingBase}/licence-history?hospitalId=${hospitalId}`)
   }
 
@@ -313,14 +320,6 @@ export function PaymentStepForm() {
         </div>
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSkip}
-            className="rounded-full py-3 px-6"
-          >
-            Skip
-          </Button>
           <Button
             type="button"
             onClick={handleSaveAndContinue}
@@ -489,7 +488,7 @@ export function PaymentStepForm() {
                 />
               </div>
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="currency_code"
                 render={({ field }) => (
@@ -497,6 +496,36 @@ export function PaymentStepForm() {
                     <Label>Currency Code *</Label>
                     <FormControl>
                       <Input placeholder="USD" maxLength={3} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              /> */}
+              <FormField
+                control={form.control}
+                name="currency_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label>Currency Code*</Label>
+                    <FormControl>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger className="w-full max-w-full truncate">
+                          <SelectValue placeholder="Select Currency" />
+                        </SelectTrigger>
+                        <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                          {isLoadingCountries ? (
+                            <div className="py-2 px-3 text-sm text-muted-foreground">
+                              Loading...
+                            </div>
+                          ) : (
+                            countries.map((c) => (
+                              <SelectItem key={c.id} value={c.currency_code}>
+                                {c.currency_code} - {c.name_en}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -555,8 +584,8 @@ export function PaymentStepForm() {
               </DialogFooter>
             </form>
           </Form>
-        </DialogContent>
-      </Dialog>
-    </div>
+        </DialogContent >
+      </Dialog >
+    </div >
   )
 }

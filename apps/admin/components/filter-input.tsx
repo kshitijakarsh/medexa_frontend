@@ -1,15 +1,32 @@
+import { useState } from "react"
 import { Input } from "@workspace/ui/components/input"
 import { SearchIcon } from "lucide-react"
 
-export const FilterInput = ({ placeholder }: { placeholder: string }) => {
+interface FilterInputProps {
+  placeholder: string
+  onValueChange?: (value: string) => void
+}
+
+export const FilterInput = ({
+  placeholder,
+  onValueChange,
+}: FilterInputProps) => {
+  const [value, setValue] = useState("")
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value
+    setValue(newValue)
+    onValueChange?.(newValue)
+  }
+
   return (
     <div className="*:not-first:mt-2">
       <div className="relative">
         <Input
           id="hospital-name-input"
           className="peer ps-10"
-          value={""}
-          onChange={(e) => {}}
+          value={value}
+          onChange={handleChange}
           placeholder={placeholder}
           type="text"
         />

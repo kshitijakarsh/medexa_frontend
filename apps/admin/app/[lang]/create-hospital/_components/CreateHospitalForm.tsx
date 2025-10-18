@@ -40,7 +40,6 @@ export function CreateHospitalForm() {
   const router = useRouter()
   const params = useParams<{ lang: string }>()
   const lang = params?.lang ?? "en"
-  const onboardingModulesPath = `/${lang}/onboarding/modules`
 
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -83,9 +82,9 @@ export function CreateHospitalForm() {
       }
 
       const tenantApiClient = createTenantApiClient({ authToken: "" })
-      const response = await tenantApiClient.createTenant(transformedValues)
-      const tenantId = String(response.data.data.id)
-      router.push(`${onboardingModulesPath}?hospitalId=${tenantId}`)
+      await tenantApiClient.createTenant(transformedValues)
+      // Redirect to hospitals list after successful creation
+      router.push(`/${lang}/hospitals`)
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to create tenant"

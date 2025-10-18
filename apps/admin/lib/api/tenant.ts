@@ -47,6 +47,21 @@ interface TenantResponse {
   success: boolean
 }
 
+interface Country {
+  id: number
+  name_en: string
+  name_local: string
+  iso_code: string
+  currency_code: string
+  created_at: string
+  updated_at: string
+}
+
+interface CountriesListResponse {
+  data: Country[]
+  success: boolean
+}
+
 interface GetTenantsParams {
   page?: number
   limit?: number
@@ -170,10 +185,10 @@ class TenantApiClient {
     }
   }
 
-  // get country list 
-    async getCountriesList(): Promise<AxiosResponse<TenantResponse>> {
+  // get country list
+  async getCountriesList(): Promise<AxiosResponse<CountriesListResponse>> {
     try {
-      return await axios.get<TenantResponse>(
+      return await axios.get<CountriesListResponse>(
         `${this.baseUrl}/api/v1/countries`,
         this.getJsonRequestConfig()
       )
@@ -183,7 +198,7 @@ class TenantApiClient {
           throw new Error("Authentication failed. Please Log In again.")
         }
         throw new Error(
-          `Get modules error: ${error.response?.data?.message || error.message}`
+          `Get countries error: ${error.response?.data?.message || error.message}`
         )
       }
       throw error
@@ -200,9 +215,11 @@ export const createTenantApiClient = (config: ApiConfig) =>
 
 export type {
   Tenant,
+  Country,
   PaginationMeta,
   TenantsListResponse,
   TenantResponse,
+  CountriesListResponse,
   GetTenantsParams,
   CreateTenantParams,
 }

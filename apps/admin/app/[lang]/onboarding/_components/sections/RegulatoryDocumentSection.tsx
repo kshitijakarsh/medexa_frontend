@@ -2,6 +2,7 @@
 "use client"
 
 import React, { useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { FormSection } from "../ui/FormSection"
 import { FormInput } from "../ui/FormInput"
 import {
@@ -14,6 +15,14 @@ import { Label } from "@workspace/ui/components/label"
 import { Input } from "@workspace/ui/components/input"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { FileUploader } from "../ui/FileUploader"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import { createRegulatoryApiClient, type Authority } from "@/lib/api/regulatory"
 
 interface RegulatoryDocumentSectionProps {
   form: any // react-hook-form instance
@@ -30,6 +39,17 @@ export const RegulatoryDocumentSection = ({
   docPreview,
   setDocPreview,
 }: RegulatoryDocumentSectionProps) => {
+  const { data: authorities = [], isLoading: isLoadingAuthorities } = useQuery<
+    Authority[]
+  >({
+    queryKey: ["authorities"],
+    queryFn: async () => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const response = await client.getAuthoritesList()
+      return response.data.data // Extract data array from response
+    },
+  })
+
   return (
     <FormSection title="Regulatory Document">
       <div className="space-y-4">
@@ -41,11 +61,44 @@ export const RegulatoryDocumentSection = ({
             label="Document Type"
             placeholder="e.g., License, Certificate"
           />
-          <FormInput
+          <FormField
             control={form.control}
             name="authority_id"
-            label="Authority ID"
-            placeholder="Enter authority ID"
+            render={({ field }) => (
+              <FormItem>
+                <Label className="block text-sm text-slate-600 mb-1">
+                  Authority
+                </Label>
+                <FormControl>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    value={
+                      field.value && field.value > 0
+                        ? String(field.value)
+                        : undefined
+                    }
+                  >
+                    <SelectTrigger className="w-full max-w-full truncate">
+                      <SelectValue placeholder="Select Authority" />
+                    </SelectTrigger>
+                    <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                      {isLoadingAuthorities ? (
+                        <div className="py-2 px-3 text-sm text-muted-foreground">
+                          Loading...
+                        </div>
+                      ) : (
+                        authorities.map((a) => (
+                          <SelectItem key={a.id} value={String(a.id)}>
+                            {a.name_en} ({a.short_code})
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
