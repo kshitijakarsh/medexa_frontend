@@ -12,6 +12,7 @@ import {
 import { EllipsisVertical } from "lucide-react"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 import { FilterInput } from "@/components/filter-input"
+import { LocaleLink } from "@/components/locale-link"
 
 const items = [
   {
@@ -90,12 +91,17 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
   const t = dict.pages.hospitals.table
 
   return (
-    <div className="space-y-4 border rounded-xl p-4">
+    <div className="space-y-4 border rounded-xl p-4 bg-white">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">{t.activeHospitals}</h2>
         <div className="flex items-center gap-4">
           <FilterInput placeholder={t.searchPlaceholder} />
-          <Button>{t.onboardNew}</Button>
+          <Button
+            className=" bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+            asChild
+          >
+            <LocaleLink href="/create-hospital">{t.onboardNew}</LocaleLink>
+          </Button>
         </div>
       </div>
       <Table>

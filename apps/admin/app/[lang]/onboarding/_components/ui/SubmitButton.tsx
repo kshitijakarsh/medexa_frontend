@@ -38,38 +38,48 @@ import { Loader2, SquarePlus } from "lucide-react";
 interface SubmitButtonProps {
   loading: boolean;
   isEdit?: boolean;
+  label?: string;
+  loadingLabel?: string;
 }
 
-export const SubmitButton = ({ loading, isEdit }: SubmitButtonProps) => (
-  <Button
-    type="submit"
-    disabled={loading}
-    className="
-      relative flex items-center justify-center gap-3
-      bg-gradient-to-r from-green-500 to-green-600
-      hover:from-green-600 hover:to-green-700
-      text-white font-semibold
-      rounded-full px-6 py-6
-      shadow-md
-      transition-all duration-300 transform
-      cursor-pointer
-      hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed
-    "
-  >
-    {loading ? (
-      <>
-        <Loader2 className="animate-spin h-5 w-5 text-white" />
-        <span className="text-sm">Submitting...</span>
-      </>
-    ) : (
-      <>
+export const SubmitButton = ({
+  loading,
+  isEdit,
+  label,
+  loadingLabel,
+}: SubmitButtonProps) => {
+  const resolvedLabel = label ?? (isEdit ? "Update Hospital" : "Onboard New")
+  const resolvedLoadingLabel = loadingLabel ?? "Submitting..."
+
+  return (
+    <Button
+      type="submit"
+      disabled={loading}
+      className="
+        relative flex items-center justify-center gap-3
+        bg-gradient-to-r from-green-500 to-green-600
+        hover:from-green-600 hover:to-green-700
+        text-white font-semibold
+        rounded-full px-6 py-6
+        shadow-md
+        transition-all duration-300 transform
+        cursor-pointer
+        hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed
+      "
+    >
+      {loading ? (
+        <>
+          <Loader2 className="animate-spin h-5 w-5 text-white" />
+          <span className="text-sm">{resolvedLoadingLabel}</span>
+        </>
+      ) : (
         <span className="flex items-center gap-2">
-          {isEdit ? "Update Hospital" : "Onboard New"}
+          {resolvedLabel}
           <span className="p-2 bg-white/20 rounded-full">
             <SquarePlus className="size-4 text-white" />
           </span>
         </span>
-      </>
-    )}
-  </Button>
-);
+      )}
+    </Button>
+  )
+}

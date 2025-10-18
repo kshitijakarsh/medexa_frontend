@@ -13,6 +13,8 @@ import type { SupportTicket } from "./data"
 import { SUPPORT_TICKETS } from "./data"
 import { FilterInput } from "@/components/filter-input"
 import { Button } from "@workspace/ui/components/button"
+import { useState } from "react"
+import { TicketSheet } from "./ticket-sheet"
 
 function StatusBadge({ status }: { status: SupportTicket["status"] }) {
   switch (status) {
@@ -44,9 +46,11 @@ export function SupportTable() {
   const rows = SUPPORT_TICKETS.slice().sort(
     (a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)
   )
+  const [open, setOpen] = useState(false)
+  const [selected, setSelected] = useState<SupportTicket | null>(null)
 
   return (
-    <div className="space-y-4 border rounded-xl p-4">
+    <div className="space-y-4 border rounded-xl p-4 bg-white">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Support Tickets</h2>
         <div className="flex items-center gap-4">
@@ -84,7 +88,14 @@ export function SupportTable() {
                 {new Date(ticket.createdAt).toLocaleString()}
               </TableCell>
               <TableCell className="py-2.5 text-right">
-                <Button variant="link" size="sm">
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={() => {
+                    setSelected(ticket)
+                    setOpen(true)
+                  }}
+                >
                   View
                 </Button>
               </TableCell>
@@ -92,6 +103,18 @@ export function SupportTable() {
           ))}
         </TableBody>
       </Table>
+      <TicketSheet
+        open={open}
+        onOpenChange={setOpen}
+        ticket={selected}
+        onAddComment={(id, message) => {
+          // noop for mock data; could update local state if needed
+          console.log("add-comment", id, message)
+        }}
+        onChangeStatus={(id, status) => {
+          console.log("change-status", id, status)
+        }}
+      />
     </div>
   )
 }

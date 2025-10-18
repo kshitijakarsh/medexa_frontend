@@ -13,7 +13,8 @@
     "hospitals": "Ziekenhuizen",
     "support": "Ondersteuning",
     "activityLog": "Activiteitenlogboek",
-    "application": "Toepassing"
+    "application": "Toepassing",
+    "monitoring": "Monitorings"
   },
   "pages": {
     "overview": {
@@ -54,6 +55,9 @@
     },
     "activityLog": {
       "title": "Activiteitenlogboek"
+    },
+    "monitoring": {
+      "title": "Monitorings"
     },
     "login": {
       "title": "Inloggen"
