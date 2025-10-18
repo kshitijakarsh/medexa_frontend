@@ -73,7 +73,6 @@ export function PaymentStepForm() {
     payment: paymentState,
     setPaymentItems,
     savePayment,
-    skipPayment,
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -184,11 +183,6 @@ export function PaymentStepForm() {
 
   const handleSaveAndContinue = () => {
     savePayment()
-    router.push(`${onboardingBase}/licence-history?hospitalId=${hospitalId}`)
-  }
-
-  const handleSkip = () => {
-    skipPayment()
     router.push(`${onboardingBase}/licence-history?hospitalId=${hospitalId}`)
   }
 
@@ -313,14 +307,6 @@ export function PaymentStepForm() {
         </div>
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSkip}
-            className="rounded-full py-3 px-6"
-          >
-            Skip
-          </Button>
           <Button
             type="button"
             onClick={handleSaveAndContinue}

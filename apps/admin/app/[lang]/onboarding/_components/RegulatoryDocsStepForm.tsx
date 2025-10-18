@@ -30,19 +30,27 @@ import {
   step5Schema,
   type Step5Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
-import { createRegulatoryApiClient, type Document } from "@/lib/api/regulatory"
+import {
+  createRegulatoryApiClient,
+  type Authority,
+  type Document,
+} from "@/lib/api/regulatory"
 import { useOnboardingStore } from "@/stores/onboarding"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 const defaultValues: Step5Values = {
   doc_type: "",
-  authority_id: null,
+  authority_id: 0,
   doc_number: "",
   issue_date: "",
   expiry_date: "",
   file_url: "",
-  // uploaded_by: 0,  
-  verified_by: 0,
   status: "pending",
   notes: "",
 }
@@ -62,7 +70,7 @@ export function RegulatoryDocsStepForm() {
     regulatory: regulatoryState,
     setRegulatoryItems,
     saveRegulatory,
-    skipRegulatory,
+    resetAll,
   } = useOnboardingStore()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -76,13 +84,14 @@ export function RegulatoryDocsStepForm() {
     }
   }, [hospitalId, router, lang])
 
-
-  const { data: authorities = [], isLoading: isLoadingAuthorites } = useQuery({
+  const { data: authorities = [], isLoading: isLoadingAuthorites } = useQuery<
+    Authority[]
+  >({
     queryKey: ["authorites"],
     queryFn: async () => {
       const client = createRegulatoryApiClient({ authToken: "dev-token" })
       const response = await client.getAuthoritesList()
-      return response.data.data // Extract data array from paginated response
+      return response.data.data // Extract data array from response
     },
   })
 
@@ -126,7 +135,7 @@ export function RegulatoryDocsStepForm() {
   })
 
   const form = useForm<Step5Values>({
-    resolver: zodResolver(step5Schema),
+    resolver: zodResolver(step5Schema) as any,
     defaultValues,
   })
 
@@ -155,8 +164,6 @@ export function RegulatoryDocsStepForm() {
       issue_date: formatISOToDate(item.issue_date),
       expiry_date: formatISOToDate(item.expiry_date),
       file_url: item.file_url,
-      // uploaded_by: item.uploaded_by || 0,
-      verified_by: item.verified_by || 1,
       status: item.status || "pending",
       notes: item.notes || "",
     })
@@ -205,6 +212,8 @@ export function RegulatoryDocsStepForm() {
       file_url: fileUrl,
     }
 
+    console.log("📤 Sending to API:", formattedData)
+
     if (editingItem) {
       updateMutation.mutate({
         id: editingItem.id,
@@ -220,12 +229,7 @@ export function RegulatoryDocsStepForm() {
 
   const handleCompleteOnboarding = () => {
     saveRegulatory()
-    alert("Hospital onboarded successfully!")
-    router.push(`/${lang}/hospitals`)
-  }
-
-  const handleSkip = () => {
-    skipRegulatory()
+    resetAll()
     alert("Hospital onboarded successfully!")
     router.push(`/${lang}/hospitals`)
   }
@@ -276,6 +280,9 @@ export function RegulatoryDocsStepForm() {
                     {item.doc_type}
                   </div>
                   <div className="text-sm text-slate-600 mt-1 space-y-1">
+                    {item.authority_id && (
+                      <div>Authority ID: {item.authority_id}</div>
+                    )}
                     {item.doc_number && (
                       <div>Document Number: {item.doc_number}</div>
                     )}
@@ -340,14 +347,6 @@ export function RegulatoryDocsStepForm() {
         </div>
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleSkip}
-            className="rounded-full py-3 px-6"
-          >
-            Skip
-          </Button>
           <Button
             type="button"
             onClick={handleCompleteOnboarding}
@@ -422,8 +421,14 @@ export function RegulatoryDocsStepForm() {
                       <Label>Authority ID *</Label>
                       <FormControl>
                         <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          value={
+                            field.value && field.value > 0
+                              ? String(field.value)
+                              : undefined
+                          }
                         >
                           <SelectTrigger className="w-full max-w-full truncate">
                             <SelectValue placeholder="Select Authority" />
@@ -435,7 +440,7 @@ export function RegulatoryDocsStepForm() {
                               </div>
                             ) : (
                               authorities.map((a) => (
-                                <SelectItem key={a.id} value={a.id}>
+                                <SelectItem key={a.id} value={String(a.id)}>
                                   {a.name_en} ({a.short_code})
                                 </SelectItem>
                               ))
@@ -447,7 +452,6 @@ export function RegulatoryDocsStepForm() {
                     </FormItem>
                   )}
                 />
-
 
                 <FormField
                   control={form.control}

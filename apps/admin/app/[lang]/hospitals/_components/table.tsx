@@ -1,6 +1,9 @@
 "use client"
 
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { Button } from "@workspace/ui/components/button"
+import { Badge } from "@workspace/ui/components/badge"
 import {
   Table,
   TableBody,
@@ -9,93 +12,91 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
-import { EllipsisVertical } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
+import { EllipsisVertical, Loader2 } from "lucide-react"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
 import { FilterInput } from "@/components/filter-input"
 import { LocaleLink } from "@/components/locale-link"
+import { createTenantApiClient, type Tenant } from "@/lib/api/tenant"
 
-const items = [
-  {
-    id: "ME12000",
-    hospitalName: "Hamad General Hospital",
-    email: "admin@hamad.qa",
-    phone: "+974 4439 2222",
-    modules: "12",
-    subscriptionPlan: "Monthly",
-    billingStatus: "Active",
-    lastLogin: "2025-09-27 19:30",
-  },
-  {
-    id: "ME12001",
-    hospitalName: "Al Wakra Hospital",
-    email: "admin@alwakra.qa",
-    phone: "+974 4011 3333",
-    modules: "10",
-    subscriptionPlan: "Annual",
-    billingStatus: "Active",
-    lastLogin: "2025-09-26 14:20",
-  },
-  {
-    id: "ME12002",
-    hospitalName: "Al Khor Hospital",
-    email: "admin@alkhor.qa",
-    phone: "+974 4472 4444",
-    modules: "8",
-    subscriptionPlan: "Monthly",
-    billingStatus: "Pending",
-    lastLogin: "2025-09-25 09:15",
-  },
-  {
-    id: "ME12003",
-    hospitalName: "Women's Wellness and Research Center",
-    email: "admin@wwrc.qa",
-    phone: "+974 4409 5555",
-    modules: "15",
-    subscriptionPlan: "Annual",
-    billingStatus: "Active",
-    lastLogin: "2025-09-27 16:45",
-  },
-  {
-    id: "ME12004",
-    hospitalName: "National Center for Eye Care",
-    email: "admin@ncec.qa",
-    phone: "+974 4011 6666",
-    modules: "20",
-    subscriptionPlan: "Annual",
-    billingStatus: "Active",
-    lastLogin: "2025-09-27 11:30",
-  },
-  {
-    id: "ME12005",
-    hospitalName: "Isha Hospital",
-    email: "admin@isha.qa",
-    phone: "+974 4011 7777",
-    modules: "14",
-    subscriptionPlan: "Monthly",
-    billingStatus: "Active",
-    lastLogin: "2025-09-26 20:10",
-  },
-  {
-    id: "ME12006",
-    hospitalName: "Rumailah Hospital",
-    email: "admin@rumailah.qa",
-    phone: "+974 4011 8888",
-    modules: "18",
-    subscriptionPlan: "Annual",
-    billingStatus: "Active",
-    lastLogin: "2025-09-27 13:25",
-  },
-]
+const getStatusBadgeVariant = (status: string) => {
+  const statusLower = status.toLowerCase()
+  switch (statusLower) {
+    case "pending":
+      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+    case "active":
+      return "bg-green-100 text-green-800 hover:bg-green-100"
+    case "inactive":
+      return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+    case "suspended":
+      return "bg-red-100 text-red-800 hover:bg-red-100"
+    default:
+      return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+  }
+}
 
 export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
   const t = dict.pages.hospitals.table
+  const params = useParams<{ lang: string }>()
+  const lang = params?.lang ?? "en"
+
+  const [tenants, setTenants] = useState<Tenant[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalData, setTotalData] = useState(0)
+
+  const fetchTenants = async (page: number = 1, search: string = "") => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const tenantApiClient = createTenantApiClient({ authToken: "" })
+      const response = await tenantApiClient.getTenants({
+        page,
+        limit: 10,
+        search: search || undefined,
+      })
+
+      setTenants(response.data.data)
+      setTotalPages(response.data.pagination.totalPages)
+      setTotalData(response.data.pagination.totalData)
+      setCurrentPage(response.data.pagination.page)
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch hospitals"
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTenants(currentPage, searchQuery)
+  }, [currentPage])
+
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+    fetchTenants(1, value)
+  }
 
   return (
     <div className="space-y-4 border rounded-xl p-4 bg-white">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">{t.activeHospitals}</h2>
         <div className="flex items-center gap-4">
-          <FilterInput placeholder={t.searchPlaceholder} />
+          <FilterInput
+            placeholder={t.searchPlaceholder}
+            onValueChange={handleSearch}
+          />
           <Button
             className=" bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
             asChild
@@ -104,50 +105,123 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
           </Button>
         </div>
       </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+          {error}
+        </div>
+      )}
+
       <Table>
         <TableHeader className="bg-background [&_tr]:border-none">
           <TableRow className="hover:bg-transparent">
-            <TableHead>{t.id}</TableHead>
-            <TableHead>{t.hospitalName}</TableHead>
-            <TableHead>{t.email}</TableHead>
-            <TableHead>{t.phone}</TableHead>
-            <TableHead>{t.modules}</TableHead>
-            <TableHead>{t.subscriptionPlan}</TableHead>
-            <TableHead>{t.billingStatus}</TableHead>
-            <TableHead>{t.lastLogin}</TableHead>
-            <TableHead className="text-right">{t.action}</TableHead>
+            <TableHead>ID</TableHead>
+            <TableHead>Hospital Name</TableHead>
+            <TableHead>Admin Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
         <tbody aria-hidden="true" className="table-row h-2"></tbody>
         <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
-          {items.map((item) => (
-            <TableRow
-              key={item.id}
-              className="odd:bg-muted/50 odd:hover:bg-muted/50 border-none hover:bg-transparent"
-            >
-              <TableCell className="py-2.5 font-medium">{item.id}</TableCell>
-              <TableCell className="py-2.5">{item.hospitalName}</TableCell>
-              <TableCell className="py-2.5">{item.email}</TableCell>
-              <TableCell className="py-2.5">{item.phone}</TableCell>
-              <TableCell className="py-2.5">{item.modules}</TableCell>
-              <TableCell className="py-2.5">{item.subscriptionPlan}</TableCell>
-              <TableCell className="py-2.5">{item.billingStatus}</TableCell>
-              <TableCell className="py-2.5">{item.lastLogin}</TableCell>
-              <TableCell className="py-2.5 text-right">
-                <Button size="icon-sm" variant="ghost">
-                  <EllipsisVertical />
-                </Button>
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-8">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading hospitals...</span>
+                </div>
               </TableCell>
             </TableRow>
-          ))}
+          ) : tenants.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="text-center py-8 text-muted-foreground"
+              >
+                No hospitals found
+              </TableCell>
+            </TableRow>
+          ) : (
+            tenants.map((tenant) => (
+              <TableRow
+                key={tenant.id}
+                className="odd:bg-muted/50 odd:hover:bg-muted/50 border-none hover:bg-transparent"
+              >
+                <TableCell className="py-2.5 font-medium">
+                  {tenant.tenant_key || tenant.id}
+                </TableCell>
+                <TableCell className="py-2.5">{tenant.name_en}</TableCell>
+                <TableCell className="py-2.5">
+                  {tenant.primary_admin_name}
+                </TableCell>
+                <TableCell className="py-2.5">
+                  {tenant.primary_admin_email}
+                </TableCell>
+                <TableCell className="py-2.5">
+                  <Badge className={getStatusBadgeVariant(tenant.status)}>
+                    {tenant.status.charAt(0).toUpperCase() +
+                      tenant.status.slice(1).toLowerCase()}
+                  </Badge>
+                </TableCell>
+                <TableCell className="py-2.5 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon-sm" variant="ghost">
+                        <EllipsisVertical />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      {tenant.status.toLowerCase() === "pending" && (
+                        <DropdownMenuItem asChild>
+                          <LocaleLink
+                            href={`/onboarding/modules?hospitalId=${tenant.id}`}
+                          >
+                            Get Onboarded
+                          </LocaleLink>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem disabled>Edit</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
-        {/* <TableFooter className="bg-transparent">
-          <TableRow className="hover:bg-transparent">
-            <TableCell colSpan={8}>Total Hospitals</TableCell>
-            <TableCell className="text-right">{items.length}</TableCell>
-          </TableRow>
-        </TableFooter> */}
       </Table>
+
+      {!loading && tenants.length > 0 && (
+        <div className="flex items-center justify-between pt-4">
+          <div className="text-sm text-muted-foreground">
+            Showing {tenants.length} of {totalData} hospitals
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </Button>
+            <div className="text-sm">
+              Page {currentPage} of {totalPages}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+              }
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

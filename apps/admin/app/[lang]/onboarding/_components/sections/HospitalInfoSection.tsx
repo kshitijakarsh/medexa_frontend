@@ -14,9 +14,16 @@ import { FormInput } from "../ui/FormInput"
 import { FileUploader } from "../ui/FileUploader"
 import { FormSection } from "../ui/FormSection"
 import { Label } from "@workspace/ui/components/label"
-import { createTenantApiClient } from "@/lib/api/tenant"
+import { createTenantApiClient, type Country } from "@/lib/api/tenant"
+import { createRegulatoryApiClient, type Authority } from "@/lib/api/regulatory"
 import { useQuery } from "@tanstack/react-query"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 
 interface HospitalInfoSectionProps {
   form: any // react-hook-form instance
@@ -35,18 +42,28 @@ export const HospitalInfoSection = ({
   setLogoFile,
   onLogoSelected,
 }: HospitalInfoSectionProps) => {
-
-
-
-  const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
+  const { data: countries = [], isLoading: isLoadingCountries } = useQuery<
+    Country[]
+  >({
     queryKey: ["countries"],
     queryFn: async () => {
       const client = createTenantApiClient({ authToken: "dev-token" })
       const response = await client.getCountriesList()
-      return response.data.data // Extract data array from paginated response
+      return response.data.data // Extract data array from response
     },
   })
-  
+
+  const { data: authorities = [], isLoading: isLoadingAuthorities } = useQuery<
+    Authority[]
+  >({
+    queryKey: ["authorities"],
+    queryFn: async () => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const response = await client.getAuthoritesList()
+      return response.data.data // Extract data array from response
+    },
+  })
+
   return (
     <FormSection title="Hospital / Tenant Information">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -112,8 +129,12 @@ export const HospitalInfoSection = ({
                   <Label>Country *</Label>
                   <FormControl>
                     <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={
+                        field.value && field.value > 0
+                          ? String(field.value)
+                          : undefined
+                      }
                     >
                       <SelectTrigger className="w-full max-w-full truncate">
                         <SelectValue placeholder="Select Country" />
@@ -125,7 +146,7 @@ export const HospitalInfoSection = ({
                           </div>
                         ) : (
                           countries.map((c) => (
-                            <SelectItem key={c.id} value={c.id}>
+                            <SelectItem key={c.id} value={String(c.id)}>
                               {c.name_en} ({c.iso_code})
                             </SelectItem>
                           ))
@@ -138,21 +159,38 @@ export const HospitalInfoSection = ({
               )}
             />
 
-
-
             <FormField
               control={form.control}
               name="regulatory_authority_id"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Regulatory Authority ID *</Label>
+                  <Label>Regulatory Authority *</Label>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="Enter regulatory authority ID"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={
+                        field.value && field.value > 0
+                          ? String(field.value)
+                          : undefined
+                      }
+                    >
+                      <SelectTrigger className="w-full max-w-full truncate">
+                        <SelectValue placeholder="Select Authority" />
+                      </SelectTrigger>
+                      <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                        {isLoadingAuthorities ? (
+                          <div className="py-2 px-3 text-sm text-muted-foreground">
+                            Loading...
+                          </div>
+                        ) : (
+                          authorities.map((a) => (
+                            <SelectItem key={a.id} value={String(a.id)}>
+                              {a.name_en} ({a.short_code})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,10 +264,7 @@ export const HospitalInfoSection = ({
                 <FormItem>
                   <Label>Currency *</Label>
                   <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-full max-w-full truncate">
                         <SelectValue placeholder="Select Currency" />
                       </SelectTrigger>
@@ -252,7 +287,6 @@ export const HospitalInfoSection = ({
                 </FormItem>
               )}
             />
-
 
             <FormField
               control={form.control}

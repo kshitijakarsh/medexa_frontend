@@ -5,6 +5,21 @@ interface ApiConfig {
   authToken: string
 }
 
+interface Authority {
+  id: number
+  name_en: string
+  name_local: string
+  short_code: string
+  country_id: number
+  created_at: string
+  updated_at: string
+}
+
+interface AuthoritiesListResponse {
+  data: Authority[]
+  success: boolean
+}
+
 interface CreateDocumentParams {
   doc_type: string
   authority_id: number
@@ -12,7 +27,6 @@ interface CreateDocumentParams {
   issue_date: string
   expiry_date: string
   file_url: string
-  uploaded_by: number
   notes?: string
 }
 
@@ -37,8 +51,6 @@ interface Document {
   issue_date: string
   expiry_date: string
   file_url: string
-  uploaded_by: number
-  verified_by?: number
   status: string
   notes?: string
   created_at: string
@@ -69,11 +81,9 @@ class RegulatoryApiClient {
     }
   }
 
-  
-  
-  async getAuthoritesList(): Promise<AxiosResponse<DocumentResponse>> {
+  async getAuthoritesList(): Promise<AxiosResponse<AuthoritiesListResponse>> {
     try {
-      return await axios.get<DocumentResponse>(
+      return await axios.get<AuthoritiesListResponse>(
         `${this.baseUrl}/api/v1/regulatory_authorities`,
         this.getJsonRequestConfig()
       )
@@ -83,7 +93,7 @@ class RegulatoryApiClient {
           throw new Error("Authentication failed. Please Log In again.")
         }
         throw new Error(
-          `Get modules error: ${error.response?.data?.message || error.message}`
+          `Get authorities error: ${error.response?.data?.message || error.message}`
         )
       }
       throw error
@@ -164,6 +174,8 @@ export const createRegulatoryApiClient = (config: ApiConfig) =>
   new RegulatoryApiClient(config)
 
 export type {
+  Authority,
+  AuthoritiesListResponse,
   Document,
   CreateDocumentParams,
   UpdateDocumentParams,

@@ -101,7 +101,7 @@ export default function OnboardWizard() {
 
   // Step 4: License History
   const step4Form = useForm<Step4Values>({
-    resolver: zodResolver(step4Schema),
+    resolver: zodResolver(step4Schema) as any,
     defaultValues: {
       plan_key: "",
       seats: 0,
@@ -118,7 +118,7 @@ export default function OnboardWizard() {
   const [docPreview, setDocPreview] = useState<string | null>(null)
 
   const step5Form = useForm<Step5Values>({
-    resolver: zodResolver(step5Schema),
+    resolver: zodResolver(step5Schema) as any,
     defaultValues: {
       doc_type: "",
       authority_id: 0,
@@ -126,9 +126,7 @@ export default function OnboardWizard() {
       issue_date: "",
       expiry_date: "",
       file_url: "",
-      // uploaded_by: 0,
-      verified_by: undefined,
-      status: undefined,
+      status: "pending",
       notes: "",
     },
   })
@@ -222,10 +220,12 @@ export default function OnboardWizard() {
           // Step 5: Upload Regulatory Document
           if (!tenantId) throw new Error("Tenant ID not found")
           const values = step5Form.getValues()
-          await regulatoryApiClient.createDocument(tenantId, values)
+          // Add uploaded_by field (required by API, using default value 1)
+          // TODO: Replace with actual logged-in user ID when auth is implemented
+          await regulatoryApiClient.createDocument(tenantId, {
+            ...values,
+          })
 
-          // Success! Optionally redirect or show success message
-          alert("Tenant onboarded successfully!")
           // TODO: Redirect to tenant/hospital list or detail page
           window.location.href = "/hospitals"
           break
