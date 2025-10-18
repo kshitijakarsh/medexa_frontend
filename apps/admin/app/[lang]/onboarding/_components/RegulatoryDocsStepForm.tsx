@@ -129,17 +129,25 @@ export function RegulatoryDocsStepForm() {
 
   const handleEdit = (item: Document) => {
     setEditingItem(item)
+
+    // Convert ISO datetime to date format (YYYY-MM-DD) for date inputs
+    const formatISOToDate = (isoString: string) => {
+      if (!isoString) return ""
+      // Extract date part from ISO string (YYYY-MM-DDTHH:MM:SSZ -> YYYY-MM-DD)
+      return isoString.split("T")[0]
+    }
+
     form.reset({
       doc_type: item.doc_type,
       authority_id: item.authority_id,
       doc_number: item.doc_number,
-      issue_date: item.issue_date,
-      expiry_date: item.expiry_date,
+      issue_date: formatISOToDate(item.issue_date),
+      expiry_date: formatISOToDate(item.expiry_date),
       file_url: item.file_url,
-      uploaded_by: item.uploaded_by,
-      verified_by: item.verified_by,
-      status: item.status,
-      notes: item.notes,
+      uploaded_by: item.uploaded_by || 0,
+      verified_by: item.verified_by || 1,
+      status: item.status || "pending",
+      notes: item.notes || "",
     })
     setDocFile(null)
     setDocPreview(item.file_url || null)
@@ -161,27 +169,40 @@ export function RegulatoryDocsStepForm() {
       reader.onload = (event) => {
         const url = event.target?.result as string
         setDocPreview(url)
-        form.setValue("file_url", file.name)
+        form.setValue("file_url", "https://google.com/file")
       }
       reader.readAsDataURL(file)
     }
   }
 
   const handleSaveItem = async (values: Step5Values) => {
-    // For mock purposes, use the file name or preview as file_url
-    const fileUrl = docFile ? docFile.name : values.file_url
+    const fileUrl = "https://google.com/file"
+
+    // Convert dates to ISO datetime format (YYYY-MM-DDTHH:MM:SSZ)
+    const formatDateToISO = (dateString: string) => {
+      if (!dateString) return dateString
+      // If already in ISO format, return as is
+      if (dateString.includes("T")) return dateString
+      // Convert YYYY-MM-DD to YYYY-MM-DDTHH:MM:SSZ
+      return `${dateString}T00:00:00Z`
+    }
+
+    const formattedData = {
+      ...values,
+      issue_date: formatDateToISO(values.issue_date),
+      expiry_date: formatDateToISO(values.expiry_date),
+      file_url: fileUrl,
+    }
 
     if (editingItem) {
       updateMutation.mutate({
         id: editingItem.id,
-        ...values,
-        file_url: fileUrl,
+        ...formattedData,
       })
     } else {
       createMutation.mutate({
-        ...values,
-        file_url: fileUrl,
-        status: values.status || "pending",
+        ...formattedData,
+        status: formattedData.status || "pending",
       })
     }
   }

@@ -18,6 +18,19 @@ interface PaymentGateway {
   updated_at: string
 }
 
+interface PaymentGatewayResponse {
+  data: PaymentGateway[]
+  success: boolean
+  pagination: PaginationMeta
+}
+
+interface PaginationMeta {
+  page: number
+  limit: number
+  totalPages: number
+  totalData: number
+}
+
 interface CreatePaymentConfigParams {
   gateway_id: number
   merchant_id: string
@@ -79,9 +92,9 @@ class PaymentConfigApiClient {
     }
   }
 
-  async getPaymentGateways(): Promise<AxiosResponse<PaymentGateway[]>> {
+  async getPaymentGateways(): Promise<AxiosResponse<PaymentGatewayResponse>> {
     try {
-      return await axios.get<PaymentGateway[]>(
+      return await axios.get<PaymentGatewayResponse>(
         `${this.baseUrl}/api/v1/billing/payment-gateways`,
         this.getJsonRequestConfig()
       )

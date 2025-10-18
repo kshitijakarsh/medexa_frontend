@@ -23,7 +23,9 @@ export const step1Schema = z.object({
   primary_admin_id_no: z.string().min(1, "Primary admin ID number is required"),
   currency_code: z
     .string()
-    .length(3, "Currency code must be exactly 3 characters"),
+    .length(3, "Currency code must be exactly 3 characters")
+    .regex(/^[A-Z]{3}$/, "Currency code must be 3 uppercase letters")
+    .transform((val) => val.toUpperCase()),
   vat_registered: z.boolean(),
   vat_number: z.string().min(1, "VAT number is required"),
   user_full_name: z.string().min(1, "User full name is required"),

@@ -96,7 +96,7 @@ export function PaymentStepForm() {
     queryKey: ["gateways"],
     queryFn: async () => {
       const response = await paymentApiClient.getPaymentGateways()
-      return response.data
+      return response.data.data
     },
   })
 

@@ -42,6 +42,21 @@ const defaultValues: Step4Values = {
   status: "active",
 }
 
+// Helper function to convert YYYY-MM-DD to ISO datetime format (YYYY-MM-DDTHH:MM:SSZ)
+function dateToISODateTime(dateString: string): string {
+  if (!dateString) return ""
+  // Create a date at midnight UTC
+  const date = new Date(dateString + "T00:00:00Z")
+  return date.toISOString()
+}
+
+// Helper function to convert ISO datetime back to YYYY-MM-DD for date inputs
+function isoDateTimeToDate(isoString: string): string {
+  if (!isoString) return ""
+  // Extract just the date part (YYYY-MM-DD)
+  return isoString?.split("T")[0] ?? ""
+}
+
 export function LicenceHistoryStepForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -121,8 +136,8 @@ export function LicenceHistoryStepForm() {
       plan_key: item.plan_key,
       seats: item.seats,
       storage_quota_mb: item.storage_quota_mb,
-      start_date: item.start_date,
-      end_date: item.end_date,
+      start_date: isoDateTimeToDate(item.start_date),
+      end_date: isoDateTimeToDate(item.end_date),
       auto_renew: item.auto_renew,
       status: item.status,
     })
@@ -136,13 +151,20 @@ export function LicenceHistoryStepForm() {
   }
 
   const handleSaveItem = async (values: Step4Values) => {
+    // Transform dates to ISO datetime format before submission
+    const payload = {
+      ...values,
+      start_date: dateToISODateTime(values.start_date),
+      end_date: dateToISODateTime(values.end_date),
+    }
+
     if (editingItem) {
       updateMutation.mutate({
         id: editingItem.id,
-        ...values,
+        ...payload,
       })
     } else {
-      createMutation.mutate(values)
+      createMutation.mutate(payload)
     }
   }
 

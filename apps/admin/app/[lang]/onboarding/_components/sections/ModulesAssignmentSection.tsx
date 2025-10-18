@@ -90,12 +90,10 @@ export function ModuleAssignmentSection({
                                   selected ? "opacity-100" : "opacity-0"
                                 )}
                               />
-                              <span className="font-medium">
-                                {m.module_id || m.id}
-                              </span>
+                              <span className="font-medium">{m.name_en}</span>
                             </div>
                             <span className="text-xs text-muted-foreground ml-6">
-                              {m.notes || `Module ${m.module_id || m.id}`}
+                              {m.description}
                             </span>
                           </CommandItem>
                         )
@@ -116,7 +114,7 @@ export function ModuleAssignmentSection({
                       key={id}
                       className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-slate-100 text-slate-700"
                     >
-                      {mod?.module_id || mod?.id || id}
+                      {mod?.name_en || id}
                       <X
                         size={14}
                         className="cursor-pointer hover:text-red-500"
