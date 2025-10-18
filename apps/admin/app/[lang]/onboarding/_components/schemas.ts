@@ -80,7 +80,7 @@ export const step5Schema = z.object({
   issue_date: z.string().min(1, "Issue date is required"),
   expiry_date: z.string().min(1, "Expiry date is required"),
   file_url: z.string().min(1, "File is required"),
-  uploaded_by: z.number().int().min(1, "Uploaded by is required"),
+  // uploaded_by: z.number().int().min(1, "Uploaded by is required"),
   verified_by: z.number().int().optional(),
   status: z.string().optional(),
   notes: z.string().optional(),

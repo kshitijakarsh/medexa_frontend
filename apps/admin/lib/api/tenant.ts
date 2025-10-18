@@ -170,6 +170,26 @@ class TenantApiClient {
     }
   }
 
+  // get country list 
+    async getCountriesList(): Promise<AxiosResponse<TenantResponse>> {
+    try {
+      return await axios.get<TenantResponse>(
+        `${this.baseUrl}/api/v1/countries`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get modules error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   updateAuthToken(newToken: string) {
     this.authToken = newToken
   }

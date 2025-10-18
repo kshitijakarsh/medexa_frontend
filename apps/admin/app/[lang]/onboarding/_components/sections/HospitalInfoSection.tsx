@@ -14,6 +14,9 @@ import { FormInput } from "../ui/FormInput"
 import { FileUploader } from "../ui/FileUploader"
 import { FormSection } from "../ui/FormSection"
 import { Label } from "@workspace/ui/components/label"
+import { createTenantApiClient } from "@/lib/api/tenant"
+import { useQuery } from "@tanstack/react-query"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 
 interface HospitalInfoSectionProps {
   form: any // react-hook-form instance
@@ -32,6 +35,18 @@ export const HospitalInfoSection = ({
   setLogoFile,
   onLogoSelected,
 }: HospitalInfoSectionProps) => {
+
+
+
+  const { data: countries = [], isLoading: isLoadingCountries } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getCountriesList()
+      return response.data.data // Extract data array from paginated response
+    },
+  })
+  
   return (
     <FormSection title="Hospital / Tenant Information">
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
@@ -71,7 +86,7 @@ export const HospitalInfoSection = ({
 
           {/* Country and Regulatory */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="country_id"
               render={({ field }) => (
@@ -88,7 +103,43 @@ export const HospitalInfoSection = ({
                   <FormMessage />
                 </FormItem>
               )}
+            /> */}
+            <FormField
+              control={form.control}
+              name="country_id"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Country *</Label>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="w-full max-w-full truncate">
+                        <SelectValue placeholder="Select Country" />
+                      </SelectTrigger>
+                      <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                        {isLoadingCountries ? (
+                          <div className="py-2 px-3 text-sm text-muted-foreground">
+                            Loading...
+                          </div>
+                        ) : (
+                          countries.map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.name_en} ({c.iso_code})
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+
+
             <FormField
               control={form.control}
               name="regulatory_authority_id"
@@ -148,7 +199,7 @@ export const HospitalInfoSection = ({
 
           {/* Currency and VAT */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <FormField
+            {/* <FormField
               control={form.control}
               name="currency_code"
               render={({ field }) => (
@@ -167,7 +218,42 @@ export const HospitalInfoSection = ({
                   <FormMessage />
                 </FormItem>
               )}
+            /> */}
+            <FormField
+              control={form.control}
+              name="currency_code"
+              render={({ field }) => (
+                <FormItem>
+                  <Label>Currency *</Label>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <SelectTrigger className="w-full max-w-full truncate">
+                        <SelectValue placeholder="Select Currency" />
+                      </SelectTrigger>
+                      <SelectContent className="w-[var(--radix-select-trigger-width)]">
+                        {isLoadingCountries ? (
+                          <div className="py-2 px-3 text-sm text-muted-foreground">
+                            Loading...
+                          </div>
+                        ) : (
+                          countries.map((c) => (
+                            <SelectItem key={c.id} value={c.currency_code}>
+                              {c.currency_code} - {c.name_en}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+
             <FormField
               control={form.control}
               name="vat_registered"

@@ -69,6 +69,27 @@ class RegulatoryApiClient {
     }
   }
 
+  
+  
+  async getAuthoritesList(): Promise<AxiosResponse<DocumentResponse>> {
+    try {
+      return await axios.get<DocumentResponse>(
+        `${this.baseUrl}/api/v1/regulatory_authorities`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get modules error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   async createDocument(
     tenantId: string,
     params: CreateDocumentParams
