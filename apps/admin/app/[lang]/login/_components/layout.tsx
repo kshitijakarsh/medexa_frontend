@@ -37,8 +37,8 @@ import { IMAGES } from "@/lib/images"
 import { LoginCard } from "./card"
 import { LOGOS } from "@/lib/logos"
 
-export function LoginLayout() {
-  console.log(IMAGES.illustrationLatest)
+export default function LoginLayout() {
+  // console.log(IMAGES.illustrationLatest)
   return (
     <div className="w-full min-h-screen flex flex-col md:flex-row">
       {/* Background Illustration */}
