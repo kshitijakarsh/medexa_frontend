@@ -7,6 +7,7 @@ import {
   Monitor,
   User2,
   ChevronUp,
+  LogOut,
 } from "lucide-react"
 
 import {
@@ -34,6 +35,7 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { DropdownMenu } from "@workspace/ui/components/dropdown-menu"
 import { logoutCognitoUser } from "@/lib/api"
+import { Button } from "@workspace/ui/components/button"
 
 interface AppSidebarProps {
   dict: DictionaryType
@@ -46,38 +48,51 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
   const items = [
     {
       title: dict.nav.overview,
-      url: "/overview",
+      url: ["/overview"],
       icon: LayoutDashboard,
     },
     {
       title: dict.nav.hospitals,
-      url: "/hospitals",
+      url: ["/hospitals", "/create-hospital", "/onboarding/modules", "/onboarding/payment", "/onboarding/licence-history", "/onboarding/regulatory-docs"], // multiple URLs
       icon: Hospital,
     },
     {
       title: dict.nav.support,
-      url: "/support",
+      url: ["/support"],
       icon: Handshake,
     },
     {
       title: dict.nav.activityLog,
-      url: "/activity-log",
+      url: ["/activity-log"],
       icon: Activity,
     },
     {
       title: dict.nav.monitoring,
-      url: "/monitoring",
+      url: ["/monitoring"],
       icon: Monitor,
     },
+
   ]
 
-  const isActive = (url: string) => {
-    // Remove locale prefix from pathname for comparison
-    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "")
-    return url === "/"
-      ? pathWithoutLocale === "" || pathWithoutLocale === "/"
-      : pathWithoutLocale.startsWith(url)
-  }
+  // const isActive = (url: string) => {
+  //   // Remove locale prefix from pathname for comparison
+  //   const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "")
+  //   return url === "/"
+  //     ? pathWithoutLocale === "" || pathWithoutLocale === "/"
+  //     : pathWithoutLocale.startsWith(url)
+  // }
+  const isActive = (urls: string[] | string) => {
+    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "");
+
+    if (Array.isArray(urls)) {
+      return urls.some((url) =>
+        url === "/" ? pathWithoutLocale === "" || pathWithoutLocale === "/" : pathWithoutLocale.startsWith(url)
+      );
+    }
+
+    return urls === "/" ? pathWithoutLocale === "" || pathWithoutLocale === "/" : pathWithoutLocale.startsWith(urls);
+  };
+
 
   const sidebarState = useSidebar().state
 
@@ -86,8 +101,16 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
     window.location.href = "/login"; // full page reload
   };
 
+  const groups = [
+    items.slice(0, 1), // first group
+    items.slice(1, 3), // second group
+    items.slice(3, 5), // second group
+  ];
+
+
+
   return (
-    <Sidebar collapsible={isStandalonePage ? "icon" : "offcanvas"}>
+    <Sidebar collapsible={isStandalonePage ? "icon" : "offcanvas"} className="[&[data-state=collapsed]]:!w-[7rem]">
       <SidebarHeader className="flex items-center justify-center py-4">
         <div className="relative w-full flex items-center justify-center overflow-hidden">
           <Image
@@ -96,8 +119,8 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
             width={130}
             height={50}
             className={`transition-all duration-300 ease-in-out ${sidebarState === "expanded"
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-75 absolute"
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-75 absolute"
               }`}
             priority
           />
@@ -107,19 +130,19 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
             width={30}
             height={25}
             className={`transition-all duration-300 ease-in-out ${sidebarState === "collapsed"
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-75 absolute"
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-75 absolute"
               }`}
             priority
           />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      {/* <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>{dict.nav.application}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {items?.[0].map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <LocaleLink href={item.url}>
@@ -132,11 +155,35 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+      </SidebarContent> */}
+      <SidebarContent className="gap-0">
+        {groups.map((group, index) => (
+          <SidebarGroup key={index} className="mb-0">
+            <SidebarGroupLabel>{index === 0 ? dict.nav.application : index === 1 ? dict.nav.management : dict.nav.monitor}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.map(item => (
+                  <SidebarMenuItem key={item.title} className={`bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)] rounded  ${sidebarState === "collapsed" && "ms-2"}`}>
+                    <SidebarMenuButton asChild isActive={isActive(item.url)} className="text-sm p-3">
+                      <LocaleLink href={item.url[0] /* main URL for link */}>
+                        <item.icon
+                          className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7 hover:scale-110" : "w-5 h-5"
+                            }`}
+                        />
+                        <span>{item.title}</span>
+                      </LocaleLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
+          <SidebarMenuItem className={`bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)] rounded  ${sidebarState === "collapsed" && "ms-2"}`}>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   <User2 /> Username
@@ -157,7 +204,11 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
                   <span onClick={handleLogout}>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
+            <SidebarMenuButton onClick={handleLogout} className="cursor-pointer">
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

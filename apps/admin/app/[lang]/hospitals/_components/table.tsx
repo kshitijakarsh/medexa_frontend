@@ -112,15 +112,15 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
         </div>
       )}
 
-      <Table>
-        <TableHeader className="bg-background [&_tr]:border-none">
-          <TableRow className="hover:bg-transparent">
-            <TableHead>ID</TableHead>
-            <TableHead>Hospital Name</TableHead>
-            <TableHead>Admin Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+      <Table className="rounded">
+        <TableHeader className="bg-background [&_tr]:border-none ">
+          <TableRow className="bg-sidebar ">
+            <TableHead className="text-white">ID</TableHead>
+            <TableHead className="text-white">Hospital Name</TableHead>
+            <TableHead className="text-white">Admin Name</TableHead>
+            <TableHead  className="text-white">Email</TableHead>
+            <TableHead  className="text-white">Status</TableHead>
+            <TableHead className="text-right text-white" >Action</TableHead>
           </TableRow>
         </TableHeader>
         <tbody aria-hidden="true" className="table-row h-2"></tbody>
@@ -147,7 +147,7 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
             tenants.map((tenant) => (
               <TableRow
                 key={tenant.id}
-                className="odd:bg-muted/50 odd:hover:bg-muted/50 border-none hover:bg-transparent"
+                className="odd:bg-[#F4FAFF] odd:hover:bg-muted/50 border-none hover:bg-transparent"
               >
                 <TableCell className="py-2.5 font-medium">
                   {tenant.tenant_key || tenant.id}

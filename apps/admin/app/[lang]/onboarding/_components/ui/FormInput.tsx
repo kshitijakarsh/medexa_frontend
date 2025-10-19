@@ -103,6 +103,8 @@ import {
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { Eye, EyeOff } from "lucide-react"
+import { Label } from "@workspace/ui/components/label"
+import { FormLabel } from "./FormLable"
 
 interface FormInputProps {
   control: any
@@ -131,9 +133,7 @@ export const FormInput = ({
       name={name}
       render={({ field, fieldState }) => (
         <FormItem className="w-full">
-          <label className="block text-sm font-medium text-slate-600 mb-1">
-            {label}
-          </label>
+        <FormLabel label={label} />
           <FormControl>
             <div className="relative">
               <Input

@@ -13,7 +13,9 @@
     "hospitals": "Hospitals",
     "support": "Support",
     "activityLog": "Activity Log",
-    "application": "Application",
+    "application": "Dashboard",
+    "management": "Management",
+    "monitor": "Monitor",
     "monitoring": "Monitoring"
   },
   "pages": {

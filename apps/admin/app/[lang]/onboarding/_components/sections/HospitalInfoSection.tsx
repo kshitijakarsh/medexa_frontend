@@ -7,7 +7,6 @@ import {
   FormItem,
   FormControl,
   FormMessage,
-  FormLabel,
 } from "@workspace/ui/components/form"
 import { Input } from "@workspace/ui/components/input"
 import { FormInput } from "../ui/FormInput"
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { FormLabel } from "../ui/FormLable"
 
 interface HospitalInfoSectionProps {
   form: any // react-hook-form instance
@@ -126,7 +126,8 @@ export const HospitalInfoSection = ({
               name="country_id"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Country *</Label>
+                  {/* <Label>Country *</Label> */}
+                  <FormLabel label={"Country *"} />
                   <FormControl>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
@@ -164,7 +165,8 @@ export const HospitalInfoSection = ({
               name="regulatory_authority_id"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Regulatory Authority *</Label>
+                  {/* <Label>Regulatory Authority *</Label> */}
+                  <FormLabel label={"Regulatory Authority *"} />
                   <FormControl>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
@@ -211,7 +213,7 @@ export const HospitalInfoSection = ({
               name="license_expiry"
               render={({ field }) => (
                 <FormItem>
-                  <Label>License Expiry *</Label>
+                  <FormLabel label={"License Expiry *"} />
                   <FormControl>
                     <Input type="datetime-local" {...field} />
                   </FormControl>
@@ -262,7 +264,8 @@ export const HospitalInfoSection = ({
               name="currency_code"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Currency *</Label>
+                  {/* <Label></Label> */}
+                  <FormLabel label={"Currency *"} />
                   <FormControl>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="w-full max-w-full truncate">
@@ -293,7 +296,8 @@ export const HospitalInfoSection = ({
               name="vat_registered"
               render={({ field }) => (
                 <FormItem>
-                  <Label>VAT Registered *</Label>
+                  {/* <Label>VAT Registered *</Label> */}
+                  <FormLabel label={"VAT Registered *"} />
                   <FormControl>
                     <div className="flex items-center gap-2 h-10">
                       <input

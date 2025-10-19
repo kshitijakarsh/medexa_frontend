@@ -113,7 +113,7 @@ import {
 import { FilterInput } from "@/components/filter-input"
 import { LogSheet } from "./log-sheet"
 import { AuditLog, createAuditLogsApiClient } from "@/lib/api/activity-logs/activity-logs"
-import { Loader2 } from "lucide-react"
+import { EyeIcon, Loader2 } from "lucide-react"
 
 function StatusBadge({ status }: { status: AuditLog["status"] }) {
   if (status === "failed") {
@@ -153,7 +153,7 @@ export function AuditLogTable() {
         </div>
       </div>
 
-      {isLoading ? (
+      {/* {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="animate-spin h-10 w-10 text-blue-500" />
         </div>
@@ -161,21 +161,40 @@ export function AuditLogTable() {
         <div className="flex justify-center items-center h-64 text-gray-500 text-sm">
           No audit logs found.
         </div>
-      ) : (
-        <Table>
-          <TableHeader className="bg-background [&_tr]:border-none">
-            <TableRow className="hover:bg-transparent">
-              <TableHead>Type</TableHead>
-              <TableHead>Action</TableHead>
-              <TableHead>Hospital</TableHead>
-              <TableHead>Performed By</TableHead>
-              <TableHead>Date & Time</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+      ) : ( */}
+      <Table>
+        <TableHeader className="bg-background [&_tr]:border-none">
+          <TableRow className="hover:bg-transparent">
+            <TableHead>Type</TableHead>
+            <TableHead>Action</TableHead>
+            <TableHead>Hospital</TableHead>
+            <TableHead>Performed By</TableHead>
+            <TableHead>Date & Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={6} className="text-center py-8">
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>Loading Activity logs...</span>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
-            {sortedLogs.map((log) => (
+          ) : sortedLogs.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="text-center py-8 text-muted-foreground"
+              >
+                No activity logs found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            sortedLogs.map((log) => (
               <TableRow
                 key={log.id}
                 className="odd:bg-muted/50 odd:hover:bg-muted/50 border-none hover:bg-transparent"
@@ -202,15 +221,16 @@ export function AuditLogTable() {
                       setSelected(log)
                       setOpen(true)
                     }}
+                    className="cursor-pointer text-sidebar "
                   >
-                    View
+                    <EyeIcon className="w-4 h-4 "/>
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+            )))}
+        </TableBody>
+      </Table>
+      {/* )} */}
 
       <LogSheet open={open} onOpenChange={setOpen} log={selected} />
     </div>

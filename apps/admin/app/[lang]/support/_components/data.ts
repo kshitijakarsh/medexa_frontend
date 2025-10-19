@@ -31,7 +31,7 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     issue: "Unable to access patient records module",
     hospital: "Al Hayat Clinic",
     status: "Open",
-    priority: "Critical",
+    priority: "Medium",
     createdAt: iso(15),
     reportedBy: { name: "Sarah Ali", email: "s.ali@alhayat.qa" },
     description:
@@ -83,7 +83,7 @@ export const SUPPORT_TICKETS: SupportTicket[] = [
     issue: "System performance degradation during peak hours",
     hospital: "MediQ Hospital",
     status: "Open",
-    priority: "Critical",
+    priority: "High",
     createdAt: iso(240),
     reportedBy: { name: "Fatima Al-Ansari", email: "fatima@mediq.qa" },
     description:
