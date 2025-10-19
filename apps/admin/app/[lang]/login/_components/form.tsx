@@ -625,7 +625,7 @@ export function LoginForm() {
           // localStorage.setItem("refresh_token", res.tokens.RefreshToken);
 
           toast.success("Login successful! Redirecting...");
-          window.open("/overview");
+          window.location.href = "/overview";
         }
         if (res.message === "NEW_PASSWORD_REQUIRED") {
           setShowNewPassword(true);
