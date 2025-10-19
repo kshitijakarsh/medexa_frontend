@@ -31,5 +31,5 @@ export default async function LangLayout({
   const { lang } = await params
   const dict = await getDictionary(lang)
 
-  return <Providers dict={dict}>{children}</Providers>
+  return (<Providers dict={dict}>{children}</Providers>)
 }
