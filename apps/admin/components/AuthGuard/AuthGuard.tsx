@@ -10,33 +10,37 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
 
+  const langPrefix = pathname.split("/")[1] || "en"; // e.g., 'en'
+
   useEffect(() => {
     const checkAuth = async () => {
-      setLoading(true)
       try {
-        // ✅ refreshCognitoToken already returns CognitoUserSession
         const session: CognitoUserSession = await refreshCognitoToken();
 
-        if (session.isValid()) {
-          // ✅ If logged in and trying to visit login page, redirect to overview
+        if (session?.isValid()) {
+          // Already logged in → redirect away from login page
           if (pathname.endsWith("/login")) {
-            router.replace("/overview");
+            router.replace(`/${langPrefix}/overview`);
           }
         } else {
-          // ❌ Session invalid
-          router.replace("/login");
+          // Not logged in → redirect only if not already on login
+          if (!pathname.endsWith("/login")) {
+           window.location.href = `/${langPrefix}/login`;
+          }
         }
       } catch (err) {
-        router.replace("/login");
+        if (!pathname.endsWith("/login")) {
+          window.location.href = `/${langPrefix}/login`;
+        }
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, [pathname, router]);
+  }, [pathname, router, langPrefix]);
 
-  if (loading) return null; // optional loader
+  if (loading) return null;
 
   return <>{children}</>;
 }
