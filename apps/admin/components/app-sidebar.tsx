@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
 import { DropdownMenu } from "@workspace/ui/components/dropdown-menu"
+import { logoutCognitoUser } from "@/lib/api"
 
 interface AppSidebarProps {
   dict: DictionaryType
@@ -80,6 +81,11 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
 
   const sidebarState = useSidebar().state
 
+  const handleLogout = () => {
+    logoutCognitoUser();
+    window.location.href = "/login"; // full page reload
+  };
+
   return (
     <Sidebar collapsible={isStandalonePage ? "icon" : "offcanvas"}>
       <SidebarHeader className="flex items-center justify-center py-4">
@@ -89,11 +95,10 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
             alt="MedExe"
             width={130}
             height={50}
-            className={`transition-all duration-300 ease-in-out ${
-              sidebarState === "expanded"
+            className={`transition-all duration-300 ease-in-out ${sidebarState === "expanded"
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-75 absolute"
-            }`}
+              }`}
             priority
           />
           <Image
@@ -101,11 +106,10 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
             alt="MedExe"
             width={30}
             height={25}
-            className={`transition-all duration-300 ease-in-out ${
-              sidebarState === "collapsed"
+            className={`transition-all duration-300 ease-in-out ${sidebarState === "collapsed"
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-75 absolute"
-            }`}
+              }`}
             priority
           />
         </div>
@@ -150,7 +154,7 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
                   <span>Billing</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span>Sign out</span>
+                  <span onClick={handleLogout}>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
