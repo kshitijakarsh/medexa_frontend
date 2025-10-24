@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 import { Providers } from "@/components/providers"
 import { getDictionary } from "@/i18n/get-dictionary"
 import { locales, type Locale } from "@/i18n/locales"
+import AuthGuard from "@/components/AuthGuard/AuthGuard"
 
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }))
@@ -31,5 +32,9 @@ export default async function LangLayout({
   const { lang } = await params
   const dict = await getDictionary(lang)
 
-  return (<Providers dict={dict}>{children}</Providers>)
+  return (
+    <AuthGuard>
+      <Providers dict={dict}>{children}</Providers>
+    </AuthGuard>
+  )
 }

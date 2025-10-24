@@ -17,8 +17,7 @@ interface ProvidersProps {
 export function Providers({ children, dict }: ProvidersProps) {
   const pathname = usePathname()
   // Check if the path (without locale) is /login
-  const isStandalonePage = !pathname.includes("/login")
-
+  const isStandalonePage = pathname.includes("/login")
   const [queryClient] = React.useState(
     () =>
       new QueryClient({
@@ -31,6 +30,12 @@ export function Providers({ children, dict }: ProvidersProps) {
       })
   )
 
+  if (isStandalonePage) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextThemesProvider
@@ -41,8 +46,8 @@ export function Providers({ children, dict }: ProvidersProps) {
         enableColorScheme
       >
         <Toaster position="top-right" richColors closeButton expand />
-        <SidebarProvider defaultOpen={isStandalonePage}>
-          <AppSidebar isStandalonePage={isStandalonePage} dict={dict} />
+        <SidebarProvider>
+          <AppSidebar dict={dict} />
           {children}
         </SidebarProvider>
       </NextThemesProvider>

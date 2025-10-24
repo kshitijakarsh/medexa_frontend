@@ -39,10 +39,9 @@ import { Button } from "@workspace/ui/components/button"
 
 interface AppSidebarProps {
   dict: DictionaryType
-  isStandalonePage: boolean
 }
 
-export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
+export function AppSidebar({ dict }: AppSidebarProps) {
   const pathname = usePathname()
 
   const items = [
@@ -118,7 +117,7 @@ export function AppSidebar({ isStandalonePage, dict }: AppSidebarProps) {
 
   return (
     <Sidebar
-      collapsible={isStandalonePage ? "icon" : "offcanvas"}
+      collapsible={"icon"}
       className="[&[data-state=collapsed]]:!w-[7rem]"
     >
       <SidebarHeader className="flex items-center justify-center py-4">

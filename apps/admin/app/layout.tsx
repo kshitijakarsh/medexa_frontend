@@ -2,7 +2,6 @@ import type { ReactNode } from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono, Inter } from "next/font/google"
 import "@workspace/ui/styles/admin.css"
-import AuthGuard from "@/components/AuthGuard/AuthGuard"
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -32,11 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} font-sans antialiased`}
-      >
+      <body className={`${inter.variable} font-sans antialiased`}>
         {/* {children} */}
-        <AuthGuard>{children}</AuthGuard>
+        {children}
       </body>
     </html>
   )
