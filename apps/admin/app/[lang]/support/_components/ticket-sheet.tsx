@@ -28,6 +28,19 @@ type Props = {
   onChangeStatus?: (ticketId: string, status: TicketStatus) => void
 }
 
+function PriorityBadge({ priority }: { priority: SupportTicket["priority"] }) {
+  switch (priority) {
+    // case "Critical":
+    //   return <Badge variant="destructive"   className="emerald-400">Critical</Badge>
+    case "High":
+      return <Badge variant="default" className="bg-rose-700">High</Badge>
+    case "Medium":
+      return <Badge variant="secondary" className="bg-amber-300">Medium</Badge>
+    case "Low":
+      return <Badge variant="default"  className="bg-emerald-400 ">Low</Badge>
+  }
+} // have to be added in single are with same component sturcture now copy paste of the parent 
+
 export function TicketSheet({
   open,
   onOpenChange,
@@ -79,7 +92,7 @@ export function TicketSheet({
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm text-muted-foreground">Priority</div>
-                  <Badge
+                  {/* <Badge
                     variant={
                       ticket.priority === "Critical"
                         ? "destructive"
@@ -91,7 +104,8 @@ export function TicketSheet({
                     }
                   >
                     {ticket.priority}
-                  </Badge>
+                  </Badge> */}
+                 <PriorityBadge priority={ticket.priority} />
                 </div>
               </div>
 
@@ -145,7 +159,7 @@ export function TicketSheet({
                   />
                   <Button
                     size="sm"
-                    className="absolute bottom-2 right-2"
+                    className="absolute bottom-2 right-2 bg-sidebar-accent"
                     onClick={() => {
                       if (!comment.trim() || !ticket) return
                       onAddComment?.(ticket.id, comment.trim())

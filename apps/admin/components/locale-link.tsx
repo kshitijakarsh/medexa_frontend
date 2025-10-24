@@ -4,7 +4,7 @@ import Link, { LinkProps } from "next/link"
 import { useParams } from "next/navigation"
 
 interface LocaleLinkProps extends Omit<LinkProps, "href"> {
-  href: string
+  href: any
   children: React.ReactNode
   className?: string
 }

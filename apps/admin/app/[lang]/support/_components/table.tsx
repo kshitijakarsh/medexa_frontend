@@ -15,6 +15,7 @@ import { FilterInput } from "@/components/filter-input"
 import { Button } from "@workspace/ui/components/button"
 import { useState } from "react"
 import { TicketSheet } from "./ticket-sheet"
+import { EyeIcon } from "lucide-react"
 
 function StatusBadge({ status }: { status: SupportTicket["status"] }) {
   switch (status) {
@@ -31,14 +32,14 @@ function StatusBadge({ status }: { status: SupportTicket["status"] }) {
 
 function PriorityBadge({ priority }: { priority: SupportTicket["priority"] }) {
   switch (priority) {
-    case "Critical":
-      return <Badge variant="destructive">Critical</Badge>
+    // case "Critical":
+    //   return <Badge variant="destructive"   className="emerald-400">Critical</Badge>
     case "High":
-      return <Badge variant="default">High</Badge>
+      return <Badge variant="default" className="bg-rose-700">High</Badge>
     case "Medium":
-      return <Badge variant="secondary">Medium</Badge>
+      return <Badge variant="secondary" className="bg-amber-300">Medium</Badge>
     case "Low":
-      return <Badge variant="outline">Low</Badge>
+      return <Badge variant="default" className="bg-emerald-400 ">Low</Badge>
   }
 }
 
@@ -96,7 +97,7 @@ export function SupportTable() {
                     setOpen(true)
                   }}
                 >
-                  View
+                  <EyeIcon className="w-4 h-4 " />
                 </Button>
               </TableCell>
             </TableRow>

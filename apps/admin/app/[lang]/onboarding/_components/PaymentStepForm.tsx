@@ -321,6 +321,18 @@ export function PaymentStepForm() {
         <div className="flex gap-3 items-center mt-4 md:mt-0">
           <Button
             type="button"
+            variant="secondary"
+            onClick={() =>
+              router.push(
+                `${onboardingBase}/licence-history?hospitalId=${hospitalId}`
+              )
+            }
+            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
+          >
+            Skip
+          </Button>
+          <Button
+            type="button"
             onClick={handleSaveAndContinue}
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
           >

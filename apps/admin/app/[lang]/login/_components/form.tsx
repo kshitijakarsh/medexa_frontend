@@ -679,7 +679,7 @@ export function LoginForm() {
                     <User className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                     <Input
                       id="username"
-                      placeholder="Enter your username"
+                      placeholder="Username"
                       autoComplete="username"
                       {...field}
                       className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-200 transition-colors"
@@ -707,7 +707,7 @@ export function LoginForm() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Password"
                     autoComplete="current-password"
                     {...field}
                     className="pl-10 pr-10 border-gray-300 focus:border-green-500 focus:ring-green-200 transition-colors"
@@ -776,12 +776,12 @@ export function LoginForm() {
             href="#"
             className="text-sm text-blue-600 hover:underline inline-flex items-center gap-1"
           >
-            Need Help?
+             Help?
           </a>
         </div>
         {/* Footer */}
         {!showNewPassword && (
-          <div className="text-center text-xs text-gray-400 mt-4">
+          <div className="text-center text-xs text-gray-800 mt-4">
             © 2025 MEdExa Cloud Health Platform
           </div>
         )}

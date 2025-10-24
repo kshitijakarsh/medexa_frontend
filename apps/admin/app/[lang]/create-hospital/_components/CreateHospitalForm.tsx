@@ -98,7 +98,7 @@ export function CreateHospitalForm() {
     <main className="min-h-svh w-full">
       <Header />
       <div className="flex flex-col items-start justify-between mb-6">
-        <FormHeader title="Create Tenant / Hospital" />
+        <FormHeader title="Create Tenant / Hospital" backHref="/hospitals" />
         <div className="p-4 w-full py-3">
           <Form {...form}>
             <form
