@@ -374,6 +374,8 @@ import { DataTable } from "@/components/common/data-table"
 import { Header } from "@/components/header"
 import { useRouter } from "next/navigation"
 import AddDepartmentModal from "./_components/AddDepartmentModal"
+import { QuickActionsMenu } from "./_components/QuickActionsMenu"
+import { RowActionMenu } from "./_components/RowActionMenu"
 
 interface Department {
   id: number
@@ -442,9 +444,8 @@ export default function DepartmentsPage() {
       label: "Department Status",
       render: (row: Department) => (
         <span
-          className={`font-semibold ${
-            row.status === "Active" ? "text-green-500" : "text-red-500"
-          }`}
+          className={`font-semibold ${row.status === "Active" ? "text-green-500" : "text-red-500"
+            }`}
         >
           {row.status}
         </span>
@@ -464,22 +465,34 @@ export default function DepartmentsPage() {
         <span className="text-gray-700">{row.addedBy}</span>
       ),
     },
+    // {
+    //   key: "action",
+    //   label: "Action",
+    //   render: () => (
+    //     <div className="flex justify-center items-center">
+    //       <Button
+    //         variant="ghost"
+    //         size="icon"
+    //         className="hover:bg-gray-100 text-gray-600"
+    //       >
+    //         ⋮
+    //       </Button>
+    //     </div>
+    //   ),
+    //   className: "text-center w-[80px]",
+    // },
     {
       key: "action",
       label: "Action",
-      render: () => (
-        <div className="flex justify-center items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-gray-100 text-gray-600"
-          >
-            ⋮
-          </Button>
-        </div>
+      render: (row: Department) => (
+        <RowActionMenu
+          onEdit={() => console.log("Edit", row.name)}
+          onDelete={() => console.log("Delete", row.name)}
+        />
       ),
       className: "text-center w-[80px]",
-    },
+    }
+
   ]
 
   return (
@@ -514,12 +527,14 @@ export default function DepartmentsPage() {
                 />
               </div>
 
-              <Button
+              {/* <Button
                 variant="outline"
                 className="text-gray-700 border-gray-300 hover:bg-gray-50"
               >
                 Quick
-              </Button>
+              </Button> */}
+              <QuickActionsMenu />
+
 
               <Button
                 onClick={() => setIsAddModalOpen(true)}
@@ -533,18 +548,18 @@ export default function DepartmentsPage() {
 
           {/* Table */}
           <div className="mt-2">
-            {loading ? (
+            {/* {loading ? (
               <div className="flex justify-center py-10">
                 <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
               </div>
-            ) : (
-              <DataTable
-                columns={columns}
-                data={departments}
-                loading={loading}
-                striped
-              />
-            )}
+            ) : ( */}
+            <DataTable
+              columns={columns}
+              data={departments}
+              loading={loading}
+              striped
+            />
+            {/* )} */}
           </div>
         </div>
       </div>
