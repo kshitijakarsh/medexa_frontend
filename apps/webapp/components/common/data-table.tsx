@@ -71,7 +71,7 @@ export function DataTable<T>({
             {columns.map((col) => (
               <TableHead
                 key={col.key.toString()}
-                className={`text-white ${col.className || ""}`}
+                className={`text-white py-4 ${col.className || ""}`}
               >
                 {col.label}
               </TableHead>

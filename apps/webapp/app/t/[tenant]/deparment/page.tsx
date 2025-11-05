@@ -376,6 +376,9 @@ import { useRouter } from "next/navigation"
 import AddDepartmentModal from "./_components/AddDepartmentModal"
 import { QuickActionsMenu } from "./_components/QuickActionsMenu"
 import { RowActionMenu } from "./_components/RowActionMenu"
+import SearchInput from "@/components/common/search-input"
+import { PageHeader } from "@/components/common/PageHeader"
+import NewButton from "@/components/common/new-button"
 
 interface Department {
   id: number
@@ -501,7 +504,7 @@ export default function DepartmentsPage() {
 
       <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
         {/* Title & Back */}
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             className="bg-blue-700 hover:bg-blue-500 text-white p-1 rounded-md hover:text-white cursor-pointer"
@@ -510,22 +513,33 @@ export default function DepartmentsPage() {
             <MoveLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-xl font-semibold text-gray-800">Departments</h1>
-        </div>
+        </div> */}
+        <PageHeader title="Departments" />
 
         {/* Card */}
         <div className="space-y-4 bg-white p-5 rounded-md shadow-sm">
           {/* Header Actions */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              {/* <div className="relative">
+                
                 <Input
                   placeholder="Search"
-                  className="pl-9 pr-3 py-2 w-[220px] rounded-lg border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="pr-9 pl-3 py-2 w-[220px] rounded-lg border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-              </div>
+                <Search className="absolute right-3 top-2.5 h-4 w-4 text-gray-400" />
+              </div> */}
+
+              {/* Customized with a different icon, width, and placeholder */}
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Search users..."
+              // width="300px"
+              // icon={<User className="h-4 w-4 text-gray-400" />}
+              />
 
               {/* <Button
                 variant="outline"
@@ -536,30 +550,25 @@ export default function DepartmentsPage() {
               <QuickActionsMenu />
 
 
-              <Button
+              {/* <Button
                 onClick={() => setIsAddModalOpen(true)}
                 className="bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add New
-              </Button>
+              </Button> */}
+              <NewButton handleClick={() => setIsAddModalOpen(true)} className="cursor-pointer" />
             </div>
           </div>
 
           {/* Table */}
           <div className="mt-2">
-            {/* {loading ? (
-              <div className="flex justify-center py-10">
-                <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-              </div>
-            ) : ( */}
             <DataTable
               columns={columns}
               data={departments}
               loading={loading}
               striped
             />
-            {/* )} */}
           </div>
         </div>
       </div>
