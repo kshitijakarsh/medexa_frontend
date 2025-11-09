@@ -17,7 +17,7 @@ import { AppDialog } from "@/components/common/app-dialog";
 import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
 import { useState } from "react";
-import { AppSelect } from "@/components/common/AppSelect";
+import { AppSelect } from "@/components/common/app-select";
 
 const addOTSchema = z.object({
     operationRoom: z.string().min(1, "Enter Operation Room Number"),

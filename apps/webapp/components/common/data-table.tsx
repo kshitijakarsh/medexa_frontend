@@ -113,7 +113,10 @@ export function DataTable<T>({
                   } border-none hover:bg-transparent cursor-default`}
               >
                 {columns.map((col) => (
-                  <TableCell key={col.key.toString()} className="py-2.5">
+                  <TableCell key={col.key.toString()}
+                    // className="py-2.5"
+                    className={`py-2.5 ${col.className || ""}`}
+                  >
                     {col.render ? col.render(row) : (row[col.key as keyof T] as any)}
                   </TableCell>
                 ))}
