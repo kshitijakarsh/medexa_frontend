@@ -323,8 +323,8 @@ export function UploadCard({ title, onFileSelect, value }: UploadCardProps) {
     <div className="border border-dashed rounded-md p-4 text-center bg-[#F7FBFF]">
       {/* ... (Upload / Capture State is the same) ... */}
       {!previewUrl && !isCapturing && (
-        <div /* ... (omitted for brevity) ... */ >
-          <Upload className="w-8 h-8 text-blue-500 mb-2" />
+        <div /* ... (omitted for brevity) ... */ className="flex flex-col items-center justify-center text-center" >
+          <Upload className="w-8 h-8 text-blue-500 mb-2 " />
           <p className="text-sm text-gray-600">
             Click to upload or drag & drop<br />
             Max 10MB (PDF or JPG)

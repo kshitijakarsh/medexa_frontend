@@ -27,7 +27,7 @@
 
 "use client";
 
-import { UploadCard } from "./UploadCard";
+import { UploadCard } from "../../../../../../components/common/upload-card";
 
 export function Documents({ form }: { form: any }) {
   const docs = [

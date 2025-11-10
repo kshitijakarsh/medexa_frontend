@@ -190,7 +190,7 @@ import {
     SelectValue,
     SelectItem,
 } from "@workspace/ui/components/select";
-import { UploadCard } from "./UploadCard";
+import { UploadCard } from "../../../../../../components/common/upload-card";
 import { AppSelect } from "@/components/common/app-select";
 
 export function PersonalDetails({ form }: { form: any }) {

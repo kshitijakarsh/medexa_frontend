@@ -220,6 +220,7 @@ import NewButton from "@/components/common/new-button";
 import { getMockEmployees } from "./_components/api";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useRouter } from "next/navigation";
+import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 
 const employeeConfigurationSection = [
     { key: "humanResources", label: "Human Resources" },
@@ -341,7 +342,7 @@ export default function EmployeeConfigurationPage() {
                 key: "createdOn",
                 label: "Created On",
                 render: (r: any) => r.createdOn,
-                 className: "w-[80px]"
+                className: "w-[80px]"
             },
             {
                 key: "addedBy",
@@ -390,25 +391,15 @@ export default function EmployeeConfigurationPage() {
 
                 <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
                     {/* Tabs and Actions */}
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className="flex flex-wrap gap-2">
-                            {employeeConfigurationSection.map((tab) => (
-                                <Button
-                                    key={tab.key}
-                                    type="button"
-                                    onClick={() => setActiveTab(tab.key as any)}
-                                    className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer ${activeTab === tab.key
-                                        ? "bg-blue-600 text-white hover:bg-blue-600"
-                                        : "bg-white text-gray-600 hover:bg-blue-100"
-                                        }`}
-                                >
-                                    {tab.label}
-                                </Button>
-                            ))}
-                        </div>
+                    {/* <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <DynamicTabs
+                            tabs={employeeConfigurationSection}
+                            defaultTab="humanResources"
+                            onChange={(tabKey) => setActiveTab(tabKey as any)}
+                        /> */}
 
-                        {/* Right Side Controls */}
-                        <div className="flex items-center gap-3">
+                    {/* Right Side Controls */}
+                    {/* <div className="flex items-center gap-3">
                             <Button
                                 onClick={() => setIsFilterDialogOpen(true)}
                                 variant="outline"
@@ -421,7 +412,53 @@ export default function EmployeeConfigurationPage() {
                             <QuickActionsMenu />
                             <NewButton handleClick={handleNew} />
                         </div>
+                    </div> */}
+
+                    {/* Tabs + Actions */}
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        {/* Tabs */}
+                        <div className="flex-shrink-0 w-full lg:w-auto">
+                            <DynamicTabs
+                                tabs={employeeConfigurationSection}
+                                defaultTab="humanResources"
+                                onChange={(tabKey) => setActiveTab(tabKey as any)}
+                            />
+                        </div>
+
+                        {/* Right Side Controls */}
+                        <div
+                            className="
+        flex flex-wrap items-center justify-start lg:justify-end
+        gap-3 flex-1
+      "
+                        >
+                            {/* Filter */}
+                            <Button
+                                onClick={() => setIsFilterDialogOpen(true)}
+                                variant="outline"
+                                className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+                            >
+                                <SlidersHorizontal className="w-5 h-5" />
+                                <span>Filter</span>
+                            </Button>
+
+                            {/* Search Input */}
+                            <div className="flex-grow min-w-[180px] sm:min-w-[220px] md:min-w-[260px]">
+                                <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
+                            </div>
+
+                            {/* Quick Actions */}
+                            <QuickActionsMenu />
+
+                            {/* New Button */}
+                            <div className="ml-auto w-full sm:w-auto flex justify-end">
+                                <NewButton handleClick={handleNew} />
+                            </div>
+                        </div>
                     </div>
+
+
+
 
                     {/* Table */}
                     <DataTable columns={getColumns()} data={data} loading={loading} striped />
