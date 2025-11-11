@@ -53,8 +53,6 @@
 //   )
 // }
 
-
-
 "use client"
 
 import * as React from "react"
@@ -71,7 +69,8 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   const pathname = usePathname()
-  const isStandalonePage = pathname.includes("/login")
+  const isStandalonePage =
+    pathname.includes("/login") || pathname.includes("/onboarding")
 
   const [queryClient] = React.useState(
     () =>
@@ -104,14 +103,13 @@ export function Providers({ children }: ProvidersProps) {
         <SidebarProvider>
           {/* ✅ Add a proper flex layout */}
           {/* <div className="flex h-screen w-full overflow-hidden"> */}
-            <AppSidebar />
-            {/* <main className="flex-1 overflow-y-auto bg-background"> */}
-              {children}
-            {/* </main> */}
+          <AppSidebar />
+          {/* <main className="flex-1 overflow-y-auto bg-background"> */}
+          {children}
+          {/* </main> */}
           {/* </div> */}
         </SidebarProvider>
       </NextThemesProvider>
     </QueryClientProvider>
   )
 }
-
