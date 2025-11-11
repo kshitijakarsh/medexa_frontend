@@ -224,7 +224,7 @@ export default function MastersPage() {
 
         {/* Floating Search Bar */}
         {/* Search Area (floating absolute inside container) */}
-        <div className="relative h-0 mb-o">
+        <div className="relative">
           {/* Floating Search Box */}
           <div className="absolute top-0 right-6 z-20">
             <div className="relative w-64">
