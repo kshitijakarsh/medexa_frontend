@@ -1,6 +1,6 @@
 // Simulated API call
 export async function fetchMasters() {
-  await new Promise((res) => setTimeout(res, 800)); // simulate delay
+  // await new Promise((res) => setTimeout(res, 800)); // simulate delay
   return [
     {
       title: "Departments",
