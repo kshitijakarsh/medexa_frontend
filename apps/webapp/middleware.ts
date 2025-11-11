@@ -25,6 +25,11 @@ export function middleware(request: NextRequest) {
   const host = request.headers.get("host")
   const tenant = getTenantFromHost(host)
 
+  // Allow error pages to be accessed without tenant subdomain
+  if (pathname.startsWith("/error")) {
+    return NextResponse.next()
+  }
+
   // No tenant means apex domain (will redirect to admin or show error)
   if (!tenant) {
     const adminUrl = `${process.env.NEXT_PUBLIC_ADMIN_URL}${pathname}`
@@ -63,6 +68,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - error/* routes are handled separately
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],

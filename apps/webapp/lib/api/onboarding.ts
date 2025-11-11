@@ -1,5 +1,6 @@
+import axios from "axios"
 import { getAuthToken } from "./utils"
-import { createTenantApiClient } from "./tenant"
+import { createTenantApiClient, type Tenant } from "./tenant"
 import { createModulesApiClient } from "./modules"
 import { createPaymentConfigApiClient } from "./payment"
 import { createLicenseApiClient } from "./license"
@@ -21,6 +22,7 @@ export interface OnboardingStatusResponse {
 export interface ApiResponse {
   success: boolean
   message?: string
+  invalidModuleIds?: number[]
 }
 
 /**
@@ -36,6 +38,7 @@ export async function getTenantId(tenantSlug: string): Promise<string> {
     if (/^\d+$/.test(tenantSlug)) {
       try {
         const response = await tenantClient.getTenantById(tenantSlug)
+        console.log("response", response)
         return String(response.data.data.id)
       } catch {
         // If not found by ID, continue to try by key
@@ -43,9 +46,8 @@ export async function getTenantId(tenantSlug: string): Promise<string> {
     }
 
     // Search for tenant by key
-    const response = await tenantClient.getTenants({ search: tenantSlug })
+    const response = await tenantClient.getTenants()
     const tenants = response.data.data
-
     // Find tenant matching the slug (could be tenant_key or external_id)
     const tenant = tenants.find(
       (t) => t.tenant_key === tenantSlug || t.external_id === tenantSlug
@@ -59,6 +61,23 @@ export async function getTenantId(tenantSlug: string): Promise<string> {
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to get tenant ID"
+    throw new Error(errorMessage)
+  }
+}
+
+/**
+ * Get tenant data with all related arrays (modules, payment configs, licenses, documents)
+ * This function fetches the tenant and expects the backend to return all related data
+ */
+export async function getTenantData(tenantId: string): Promise<Tenant> {
+  try {
+    const token = await getAuthToken()
+    const tenantClient = createTenantApiClient({ authToken: token })
+    const response = await tenantClient.getTenantById(tenantId)
+    return response.data.data
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get tenant data"
     throw new Error(errorMessage)
   }
 }
@@ -279,6 +298,21 @@ export async function submitModules(
       message: "Modules submitted successfully",
     }
   } catch (error) {
+    // Handle axios errors with detailed backend response
+    if (axios.isAxiosError(error) && error.response?.data) {
+      const errorData = error.response.data as {
+        message?: string
+        invalidModuleIds?: number[]
+        success?: boolean
+      }
+
+      return {
+        success: false,
+        message: errorData.message || "Failed to submit modules",
+        invalidModuleIds: errorData.invalidModuleIds,
+      }
+    }
+
     const errorMessage =
       error instanceof Error ? error.message : "Failed to submit modules"
     return {
