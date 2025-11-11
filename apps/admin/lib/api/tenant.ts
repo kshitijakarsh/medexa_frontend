@@ -87,8 +87,8 @@ interface CreateTenantParams {
   currency_code: string
   vat_registered: boolean
   vat_number: string
-  user_full_name: string
-  user_password: string
+  // user_full_name: string
+  // user_password: string
 }
 
 class TenantApiClient {

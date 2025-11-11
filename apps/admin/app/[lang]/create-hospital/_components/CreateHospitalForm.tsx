@@ -29,11 +29,12 @@ const defaultValues: Step1Values = {
   primary_admin_name: "",
   primary_admin_email: "",
   primary_admin_id_no: "",
+  primary_admin_password: "",
   currency_code: "",
   vat_registered: false,
   vat_number: "",
-  user_full_name: "",
-  user_password: "",
+  // user_full_name: "",
+  // user_password: "",
 }
 
 export function CreateHospitalForm() {
