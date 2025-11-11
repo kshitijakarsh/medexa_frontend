@@ -32,6 +32,12 @@ export async function fetchMasters() {
       active: 120,
       category: "Staff & Roles",
     },
+     {
+      title: "Insurance",
+      subtitle: "Health Insurance, Life Insurance, etc.",
+      active: 90,
+      category: "Services & Procedure",
+    },
     {
       title: "Medical Procedure / Treatment Master",
       subtitle: "Cardiology, Neuro, Ortho, etc.",
@@ -88,3 +94,71 @@ export async function fetchMasters() {
     },
   ];
 }
+
+
+
+export const masterConfig: Record<
+  string,
+  { route: string; addOptions: string[] }
+> = {
+  "Departments": {
+    route: "/department",
+    addOptions: ["Department"],
+  },
+  "Ward/ Beds": {
+    route: "/units-wards-beds",
+    addOptions: ["Bed", "Bed Type", "Ward", "Floor"],
+  },
+  "Operation Theatres / Procedure Rooms": {
+    route: "/operation-theatres",
+    addOptions: ["Theatre", "Procedure Room"],
+  },
+  "Human Resource": {
+    route: "/employee-configuration",
+    addOptions: ["Doctor", "Nurse", "Designation", "Role"],
+  },
+  "Shifts & Attendance Configuration": {
+    route: "/masters/shifts",
+    addOptions: ["Shift", "Attendance Type"],
+  },
+  "Insurance": {
+       route: "/insurance",
+    addOptions: ["Insurance"],
+  },
+  "Medical Procedure / Treatment Master": {
+    route: "/masters/procedures",
+    addOptions: ["Treatment Type", "Specialization"],
+  },
+  "Lab Test Master": {
+    route: "/masters/lab-test",
+    addOptions: ["Test Category", "Test Type"],
+  },
+  "Radiology / Imaging Test Master": {
+    route: "/masters/radiology",
+    addOptions: ["Imaging Test", "Modality"],
+  },
+  "Package / Scheme / Policy Setup": {
+    route: "/masters/packages",
+    addOptions: ["Package", "Scheme", "Policy"],
+  },
+  "Tariff / Pricing / Service Charges": {
+    route: "/masters/tariff",
+    addOptions: ["Service", "Charge"],
+  },
+  "Inventory / Consumables Master": {
+    route: "/masters/inventory",
+    addOptions: ["Consumable", "Category"],
+  },
+  "Equipment / Asset Master": {
+    route: "/masters/equipment",
+    addOptions: ["Equipment", "Asset Type"],
+  },
+  "Medicine / Drug Master": {
+    route: "/masters/medicine",
+    addOptions: ["Medicine", "Drug Type"],
+  },
+  "Supplier / Vendor Master": {
+    route: "/masters/suppliers",
+    addOptions: ["Supplier", "Vendor"],
+  },
+};

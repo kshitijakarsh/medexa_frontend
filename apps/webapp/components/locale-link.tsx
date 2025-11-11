@@ -23,7 +23,7 @@ export function LocaleLink({
     : `/${href}`
 
   return (
-    <Link href={localizedHref} className={className} {...props}>
+    <Link href={href} className={className} {...props}>
       {children}
     </Link>
   )

@@ -30,13 +30,20 @@ import { useSidebar } from "@workspace/ui/components/sidebar";
 import { LocaleLink } from "./locale-link";
 
 
-export function AppSidebar({  }) {
+export function AppSidebar({ }) {
   const pathname = usePathname()
 
   const items = [
     {
       title: "Organization Setup",
-      url: ["/dashboard"],
+      url: [
+        "/organization-setup",
+        "/department",
+        "/units-wards-beds",
+        "/operation-theatres",
+        "/employee-configuration"
+
+      ],
       icon: Settings,
     },
     // {
@@ -76,7 +83,8 @@ export function AppSidebar({  }) {
   //     : pathWithoutLocale.startsWith(url)
   // }
   const isActive = (urls: string[] | string) => {
-    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}/, "")
+    // const pathWithoutLocale = pathname.replace(/^\//, "")
+    const pathWithoutLocale = pathname;
 
     if (Array.isArray(urls)) {
       return urls.some((url) =>
@@ -116,11 +124,10 @@ export function AppSidebar({  }) {
             alt="MedExe"
             width={130}
             height={50}
-            className={`transition-all duration-300 ease-in-out ${
-              sidebarState === "expanded"
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-75 absolute"
-            }`}
+            className={`transition-all duration-300 ease-in-out ${sidebarState === "expanded"
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-75 absolute"
+              }`}
             priority
           />
           <Image
@@ -128,11 +135,10 @@ export function AppSidebar({  }) {
             alt="MedExe"
             width={30}
             height={25}
-            className={`transition-all duration-300 ease-in-out ${
-              sidebarState === "collapsed"
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-75 absolute"
-            }`}
+            className={`transition-all duration-300 ease-in-out ${sidebarState === "collapsed"
+              ? "opacity-100 scale-100"
+              : "opacity-0 scale-75 absolute"
+              }`}
             priority
           />
         </div>
@@ -162,9 +168,10 @@ export function AppSidebar({  }) {
             <SidebarGroupLabel>
               {index === 0
                 ? "application"
-                : index === 1
-                  ? "Management"
-                  : "Monitor"}
+                // : index === 1
+                //   ? "Management"
+                //   : "Monitor"}
+                : ""}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -180,9 +187,8 @@ export function AppSidebar({  }) {
                     >
                       <LocaleLink href={item.url[0] /* main URL for link */}>
                         <item.icon
-                          className={`transition-transform duration-300 ${
-                            sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
-                          }`}
+                          className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
+                            }`}
                         />
                         <span className="text-base">{item.title}</span>
                       </LocaleLink>
@@ -221,13 +227,13 @@ export function AppSidebar({  }) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu> */}
-            <SidebarMenuButton
+            {/* <SidebarMenuButton
               onClick={handleLogout}
               className="cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
               Sign out
-            </SidebarMenuButton>
+            </SidebarMenuButton> */}
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

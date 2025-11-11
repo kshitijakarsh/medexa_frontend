@@ -6,6 +6,9 @@ import {
   SheetTrigger,
   SheetContent,
   SheetClose,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from "@workspace/ui/components/sheet";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -64,7 +67,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
       </Button>
 
       {/* Menu Button + Sheet */}
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={setOpen} >
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -79,6 +82,9 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
           side="right"
           className="sm:max-w-sm w-full bg-gradient-to-b from-[#e7f6ff] to-[#f7feff] border-none shadow-2xl overflow-y-auto rounded-l-3xl"
         >
+          <SheetHeader className="hidden">
+          <SheetTitle></SheetTitle>
+        </SheetHeader>
           {/* Close button */}
           {/* <SheetClose asChild>
             <button className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
