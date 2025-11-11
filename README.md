@@ -1,4 +1,4 @@
-# Turborepo Template
+# Turborepo Template.
 
 This is a monorepo template built with **Turborepo** that includes:
 
