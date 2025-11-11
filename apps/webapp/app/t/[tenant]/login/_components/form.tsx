@@ -56,7 +56,7 @@ export function LoginForm() {
 
           toast.success("Login successful! Redirecting...")
           // Redirect to tenant dashboard
-          router.push(`/t/${tenant}/dashboard`)
+          router.push(`/dashboard`)
         }
         if (res.message === "NEW_PASSWORD_REQUIRED") {
           setShowNewPassword(true)
@@ -70,7 +70,7 @@ export function LoginForm() {
           toast.success(res.message, {
             description: "Redirecting to your dashboard...",
           })
-          router.push(`/t/${tenant}/dashboard`)
+          router.push(`/dashboard`)
           setShowNewPassword(false)
         }
       } catch (err: any) {
