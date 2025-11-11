@@ -109,6 +109,12 @@ importers:
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      amazon-cognito-identity-js:
+        specifier: ^6.3.15
+        version: 6.3.15
+      axios:
+        specifier: ^1.12.2
+        version: 1.12.2
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.1.0)

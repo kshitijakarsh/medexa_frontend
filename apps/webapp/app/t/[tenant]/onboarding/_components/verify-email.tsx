@@ -36,7 +36,7 @@ const VerifyEmail = ({ onNext }: VerifyEmailProps) => {
       } else {
         setError(response.message || "Invalid OTP. Please try again.")
       }
-    } catch (error) {
+    } catch {
       setError("An error occurred. Please try again.")
     } finally {
       setIsVerifying(false)
