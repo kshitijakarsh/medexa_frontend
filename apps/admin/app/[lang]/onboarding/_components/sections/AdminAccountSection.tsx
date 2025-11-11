@@ -29,6 +29,13 @@ export const AdminAccountSection = ({ form }: AdminAccountSection) => {
         />
         <FormInput
           control={form.control}
+          name="primary_admin_password"
+          label="Primary Admin Password"
+          placeholder="Enter password"
+          type="password"
+        />
+        <FormInput
+          control={form.control}
           name="primary_admin_id_no"
           label="ID Number *"
           placeholder="Admin ID number"
