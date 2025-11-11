@@ -165,14 +165,14 @@ export function AppSidebar({ }) {
       <SidebarContent className="gap-0">
         {groups.map((group, index) => (
           <SidebarGroup key={index} className="mb-0">
-            <SidebarGroupLabel>
+            {/* <SidebarGroupLabel>
               {index === 0
                 ? "application"
                 // : index === 1
                 //   ? "Management"
                 //   : "Monitor"}
                 : ""}
-            </SidebarGroupLabel>
+            </SidebarGroupLabel> */}
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.map((item) => (
