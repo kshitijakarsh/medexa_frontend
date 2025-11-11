@@ -24,6 +24,7 @@ import {
   Building2,
 } from "lucide-react";
 import Image from "next/image";
+import { logoutCognitoUser } from "@/lib/api/auth";
 
 interface UserProfile {
   name: string;
@@ -47,6 +48,11 @@ interface TopActionButtonsProps {
 
 export function TopActionButtons({ user }: TopActionButtonsProps) {
   const [open, setOpen] = React.useState(false);
+  const handleLogout = () => {
+    logoutCognitoUser()
+    window.location.href = "/login" // full page reload
+  }
+
 
   return (
     <div className="flex items-center gap-3">
@@ -83,8 +89,8 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
           className="sm:max-w-sm w-full bg-gradient-to-b from-[#e7f6ff] to-[#f7feff] border-none shadow-2xl overflow-y-auto rounded-l-3xl"
         >
           <SheetHeader className="hidden">
-          <SheetTitle></SheetTitle>
-        </SheetHeader>
+            <SheetTitle></SheetTitle>
+          </SheetHeader>
           {/* Close button */}
           {/* <SheetClose asChild>
             <button className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
@@ -148,7 +154,8 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
 
             <Button
               variant="ghost"
-              className="mt-4 w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg"
+              className="mt-4 w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg cursor-pointer"
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
               Logout
