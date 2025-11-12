@@ -232,14 +232,12 @@ const OnboardingPage = () => {
               if (hasWelcomeBeenShown(tenantId)) {
                 return 11
               } else {
-                markWelcomeAsShown(tenantId)
                 return 1
               }
             } else if (response.serverStatus === "completed") {
               if (hasWelcomeBeenShown(tenantId)) {
                 return 12
               } else {
-                markWelcomeAsShown(tenantId)
                 return 1
               }
             } else {
@@ -264,7 +262,7 @@ const OnboardingPage = () => {
       console.log("onboardingStatus", onboardingStatus)
       // If status is pending and we're on Welcome (step 1), skip to VerificationPending
       if (prev === 1 && onboardingStatus === "pending") {
-        return (prev + 1) as OnboardingStep
+        return 6 as OnboardingStep
       }
 
       if (prev === 1 && onboardingStatus === "completed") {
