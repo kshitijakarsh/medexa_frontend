@@ -1,4 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server"
+import {
+  isAuthenticated,
+  getAuthTokenFromRequest,
+  getTenantIdFromSlug,
+  getTenantStatus,
+} from "./lib/api/middleware-auth"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN
 
@@ -20,10 +26,15 @@ function getTenantFromHost(host?: string | null): string | null {
   return null
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const host = request.headers.get("host")
   const tenant = getTenantFromHost(host)
+
+  // Allow error pages to be accessed without tenant subdomain
+  if (pathname.startsWith("/error")) {
+    return NextResponse.next()
+  }
 
   // No tenant means apex domain (will redirect to admin or show error)
   if (!tenant) {
@@ -32,13 +43,64 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(adminUrl))
   }
 
-  // ToDo: Check if tenant is valid
-  // e.g:
-  // const exists = await checkTenantExists(tenant)
-  // if (!exists) {
-  //   // Rewrite to 404 page or tenant-not-found page
-  //   return NextResponse.rewrite(new URL("/tenant-not-found", request.url))
-  // }
+  // Check if current path is login or onboarding
+  // pathname is the original path (e.g., "/login", "/onboarding", "/dashboard")
+  const isLoginPage = pathname === "/login" || pathname.startsWith("/login/")
+  const isOnboardingPage = pathname === "/onboarding" || pathname.startsWith("/onboarding/")
+
+  // Check authentication
+  const authenticated = isAuthenticated(request)
+
+  // If not authenticated and not on login page, redirect to login
+  if (!authenticated && !isLoginPage) {
+    const loginUrl = request.nextUrl.clone()
+    loginUrl.pathname = "/login"
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // If authenticated, check tenant status
+  if (authenticated && !isLoginPage && !isOnboardingPage) {
+    try {
+      const authToken = getAuthTokenFromRequest(request)
+      if (!authToken) {
+        // Token not found, redirect to login
+        const loginUrl = request.nextUrl.clone()
+        loginUrl.pathname = "/login"
+        return NextResponse.redirect(loginUrl)
+      }
+
+      // Get tenant ID from tenant slug
+      const tenantId = await getTenantIdFromSlug(tenant, authToken)
+      if (!tenantId) {
+        // Tenant not found, allow request to proceed (will show error in page)
+        // Or redirect to error page
+        const url = request.nextUrl.clone()
+        url.pathname =
+          pathname === "/" || pathname === ""
+            ? `/t/${tenant}`
+            : `/t/${tenant}${pathname}`
+        return NextResponse.rewrite(new URL(url.toString()))
+      }
+
+      // Get tenant status
+      const tenantStatus = await getTenantStatus(tenantId, authToken)
+
+      // If tenant status is "not-done" or "pending", redirect to onboarding
+      if (tenantStatus === "not-done" || tenantStatus === "pending") {
+        const onboardingUrl = request.nextUrl.clone()
+        onboardingUrl.pathname = "/onboarding"
+        return NextResponse.redirect(onboardingUrl)
+      }
+
+      // Tenant status is active/completed, allow access
+    } catch (error) {
+      // On error (network, 401, etc.), redirect to login
+      console.error("Middleware error:", error)
+      const loginUrl = request.nextUrl.clone()
+      loginUrl.pathname = "/login"
+      return NextResponse.redirect(loginUrl)
+    }
+  }
 
   // Rewrite to internal tenant namespace /t/[tenant]/...
   const url = request.nextUrl.clone()
@@ -50,8 +112,7 @@ export function middleware(request: NextRequest) {
   const res = NextResponse.rewrite(new URL(url.toString()))
 
   // Set tenant header
-  // e.g:
-  // res.headers.set("x-tenant", tenant)
+  res.headers.set("x-tenant", tenant)
 
   return res
 }
@@ -63,6 +124,7 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - error/* routes are handled separately
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],

@@ -1,14 +1,16 @@
 "use client"
 
-import { Mail, MapPin, Phone, UserCircle } from "lucide-react"
+import { Mail, UserCircle } from "lucide-react"
 import { HandIcon, HospitalBuildingIcon } from "../../assets/icons"
 import Button from "@/components/ui/button"
+import type { Tenant } from "@/lib/api/tenant"
 
 interface WelcomeProps {
   onNext?: () => void
+  tenantData?: Tenant
 }
 
-const Welcome = ({ onNext }: WelcomeProps) => {
+const Welcome = ({ onNext, tenantData }: WelcomeProps) => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="space-y-2.5">
@@ -28,33 +30,12 @@ const Welcome = ({ onNext }: WelcomeProps) => {
             <HospitalBuildingIcon />
             <div>
               <h3 className="text-sm">Hospital Name</h3>
-              <h1 className="text-lg font-semibold">Hamad Medical Center</h1>
+              <h1 className="text-lg font-semibold">
+                {tenantData?.name_en || ""}
+              </h1>
             </div>
           </div>
           <div className="rounded-sm bg-accent w-20 h-20"></div>
-        </div>
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex items-start gap-2">
-            <Phone strokeWidth={1.5} size={20} className="text-green-500" />
-            <div>
-              <h3 className="text-sm">Contact No.</h3>
-              <h1 className="text-base font-medium">+971 50 123 4567</h1>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Mail strokeWidth={1.5} size={20} className="text-green-500" />
-            <div>
-              <h3 className="text-sm">Email</h3>
-              <h1 className="text-base font-medium">info@hamad.qa</h1>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <MapPin strokeWidth={1.5} size={20} className="text-green-500" />
-            <div>
-              <h3 className="text-sm">Address</h3>
-              <h1 className="text-base font-medium">Doha, Qatar</h1>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -72,21 +53,18 @@ const Welcome = ({ onNext }: WelcomeProps) => {
             />
             <div>
               <h3 className="text-sm">Admin Name</h3>
-              <h1 className="text-base font-medium">John Doe</h1>
+              <h1 className="text-base font-medium">
+                {tenantData?.primary_admin_name || ""}
+              </h1>
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Mail strokeWidth={1.5} size={20} className="text-green-500" />
             <div>
               <h3 className="text-sm">Email</h3>
-              <h1 className="text-base font-medium">info@hamad.qa</h1>
-            </div>
-          </div>
-          <div className="flex items-start gap-2">
-            <Phone strokeWidth={1.5} size={20} className="text-green-500" />
-            <div>
-              <h3 className="text-sm">Contact No.</h3>
-              <h1 className="text-base font-medium">+971 50 123 4567</h1>
+              <h1 className="text-base font-medium">
+                {tenantData?.primary_admin_email || ""}
+              </h1>
             </div>
           </div>
         </div>
