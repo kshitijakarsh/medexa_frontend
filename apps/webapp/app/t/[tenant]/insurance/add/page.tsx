@@ -587,10 +587,17 @@ export default function AddCompanyPage() {
                   render={({ field }) => (
                     <FormItem className="flex items-center">
                       <FormControl>
-                        <StatusSwitch
+                        <div
+                          className={`flex items-center gap-3 rounded-md px-3 py-2 ${field.value ? "bg-green-50" : "bg-gray-50"}`}
+                        >
+                          <span className="text-sm text-red-500 font-medium">Inactive</span>
+                          <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
+                          <span className="text-sm text-green-600 font-medium">Active</span>
+                        </div>
+                        {/* <StatusSwitch
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                        />
+                        /> */}
                       </FormControl>
                     </FormItem>
                   )}
