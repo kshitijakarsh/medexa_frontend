@@ -62,6 +62,11 @@ interface DocumentResponse {
   success: boolean
 }
 
+interface DocumentsListResponse {
+  data: Document[]
+  success: boolean
+}
+
 class RegulatoryApiClient {
   private baseUrl: string
   private authToken: string
@@ -111,6 +116,27 @@ class RegulatoryApiClient {
     }
   }
 
+  async getDocuments(
+    tenantId: string
+  ): Promise<AxiosResponse<DocumentsListResponse>> {
+    try {
+      return await axios.get<DocumentsListResponse>(
+        `${this.baseUrl}/api/v1/tenant/${tenantId}/document`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get documents error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   async uploadDocument(file: File): Promise<string> {
     try {
       const formData = new FormData()
@@ -128,7 +154,9 @@ class RegulatoryApiClient {
       } catch {
         // If upload endpoint doesn't exist, use file name as placeholder
         // The backend might handle the actual file upload separately
-        console.warn("File upload endpoint not available, using file name as placeholder")
+        console.warn(
+          "File upload endpoint not available, using file name as placeholder"
+        )
         // Return a placeholder URL or file name
         // In production, this should be handled by a proper file upload service
         return file.name
@@ -226,5 +254,5 @@ export type {
   CreateDocumentParams,
   UpdateDocumentParams,
   DocumentResponse,
+  DocumentsListResponse,
 }
-

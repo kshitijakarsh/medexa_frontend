@@ -1,4 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import type { PaymentConfig } from "./payment"
+import type { License } from "./license"
+import type { Document } from "./regulatory"
+import type { Module } from "./modules"
 
 interface ApiConfig {
   baseUrl?: string
@@ -27,6 +31,10 @@ interface Tenant {
   created_by: number
   created_at: string
   updated_at: string
+  tenant_modules?: Module[]
+  tenant_payment_configs?: PaymentConfig[]
+  tenant_license_history?: License[]
+  tenant_regulatory_documents?: Document[]
 }
 
 interface TenantResponse {
@@ -107,7 +115,9 @@ class TenantApiClient {
 
   async getTenants(
     params: { search?: string; page?: number; limit?: number } = {}
-  ): Promise<AxiosResponse<{ data: Tenant[]; success: boolean; pagination?: any }>> {
+  ): Promise<
+    AxiosResponse<{ data: Tenant[]; success: boolean; pagination?: any }>
+  > {
     try {
       const { search, page, limit } = params
       const queryParams = new URLSearchParams()
@@ -115,7 +125,11 @@ class TenantApiClient {
       if (page) queryParams.append("page", String(page))
       if (limit) queryParams.append("limit", String(limit))
 
-      return await axios.get<{ data: Tenant[]; success: boolean; pagination?: any }>(
+      return await axios.get<{
+        data: Tenant[]
+        success: boolean
+        pagination?: any
+      }>(
         `${this.baseUrl}/api/v1/tenants${
           queryParams.toString() ? `?${queryParams.toString()}` : ""
         }`,
@@ -191,4 +205,3 @@ export type {
   CountriesListResponse,
   UpdateTenantParams,
 }
-

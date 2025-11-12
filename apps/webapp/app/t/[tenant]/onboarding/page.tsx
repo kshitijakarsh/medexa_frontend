@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
 import Welcome from "./_components/welcome"
 import Security from "./_components/security"
 import VerifyEmail from "./_components/verify-email"
@@ -20,7 +21,9 @@ import {
   getOnboardingStatus,
   completeVerification,
   getTenantId,
+  getTenantData,
 } from "@/lib/api/onboarding"
+import { refreshCognitoToken } from "@/lib/api/auth"
 import { useRouter, useParams } from "next/navigation"
 import type {
   HospitalInfoValues,
@@ -32,70 +35,243 @@ import type {
 
 type OnboardingStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
+// Helper function to get base domain URL for error redirect
+const getBaseDomainUrl = (path: string): string => {
+  if (typeof window === "undefined") return path
+  const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || "lvh.me"
+  const protocol = window.location.protocol
+  const port = window.location.port ? `:${window.location.port}` : ""
+  return `${protocol}//${baseDomain}${port}${path}`
+}
+
+// Helper function to check if Welcome was shown for a tenant
+const hasWelcomeBeenShown = (tenantId: string): boolean => {
+  if (typeof window === "undefined") return false
+  const key = `onboarding_welcome_shown_${tenantId}`
+  return localStorage.getItem(key) === "false"
+}
+
+// Helper function to mark Welcome as shown for a tenant
+const markWelcomeAsShown = (tenantId: string): void => {
+  if (typeof window === "undefined") return
+  const key = `onboarding_welcome_shown_${tenantId}`
+  localStorage.setItem(key, "true")
+}
+
+// Helper function to get current step from localStorage
+const getStoredStep = (tenantId: string): OnboardingStep | null => {
+  if (typeof window === "undefined") return null
+  const key = `onboarding_current_step_${tenantId}`
+  const stored = localStorage.getItem(key)
+  if (stored) {
+    const step = parseInt(stored, 10) as OnboardingStep
+    if (step >= 1 && step <= 12) {
+      return step
+    }
+  }
+  return null
+}
+
+// Helper function to store current step in localStorage
+const storeStep = (tenantId: string, step: OnboardingStep): void => {
+  if (typeof window === "undefined") return
+  const key = `onboarding_current_step_${tenantId}`
+  localStorage.setItem(key, String(step))
+}
+
+// Helper function to check if authentication token exists
+const hasAuthToken = async (): Promise<boolean> => {
+  try {
+    await refreshCognitoToken()
+    return true
+  } catch {
+    return false
+  }
+}
+
 const OnboardingPage = () => {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>(1)
+  // Initialize step from localStorage if available, otherwise default to 1
+  const [currentStep, setCurrentStepState] = useState<OnboardingStep>(1)
   const [isLoading, setIsLoading] = useState(true)
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [onboardingStatus, setOnboardingStatus] = useState<
+    "not-done" | "pending" | "completed" | null
+  >(null)
   const router = useRouter()
   const params = useParams()
   const tenant = params?.tenant as string
+  const stepInitializedRef = useRef(false)
+
+  // Wrapper for setCurrentStep that also stores in localStorage
+  const setCurrentStep = useCallback(
+    (step: OnboardingStep | ((prev: OnboardingStep) => OnboardingStep)) => {
+      setCurrentStepState((prev) => {
+        const newStep = typeof step === "function" ? step(prev) : step
+        if (tenantId) {
+          storeStep(tenantId, newStep)
+        }
+        return newStep
+      })
+    },
+    [tenantId]
+  )
 
   // Store verification form data
   const [verificationData, setVerificationData] = useState<{
     hospitalInfo?: HospitalInfoValues
     modules?: ModulesValues
-    payment?: PaymentValues
-    licenseHistory?: LicenseHistoryValues
-    regulatoryDoc?: RegulatoryDocValues
+    payment?: PaymentValues[]
+    licenseHistory?: LicenseHistoryValues[]
+    regulatoryDoc?: RegulatoryDocValues[]
   }>({})
 
+  // Fetch tenant ID
   useEffect(() => {
-    // Get tenant ID and fetch onboarding status
     const initialize = async () => {
       try {
+        // Check if authentication token exists
+        const tokenExists = await hasAuthToken()
+
         if (!tenant) {
-          setError("Tenant not found")
-          setIsLoading(false)
+          // No tenant parameter - redirect based on token existence
+          window.location.href = getBaseDomainUrl("/error/no-tenant")
           return
         }
 
         // Get tenant ID from tenant slug
         try {
           const id = await getTenantId(tenant)
-          setTenantId(id)
-
-          // Fetch onboarding status
-          const response = await getOnboardingStatus(id)
-
-          if (response.serverStatus === "not-done") {
-            setCurrentStep(1) // Start with Welcome
-          } else if (response.serverStatus === "pending") {
-            setCurrentStep(11) // Jump to VerificationPending
-          } else if (response.serverStatus === "completed") {
-            setCurrentStep(12) // Jump to VerificationApproved
+          if (!id) {
+            // No tenant ID found - redirect based on token existence
+            if (!tokenExists) {
+              // No token, redirect to error page on base domain
+              router.push("/login")
+            } else {
+              // Token exists, redirect to login page
+              window.location.href = getBaseDomainUrl("/error/no-tenant")
+            }
+            return
           }
+          setTenantId(id)
         } catch (error) {
           console.error("Failed to get tenant ID:", error)
-          setError("Failed to load tenant information. Please try again.")
-          // Still allow user to proceed, they might be creating a new tenant
-          setCurrentStep(1)
+          // getTenantId failed - redirect based on token existence
+          if (!tokenExists) {
+            // No token, redirect to error page on base domain
+            router.push("/login")
+          } else {
+            // Token exists, redirect to login page
+            window.location.href = getBaseDomainUrl("/error/no-tenant")
+          }
         }
       } catch (error) {
         console.error("Failed to initialize:", error)
         setError("Failed to initialize. Please try again.")
-        setCurrentStep(1)
       } finally {
         setIsLoading(false)
       }
     }
 
     initialize()
-  }, [tenant])
+  }, [tenant, router])
+
+  // Fetch tenant data with all related arrays using React Query
+  const {
+    data: tenantData,
+    isLoading: isLoadingTenantData,
+    error: tenantDataError,
+  } = useQuery({
+    queryKey: ["tenant", tenantId],
+    queryFn: async () => {
+      if (!tenantId) throw new Error("Tenant ID is required")
+      return await getTenantData(tenantId)
+    },
+    enabled: !!tenantId,
+  })
+
+  // Restore step from localStorage when tenantId is available
+  useEffect(() => {
+    if (tenantId) {
+      const storedStep = getStoredStep(tenantId)
+      if (storedStep) {
+        setCurrentStepState(storedStep)
+      }
+    }
+  }, [tenantId])
+
+  // Fetch onboarding status when tenant ID is available (only once)
+  useEffect(() => {
+    if (tenantId && !stepInitializedRef.current) {
+      // Mark as initialized immediately to prevent multiple initializations
+      stepInitializedRef.current = true
+
+      const initializeStatus = async () => {
+        try {
+          const response = await getOnboardingStatus(tenantId)
+          setOnboardingStatus(response.serverStatus)
+
+          // Check if there's a stored step first
+          const storedStep = getStoredStep(tenantId)
+          if (storedStep) {
+            // If there's a stored step, use it (user was already on a step)
+            setCurrentStep(storedStep)
+            return
+          }
+
+          // Only set the step on initial load if there's no stored step
+          // This prevents resetting the step when user has navigated to a different step
+          setCurrentStep((prevStep) => {
+            // If user is already on a step that requires tenant data (6-10), don't reset
+            if (prevStep >= 6 && prevStep <= 10) {
+              return prevStep
+            }
+
+            // Otherwise, set step based on onboarding status
+            if (response.serverStatus === "not-done") {
+              return 1
+            } else if (response.serverStatus === "pending") {
+              if (hasWelcomeBeenShown(tenantId)) {
+                return 11
+              } else {
+                markWelcomeAsShown(tenantId)
+                return 1
+              }
+            } else if (response.serverStatus === "completed") {
+              if (hasWelcomeBeenShown(tenantId)) {
+                return 12
+              } else {
+                markWelcomeAsShown(tenantId)
+                return 1
+              }
+            } else {
+              return 1
+            }
+          })
+        } catch (error) {
+          console.error("Failed to get onboarding status:", error)
+          setError("Failed to load onboarding status. Please try again.")
+          // Reset ref on error so we can retry
+          stepInitializedRef.current = false
+        }
+      }
+
+      initializeStatus()
+    }
+  }, [tenantId])
 
   // Handler to progress to next step
   const handleNext = () => {
     setCurrentStep((prev) => {
+      console.log("onboardingStatus", onboardingStatus)
+      // If status is pending and we're on Welcome (step 1), skip to VerificationPending
+      if (prev === 1 && onboardingStatus === "pending") {
+        return (prev + 1) as OnboardingStep
+      }
+
+      if (prev === 1 && onboardingStatus === "completed") {
+        return 12 as OnboardingStep
+      }
       if (prev < 12) {
         return (prev + 1) as OnboardingStep
       }
@@ -120,7 +296,7 @@ const OnboardingPage = () => {
   }
 
   // Handler for payment step
-  const handlePaymentNext = (data: PaymentValues) => {
+  const handlePaymentNext = (data: PaymentValues[]) => {
     setVerificationData((prev) => ({ ...prev, payment: data }))
     setCurrentStep(9)
   }
@@ -130,7 +306,7 @@ const OnboardingPage = () => {
   }
 
   // Handler for license history step
-  const handleLicenseHistoryNext = (data: LicenseHistoryValues) => {
+  const handleLicenseHistoryNext = (data: LicenseHistoryValues[]) => {
     setVerificationData((prev) => ({ ...prev, licenseHistory: data }))
     setCurrentStep(10)
   }
@@ -140,7 +316,7 @@ const OnboardingPage = () => {
   }
 
   // Handler for regulatory docs step (final verification step)
-  const handleRegulatoryDocsNext = async (data: RegulatoryDocValues) => {
+  const handleRegulatoryDocsNext = async (data: RegulatoryDocValues[]) => {
     setVerificationData((prev) => ({ ...prev, regulatoryDoc: data }))
     try {
       // Complete the verification process
@@ -173,10 +349,30 @@ const OnboardingPage = () => {
     console.log("Logout clicked")
   }
 
-  if (isLoading) {
+  if (isLoading || (tenantId && isLoadingTenantData)) {
     return (
       <main className="min-h-svh w-full flex items-center justify-center">
         <div>Loading...</div>
+      </main>
+    )
+  }
+
+  if (tenantDataError) {
+    return (
+      <main className="min-h-svh w-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">
+            {tenantDataError instanceof Error
+              ? tenantDataError.message
+              : "Failed to load tenant data"}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Retry
+          </button>
+        </div>
       </main>
     )
   }
@@ -215,19 +411,20 @@ const OnboardingPage = () => {
         {currentStep === 3 && <VerifyEmail onNext={handleNext} />}
         {currentStep === 4 && <NewPassword onNext={handleNext} />}
         {currentStep === 5 && <PasswordUpdated onNext={handleNext} />}
-        {currentStep === 6 && canProceed && tenantId && (
+        {/* {currentStep === 6 && canProceed && tenantId && (
           <HospitalInfo
             onNext={handleHospitalInfoNext}
             initialData={verificationData.hospitalInfo}
             tenantId={tenantId}
           />
-        )}
-        {currentStep === 7 && canProceed && tenantId && (
+        )} */}
+        {(currentStep === 7 || currentStep === 6) && canProceed && tenantId && (
           <Modules
             onNext={handleModulesNext}
             onBack={handleModulesBack}
             initialData={verificationData.modules}
             tenantId={tenantId}
+            tenantModules={tenantData?.tenant_modules}
           />
         )}
         {currentStep === 8 && canProceed && tenantId && (
@@ -236,6 +433,7 @@ const OnboardingPage = () => {
             onBack={handlePaymentBack}
             initialData={verificationData.payment}
             tenantId={tenantId}
+            paymentConfigs={tenantData?.tenant_payment_configs}
           />
         )}
         {currentStep === 9 && canProceed && tenantId && (
@@ -244,6 +442,7 @@ const OnboardingPage = () => {
             onBack={handleLicenseHistoryBack}
             initialData={verificationData.licenseHistory}
             tenantId={tenantId}
+            licenses={tenantData?.tenant_license_history}
           />
         )}
         {currentStep === 10 && canProceed && tenantId && (
@@ -252,6 +451,7 @@ const OnboardingPage = () => {
             onBack={handleRegulatoryDocsBack}
             initialData={verificationData.regulatoryDoc}
             tenantId={tenantId}
+            documents={tenantData?.tenant_regulatory_documents}
           />
         )}
         {currentStep === 11 && <VerifiedPending onLogout={handleLogout} />}

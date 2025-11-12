@@ -44,6 +44,11 @@ interface LicenseResponse {
   success: boolean
 }
 
+interface LicensesListResponse {
+  data: License[]
+  success: boolean
+}
+
 class LicenseApiClient {
   private baseUrl: string
   private authToken: string
@@ -60,6 +65,27 @@ class LicenseApiClient {
         Accept: "application/json",
         Authorization: `Bearer ${this.authToken}`,
       },
+    }
+  }
+
+  async getLicenses(
+    tenantId: string
+  ): Promise<AxiosResponse<LicensesListResponse>> {
+    try {
+      return await axios.get<LicensesListResponse>(
+        `${this.baseUrl}/api/v1/tenant/${tenantId}/license`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get licenses error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
     }
   }
 
@@ -141,5 +167,5 @@ export type {
   CreateLicenseParams,
   UpdateLicenseParams,
   LicenseResponse,
+  LicensesListResponse,
 }
-
