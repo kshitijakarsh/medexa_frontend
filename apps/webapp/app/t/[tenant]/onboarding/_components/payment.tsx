@@ -271,7 +271,7 @@ const Payment = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={3} totalSteps={5} />
+        <StepIndicator currentStep={2} totalSteps={4} />
 
         {/* Error Display */}
         {(error ||

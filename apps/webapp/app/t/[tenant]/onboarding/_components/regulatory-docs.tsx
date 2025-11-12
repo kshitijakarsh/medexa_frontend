@@ -28,7 +28,6 @@ import {
   type CreateDocumentParams,
   type UpdateDocumentParams,
 } from "@/lib/api/regulatory"
-import { uploadRegulatoryDocFile } from "@/lib/api/onboarding"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { Edit, Plus, Trash2, FileText } from "lucide-react"
 
@@ -75,7 +74,6 @@ const RegulatoryDocs = ({
   const [error, setError] = useState<string | null>(null)
   const [filePreview, setFilePreview] = useState<string | null>(null)
   const [docFile, setDocFile] = useState<File | null>(null)
-  const [isUploadingFile, setIsUploadingFile] = useState(false)
   const queryClient = useQueryClient()
 
   // Use documents from props
@@ -212,7 +210,7 @@ const RegulatoryDocs = ({
     }
   }
 
-  const handleFileSelect = async (file: File | null) => {
+  const handleFileSelect = (file: File | null) => {
     if (file) {
       // Create preview
       const reader = new FileReader()
@@ -222,20 +220,8 @@ const RegulatoryDocs = ({
       }
       reader.readAsDataURL(file)
       setDocFile(file)
-
-      // Try to upload file
-      setIsUploadingFile(true)
-      setError(null)
-      try {
-        const uploadResult = await uploadRegulatoryDocFile(file)
-        form.setValue("file_url", uploadResult.file_url)
-      } catch (err) {
-        console.warn("File upload not available, using file name:", err)
-        // Use file name as placeholder - backend may handle upload separately
-        form.setValue("file_url", file.name)
-      } finally {
-        setIsUploadingFile(false)
-      }
+      // Set file_url to hardcoded placeholder (same as admin)
+      form.setValue("file_url", "https://google.com/file")
     } else {
       setFilePreview(null)
       setDocFile(null)
@@ -249,9 +235,12 @@ const RegulatoryDocs = ({
       return
     }
 
+    const fileUrl = "https://google.com/file"
+
     // Convert dates to ISO datetime format before submission
     const payload = {
       ...values,
+      file_url: fileUrl,
       issue_date: dateToISODateTime(values.issue_date),
       expiry_date: dateToISODateTime(values.expiry_date),
     }
@@ -319,7 +308,7 @@ const RegulatoryDocs = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={5} totalSteps={5} />
+        <StepIndicator currentStep={4} totalSteps={4} />
 
         {/* Error Display */}
         {(error ||
@@ -578,11 +567,7 @@ const RegulatoryDocs = ({
                 required
                 previewUrl={filePreview}
                 error={form.formState.errors.file_url?.message}
-                disabled={isUploadingFile}
               />
-              {isUploadingFile && (
-                <p className="text-sm text-gray-500">Uploading file...</p>
-              )}
             </div>
 
             {/* Notes */}
@@ -614,16 +599,14 @@ const RegulatoryDocs = ({
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending || isUploadingFile}>
+              <Button type="submit" disabled={isPending}>
                 {isPending
                   ? editingItem
                     ? "Updating..."
                     : "Adding..."
-                  : isUploadingFile
-                    ? "Uploading..."
-                    : editingItem
-                      ? "Update"
-                      : "Add"}
+                  : editingItem
+                    ? "Update"
+                    : "Add"}
               </Button>
             </DialogFooter>
           </form>

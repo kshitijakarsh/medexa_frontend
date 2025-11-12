@@ -1,7 +1,7 @@
 // Zod schemas for hospital verification steps
 import { z } from "@workspace/ui/lib/zod"
 
-// Step 6: Hospital Information
+// Step 6: Hospital Information (removed from onboarding flow)
 export const hospitalInfoSchema = z.object({
   tenant_key: z.string().min(1, "Tenant key is required"),
   external_id: z.string().min(1, "External ID is required"),
@@ -29,14 +29,14 @@ export const hospitalInfoSchema = z.object({
 
 export type HospitalInfoValues = z.infer<typeof hospitalInfoSchema>
 
-// Step 7: Module Assignment
+// Step 6: Module Assignment
 export const modulesSchema = z.object({
   modules: z.array(z.string()).min(1, "At least one module must be selected"),
 })
 
 export type ModulesValues = z.infer<typeof modulesSchema>
 
-// Step 8: Payment Details
+// Step 7: Payment Details
 export const paymentSchema = z.object({
   gateway_id: z.number().int().min(1, "Gateway ID is required"),
   merchant_id: z.string().min(1, "Merchant ID is required"),
@@ -54,7 +54,7 @@ export const paymentSchema = z.object({
 
 export type PaymentValues = z.infer<typeof paymentSchema>
 
-// Step 9: License History
+// Step 8: License History
 export const licenseHistorySchema = z.object({
   plan_key: z.string().min(1, "Plan key is required"),
   seats: z.number().int().min(0, "Seats is required"),
@@ -75,7 +75,7 @@ export type LicenseHistoryValues = {
   status: string
 }
 
-// Step 10: Regulatory Document
+// Step 9: Regulatory Document
 export const regulatoryDocSchema = z.object({
   doc_type: z.string().min(1, "Document type is required"),
   authority_id: z.number().int().min(1, "Authority ID is required"),

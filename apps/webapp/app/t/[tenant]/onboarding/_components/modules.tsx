@@ -244,7 +244,7 @@ const Modules = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={2} totalSteps={5} />
+        <StepIndicator currentStep={1} totalSteps={4} />
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

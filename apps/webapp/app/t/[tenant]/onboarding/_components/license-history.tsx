@@ -239,7 +239,7 @@ const LicenseHistory = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={4} totalSteps={5} />
+        <StepIndicator currentStep={3} totalSteps={4} />
 
         {/* Error Display */}
         {(error ||

@@ -7,7 +7,6 @@ import Security from "./_components/security"
 import VerifyEmail from "./_components/verify-email"
 import NewPassword from "./_components/new-password"
 import PasswordUpdated from "./_components/password-updated"
-import HospitalInfo from "./_components/hospital-info"
 import Modules from "./_components/modules"
 import Payment from "./_components/payment"
 import LicenseHistory from "./_components/license-history"
@@ -26,12 +25,12 @@ import {
 import { refreshCognitoToken } from "@/lib/api/auth"
 import { useRouter, useParams } from "next/navigation"
 import type {
-  HospitalInfoValues,
   ModulesValues,
   PaymentValues,
   LicenseHistoryValues,
   RegulatoryDocValues,
 } from "./_components/schemas"
+import { logoutCognitoUser } from "@/lib/api/auth"
 
 type OnboardingStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
@@ -48,7 +47,7 @@ const getBaseDomainUrl = (path: string): string => {
 const hasWelcomeBeenShown = (tenantId: string): boolean => {
   if (typeof window === "undefined") return false
   const key = `onboarding_welcome_shown_${tenantId}`
-  return localStorage.getItem(key) === "false"
+  return localStorage.getItem(key) === "true"
 }
 
 // Helper function to mark Welcome as shown for a tenant
@@ -119,7 +118,6 @@ const OnboardingPage = () => {
 
   // Store verification form data
   const [verificationData, setVerificationData] = useState<{
-    hospitalInfo?: HospitalInfoValues
     modules?: ModulesValues
     payment?: PaymentValues[]
     licenseHistory?: LicenseHistoryValues[]
@@ -222,8 +220,8 @@ const OnboardingPage = () => {
           // Only set the step on initial load if there's no stored step
           // This prevents resetting the step when user has navigated to a different step
           setCurrentStep((prevStep) => {
-            // If user is already on a step that requires tenant data (6-10), don't reset
-            if (prevStep >= 6 && prevStep <= 10) {
+            // If user is already on a step that requires tenant data (6-9), don't reset
+            if (prevStep >= 6 && prevStep <= 9) {
               return prevStep
             }
 
@@ -279,40 +277,30 @@ const OnboardingPage = () => {
     })
   }
 
-  // Handler for hospital info step
-  const handleHospitalInfoNext = (data: HospitalInfoValues) => {
-    setVerificationData((prev) => ({ ...prev, hospitalInfo: data }))
-    setCurrentStep(7)
-  }
-
   // Handler for modules step
   const handleModulesNext = (data: ModulesValues) => {
     setVerificationData((prev) => ({ ...prev, modules: data }))
-    setCurrentStep(8)
-  }
-
-  const handleModulesBack = () => {
-    setCurrentStep(6)
+    setCurrentStep(7)
   }
 
   // Handler for payment step
   const handlePaymentNext = (data: PaymentValues[]) => {
     setVerificationData((prev) => ({ ...prev, payment: data }))
-    setCurrentStep(9)
+    setCurrentStep(8)
   }
 
   const handlePaymentBack = () => {
-    setCurrentStep(7)
+    setCurrentStep(6)
   }
 
   // Handler for license history step
   const handleLicenseHistoryNext = (data: LicenseHistoryValues[]) => {
     setVerificationData((prev) => ({ ...prev, licenseHistory: data }))
-    setCurrentStep(10)
+    setCurrentStep(9)
   }
 
   const handleLicenseHistoryBack = () => {
-    setCurrentStep(8)
+    setCurrentStep(7)
   }
 
   // Handler for regulatory docs step (final verification step)
@@ -336,17 +324,17 @@ const OnboardingPage = () => {
   }
 
   const handleRegulatoryDocsBack = () => {
-    setCurrentStep(9)
+    setCurrentStep(8)
   }
 
   const handleDashboardNavigation = () => {
     // Navigate to dashboard
-    router.push(`/t/${tenant}/dashboard`)
+    router.push("/dashboard")
   }
 
   const handleLogout = () => {
-    // TODO: Implement logout logic
-    console.log("Logout clicked")
+    logoutCognitoUser()
+    router.push("/login")
   }
 
   if (isLoading || (tenantId && isLoadingTenantData)) {
@@ -394,7 +382,7 @@ const OnboardingPage = () => {
   }
 
   // For steps that require tenantId, check if it's available
-  const requiresTenantId = currentStep >= 6 && currentStep <= 10
+  const requiresTenantId = currentStep >= 6 && currentStep <= 9
   const canProceed = !requiresTenantId || tenantId !== null
 
   return (
@@ -405,29 +393,21 @@ const OnboardingPage = () => {
         </div>
         <Image src={hospitalIcon} alt="alt" className="absolute bottom-0" />
       </div>
-      <div className="flex-2/3 p-8">
+      <div className="flex-2/3 p-8 h-screen overflow-y-auto">
         {currentStep === 1 && <Welcome onNext={handleNext} />}
         {currentStep === 2 && <Security onNext={handleNext} />}
         {currentStep === 3 && <VerifyEmail onNext={handleNext} />}
         {currentStep === 4 && <NewPassword onNext={handleNext} />}
         {currentStep === 5 && <PasswordUpdated onNext={handleNext} />}
-        {/* {currentStep === 6 && canProceed && tenantId && (
-          <HospitalInfo
-            onNext={handleHospitalInfoNext}
-            initialData={verificationData.hospitalInfo}
-            tenantId={tenantId}
-          />
-        )} */}
-        {(currentStep === 7 || currentStep === 6) && canProceed && tenantId && (
+        {currentStep === 6 && canProceed && tenantId && (
           <Modules
             onNext={handleModulesNext}
-            onBack={handleModulesBack}
             initialData={verificationData.modules}
             tenantId={tenantId}
             tenantModules={tenantData?.tenant_modules}
           />
         )}
-        {currentStep === 8 && canProceed && tenantId && (
+        {currentStep === 7 && canProceed && tenantId && (
           <Payment
             onNext={handlePaymentNext}
             onBack={handlePaymentBack}
@@ -436,7 +416,7 @@ const OnboardingPage = () => {
             paymentConfigs={tenantData?.tenant_payment_configs}
           />
         )}
-        {currentStep === 9 && canProceed && tenantId && (
+        {currentStep === 8 && canProceed && tenantId && (
           <LicenseHistory
             onNext={handleLicenseHistoryNext}
             onBack={handleLicenseHistoryBack}
@@ -445,7 +425,7 @@ const OnboardingPage = () => {
             licenses={tenantData?.tenant_license_history}
           />
         )}
-        {currentStep === 10 && canProceed && tenantId && (
+        {currentStep === 9 && canProceed && tenantId && (
           <RegulatoryDocs
             onNext={handleRegulatoryDocsNext}
             onBack={handleRegulatoryDocsBack}
