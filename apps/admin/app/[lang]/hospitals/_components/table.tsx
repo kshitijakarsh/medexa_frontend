@@ -240,6 +240,8 @@ import { useEffect, useState } from "react"
 import { createTenantApiClient, type Tenant } from "@/lib/api/tenant"
 import { DataTable } from "@/components/common/data-table"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
+import { Hospital_Domain } from "@/utils/src/constants/domain"
+import Link from "next/link"
 
 const getStatusBadgeVariant = (status: string) => {
   const statusLower = status.toLowerCase()
@@ -309,6 +311,19 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
     { key: "name_en", label: "Hospital Name" },
     { key: "primary_admin_name", label: "Admin Name" },
     { key: "primary_admin_email", label: "Email" },
+    {
+      key: "domain_url",
+      label: "Domain URL",
+      render: (r: any) => (
+        <Link
+          href={`https://${r.id}.${Hospital_Domain}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {`${r.id}.${Hospital_Domain}`}
+        </Link>
+      ),
+    },
     {
       key: "status",
       label: "Status",
