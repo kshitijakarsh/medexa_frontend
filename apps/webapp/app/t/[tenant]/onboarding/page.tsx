@@ -212,6 +212,10 @@ const OnboardingPage = () => {
           // Check if there's a stored step first
           const storedStep = getStoredStep(tenantId)
           if (storedStep) {
+            if (response.serverStatus === "completed") {
+              setCurrentStep(12)
+              return
+            }
             // If there's a stored step, use it (user was already on a step)
             setCurrentStep(storedStep)
             return
@@ -226,6 +230,7 @@ const OnboardingPage = () => {
             }
 
             // Otherwise, set step based on onboarding status
+
             if (response.serverStatus === "not-done") {
               return 1
             } else if (response.serverStatus === "pending") {
@@ -260,7 +265,7 @@ const OnboardingPage = () => {
   const handleNext = () => {
     setCurrentStep((prev) => {
       console.log("onboardingStatus", onboardingStatus)
-      // If status is pending and we're on Welcome (step 1), skip to VerificationPending
+      // If status is pending and we're on Welcome (step 1), skip to VerificationPending (step 11)
       if (prev === 1 && onboardingStatus === "pending") {
         return 6 as OnboardingStep
       }
@@ -392,7 +397,9 @@ const OnboardingPage = () => {
         <Image src={hospitalIcon} alt="alt" className="absolute bottom-0" />
       </div>
       <div className="flex-2/3 p-8 h-screen overflow-y-auto">
-        {currentStep === 1 && <Welcome onNext={handleNext} />}
+        {currentStep === 1 && (
+          <Welcome onNext={handleNext} tenantData={tenantData} />
+        )}
         {currentStep === 2 && <Security onNext={handleNext} />}
         {currentStep === 3 && <VerifyEmail onNext={handleNext} />}
         {currentStep === 4 && <NewPassword onNext={handleNext} />}

@@ -17,6 +17,7 @@ import { Button } from "@workspace/ui/components/button"
 import { User, Lock, Eye, EyeOff, Fingerprint } from "lucide-react"
 import { Label } from "@workspace/ui/components/label"
 import { loginUserCognito } from "@/lib/api/auth"
+import { setAuthTokenCookie } from "@/lib/api/utils"
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -48,16 +49,6 @@ export function LoginForm() {
           values.password,
           showNewPassword ? values.newPassword : undefined
         )
-        if (res.success && res.tokens) {
-          // Store tokens if needed
-          // localStorage.setItem("access_token", res.tokens.AccessToken);
-          // localStorage.setItem("id_token", res.tokens.IdToken);
-          // localStorage.setItem("refresh_token", res.tokens.RefreshToken);
-
-          toast.success("Login successful! Redirecting...")
-          // Redirect to tenant dashboard
-          router.push(`/dashboard`)
-        }
         if (res.message === "NEW_PASSWORD_REQUIRED") {
           setShowNewPassword(true)
           toast.info("Password update required", {
@@ -66,8 +57,24 @@ export function LoginForm() {
           return
         }
 
-        if (res.success) {
-          toast.success(res.message, {
+        if (res.success && res.tokens) {
+          // Store tokens if needed
+          // localStorage.setItem("access_token", res.tokens.AccessToken);
+          // localStorage.setItem("id_token", res.tokens.IdToken);
+          // localStorage.setItem("refresh_token", res.tokens.RefreshToken);
+
+          // Set cookie for middleware authentication check
+          setAuthTokenCookie(res.tokens.AccessToken)
+
+          toast.success(res.message || "Login successful! Redirecting...", {
+            description: "Redirecting to your dashboard...",
+          })
+          // Redirect to tenant dashboard
+          router.push(`/dashboard`)
+          setShowNewPassword(false)
+        } else if (res.success) {
+          // Success but no tokens (shouldn't happen, but handle gracefully)
+          toast.success(res.message || "Login successful", {
             description: "Redirecting to your dashboard...",
           })
           router.push(`/dashboard`)

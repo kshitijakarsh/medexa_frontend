@@ -4,7 +4,7 @@ import Link, { LinkProps } from "next/link"
 import { useParams } from "next/navigation"
 
 interface LocaleLinkProps extends Omit<LinkProps, "href"> {
-  href: any
+  href: string
   children: React.ReactNode
   className?: string
 }
@@ -15,15 +15,19 @@ export function LocaleLink({
   className,
   ...props
 }: LocaleLinkProps) {
-  const params = useParams<{ lang: string }>()
+  const params = useParams<{ lang?: string }>()
 
-  // Add locale prefix to the href
-  const localizedHref = href.startsWith("/")
-    ? `/${href}`
+  // Add locale prefix to the href if locale exists in params
+  const localizedHref = params?.lang
+    ? href.startsWith("/")
+      ? `/${params.lang}${href}`
+      : `/${params.lang}/${href}`
+    : href.startsWith("/")
+    ? href
     : `/${href}`
 
   return (
-    <Link href={href} className={className} {...props}>
+    <Link href={localizedHref} className={className} {...props}>
       {children}
     </Link>
   )

@@ -5,6 +5,7 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from "amazon-cognito-identity-js"
+import { removeAuthTokenCookie } from "./utils"
 
 const poolData = {
   UserPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID!,
@@ -114,15 +115,17 @@ export function refreshCognitoToken(): Promise<CognitoUserSession> {
   })
 }
 
-// lib/api/auth.ts
-
 export function logoutCognitoUser(): void {
   const user: CognitoUser | null = userPool.getCurrentUser()
   if (!user) {
     console.warn("No user is currently logged in")
+    // Still remove cookie in case it exists
+    removeAuthTokenCookie()
     return
   }
 
   user.signOut()
+  // Remove auth cookie for middleware
+  removeAuthTokenCookie()
   console.log("User logged out successfully")
 }

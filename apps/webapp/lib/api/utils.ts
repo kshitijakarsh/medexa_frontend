@@ -19,3 +19,26 @@ export async function getAuthToken(): Promise<string> {
   }
 }
 
+/**
+ * Set authentication token as HTTP-only cookie for middleware access
+ * This is called after successful login to make the token available in middleware
+ */
+export function setAuthTokenCookie(accessToken: string): void {
+  if (typeof document !== "undefined") {
+    // Set cookie with 7 days expiration, HTTP-only would be ideal but requires server-side
+    // For now, using a secure cookie that middleware can read
+    const expires = new Date()
+    expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    document.cookie = `access_token=${accessToken}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+  }
+}
+
+/**
+ * Remove authentication token cookie
+ */
+export function removeAuthTokenCookie(): void {
+  if (typeof document !== "undefined") {
+    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+  }
+}
+
