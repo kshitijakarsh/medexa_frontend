@@ -9,7 +9,7 @@ import {
   ChevronUp,
   LogOut,
   Settings,
-} from "lucide-react";
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -22,15 +22,14 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
-} from "@workspace/ui/components/sidebar";
-import { usePathname } from "next/navigation";
-import { LOGOS } from "@/lib/logos";
-import Image from "next/image";
-import { useSidebar } from "@workspace/ui/components/sidebar";
-import { LocaleLink } from "./locale-link";
+} from "@workspace/ui/components/sidebar"
+import { usePathname } from "next/navigation"
+import { LOGOS } from "@/lib/logos"
+import Image from "next/image"
+import { useSidebar } from "@workspace/ui/components/sidebar"
+import { LocaleLink } from "./locale-link"
 
-
-export function AppSidebar({ }) {
+export function AppSidebar({}) {
   const pathname = usePathname()
 
   const items = [
@@ -41,8 +40,7 @@ export function AppSidebar({ }) {
         "/department",
         "/units-wards-beds",
         "/operation-theatres",
-        "/employee-configuration"
-
+        "/employee-configuration",
       ],
       icon: Settings,
     },
@@ -84,7 +82,7 @@ export function AppSidebar({ }) {
   // }
   const isActive = (urls: string[] | string) => {
     // const pathWithoutLocale = pathname.replace(/^\//, "")
-    const pathWithoutLocale = pathname;
+    const pathWithoutLocale = pathname
 
     if (Array.isArray(urls)) {
       return urls.some((url) =>
@@ -124,10 +122,11 @@ export function AppSidebar({ }) {
             alt="MedExe"
             width={130}
             height={50}
-            className={`transition-all duration-300 ease-in-out ${sidebarState === "expanded"
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-75 absolute"
-              }`}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "expanded"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
             priority
           />
           <Image
@@ -135,10 +134,11 @@ export function AppSidebar({ }) {
             alt="MedExe"
             width={30}
             height={25}
-            className={`transition-all duration-300 ease-in-out ${sidebarState === "collapsed"
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-75 absolute"
-              }`}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "collapsed"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
             priority
           />
         </div>
@@ -185,10 +185,13 @@ export function AppSidebar({ }) {
                       isActive={isActive(item.url)}
                       className="text-sm p-3"
                     >
-                      <LocaleLink href={item.url[0] /* main URL for link */}>
+                      <LocaleLink
+                        href={item.url[0] || "" /* main URL for link */}
+                      >
                         <item.icon
-                          className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
-                            }`}
+                          className={`transition-transform duration-300 ${
+                            sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
+                          }`}
                         />
                         <span className="text-base">{item.title}</span>
                       </LocaleLink>
