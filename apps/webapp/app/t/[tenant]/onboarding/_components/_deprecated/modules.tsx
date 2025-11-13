@@ -5,14 +5,15 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import axios from "axios"
-import { VerificationIcon } from "../../assets/icons"
-import { StepIndicator } from "./step-indicator"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
+import { StepIndicator } from "../step-indicator"
 import Button from "@/components/ui/button"
-import { modulesSchema, type ModulesValues } from "./schemas"
-import { submitModules } from "@/lib/api/onboarding"
-import { getAuthToken } from "@/lib/api/utils"
-import { createModulesApiClient } from "@/lib/api/modules"
-import type { Module } from "@/lib/api/modules"
+import { modulesSchema, type ModulesValues } from "./schema"
+import { submitModules } from "./onboarding-api-deprecated"
+import { getAuthToken } from "@/app/utils/onboarding"
+import { createModulesApiClient } from "./modules-api"
+import type { Module } from "./modules-api"
 import { Check } from "lucide-react"
 
 interface ModulesProps {
@@ -234,7 +235,12 @@ const Modules = ({
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2.5">
-          <VerificationIcon />
+          <Image
+            src={ICONS.verificationIcon}
+            alt="Verification icon"
+            width={78}
+            height={78}
+          />
           <h1 className="text-2xl font-semibold">
             Complete Your Hospital Verification
           </h1>

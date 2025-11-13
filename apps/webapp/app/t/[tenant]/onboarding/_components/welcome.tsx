@@ -1,8 +1,9 @@
 "use client"
 
 import { Mail, UserCircle } from "lucide-react"
-import { HandIcon, HospitalBuildingIcon } from "../../assets/icons"
+import Image from "next/image"
 import Button from "@/components/ui/button"
+import { ICONS } from "@/lib/icons"
 import type { Tenant } from "@/lib/api/tenant"
 
 interface WelcomeProps {
@@ -14,7 +15,7 @@ const Welcome = ({ onNext, tenantData }: WelcomeProps) => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="space-y-2.5">
-        <HandIcon />
+        <Image src={ICONS.handIcon} alt="Hand icon" width={31} height={31} />
         <h1 className="text-2xl font-semibold">
           Welcome to <span className="text-blue-500">MedExe</span>
         </h1>
@@ -27,7 +28,7 @@ const Welcome = ({ onNext, tenantData }: WelcomeProps) => {
       <div className="mt-8 bg-white rounded-3xl p-6 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <HospitalBuildingIcon />
+            <Image src={ICONS.hospitalBuildingIcon} alt="Hospital building icon" width={44} height={44} />
             <div>
               <h3 className="text-sm">Hospital Name</h3>
               <h1 className="text-lg font-semibold">

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import {
@@ -12,15 +12,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { VerificationIcon } from "../../assets/icons"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
 import { StepIndicator } from "./step-indicator"
-import { FormInput } from "./form-input"
-import { FormDate } from "./form-date"
-import { FormCheckbox } from "./form-checkbox"
-import { FormSelect } from "./form-select"
+import { FormInput } from "../../../../../components/ui/form-input"
+import { FormDate } from "../../../../../components/ui/form-date"
+import { FormCheckbox } from "../../../../../components/ui/form-checkbox"
+import { FormSelect } from "../../../../../components/ui/form-select"
 import Button from "@/components/ui/button"
-import { licenseHistorySchema, type LicenseHistoryValues } from "./schemas"
-import { getAuthToken } from "@/lib/api/utils"
+import {
+  licenseHistorySchema,
+  type LicenseHistoryValues,
+} from "@/lib/schemas/onboarding"
+import { getAuthToken } from "@/app/utils/onboarding"
 import {
   createLicenseApiClient,
   type License,
@@ -229,7 +233,12 @@ const LicenseHistory = ({
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2.5">
-          <VerificationIcon />
+          <Image
+            src={ICONS.verificationIcon}
+            alt="Verification icon"
+            width={78}
+            height={78}
+          />
           <h1 className="text-2xl font-semibold">
             Complete Your Hospital Verification
           </h1>
@@ -239,7 +248,7 @@ const LicenseHistory = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={3} totalSteps={4} />
+        <StepIndicator currentStep={1} totalSteps={2} />
 
         {/* Error Display */}
         {(error ||

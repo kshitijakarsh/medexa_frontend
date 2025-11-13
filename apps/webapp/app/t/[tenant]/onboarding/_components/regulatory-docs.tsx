@@ -12,15 +12,19 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { VerificationIcon } from "../../assets/icons"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
 import { StepIndicator } from "./step-indicator"
-import { FormInput } from "./form-input"
-import { FormSelect } from "./form-select"
-import { FormDate } from "./form-date"
-import { FileUpload } from "./file-upload"
+import { FormInput } from "../../../../../components/ui/form-input"
+import { FormSelect } from "../../../../../components/ui/form-select"
+import { FormDate } from "../../../../../components/ui/form-date"
+import { FileUpload } from "../../../../../components/ui/file-upload"
 import Button from "@/components/ui/button"
-import { regulatoryDocSchema, type RegulatoryDocValues } from "./schemas"
-import { getAuthToken } from "@/lib/api/utils"
+import {
+  regulatoryDocSchema,
+  type RegulatoryDocValues,
+} from "@/lib/schemas/onboarding"
+import { getAuthToken } from "@/app/utils/onboarding"
 import {
   createRegulatoryApiClient,
   type Document,
@@ -298,7 +302,12 @@ const RegulatoryDocs = ({
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2.5">
-          <VerificationIcon />
+          <Image
+            src={ICONS.verificationIcon}
+            alt="Verification icon"
+            width={78}
+            height={78}
+          />
           <h1 className="text-2xl font-semibold">
             Complete Your Hospital Verification
           </h1>
@@ -308,7 +317,7 @@ const RegulatoryDocs = ({
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator currentStep={4} totalSteps={4} />
+        <StepIndicator currentStep={2} totalSteps={2} />
 
         {/* Error Display */}
         {(error ||

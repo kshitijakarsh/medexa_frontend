@@ -12,21 +12,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { VerificationIcon } from "../../assets/icons"
-import { StepIndicator } from "./step-indicator"
-import { FormInput } from "./form-input"
-import { FormSelect } from "./form-select"
-import { FormCheckbox } from "./form-checkbox"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
+import { StepIndicator } from "../step-indicator"
+import { FormInput } from "../../../../../../components/ui/form-input"
+import { FormSelect } from "../../../../../../components/ui/form-select"
+import { FormCheckbox } from "../../../../../../components/ui/form-checkbox"
 import Button from "@/components/ui/button"
-import { paymentSchema, type PaymentValues } from "./schemas"
-import { getAuthToken } from "@/lib/api/utils"
+import { paymentSchema, type PaymentValues } from "./schema"
+import { getAuthToken } from "@/app/utils/onboarding"
 import {
   createPaymentConfigApiClient,
   type PaymentConfig,
   type PaymentGateway,
   type CreatePaymentConfigParams,
   type UpdatePaymentConfigParams,
-} from "@/lib/api/payment"
+} from "./payment-api"
 import { createTenantApiClient, type Country } from "@/lib/api/tenant"
 import { Edit, Plus, Trash2 } from "lucide-react"
 
@@ -261,7 +262,12 @@ const Payment = ({
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2.5">
-          <VerificationIcon />
+          <Image
+            src={ICONS.verificationIcon}
+            alt="Verification icon"
+            width={78}
+            height={78}
+          />
           <h1 className="text-2xl font-semibold">
             Complete Your Hospital Verification
           </h1>
