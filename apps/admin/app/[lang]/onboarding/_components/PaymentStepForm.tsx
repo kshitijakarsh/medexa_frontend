@@ -91,6 +91,17 @@ export function PaymentStepForm() {
     }
   }, [hospitalId, router, lang])
 
+  // Fetch tenant data to populate payment configs from backend
+  const { data: tenantData } = useQuery({
+    queryKey: ["tenant", hospitalId],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getTenantById(hospitalId)
+      return response.data.data
+    },
+    enabled: !!hospitalId,
+  })
+
   const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
     queryKey: ["gateways"],
     queryFn: async () => {
@@ -110,6 +121,39 @@ export function PaymentStepForm() {
     },
   })
 
+  // Populate store with tenant payment configs when data loads
+  useEffect(() => {
+    if (tenantData?.tenant_payment_configs !== undefined) {
+      const paymentConfigs = tenantData.tenant_payment_configs
+      // Only update if different from current state
+      if (
+        JSON.stringify(paymentConfigs) !== JSON.stringify(paymentState.items)
+      ) {
+        setPaymentItems(paymentConfigs)
+        // Extract country_id from first payment config if available and countries are loaded
+        const firstPaymentConfig = paymentConfigs[0]
+        if (
+          firstPaymentConfig &&
+          firstPaymentConfig.currency_code &&
+          countries.length > 0
+        ) {
+          const country = countries.find(
+            (c) => c.currency_code === firstPaymentConfig.currency_code
+          )
+          if (country) {
+            setPaymentCountryId(country.id)
+          }
+        }
+      }
+    }
+  }, [
+    tenantData,
+    setPaymentItems,
+    setPaymentCountryId,
+    paymentState.items,
+    countries,
+  ])
+
   const createMutation = useMutation({
     mutationFn: async (payload: CreatePaymentConfigParams) => {
       const response = await paymentApiClient.createPaymentConfig(
@@ -122,7 +166,7 @@ export function PaymentStepForm() {
       const gg = Array.isArray(newConfig) ? newConfig : [newConfig]
       const updatedItems = [...paymentState.items, ...gg]
       setPaymentItems(updatedItems)
-      queryClient.setQueryData(["tenant", "payment-config"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       form.reset(defaultValues)
     },
@@ -141,10 +185,19 @@ export function PaymentStepForm() {
         item.id === updatedConfig.id ? updatedConfig : item
       )
       setPaymentItems(updatedItems)
-      queryClient.setQueryData(["tenant", "payment-config"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       setEditingItem(null)
       form.reset(defaultValues)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await paymentApiClient.deletePaymentConfig(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
     },
   })
 
@@ -177,9 +230,14 @@ export function PaymentStepForm() {
   }
 
   const handleDelete = (id: string) => {
-    const updatedItems = paymentState.items.filter((item) => item.id !== id)
-    setPaymentItems(updatedItems)
-    queryClient.setQueryData(["tenant", "payment-config"], updatedItems)
+    if (confirm("Are you sure you want to delete this payment config?")) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          const updatedItems = paymentState.items.filter((item) => item.id !== id)
+          setPaymentItems(updatedItems)
+        },
+      })
+    }
   }
 
   const handleSaveItem = async (values: Step3Values) => {
@@ -294,13 +352,17 @@ export function PaymentStepForm() {
       </div>
 
       <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
-        {(createMutation.isError || updateMutation.isError) && (
+        {(createMutation.isError ||
+          updateMutation.isError ||
+          deleteMutation.isError) && (
           <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
-            {createMutation.error instanceof Error
-              ? createMutation.error.message
-              : updateMutation.error instanceof Error
-                ? updateMutation.error.message
-                : "An error occurred"}
+            {deleteMutation.error instanceof Error
+              ? deleteMutation.error.message
+              : createMutation.error instanceof Error
+                ? createMutation.error.message
+                : updateMutation.error instanceof Error
+                  ? updateMutation.error.message
+                  : "An error occurred"}
           </div>
         )}
 

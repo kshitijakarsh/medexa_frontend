@@ -14,12 +14,9 @@ import {
   type Step2Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
 import { createModulesApiClient } from "@/lib/api/modules"
+import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
 import { ArrowLeft } from "lucide-react"
-
-const defaultValues: Step2Values = {
-  modules: [],
-}
 
 export function ModuleStepForm() {
   const router = useRouter()
@@ -48,6 +45,33 @@ export function ModuleStepForm() {
       return response.data.data // Extract data array from paginated response
     },
   })
+
+  // Fetch tenant data to populate modules from backend
+  const { data: tenantData } = useQuery({
+    queryKey: ["tenant", hospitalId],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getTenantById(hospitalId)
+      return response.data.data
+    },
+    enabled: !!hospitalId,
+  })
+
+  // Populate store with tenant modules when data loads
+  useEffect(() => {
+    if (tenantData?.tenant_modules !== undefined) {
+      const moduleIds = tenantData.tenant_modules.map((module) =>
+        String(module.module_id)
+      )
+      // Only update if different from current state
+      if (
+        JSON.stringify(moduleIds.sort()) !==
+        JSON.stringify(moduleState.selectedIds.sort())
+      ) {
+        setModules(moduleIds)
+      }
+    }
+  }, [tenantData, setModules, moduleState.selectedIds])
 
   const mutation = useMutation({
     mutationKey: ["tenant", "modules"],
