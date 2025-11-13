@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server"
-import axios from "axios"
 import { createTenantApiClient } from "./tenant"
 
 /**
@@ -7,9 +6,7 @@ import { createTenantApiClient } from "./tenant"
  * Cognito stores tokens in localStorage on client, but we can check for a cookie
  * that should be set during login
  */
-export function getAuthTokenFromRequest(
-  request: NextRequest
-): string | null {
+export function getAuthTokenFromRequest(request: NextRequest): string | null {
   // Check for access token in cookie (set during login)
   const accessToken = request.cookies.get("access_token")?.value
 
@@ -91,4 +88,3 @@ export async function getTenantStatus(
     return null
   }
 }
-

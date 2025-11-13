@@ -163,6 +163,25 @@ class PaymentConfigApiClient {
     }
   }
 
+  async deletePaymentConfig(configId: string): Promise<AxiosResponse<void>> {
+    try {
+      return await axios.delete<void>(
+        `${this.baseUrl}/api/v1/tenants/payment-config/${configId}`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Delete payment config error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   updateAuthToken(newToken: string) {
     this.authToken = newToken
   }

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 import {
   Sheet,
   SheetTrigger,
@@ -9,8 +9,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-} from "@workspace/ui/components/sheet";
-import { Button } from "@workspace/ui/components/button";
+} from "@workspace/ui/components/sheet"
+import { Button } from "@workspace/ui/components/button"
 import {
   Globe2,
   Menu,
@@ -22,37 +22,36 @@ import {
   MapPin,
   Phone,
   Building2,
-} from "lucide-react";
-import Image from "next/image";
-import { logoutCognitoUser } from "@/lib/api/auth";
+} from "lucide-react"
+import Image from "next/image"
+import { logoutCognitoUser } from "@/app/utils/auth"
 
 interface UserProfile {
-  name: string;
-  role: string;
-  employeeId: string;
-  avatar?: string;
-  accountStatus: "Active" | "Inactive";
-  lastLogin: string;
+  name: string
+  role: string
+  employeeId: string
+  avatar?: string
+  accountStatus: "Active" | "Inactive"
+  lastLogin: string
   hospital: {
-    name: string;
-    contact: string;
-    email: string;
-    address: string;
-    logo?: string;
-  };
+    name: string
+    contact: string
+    email: string
+    address: string
+    logo?: string
+  }
 }
 
 interface TopActionButtonsProps {
-  user: UserProfile;
+  user: UserProfile
 }
 
 export function TopActionButtons({ user }: TopActionButtonsProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false)
   const handleLogout = () => {
     logoutCognitoUser()
     window.location.href = "/login" // full page reload
   }
-
 
   return (
     <div className="flex items-center gap-3">
@@ -73,7 +72,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
       </Button>
 
       {/* Menu Button + Sheet */}
-      <Sheet open={open} onOpenChange={setOpen} >
+      <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -202,5 +201,5 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
         </SheetContent>
       </Sheet>
     </div>
-  );
+  )
 }

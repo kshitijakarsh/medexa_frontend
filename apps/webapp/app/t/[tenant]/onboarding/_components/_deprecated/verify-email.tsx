@@ -1,14 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { EmailIcon } from "../../assets/icons"
+import Image from "next/image"
 import Button from "@/components/ui/button"
+import { ICONS } from "@/lib/icons"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@workspace/ui/components/input-otp"
-import { verifyOTP } from "@/lib/api/onboarding"
+import { verifyOTP } from "./onboarding-api-deprecated"
 
 interface VerifyEmailProps {
   onNext?: () => void
@@ -51,7 +52,7 @@ const VerifyEmail = ({ onNext }: VerifyEmailProps) => {
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-sm">
       <div className="space-y-2.5 max-w-md my-28">
-        <EmailIcon />
+        <Image src={ICONS.emailIcon} alt="Email icon" width={78} height={78} />
         <h1 className="text-2xl font-semibold mt-6">Verify Your Email</h1>
         <p className="">
           We've sent a 6-digit verification code to admin@hospital.com Please

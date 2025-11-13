@@ -1,8 +1,9 @@
 "use client"
 
-import { VerifiedIcon } from "../../assets/icons"
+import Image from "next/image"
 import Button from "@/components/ui/button"
 import { CheckCircle2 } from "lucide-react"
+import { ICONS } from "@/lib/icons"
 
 interface VerificationApprovedProps {
   onDashboard?: () => void
@@ -16,7 +17,7 @@ const VerificationApproved = ({
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl p-12 shadow-sm">
       <div className="space-y-2.5 max-w-md">
-        <VerifiedIcon />
+        <Image src={ICONS.verifiedIcon} alt="Verified icon" width={78} height={78} />
         <div className="flex items-center gap-2 mt-6">
           <h1 className="text-2xl font-semibold">Verification Approved!</h1>
           <CheckCircle2 className="text-green-500" size={28} />

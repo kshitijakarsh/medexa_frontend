@@ -7,6 +7,7 @@ interface ApiConfig {
 
 interface Module {
   id: string
+  module_id: string
   module_key: string
   name_en: string
   name_local: string

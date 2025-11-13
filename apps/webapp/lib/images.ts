@@ -5,4 +5,6 @@ export const IMAGES = {
   leftLllustration: "/images/Group-illustration.svg",
   leftIllustrationHospitalIocn: "/images/Group 53240.svg",
   leftIllustratoinHospitalPeople: "/images/image 3.svg",
+  hospitalSS: "/images/hospital-ss.png",
+  hospitalIcon: "/images/hospital-img.png",
 }

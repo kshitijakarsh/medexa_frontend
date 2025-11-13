@@ -1,4 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import { PaymentConfig } from "./payment"
+import { License } from "./license"
+import { Module } from "./modules"
+import { Document } from "./regulatory"
 
 interface ApiConfig {
   baseUrl?: string
@@ -27,6 +31,10 @@ interface Tenant {
   created_by: number
   created_at: string
   updated_at: string
+  tenant_modules?: Module[]
+  tenant_payment_configs?: PaymentConfig[]
+  tenant_license_history?: License[]
+  tenant_regulatory_documents?: Document[]
 }
 
 interface PaginationMeta {

@@ -1,7 +1,8 @@
 "use client"
 
-import { VerifiedIcon } from "../../assets/icons"
+import Image from "next/image"
 import Button from "@/components/ui/button"
+import { ICONS } from "@/lib/icons"
 
 interface VerificationPendingProps {
   onLogout?: () => void
@@ -11,7 +12,7 @@ const VerificationPending = ({ onLogout }: VerificationPendingProps) => {
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl p-12 shadow-sm">
       <div className="space-y-2.5 max-w-md">
-        <VerifiedIcon />
+        <Image src={ICONS.verifiedIcon} alt="Verified icon" width={78} height={78} />
         <h1 className="text-2xl font-semibold mt-6">
           Verification Submitted Successfully!
         </h1>

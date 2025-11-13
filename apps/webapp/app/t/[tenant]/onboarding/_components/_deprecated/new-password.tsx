@@ -1,6 +1,7 @@
 "use client"
 
-import { PasswordLock } from "../../assets/icons"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
 import { Input } from "@/components/ui/input"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
@@ -71,7 +72,7 @@ const NewPassword = ({ onNext }: NewPasswordProps) => {
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-sm">
       <div className="space-y-2.5 max-w-md my-20">
-        <PasswordLock />
+        <Image src={ICONS.passwordLock} alt="Password lock icon" width={78} height={78} />
         <h1 className="text-2xl font-semibold mt-6">Set Your New Password</h1>
         <p className="">
           Your email has been verified successfully.Now create a new password to

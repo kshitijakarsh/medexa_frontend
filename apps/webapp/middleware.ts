@@ -46,12 +46,12 @@ export async function middleware(request: NextRequest) {
   // Check if current path is login or onboarding
   // pathname is the original path (e.g., "/login", "/onboarding", "/dashboard")
   const isLoginPage = pathname === "/login" || pathname.startsWith("/login/")
-  const isOnboardingPage = pathname === "/onboarding" || pathname.startsWith("/onboarding/")
+  const isOnboardingPage =
+    pathname === "/onboarding" || pathname.startsWith("/onboarding/")
 
   // Check authentication
   const authenticated = isAuthenticated(request)
 
-  // If not authenticated and not on login page, redirect to login
   if (!authenticated && !isLoginPage) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = "/login"
@@ -63,7 +63,6 @@ export async function middleware(request: NextRequest) {
     try {
       const authToken = getAuthTokenFromRequest(request)
       if (!authToken) {
-        // Token not found, redirect to login
         const loginUrl = request.nextUrl.clone()
         loginUrl.pathname = "/login"
         return NextResponse.redirect(loginUrl)
@@ -72,29 +71,21 @@ export async function middleware(request: NextRequest) {
       // Get tenant ID from tenant slug
       const tenantId = await getTenantIdFromSlug(tenant, authToken)
       if (!tenantId) {
-        // Tenant not found, allow request to proceed (will show error in page)
-        // Or redirect to error page
-        const url = request.nextUrl.clone()
-        url.pathname =
-          pathname === "/" || pathname === ""
-            ? `/t/${tenant}`
-            : `/t/${tenant}${pathname}`
-        return NextResponse.rewrite(new URL(url.toString()))
+        // Tenant not found, redirect to error page
+        const errorUrl = request.nextUrl.clone()
+        errorUrl.pathname = `/t/${tenant}/error`
+        errorUrl.searchParams.set("message", "Tenant not found")
+        return NextResponse.redirect(errorUrl)
       }
 
-      // Get tenant status
       const tenantStatus = await getTenantStatus(tenantId, authToken)
 
-      // If tenant status is "not-done" or "pending", redirect to onboarding
       if (tenantStatus === "not-done" || tenantStatus === "pending") {
         const onboardingUrl = request.nextUrl.clone()
         onboardingUrl.pathname = "/onboarding"
         return NextResponse.redirect(onboardingUrl)
       }
-
-      // Tenant status is active/completed, allow access
     } catch (error) {
-      // On error (network, 401, etc.), redirect to login
       console.error("Middleware error:", error)
       const loginUrl = request.nextUrl.clone()
       loginUrl.pathname = "/login"
@@ -102,7 +93,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Rewrite to internal tenant namespace /t/[tenant]/...
   const url = request.nextUrl.clone()
   url.pathname =
     pathname === "/" || pathname === ""
