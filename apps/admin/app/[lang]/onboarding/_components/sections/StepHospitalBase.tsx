@@ -39,7 +39,7 @@ export const StepHospitalBase = ({
       <AdminAccountSection form={form} />
 
       {/* User Credential */}
-      <UserCredentialSection form={form} />
+      {/* <UserCredentialSection form={form} /> */}
     </div>
   )
 }

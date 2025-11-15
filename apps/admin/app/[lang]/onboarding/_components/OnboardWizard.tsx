@@ -66,11 +66,12 @@ export default function OnboardWizard() {
       primary_admin_name: "",
       primary_admin_email: "",
       primary_admin_id_no: "",
+      primary_admin_password: "",
       currency_code: "",
       vat_registered: false,
       vat_number: "",
-      user_full_name: "",
-      user_password: "",
+      // user_full_name: "",
+      // user_password: "",
     },
   })
 
@@ -324,21 +325,19 @@ export default function OnboardWizard() {
               {Array.from({ length: TOTAL_STEPS }).map((_, idx) => (
                 <div key={idx} className="flex items-center">
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                      idx === currentStep
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${idx === currentStep
                         ? "bg-blue-600 text-white"
                         : idx < currentStep
                           ? "bg-green-500 text-white"
                           : "bg-slate-200 text-slate-600"
-                    }`}
+                      }`}
                   >
                     {idx + 1}
                   </div>
                   {idx < TOTAL_STEPS - 1 && (
                     <div
-                      className={`w-12 h-1 ${
-                        idx < currentStep ? "bg-green-500" : "bg-slate-200"
-                      }`}
+                      className={`w-12 h-1 ${idx < currentStep ? "bg-green-500" : "bg-slate-200"
+                        }`}
                     />
                   )}
                 </div>

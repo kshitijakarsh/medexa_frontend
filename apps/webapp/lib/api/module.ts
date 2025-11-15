@@ -1,3 +1,10 @@
+/**
+ * DEPRECATED: This API file is no longer used in the active onboarding flow.
+ * It is kept here for reference and is only used by deprecated components.
+ *
+ * @deprecated Do not use this API in new code. It is kept for historical reference only.
+ */
+
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 
 interface ApiConfig {
@@ -118,4 +125,3 @@ export const createModulesApiClient = (config: ApiConfig) =>
   new ModulesApiClient(config)
 
 export type { Module, UpdateModulesParams, ModuleListResponse, ModuleResponse }
-

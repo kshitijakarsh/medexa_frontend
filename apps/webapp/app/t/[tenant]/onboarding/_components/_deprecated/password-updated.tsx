@@ -1,7 +1,8 @@
 "use client"
 
-import { PasswordUpdatedIcon } from "../../assets/icons"
+import Image from "next/image"
 import Button from "@/components/ui/button"
+import { ICONS } from "@/lib/icons"
 
 interface PasswordUpdatedProps {
   onNext?: () => void
@@ -11,7 +12,7 @@ const PasswordUpdated = ({ onNext }: PasswordUpdatedProps) => {
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-3xl p-8 shadow-sm">
       <div className="space-y-2.5 max-w-md my-20">
-        <PasswordUpdatedIcon />
+        <Image src={ICONS.passwordUpdatedIcon} alt="Password updated icon" width={78} height={78} />
         <h1 className="text-2xl font-semibold mt-6">Password Updated!</h1>
         <p className="">
           Your new password has been saved and will be used for future logins.

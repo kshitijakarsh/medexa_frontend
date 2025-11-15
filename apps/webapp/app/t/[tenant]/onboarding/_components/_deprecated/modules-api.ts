@@ -1,3 +1,10 @@
+/**
+ * DEPRECATED: This API file is no longer used in the active onboarding flow.
+ * It is kept here for reference and is only used by deprecated components.
+ *
+ * @deprecated Do not use this API in new code. It is kept for historical reference only.
+ */
+
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 
 interface ApiConfig {
@@ -7,7 +14,6 @@ interface ApiConfig {
 
 interface Module {
   id: string
-  module_id: string
   module_key: string
   name_en: string
   name_local: string
@@ -63,7 +69,7 @@ class ModulesApiClient {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
       },
     }
   }

@@ -5,17 +5,11 @@ interface StepIndicatorProps {
   totalSteps?: number
 }
 
-const STEP_NAMES = [
-  "Hospital Information",
-  "Modules",
-  "Payment Details",
-  "License History",
-  "Regulatory Documents",
-]
+const STEP_NAMES = ["License History", "Regulatory Documents"]
 
 export const StepIndicator = ({
   currentStep,
-  totalSteps = 5,
+  totalSteps = 2,
 }: StepIndicatorProps) => {
   return (
     <div className="w-full mb-8">

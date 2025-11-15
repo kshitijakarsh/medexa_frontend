@@ -1,14 +1,12 @@
-"use client";
+"use client"
 
-import { SidebarTrigger, useSidebar } from "@workspace/ui/components/sidebar"
-import { Grip, LogOutIcon } from "lucide-react"
-import { SectionDropdown } from "./header/section-dropdown";
-import { TopActionButtons } from "./header/top-action-menu-buttons";
-import { Button } from "@workspace/ui/components/button";
-import { LayoutGrid } from "lucide-react"; // your preferred icon
+import { useSidebar } from "@workspace/ui/components/sidebar"
+import { Grip } from "lucide-react"
+import { SectionDropdown } from "./header/section-dropdown"
+import { TopActionButtons } from "./header/top-action-menu-buttons"
+import { Button } from "@workspace/ui/components/button"
 
 export const Header = () => {
-
   // const handleLogout = () => {
   //   logoutCognitoUser();
   //   window.location.href = "/login"; // full page reload
@@ -28,11 +26,9 @@ export const Header = () => {
       address: "Doha, Qatar",
       logo: "/images/user.svg",
     },
-  };
+  }
 
-  const { toggleSidebar } = useSidebar();
-
-
+  const { toggleSidebar } = useSidebar()
 
   return (
     <div className="h-14 w-full px-4 flex items-center justify-between border-b bg-white">
@@ -47,7 +43,6 @@ export const Header = () => {
           <Grip className="h-5 w-5" />
         </Button>
         <SectionDropdown />
-
       </div>
       {/* <button
         onClick={handleLogout}
@@ -55,9 +50,8 @@ export const Header = () => {
       >
         <LogOutIcon onClick={handleLogout} className="h-4 w-4" />
       </button> */}
-      <div >
+      <div>
         <TopActionButtons user={userData} />
-
       </div>
     </div>
   )

@@ -3,16 +3,17 @@
 import { useState, useEffect } from "react"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
-import { VerificationIcon } from "../../assets/icons"
-import { StepIndicator } from "./step-indicator"
-import { FormInput } from "./form-input"
-import { FormSelect } from "./form-select"
-import { FormDate } from "./form-date"
-import { FormCheckbox } from "./form-checkbox"
+import Image from "next/image"
+import { ICONS } from "@/lib/icons"
+import { StepIndicator } from "../step-indicator"
+import { FormInput } from "../../../../../../components/ui/form-input"
+import { FormSelect } from "../../../../../../components/ui/form-select"
+import { FormDate } from "../../../../../../components/ui/form-date"
+import { FormCheckbox } from "../../../../../../components/ui/form-checkbox"
 import Button from "@/components/ui/button"
-import { hospitalInfoSchema, type HospitalInfoValues } from "./schemas"
-import { submitHospitalInfo } from "@/lib/api/onboarding"
-import { getAuthToken } from "@/lib/api/utils"
+import { hospitalInfoSchema, type HospitalInfoValues } from "./schema"
+import { submitHospitalInfo } from "./onboarding-api-deprecated"
+import { getAuthToken } from "@/app/utils/onboarding"
 import { createTenantApiClient } from "@/lib/api/tenant"
 import { createRegulatoryApiClient } from "@/lib/api/regulatory"
 import type { Country } from "@/lib/api/tenant"
@@ -27,8 +28,12 @@ interface HospitalInfoProps {
 const HospitalInfo = ({ onNext, initialData, tenantId }: HospitalInfoProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [countries, setCountries] = useState<{ value: string; label: string }[]>([])
-  const [authorities, setAuthorities] = useState<{ value: string; label: string }[]>([])
+  const [countries, setCountries] = useState<
+    { value: string; label: string }[]
+  >([])
+  const [authorities, setAuthorities] = useState<
+    { value: string; label: string }[]
+  >([])
   const [isLoadingCountries, setIsLoadingCountries] = useState(true)
   const [isLoadingAuthorities, setIsLoadingAuthorities] = useState(true)
 
@@ -70,10 +75,12 @@ const HospitalInfo = ({ onNext, initialData, tenantId }: HospitalInfoProps) => {
         // Fetch countries
         try {
           const countriesResponse = await tenantClient.getCountriesList()
-          const countriesData = countriesResponse.data.data.map((country: Country) => ({
-            value: String(country.id),
-            label: `${country.name_en} (${country.iso_code})`,
-          }))
+          const countriesData = countriesResponse.data.data.map(
+            (country: Country) => ({
+              value: String(country.id),
+              label: `${country.name_en} (${country.iso_code})`,
+            })
+          )
           setCountries(countriesData)
         } catch (err) {
           console.error("Failed to fetch countries:", err)
@@ -94,7 +101,9 @@ const HospitalInfo = ({ onNext, initialData, tenantId }: HospitalInfoProps) => {
           setAuthorities(authoritiesData)
         } catch (err) {
           console.error("Failed to fetch authorities:", err)
-          setError("Failed to load regulatory authorities. Please refresh the page.")
+          setError(
+            "Failed to load regulatory authorities. Please refresh the page."
+          )
         } finally {
           setIsLoadingAuthorities(false)
         }
@@ -140,7 +149,12 @@ const HospitalInfo = ({ onNext, initialData, tenantId }: HospitalInfoProps) => {
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2.5">
-          <VerificationIcon />
+          <Image
+            src={ICONS.verificationIcon}
+            alt="Verification icon"
+            width={78}
+            height={78}
+          />
           <h1 className="text-2xl font-semibold">
             Complete Your Hospital Verification
           </h1>

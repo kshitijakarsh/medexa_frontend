@@ -16,8 +16,8 @@ import { Input } from "@workspace/ui/components/input"
 import { Button } from "@workspace/ui/components/button"
 import { User, Lock, Eye, EyeOff, Fingerprint } from "lucide-react"
 import { Label } from "@workspace/ui/components/label"
-import { loginUserCognito } from "@/lib/api/auth"
-import { setAuthTokenCookie } from "@/lib/api/utils"
+import { loginUserCognito } from "@/app/utils/auth"
+import { setAuthTokenCookie } from "@/app/utils/onboarding"
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
