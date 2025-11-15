@@ -1,4 +1,4 @@
-import { refreshCognitoToken } from "./auth"
+import { refreshCognitoToken } from "@/app/utils/auth"
 
 /**
  * Get the current authentication token from Cognito session
@@ -38,7 +38,46 @@ export function setAuthTokenCookie(accessToken: string): void {
  */
 export function removeAuthTokenCookie(): void {
   if (typeof document !== "undefined") {
-    document.cookie = "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+    document.cookie =
+      "access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
   }
 }
 
+/**
+ * Utility functions for managing onboarding state in localStorage
+ * Only stores welcome page status - all other steps are determined by server status
+ * All keys are tenant-specific to support multi-tenant scenarios
+ */
+
+export type OnboardingStep =
+  | "welcome"
+  | "license-history"
+  | "regulatory-docs"
+  | "verification-pending"
+  | "verification-approved"
+
+/**
+ * Check if welcome page has been shown for a tenant
+ */
+export function hasWelcomeBeenShown(tenantId: string): boolean {
+  if (typeof window === "undefined") return false
+  const key = `onboarding_welcome_shown_${tenantId}`
+  return localStorage.getItem(key) === "true"
+}
+
+/**
+ * Mark welcome page as shown for a tenant
+ */
+export function markWelcomeAsShown(tenantId: string): void {
+  if (typeof window === "undefined") return
+  const key = `onboarding_welcome_shown_${tenantId}`
+  localStorage.setItem(key, "true")
+}
+
+/**
+ * Clear onboarding storage for a tenant (useful for testing or reset)
+ */
+export function clearOnboardingStorage(tenantId: string): void {
+  if (typeof window === "undefined") return
+  localStorage.removeItem(`onboarding_welcome_shown_${tenantId}`)
+}

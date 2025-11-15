@@ -21,6 +21,15 @@ export const step1Schema = z.object({
   primary_admin_name: z.string().min(1, "Primary admin name is required"),
   primary_admin_email: z.email("Invalid email"),
   primary_admin_id_no: z.string().min(1, "Primary admin ID number is required"),
+  // primary_admin_password: z.string().min(1, "User password is required"),
+  primary_admin_password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long." })
+    .refine((p) => /[0-9]/.test(p), { message: "Password must contain at least one number." })
+    .refine((p) => /[A-Z]/.test(p), { message: "Password must contain at least one uppercase letter." })
+    .refine((p) => /[a-z]/.test(p), { message: "Password must contain at least one lowercase letter." })
+    .refine((p) => /[^A-Za-z0-9]/.test(p), { message: "Password must contain at least one special character." }),
+
   currency_code: z
     .string()
     .length(3, "Currency code must be exactly 3 characters")
@@ -28,8 +37,8 @@ export const step1Schema = z.object({
     .transform((val) => val.toUpperCase()),
   vat_registered: z.boolean(),
   vat_number: z.string().min(1, "VAT number is required"),
-  user_full_name: z.string().min(1, "User full name is required"),
-  user_password: z.string().min(1, "User password is required"),
+  // user_full_name: z.string().min(1, "User full name is required"),
+  // user_password: z.string().min(1, "User password is required"),
 })
 
 export type Step1Values = z.infer<typeof step1Schema>

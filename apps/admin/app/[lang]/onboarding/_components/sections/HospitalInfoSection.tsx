@@ -291,12 +291,11 @@ export const HospitalInfoSection = ({
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="vat_registered"
               render={({ field }) => (
                 <FormItem>
-                  {/* <Label>VAT Registered *</Label> */}
                   <FormLabel label={"VAT Registered *"} />
                   <FormControl>
                     <div className="flex items-center gap-2 h-10">
@@ -314,7 +313,7 @@ export const HospitalInfoSection = ({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormInput
               control={form.control}
               name="vat_number"

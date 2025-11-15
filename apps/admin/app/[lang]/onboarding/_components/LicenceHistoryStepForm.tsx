@@ -30,6 +30,7 @@ import {
   type Step4Values,
 } from "@/app/[lang]/onboarding/_components/schemas"
 import { createLicenseApiClient, type License } from "@/lib/api/license"
+import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
 import {
   Select,
@@ -90,6 +91,30 @@ export function LicenceHistoryStepForm() {
     }
   }, [hospitalId, router, lang])
 
+  // Fetch tenant data to populate license history from backend
+  const { data: tenantData } = useQuery({
+    queryKey: ["tenant", hospitalId],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getTenantById(hospitalId)
+      return response.data.data
+    },
+    enabled: !!hospitalId,
+  })
+
+  // Populate store with tenant license history when data loads
+  useEffect(() => {
+    if (tenantData?.tenant_license_history !== undefined) {
+      const licenseHistory = tenantData.tenant_license_history
+      // Only update if different from current state
+      if (
+        JSON.stringify(licenseHistory) !== JSON.stringify(licenceState.items)
+      ) {
+        setLicenceItems(licenseHistory)
+      }
+    }
+  }, [tenantData, setLicenceItems, licenceState.items])
+
   const createMutation = useMutation({
     mutationFn: async (
       payload: Omit<License, "id" | "tenant_id" | "created_at" | "updated_at">
@@ -101,7 +126,7 @@ export function LicenceHistoryStepForm() {
     onSuccess: (newLicence) => {
       const updatedItems = [...licenceState.items, newLicence]
       setLicenceItems(updatedItems)
-      queryClient.setQueryData(["tenant", "licence-history"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       form.reset(defaultValues)
     },
@@ -118,10 +143,20 @@ export function LicenceHistoryStepForm() {
         item.id === updatedLicence.id ? updatedLicence : item
       )
       setLicenceItems(updatedItems)
-      queryClient.setQueryData(["tenant", "licence-history"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       setEditingItem(null)
       form.reset(defaultValues)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const client = createLicenseApiClient({ authToken: "dev-token" })
+      await client.deleteLicense(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
     },
   })
 
@@ -151,9 +186,14 @@ export function LicenceHistoryStepForm() {
   }
 
   const handleDelete = (id: string) => {
-    const updatedItems = licenceState.items.filter((item) => item.id !== id)
-    setLicenceItems(updatedItems)
-    queryClient.setQueryData(["tenant", "licence-history"], updatedItems)
+    if (confirm("Are you sure you want to delete this license?")) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          const updatedItems = licenceState.items.filter((item) => item.id !== id)
+          setLicenceItems(updatedItems)
+        },
+      })
+    }
   }
 
   const handleSaveItem = async (values: Step4Values) => {
@@ -254,13 +294,17 @@ export function LicenceHistoryStepForm() {
       </div>
 
       <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
-        {(createMutation.isError || updateMutation.isError) && (
+        {(createMutation.isError ||
+          updateMutation.isError ||
+          deleteMutation.isError) && (
           <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
-            {createMutation.error instanceof Error
-              ? createMutation.error.message
-              : updateMutation.error instanceof Error
-                ? updateMutation.error.message
-                : "An error occurred"}
+            {deleteMutation.error instanceof Error
+              ? deleteMutation.error.message
+              : createMutation.error instanceof Error
+                ? createMutation.error.message
+                : updateMutation.error instanceof Error
+                  ? updateMutation.error.message
+                  : "An error occurred"}
           </div>
         )}
 

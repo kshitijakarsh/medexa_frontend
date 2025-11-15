@@ -87,6 +87,30 @@ export function RegulatoryDocsStepForm() {
     }
   }, [hospitalId, router, lang])
 
+  // Fetch tenant data to populate regulatory documents from backend
+  const { data: tenantData } = useQuery({
+    queryKey: ["tenant", hospitalId],
+    queryFn: async () => {
+      const client = createTenantApiClient({ authToken: "dev-token" })
+      const response = await client.getTenantById(hospitalId)
+      return response.data.data
+    },
+    enabled: !!hospitalId,
+  })
+
+  // Populate store with tenant regulatory documents when data loads
+  useEffect(() => {
+    if (tenantData?.tenant_regulatory_documents !== undefined) {
+      const regulatoryDocs = tenantData.tenant_regulatory_documents
+      // Only update if different from current state
+      if (
+        JSON.stringify(regulatoryDocs) !== JSON.stringify(regulatoryState.items)
+      ) {
+        setRegulatoryItems(regulatoryDocs)
+      }
+    }
+  }, [tenantData, setRegulatoryItems, regulatoryState.items])
+
   const { data: authorities = [], isLoading: isLoadingAuthorites } = useQuery<
     Authority[]
   >({
@@ -109,7 +133,7 @@ export function RegulatoryDocsStepForm() {
     onSuccess: (newDoc) => {
       const updatedItems = [...regulatoryState.items, newDoc]
       setRegulatoryItems(updatedItems)
-      queryClient.setQueryData(["tenant", "regulatory-docs"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       form.reset(defaultValues)
       setDocFile(null)
@@ -128,12 +152,22 @@ export function RegulatoryDocsStepForm() {
         item.id === updatedDoc.id ? updatedDoc : item
       )
       setRegulatoryItems(updatedItems)
-      queryClient.setQueryData(["tenant", "regulatory-docs"], updatedItems)
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       setEditingItem(null)
       form.reset(defaultValues)
       setDocFile(null)
       setDocPreview(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      await client.deleteDocument(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
     },
   })
 
@@ -176,9 +210,14 @@ export function RegulatoryDocsStepForm() {
   }
 
   const handleDelete = (id: string) => {
-    const updatedItems = regulatoryState.items.filter((item) => item.id !== id)
-    setRegulatoryItems(updatedItems)
-    queryClient.setQueryData(["tenant", "regulatory-docs"], updatedItems)
+    if (confirm("Are you sure you want to delete this regulatory document?")) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          const updatedItems = regulatoryState.items.filter((item) => item.id !== id)
+          setRegulatoryItems(updatedItems)
+        },
+      })
+    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -341,14 +380,17 @@ export function RegulatoryDocsStepForm() {
       <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
         {(createMutation.isError ||
           updateMutation.isError ||
+          deleteMutation.isError ||
           activationError) && (
           <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
             {activationError ||
-              (createMutation.error instanceof Error
-                ? createMutation.error.message
-                : updateMutation.error instanceof Error
-                  ? updateMutation.error.message
-                  : "An error occurred")}
+              (deleteMutation.error instanceof Error
+                ? deleteMutation.error.message
+                : createMutation.error instanceof Error
+                  ? createMutation.error.message
+                  : updateMutation.error instanceof Error
+                    ? updateMutation.error.message
+                    : "An error occurred")}
           </div>
         )}
 

@@ -1,0 +1,1 @@
+export const Hospital_Domain = "domain";
