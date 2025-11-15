@@ -890,7 +890,7 @@ export const PermissionAccordion = ({
         value={mainModule.key}
         className="border-2 border-[#3B82F6] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 bg-white mb-5"
       >
-        <AccordionTrigger className="px-5 py-4 text-base font-bold text-[#1E40AF] hover:bg-[#EFF6FF] bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE] transition-colors duration-150">
+        <AccordionTrigger className="px-5 py-3 text-base font-bold text-[#1E40AF] hover:bg-[#EFF6FF] bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE] transition-colors duration-150">
           <span className="flex items-center gap-3">
             {mainModule.icon && <span className="text-xl">{mainModule.icon}</span>}
             {mainModule.label}
