@@ -183,6 +183,7 @@ import { useState } from "react";
 import { PageHeader } from "@/components/common/PageHeader";
 import { PermissionAccordion } from "../_components/PermissionAccordion";
 import { Button } from "@workspace/ui/components/button";
+import { Header } from "@/components/header";
 
 export default function PermissionAddPage() {
   const { roleId } = useParams();
@@ -194,11 +195,13 @@ export default function PermissionAddPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] p-6">
-      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow p-8 space-y-8">
+    <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] ">
+      <Header />
+
+      <div className=" mx-auto  rounded-lg shadow p-6 space-y-8">
         <PageHeader title={`Permissions for Role ID: ${roleId}`} />
 
-        <div className="border border-blue-100 rounded-lg p-4 bg-[#F6FBFF]">
+        <div className="border border-blue-100 rounded-lg p-4 bg-white">
           <PermissionAccordion value={permissionData} onChange={setPermissionData} />
         </div>
 
