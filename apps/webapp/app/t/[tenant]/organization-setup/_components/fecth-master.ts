@@ -1,3 +1,5 @@
+import { ROUTES } from "@/lib/routes";
+
 // Simulated API call
 export async function fetchMasters() {
   // await new Promise((res) => setTimeout(res, 800)); // simulate delay
@@ -32,7 +34,7 @@ export async function fetchMasters() {
       active: 120,
       category: "Staff & Roles",
     },
-     {
+    {
       title: "Insurance",
       subtitle: "Health Insurance, Life Insurance, etc.",
       active: 90,
@@ -102,15 +104,15 @@ export const masterConfig: Record<
   { route: string; addOptions: string[] }
 > = {
   "Departments": {
-    route: "/department",
+    route: ROUTES.ADMINISTRATION_DEPARTMENT,
     addOptions: ["Department"],
   },
   "Ward/ Beds": {
-    route: "/units-wards-beds",
+    route: ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS,
     addOptions: ["Bed", "Bed Type", "Ward", "Floor"],
   },
   "Operation Theatres / Procedure Rooms": {
-    route: "/operation-theatres",
+    route: ROUTES.ADMINISTRATION_OPERATION_THEATRES,
     addOptions: ["Theatre", "Procedure Room"],
   },
   "Human Resource": {
@@ -122,7 +124,7 @@ export const masterConfig: Record<
     addOptions: ["Shift", "Attendance Type"],
   },
   "Insurance": {
-       route: "/insurance",
+    route: ROUTES.ADMINISTRATION_INSURANCE,
     addOptions: ["Insurance"],
   },
   "Medical Procedure / Treatment Master": {

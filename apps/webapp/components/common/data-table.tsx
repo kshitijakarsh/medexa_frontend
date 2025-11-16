@@ -1,5 +1,6 @@
 "use client"
 
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -84,12 +85,23 @@ export function DataTable<T>({
 
         <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
           {loading ? (
+            // <>
+            //   {[...Array(5)].map((_, i) => (
+            //     <TableRow key={i} className="animate-pulse">
+            //       {columns.map((_, j) => (
+            //         <TableCell key={j} className="py-4">
+            //           <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+            //         </TableCell>
+            //       ))}
+            //     </TableRow>
+            //   ))}
+            // </>
             <>
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
                   {columns.map((_, j) => (
                     <TableCell key={j} className="py-4">
-                      <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+                      <Skeleton className="h-4 w-full rounded-md" />
                     </TableCell>
                   ))}
                 </TableRow>

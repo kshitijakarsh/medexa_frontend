@@ -427,10 +427,7 @@ export default function EmployeeConfigurationPage() {
 
                         {/* Right Side Controls */}
                         <div
-                            className="
-        flex flex-wrap items-center justify-start lg:justify-end
-        gap-3 flex-1
-      "
+                            className=" flex flex-wrap items-center justify-start lg:justify-end gap-3 flex-1"
                         >
                             {/* Filter */}
                             <Button
@@ -443,17 +440,17 @@ export default function EmployeeConfigurationPage() {
                             </Button>
 
                             {/* Search Input */}
-                            <div className="flex-grow min-w-[180px] sm:min-w-[220px] md:min-w-[260px]">
+                            {/* <div className="flex-grow min-w-[180px] sm:min-w-[220px] md:min-w-[260px]"> */}
                                 <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
-                            </div>
+                            {/* </div> */}
 
                             {/* Quick Actions */}
                             <QuickActionsMenu />
 
                             {/* New Button */}
-                            <div className="ml-auto w-full sm:w-auto flex justify-end">
+                            {/* <div className="ml-auto w-full sm:w-auto flex justify-end"> */}
                                 <NewButton handleClick={handleNew} />
-                            </div>
+                            {/* </div> */}
                         </div>
                     </div>
 

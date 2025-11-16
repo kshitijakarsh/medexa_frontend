@@ -28,6 +28,7 @@ import { LOGOS } from "@/lib/logos"
 import Image from "next/image"
 import { useSidebar } from "@workspace/ui/components/sidebar"
 import { LocaleLink } from "./locale-link"
+import { ROUTES } from "@/lib/routes"
 
 export function AppSidebar({}) {
   const pathname = usePathname()
@@ -37,10 +38,14 @@ export function AppSidebar({}) {
       title: "Organization Setup",
       url: [
         "/organization-setup",
-        "/department",
-        "/units-wards-beds",
-        "/operation-theatres",
-        "/employee-configuration",
+        ROUTES.ADMINISTRATION_CHARGES,
+         ROUTES.ADMINISTRATION_ROLES,
+         ROUTES.ADMINISTRATION_OPERATION_THEATRES,
+         ROUTES.ADMINISTRATION_OPERATION,
+         ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS,
+         ROUTES.ADMINISTRATION_ROLES_PERMISSIONS,
+         ROUTES.ADMINISTRATION_INSURANCE,
+         ROUTES.ADMINISTRATION_USER,
       ],
       icon: Settings,
     },
