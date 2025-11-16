@@ -18,6 +18,7 @@ import TabSwitcher from "@/components/common/tab-switcher-menu";
 import { QuickActions } from "./_components/QuickActions";
 import FilterButton from "@/components/common/filter-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 
 const ChargesSection = [
@@ -200,7 +201,7 @@ export default function ChargesPage() {
             </div>
           </div>
           {/* Table */}
-          <DataTable columns={columnsFor(tab)} data={data} loading={loading} striped />
+          <ResponsiveDataTable columns={columnsFor(tab)} data={data} loading={loading} striped />
 
         </div>
 

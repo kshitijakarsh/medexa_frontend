@@ -16,6 +16,7 @@ import { fetchUsers, fetchUserRoles, addUsers } from "./_components/api";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useRouter } from "next/navigation";
 import FilterButton from "@/components/common/filter-button";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 export default function EmployeeConfigurationPage() {
     const router = useRouter();
@@ -150,7 +151,7 @@ export default function EmployeeConfigurationPage() {
                         </div>
                     </div>
 
-                    <DataTable columns={getColumns()} data={data} loading={loading} striped />
+                    <ResponsiveDataTable columns={getColumns()} data={data} loading={loading} striped />
                 </div>
             </div>
 

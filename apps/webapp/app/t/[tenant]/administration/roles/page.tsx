@@ -14,6 +14,7 @@ import NewButton from "@/components/common/new-button";
 import { getMockEmployees } from "./_components/api";
 import { PageHeader } from "@/components/common/PageHeader";
 import { useRouter } from "next/navigation";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 export default function EmployeeConfigurationPage() {
     const router = useRouter();
@@ -125,7 +126,7 @@ export default function EmployeeConfigurationPage() {
                     </div>
 
                     {/* Data Table */}
-                    <DataTable columns={getColumns()} data={data} loading={loading} striped />
+                    <ResponsiveDataTable columns={getColumns()} data={data} loading={loading} striped />
                 </div>
             </div>
 

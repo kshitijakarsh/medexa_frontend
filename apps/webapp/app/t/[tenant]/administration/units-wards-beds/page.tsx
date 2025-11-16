@@ -257,6 +257,7 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 import FilterButton from "@/components/common/filter-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 const UnitsWardsBedsSection = [
   { key: "bed", label: "Bed" },
@@ -373,7 +374,7 @@ export default function BedsPage() {
           </div>
 
           {/* Table */}
-          <DataTable columns={getColumns()} data={data} loading={loading} striped />
+          <ResponsiveDataTable columns={getColumns()} data={data} loading={loading} striped />
         </div>
       </div>
 

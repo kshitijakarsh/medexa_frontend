@@ -14,6 +14,7 @@ import { AddDialog } from "./_components/AddDialog";
 import { FilterDialog } from "./_components/FilterDialog";
 import { useRouter } from "next/navigation";
 import FilterButton from "@/components/common/filter-button";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 export default function CompanyListPage() {
     const router = useRouter();
@@ -124,7 +125,7 @@ export default function CompanyListPage() {
                     </div>
 
                     <div>
-                        <DataTable columns={columns} data={data} loading={loading} striped />
+                        <ResponsiveDataTable columns={columns} data={data} loading={loading} striped />
                     </div>
                 </div>
             </div>

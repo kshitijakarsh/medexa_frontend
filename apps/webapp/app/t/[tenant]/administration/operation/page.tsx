@@ -215,6 +215,7 @@ import { RowActionMenu } from "./_components/RowActionMenu";
 import { AddDialog } from "./_components/AddDialog";
 import { FilterDialog } from "./_components/FilterDialog";
 import FilterButton from "@/components/common/filter-button";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 const operationTabs = [
   { key: "operation", label: "Operation" },
@@ -365,7 +366,7 @@ export default function OperationManagementPage() {
           </div>
 
           {/* Table */}
-          <DataTable columns={getColumns()} data={data} loading={loading} striped />
+          <ResponsiveDataTable columns={getColumns()} data={data} loading={loading} striped />
         </div>
       </div>
 

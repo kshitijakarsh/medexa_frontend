@@ -14,6 +14,7 @@ import { getMockOperationTheatreData } from "./_components/api";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/PageHeader";
 import { AddOperationTheatreDialog } from "./_components/AddOperationTheatreDialog";
+import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 
 export default function OperationTheatresPage() {
   const router = useRouter();
@@ -76,7 +77,7 @@ export default function OperationTheatresPage() {
           </div>
 
           {/* Table */}
-          <DataTable columns={columns} data={data} loading={loading} striped />
+          <ResponsiveDataTable columns={columns} data={data} loading={loading} striped />
         </div>
       </div>
 
