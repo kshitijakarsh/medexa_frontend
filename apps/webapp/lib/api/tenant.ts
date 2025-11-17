@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
-import type { PaymentConfig } from "@/app/t/[tenant]/onboarding/_components/_deprecated/payment-api"
+import type { PaymentConfig } from "@/app/[lang]/onboarding/_components/_deprecated/payment-api"
 import type { License } from "./license"
 import type { Document } from "./regulatory"
 import type { Module } from "./module"

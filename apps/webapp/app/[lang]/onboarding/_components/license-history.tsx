@@ -15,10 +15,10 @@ import {
 import Image from "next/image"
 import { ICONS } from "@/lib/icons"
 import { StepIndicator } from "./step-indicator"
-import { FormInput } from "../../../../../components/ui/form-input"
-import { FormDate } from "../../../../../components/ui/form-date"
-import { FormCheckbox } from "../../../../../components/ui/form-checkbox"
-import { FormSelect } from "../../../../../components/ui/form-select"
+import { FormInput } from "../../../../components/ui/form-input"
+import { FormDate } from "../../../../components/ui/form-date"
+import { FormCheckbox } from "../../../../components/ui/form-checkbox"
+import { FormSelect } from "../../../../components/ui/form-select"
 import Button from "@/components/ui/button"
 import {
   licenseHistorySchema,

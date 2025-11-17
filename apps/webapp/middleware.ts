@@ -5,6 +5,8 @@ import {
   getTenantIdFromSlug,
   getTenantStatus,
 } from "./lib/api/middleware-auth"
+import { getLocale } from "./i18n/get-locale"
+import { locales, defaultLocale } from "./i18n/locales"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN
 
@@ -43,18 +45,65 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(adminUrl))
   }
 
-  // Check if current path is login or onboarding
-  // pathname is the original path (e.g., "/login", "/onboarding", "/dashboard")
-  const isLoginPage = pathname === "/login" || pathname.startsWith("/login/")
+  // Check if pathname has locale in format: /{locale}/path or /{locale}
+  const localeMatch = pathname.match(/^\/(en|nl)(\/.*)?$/)
+  const pathnameHasLocale = !!localeMatch
+  const pathnameLocale = localeMatch
+    ? (localeMatch[1] as typeof defaultLocale | "nl")
+    : null
+  const pathAfterLocale = localeMatch ? localeMatch[2] || "/" : pathname
+
+  // Handle old /t/[tenant]/[lang]/path format - redirect to clean URL
+  if (pathname.startsWith(`/t/${tenant}/`)) {
+    const parts = pathname.split("/")
+    if (parts.length >= 4 && locales.includes(parts[3] as any)) {
+      const locale = parts[3] as typeof defaultLocale | "nl"
+      const restOfPath = "/" + parts.slice(4).join("/") || "/"
+      const url = request.nextUrl.clone()
+      // For default locale, don't show it in URL
+      if (locale === defaultLocale) {
+        url.pathname = restOfPath === "/" ? "/" : restOfPath
+      } else {
+        url.pathname = `/${locale}${restOfPath}`
+      }
+      return NextResponse.redirect(url)
+    }
+  }
+
+  // If pathname doesn't have locale, detect locale
+  // For non-default locales, redirect to include locale in URL
+  // For default locale, we'll rewrite internally (no redirect to avoid loop)
+  if (!pathnameHasLocale) {
+    const locale = getLocale(request)
+    // Only redirect non-default locales to show locale in URL
+    if (locale !== defaultLocale) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`
+      return NextResponse.redirect(url)
+    }
+    // For default locale, continue to rewrite logic below (no redirect)
+  }
+
+  // Extract actual path for checking login/onboarding
+  const actualPath = pathAfterLocale
+
+  const isLoginPage =
+    actualPath === "/login" || actualPath.startsWith("/login/")
   const isOnboardingPage =
-    pathname === "/onboarding" || pathname.startsWith("/onboarding/")
+    actualPath === "/onboarding" || actualPath.startsWith("/onboarding/")
 
   // Check authentication
   const authenticated = isAuthenticated(request)
 
   if (!authenticated && !isLoginPage) {
+    const locale = pathnameLocale || getLocale(request)
     const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = "/login"
+    // For default locale, don't show it in URL
+    if (locale === defaultLocale) {
+      loginUrl.pathname = "/login"
+    } else {
+      loginUrl.pathname = `/${locale}/login`
+    }
     return NextResponse.redirect(loginUrl)
   }
 
@@ -63,8 +112,13 @@ export async function middleware(request: NextRequest) {
     try {
       const authToken = getAuthTokenFromRequest(request)
       if (!authToken) {
+        const locale = pathnameLocale || getLocale(request)
         const loginUrl = request.nextUrl.clone()
-        loginUrl.pathname = "/login"
+        if (locale === defaultLocale) {
+          loginUrl.pathname = "/login"
+        } else {
+          loginUrl.pathname = `/${locale}/login`
+        }
         return NextResponse.redirect(loginUrl)
       }
 
@@ -72,8 +126,13 @@ export async function middleware(request: NextRequest) {
       const tenantId = await getTenantIdFromSlug(tenant, authToken)
       if (!tenantId) {
         // Tenant not found, redirect to error page
+        const locale = pathnameLocale || getLocale(request)
         const errorUrl = request.nextUrl.clone()
-        errorUrl.pathname = `/t/${tenant}/error`
+        if (locale === defaultLocale) {
+          errorUrl.pathname = "/error"
+        } else {
+          errorUrl.pathname = `/${locale}/error`
+        }
         errorUrl.searchParams.set("message", "Tenant not found")
         return NextResponse.redirect(errorUrl)
       }
@@ -81,23 +140,33 @@ export async function middleware(request: NextRequest) {
       const tenantStatus = await getTenantStatus(tenantId, authToken)
 
       if (tenantStatus === "not-done" || tenantStatus === "pending") {
+        const locale = pathnameLocale || getLocale(request)
         const onboardingUrl = request.nextUrl.clone()
-        onboardingUrl.pathname = "/onboarding"
+        if (locale === defaultLocale) {
+          onboardingUrl.pathname = "/onboarding"
+        } else {
+          onboardingUrl.pathname = `/${locale}/onboarding`
+        }
         return NextResponse.redirect(onboardingUrl)
       }
     } catch (error) {
       console.error("Middleware error:", error)
+      const locale = pathnameLocale || getLocale(request)
       const loginUrl = request.nextUrl.clone()
-      loginUrl.pathname = "/login"
+      if (locale === defaultLocale) {
+        loginUrl.pathname = "/login"
+      } else {
+        loginUrl.pathname = `/${locale}/login`
+      }
       return NextResponse.redirect(loginUrl)
     }
   }
 
+  // Rewrite URL internally to /[lang]/path
+  // But keep the visible URL clean: /path or /{locale}/path
+  const locale = pathnameLocale || getLocale(request)
   const url = request.nextUrl.clone()
-  url.pathname =
-    pathname === "/" || pathname === ""
-      ? `/t/${tenant}`
-      : `/t/${tenant}${pathname}`
+  url.pathname = `/${locale}${pathAfterLocale === "/" ? "" : pathAfterLocale}`
 
   const res = NextResponse.rewrite(new URL(url.toString()))
 

@@ -15,14 +15,17 @@ import {
   getTenantId,
   getTenantData,
 } from "@/lib/api/onboarding"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import type {
   LicenseHistoryValues,
   RegulatoryDocValues,
 } from "@/lib/schemas/onboarding"
 import { logoutCognitoUser } from "@/app/utils/auth"
 import { useOnboardingFlow } from "@/app/hooks/use-onboarding-flow"
-import { markWelcomeAsShown } from "@/app/utils/onboarding"
+import {
+  markWelcomeAsShown,
+  getTenantFromHostname,
+} from "@/app/utils/onboarding"
 
 // Helper function to get base domain URL for error redirect
 const getBaseDomainUrl = (path: string): string => {
@@ -35,14 +38,13 @@ const getBaseDomainUrl = (path: string): string => {
 
 const OnboardingPage = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const [tenant, setTenant] = useState<string | null>(null)
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [onboardingStatus, setOnboardingStatus] = useState<
     "not-done" | "pending" | "completed" | null
   >(null)
   const router = useRouter()
-  const params = useParams()
-  const tenant = params?.tenant as string
   const statusInitializedRef = useRef(false)
 
   // Use onboarding flow hook for step management
@@ -61,8 +63,23 @@ const OnboardingPage = () => {
     regulatoryDoc?: RegulatoryDocValues[]
   }>({})
 
-  // Fetch tenant ID
+  // Extract tenant from subdomain on mount
   useEffect(() => {
+    const extractedTenant = getTenantFromHostname()
+    if (!extractedTenant) {
+      setError(
+        "Invalid subdomain. Please access this page from a tenant subdomain."
+      )
+      setIsLoading(false)
+      return
+    }
+    setTenant(extractedTenant)
+  }, [])
+
+  // Fetch tenant ID when tenant is available
+  useEffect(() => {
+    if (!tenant) return
+
     const initialize = async () => {
       try {
         const id = await getTenantId(tenant)
@@ -170,6 +187,23 @@ const OnboardingPage = () => {
   const handleLogout = () => {
     logoutCognitoUser()
     router.push("/login")
+  }
+
+  // Show error if tenant extraction failed
+  if (error && !tenant && !isLoading) {
+    return (
+      <main className="min-h-svh w-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Retry
+          </button>
+        </div>
+      </main>
+    )
   }
 
   if (

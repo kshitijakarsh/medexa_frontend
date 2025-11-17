@@ -81,3 +81,30 @@ export function clearOnboardingStorage(tenantId: string): void {
   if (typeof window === "undefined") return
   localStorage.removeItem(`onboarding_welcome_shown_${tenantId}`)
 }
+
+/**
+ * Extract tenant slug from hostname (client-side)
+ * Mirrors the middleware's getTenantFromHost logic
+ * @returns Tenant slug or null if not found
+ */
+export function getTenantFromHostname(): string | null {
+  if (typeof window === "undefined") return null
+
+  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN
+  if (!BASE_DOMAIN) return null
+
+  const hostname = window.location.hostname
+  if (!hostname) return null
+
+  // Apex domain (domain.com) - no tenant
+  if (hostname === BASE_DOMAIN) return null
+
+  // Subdomain check (tenant.domain.com)
+  if (hostname.endsWith("." + BASE_DOMAIN)) {
+    const sub = hostname.slice(0, -(BASE_DOMAIN.length + 1))
+    if (!sub || sub === "www") return null
+    return sub
+  }
+
+  return null
+}
