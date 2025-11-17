@@ -177,100 +177,132 @@
 //   );
 // }
 
+"use client"
 
-
-"use client";
-
-import { FormField, FormItem, FormLabel, FormControl } from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
 import {
-    Select,
-    SelectTrigger,
-    SelectContent,
-    SelectValue,
-    SelectItem,
-} from "@workspace/ui/components/select";
-import { UploadCard } from "../../../../../../components/common/upload-card";
-import { AppSelect } from "@/components/common/app-select";
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@workspace/ui/components/form"
+import { Input } from "@workspace/ui/components/input"
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+  SelectItem,
+} from "@workspace/ui/components/select"
+import { UploadCard } from "@/components/common/upload-card"
+import { AppSelect } from "@/components/common/app-select"
 
 export function PersonalDetails({ form }: { form: any }) {
-    return (
-        <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField control={form.control} name="gender" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Gender</FormLabel>
-                        <FormControl>
-                            {/* <Select onValueChange={field.onChange} value={field.value}>
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Gender</FormLabel>
+              <FormControl>
+                {/* <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger><SelectValue placeholder="Select Gender" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">Male</SelectItem>
                   <SelectItem value="female">Female</SelectItem>
                 </SelectContent>
               </Select> */}
-                            <AppSelect
-                                placeholder="Select Gender"
-                                value={field.value}
-                                onChange={field.onChange}
-                                options={[
-                                    { label: "male", value: "Male" },
-                                    { label: "female", value: "Female" },
-                                ]}
-                                error={form.formState.errors.floor}
-                            />
-                        </FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="dob" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Date of Birth</FormLabel>
-                        <FormControl><Input type="date" {...field} /></FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="marital_status" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Marital Status</FormLabel>
-                        <FormControl>
-                            {/* <Select onValueChange={field.onChange} value={field.value}>
+                <AppSelect
+                  placeholder="Select Gender"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={[
+                    { label: "male", value: "Male" },
+                    { label: "female", value: "Female" },
+                  ]}
+                  error={form.formState.errors.floor}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="dob"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Date of Birth</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="marital_status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Marital Status</FormLabel>
+              <FormControl>
+                {/* <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger><SelectValue placeholder="Select Marital Status" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="single">Single</SelectItem>
                   <SelectItem value="married">Married</SelectItem>
                 </SelectContent>
               </Select> */}
-                            <AppSelect
-                                placeholder="Select Marital Status"
-                                value={field.value}
-                                onChange={field.onChange}
-                                options={[
-                                    { label: "single", value: "Single" },
-                                    { label: "married", value: "Married" },
-                                ]}
-                                error={form.formState.errors.floor}
-                            />
-                        </FormControl>
-                    </FormItem>
-                )} />
-            </div>
+                <AppSelect
+                  placeholder="Select Marital Status"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={[
+                    { label: "single", value: "Single" },
+                    { label: "married", value: "Married" },
+                  ]}
+                  error={form.formState.errors.floor}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField control={form.control} name="cpr" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>CPR/NID</FormLabel>
-                        <FormControl><Input {...field} /></FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="cpr_expiration" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>CPR/NID Expiration</FormLabel>
-                        <FormControl><Input type="date" {...field} /></FormControl>
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="blood_group" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Blood Group</FormLabel>
-                        <FormControl>
-                            {/* <Select onValueChange={field.onChange} value={field.value}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <FormField
+          control={form.control}
+          name="cpr"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CPR/NID</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="cpr_expiration"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>CPR/NID Expiration</FormLabel>
+              <FormControl>
+                <Input type="date" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="blood_group"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Blood Group</FormLabel>
+              <FormControl>
+                {/* <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger><SelectValue placeholder="Select Blood Group" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="A+">A+</SelectItem>
@@ -278,52 +310,58 @@ export function PersonalDetails({ form }: { form: any }) {
                   <SelectItem value="O+">O+</SelectItem>
                 </SelectContent>
               </Select> */}
-                            <AppSelect
-                                placeholder="Select Blood Group"
-                                value={field.value}
-                                onChange={field.onChange}
-                                options={[
-                                    { label: "A+", value: "A+" },
-                                    { label: "B+", value: "B+" },
-                                    { label: "O+", value: "O+" },
-                                ]}
-                                error={form.formState.errors.floor}
-                            />
-                        </FormControl>
-                    </FormItem>
-                )} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField control={form.control} name="nationality" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Nationality</FormLabel>
-                        <FormControl><Input placeholder="Enter Nationality" {...field} /></FormControl>
-                    </FormItem>
-                )} />
-            </div>
-
-            <div className="pt-4 max-w-sm">
-                {/* <FormLabel>Employee Photo</FormLabel>
-                <UploadCard title="Employee Photo" /> */}
-                <FormField
-                    control={form.control}
-                    name="employee_photo"
-                    render={({ field }) => (
-                        <FormItem className="pt-4 max-w-sm">
-                            <FormLabel>Employee Photo</FormLabel>
-                            <FormControl>
-                                <UploadCard
-                                    title="Employee Photo"
-                                    value={field.value}
-                                    onFileSelect={(file) => field.onChange(file)}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    )}
+                <AppSelect
+                  placeholder="Select Blood Group"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={[
+                    { label: "A+", value: "A+" },
+                    { label: "B+", value: "B+" },
+                    { label: "O+", value: "O+" },
+                  ]}
+                  error={form.formState.errors.floor}
                 />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
 
-            </div>
-        </div>
-    );
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <FormField
+          control={form.control}
+          name="nationality"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nationality</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter Nationality" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="pt-4 max-w-sm">
+        {/* <FormLabel>Employee Photo</FormLabel>
+                <UploadCard title="Employee Photo" /> */}
+        <FormField
+          control={form.control}
+          name="employee_photo"
+          render={({ field }) => (
+            <FormItem className="pt-4 max-w-sm">
+              <FormLabel>Employee Photo</FormLabel>
+              <FormControl>
+                <UploadCard
+                  title="Employee Photo"
+                  value={field.value}
+                  onFileSelect={(file) => field.onChange(file)}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </div>
+    </div>
+  )
 }

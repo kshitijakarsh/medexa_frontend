@@ -24,10 +24,9 @@
 //   );
 // }
 
+"use client"
 
-"use client";
-
-import { UploadCard } from "../../../../../../components/common/upload-card";
+import { UploadCard } from "@/components/common/upload-card"
 
 export function Documents({ form }: { form: any }) {
   const docs = [
@@ -37,7 +36,7 @@ export function Documents({ form }: { form: any }) {
     "Resume / CV",
     "Offer Letter / Contract",
     "Signature",
-  ];
+  ]
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -48,5 +47,5 @@ export function Documents({ form }: { form: any }) {
         </div>
       ))}
     </div>
-  );
+  )
 }
