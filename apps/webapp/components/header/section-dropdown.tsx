@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useParams } from "next/navigation"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +25,7 @@ import {
   Briefcase,
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
-import { getAuthToken } from "@/app/utils/onboarding"
+import { getAuthToken, getTenantFromHostname } from "@/app/utils/onboarding"
 import { getTenantId } from "@/lib/api/onboarding"
 import { createTenantApiClient } from "@/lib/api/tenant"
 import { createModulesApiClient, type Module } from "@/lib/api/module"
@@ -63,8 +62,7 @@ const moduleIconMap: Record<string, LucideIcon> = {
 const DefaultIcon = Cog
 
 export function SectionDropdown() {
-  const params = useParams()
-  const tenantSlug = params?.tenant as string
+  const tenantSlug = getTenantFromHostname()
 
   const [selected, setSelected] = React.useState("Administration")
   const [sections, setSections] = React.useState<Section[]>([])
