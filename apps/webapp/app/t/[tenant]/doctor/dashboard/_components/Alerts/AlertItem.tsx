@@ -66,17 +66,18 @@ import {
   FlaskConical,
   CircleAlert,
 } from "lucide-react";
+import type { ReactElement } from "react";
 
 interface AlertItemProps {
   type: "emergency" | "patient" | "insurance";
   title: string;
   subtitle: string;
 }
-
 const iconMap: Record<
   string,
-  { icon: JSX.Element; bg: string; color: string }
+  { icon: ReactElement; bg: string; color: string }
 > = {
+
   emergency: {
     icon: <CircleAlert size={20} strokeWidth={2.5} />, // matches screenshot
     bg: "bg-[#FFEDEC]",

@@ -349,11 +349,13 @@ import {
     TableRow,
 } from "@workspace/ui/components/table";
 import { DashboardSectionCard } from "./ui/DashboardSectionCard";
+import { ViewAllLink } from "./ui/ViewAllLink";
+import { buildUrl, DOCTOR_DEFAULT_TAB, DoctorHomeTabKeys, DoctorHomeTabs, ROUTES } from "@/lib/routes";
 
 export default function AppointmentTable() {
     const [loading, setLoading] = useState(true);
     const [rows, setRows] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState("all");
+    const [activeTab, setActiveTab] = useState(DOCTOR_DEFAULT_TAB);
 
     useEffect(() => {
         getAppointments().then((d) => {
@@ -366,11 +368,11 @@ export default function AppointmentTable() {
 
     // dynamic filtering
     const filteredRows =
-        activeTab === "all"
+        activeTab === DOCTOR_DEFAULT_TAB
             ? rows
-            : activeTab === "vip"
-                ? rows.filter((r) => r.type.toLowerCase().includes("vip"))
-                : rows.filter((r) => r.type.toLowerCase().includes("follow"));
+            : activeTab === DoctorHomeTabKeys[1]
+                ? rows.filter((r) => r.type.toLowerCase().includes(DoctorHomeTabKeys[1]))
+                : rows.filter((r) => r.type.toLowerCase().includes(DoctorHomeTabKeys[2]));
 
     return (
         // <div className="bg-white p-4 rounded-xl shadow-sm border ">
@@ -379,18 +381,22 @@ export default function AppointmentTable() {
             {/* Header Tabs */}
             <div className="flex justify-between items-center mb-4">
                 <DynamicTabs
-                    tabs={[
-                        { key: "all", label: "All Appointments" },
-                        { key: "vip", label: "VIP Patients" },
-                        { key: "follow", label: "Follow Up Patients" },
-                    ]}
-                    defaultTab="all"
+                    // tabs={[
+                    //     { key: "all", label: "All Appointments" },
+                    //     { key: "vip", label: "VIP Patients" },
+                    //     { key: "follow", label: "Follow Up Patients" },
+                    // ]}
+                    tabs={DoctorHomeTabs}
+                    defaultTab={DOCTOR_DEFAULT_TAB}
                     onChange={(key) => setActiveTab(key)}
                 />
 
-                <div className="text-sm text-[#0B84FF] cursor-pointer">
+                {/* <div className="text-sm text-[#0B84FF] cursor-pointer">
                     View All
-                </div>
+                </div> */}
+                {/* <ViewAllLink href="/doctor-dashboard/emergency-patients" /> */}
+                <ViewAllLink href={buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: activeTab })} />
+
             </div>
 
             {/* Table */}

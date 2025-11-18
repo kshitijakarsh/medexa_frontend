@@ -187,6 +187,8 @@ import { EmergencyPatientCard } from "./EmergencyPatient/EmergencyPatientCard";
 import { DashboardSectionCard } from "./ui/DashboardSectionCard";
 import Link from "next/link";
 import { SectionTitle } from "./ui/SectionTitle";
+import { ViewAllLink } from "./ui/ViewAllLink";
+import { buildUrl, ROUTES } from "@/lib/routes";
 
 export default function EmergencyPatients() {
     const [loading, setLoading] = useState(true);
@@ -205,14 +207,17 @@ export default function EmergencyPatients() {
             <div className="flex items-center justify-between mb-4">
                 {/* <div className="text-base font-semibold">Emergency Patients</div> */}
                 <SectionTitle as="h3">Emergency Patients</SectionTitle>
-                
+
                 {/* View All route */}
-                <Link
+                {/* <Link
                     href="/doctor-dashboard/emergency-patients"
                     className="text-sm text-[#0B84FF] font-medium"
                 >
                     View All
-                </Link>
+                </Link> */}
+                {/* <ViewAllLink href={ROUTES.DOCTOR_VIEW_ALL + "?tab=emergency"} /> */}
+                <ViewAllLink href={buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: "emergency" })} />
+
             </div>
 
             {/* List */}

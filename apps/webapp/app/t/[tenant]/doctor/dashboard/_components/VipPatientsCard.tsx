@@ -133,6 +133,8 @@ import Link from "next/link";
 import { VipCrownBadge } from "./VIP/VipCrownBadge";
 import { SectionTitle } from "./ui/SectionTitle";
 import { VipPatientSkeleton } from "./VIP/VipPatientSkeleton";
+import { buildUrl, DoctorTabs, ROUTES } from "@/lib/routes";
+import { ViewAllLink } from "./ui/ViewAllLink";
 
 export default function VipPatientsCard() {
     const [loading, setLoading] = useState(true);
@@ -144,6 +146,8 @@ export default function VipPatientsCard() {
             setLoading(false);
         });
     }, []);
+                    console.log(DoctorTabs[2]?.key)
+
 
     return (
         <DashboardSectionCard>
@@ -155,9 +159,11 @@ export default function VipPatientsCard() {
                 </div>
 
 
-                <Link href="/doctor-dashboard/vip-patients" className="text-sm text-[#0B84FF]">
+                {/* <Link href="/doctor-dashboard/vip-patients" className="text-sm text-[#0B84FF]">
                     View All
-                </Link>
+                </Link> */}
+                <ViewAllLink href={buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: DoctorTabs[2]?.key })} />
+
             </div>
 
             {/* List */}
