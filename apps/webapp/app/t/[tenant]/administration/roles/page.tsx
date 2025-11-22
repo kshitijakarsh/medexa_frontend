@@ -12,7 +12,7 @@ import { AddDialog } from "./_components/AddDialog";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { getMockEmployees } from "./_components/api";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { useRouter } from "next/navigation";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 

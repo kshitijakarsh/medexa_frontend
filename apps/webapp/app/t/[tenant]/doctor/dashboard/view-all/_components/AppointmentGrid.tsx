@@ -1,7 +1,7 @@
 // app/doctor-dashboard/components/appointments/AppointmentGrid.tsx
 "use client";
 
-import AppointmentCard from "./AppointmentCard";
+import AppointmentCard from "@/components/common/pasient-card/appointment-card";
 import AppointmentCardSkeleton from "./AppointmentCardSkeleton";
 
 

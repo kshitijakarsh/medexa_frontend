@@ -196,7 +196,7 @@
 
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { DataTable } from "@/components/common/data-table";

@@ -1,7 +1,7 @@
 "use client";
 
+import { CardBlock } from "@/components/common/pasient-card/card-block";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { CardBlock } from "../ui/CardBlock";
 
 export function VipPatientSkeleton() {
   return (

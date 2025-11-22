@@ -12,7 +12,7 @@ import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { getMockOperationTheatreData } from "./_components/api";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { AddOperationTheatreDialog } from "./_components/AddOperationTheatreDialog";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 

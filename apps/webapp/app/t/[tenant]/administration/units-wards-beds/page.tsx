@@ -254,7 +254,7 @@ import NewButton from "@/components/common/new-button";
 import { getMockData } from "./_components/api";
 import { AddBedDialog } from "./_components/AddBedDialog";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import FilterButton from "@/components/common/filter-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";

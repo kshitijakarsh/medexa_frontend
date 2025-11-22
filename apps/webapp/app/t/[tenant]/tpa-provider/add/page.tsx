@@ -14,7 +14,7 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { Header } from "@/components/header";
 import { useState } from "react";
 import { AppSelect } from "@/components/common/app-select";

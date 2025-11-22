@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { CardBlock } from "../ui/CardBlock";
+import { CardBlock } from "../../../../../../../components/common/pasient-card/card-block";
 
 export function FollowUpPatientSkeleton() {
   return (

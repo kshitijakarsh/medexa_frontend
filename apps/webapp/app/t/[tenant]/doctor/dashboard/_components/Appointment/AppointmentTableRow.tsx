@@ -34,8 +34,8 @@
 
 import { TableRow, TableCell } from "@workspace/ui/components/table";
 import { PatientCell } from "./PatientCell";
-import { StatusPill } from "../ui/StatusPill";
-import { TypeBadge } from "../ui/TypeBadge";
+import { StatusPill } from "../../../../../../../components/common/pasient-card/status-pill";
+import { TypeBadge } from "../../../../../../../components/common/pasient-card/type-badge";
 
 export function AppointmentTableRow({ r, idx }: any) {
   return (

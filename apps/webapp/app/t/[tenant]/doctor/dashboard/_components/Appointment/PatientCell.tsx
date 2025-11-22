@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "../ui/AvatarImage";
+import { UserAvatar } from "../../../../../../../components/common/pasient-card/user-avatar";
 
 export function PatientCell({ name, mrn, avatar }: any) {
   return (

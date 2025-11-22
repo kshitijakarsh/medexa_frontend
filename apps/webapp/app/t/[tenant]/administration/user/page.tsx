@@ -13,7 +13,7 @@ import AddDialog from "./_components/AddDialog";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { fetchUsers, fetchUserRoles, addUsers } from "./_components/api";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { useRouter } from "next/navigation";
 import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";

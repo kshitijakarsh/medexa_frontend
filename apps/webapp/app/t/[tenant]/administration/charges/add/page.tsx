@@ -8,7 +8,7 @@ import { useForm } from "@workspace/ui/hooks/use-form";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@workspace/ui/components/form";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { Header } from "@/components/header";
 import { getCategoriesDropdown, getUnitsDropdown, getTaxesDropdown, addServices } from "../_components/api";
 import { useRouter } from "next/navigation";

@@ -3,11 +3,11 @@
 
 import Image from "next/image";
 import { Clock } from "lucide-react";
-import { StatusPill } from "../ui/StatusPill";
-import { UserAvatar } from "../ui/AvatarImage";
-import { TypeBadge } from "../ui/TypeBadge";
-import { TimeRoomInfo } from "../ui/TimeRoomInfo";
-import { CardBlock } from "../ui/CardBlock";
+import { StatusPill } from "../../../../../../../components/common/pasient-card/status-pill";
+import { UserAvatar } from "../../../../../../../components/common/pasient-card/user-avatar";
+import { TypeBadge } from "../../../../../../../components/common/pasient-card/type-badge";
+import { TimeRoomInfo } from "../../../../../../../components/common/pasient-card/time-room-info";
+import { CardBlock } from "../../../../../../../components/common/pasient-card/card-block";
 
 export function EmergencyPatientCard({ p }: { p: any }) {
   return (

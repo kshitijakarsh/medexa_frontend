@@ -11,7 +11,7 @@ import AddBulkDialog from "./_components/AddBulkDialog";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { fetchUnits, fetchTaxes, fetchCategories, fetchServices, deleteById, updateStatus } from "./_components/api";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { useRouter } from "next/navigation";
 import ChargesRowActions from "./_components/ChargesRowActions";
 import TabSwitcher from "@/components/common/tab-switcher-menu";

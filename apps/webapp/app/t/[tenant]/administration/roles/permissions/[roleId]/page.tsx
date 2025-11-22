@@ -180,7 +180,7 @@
 
 import { useParams } from "next/navigation";
 import { useState } from "react";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { PermissionAccordion } from "../_components/PermissionAccordion";
 import { Button } from "@workspace/ui/components/button";
 import { Header } from "@/components/header";

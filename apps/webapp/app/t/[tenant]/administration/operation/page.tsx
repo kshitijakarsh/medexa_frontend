@@ -204,7 +204,7 @@ import { useRouter } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 
 import { Header } from "@/components/header";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { Button } from "@workspace/ui/components/button";
 import { DataTable } from "@/components/common/data-table";
 import SearchInput from "@/components/common/search-input";

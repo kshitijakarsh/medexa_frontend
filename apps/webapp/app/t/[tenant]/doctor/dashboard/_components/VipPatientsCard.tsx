@@ -130,7 +130,7 @@ import { DashboardSectionCard } from "./ui/DashboardSectionCard";
 import { VipPatientItem } from "./VIP/VipPatientItem";
 import { SkeletonBlock } from "./ui/SkeletonBlock";
 import Link from "next/link";
-import { VipCrownBadge } from "./VIP/VipCrownBadge";
+import { VipCrownBadge } from "../../../../../../components/common/pasient-card/vip-crown-badge";
 import { SectionTitle } from "./ui/SectionTitle";
 import { VipPatientSkeleton } from "./VIP/VipPatientSkeleton";
 import { buildUrl, DoctorTabs, ROUTES } from "@/lib/routes";

@@ -61,11 +61,11 @@
 "use client";
 
 import { FollowUpBadge } from "./FollowUpBadge";
-import { UserAvatar } from "../ui/AvatarImage";
-import { TimeRoomInfo } from "../ui/TimeRoomInfo";
-import { StatusPill } from "../ui/StatusPill";
-import { TypeBadge } from "../ui/TypeBadge";
-import { CardBlock } from "../ui/CardBlock";
+import { UserAvatar } from "../../../../../../../components/common/pasient-card/user-avatar";
+import { TimeRoomInfo } from "../../../../../../../components/common/pasient-card/time-room-info";
+import { StatusPill } from "../../../../../../../components/common/pasient-card/status-pill";
+import { TypeBadge } from "../../../../../../../components/common/pasient-card/type-badge";
+import { CardBlock } from "../../../../../../../components/common/pasient-card/card-block";
 
 export function FollowUpPatientItem({ p }: { p: any }) {
   return (

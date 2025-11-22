@@ -42,12 +42,12 @@
 
 "use client";
 
-import { VipCrownBadge } from "./VipCrownBadge";
-import { UserAvatar } from "../ui/AvatarImage";
-import { TimeRoomInfo } from "../ui/TimeRoomInfo";
-import { TypeBadge } from "../ui/TypeBadge";
-import { StatusPill } from "../ui/StatusPill";
-import { CardBlock } from "../ui/CardBlock";
+import { CardBlock } from "@/components/common/pasient-card/card-block";
+import { StatusPill } from "@/components/common/pasient-card/status-pill";
+import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
+import { TypeBadge } from "@/components/common/pasient-card/type-badge";
+import { UserAvatar } from "@/components/common/pasient-card/user-avatar";
+import { VipCrownBadge } from "@/components/common/pasient-card/vip-crown-badge";
 
 export function VipPatientItem({ p }: { p: any }) {
   return (
