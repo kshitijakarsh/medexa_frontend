@@ -86,7 +86,7 @@ export function EmployeeRowActions({ onEdit, onView, onDelete, onPermission }: a
   
   const rowActions: RowAction[] = [
     { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: onEdit, variant: "success" },
-    { label: "View", icon: <Eye className="w-4 h-4" />, onClick: onView, variant: "info" },
+    // { label: "View", icon: <Eye className="w-4 h-4" />, onClick: onView, variant: "success" },
     { label: "Permissions", icon: <ShieldCheck className="w-4 h-4" />, onClick: onPermission, variant: "success" },
     { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: onDelete, variant: "danger" },
   ];

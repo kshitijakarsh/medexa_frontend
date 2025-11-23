@@ -14,7 +14,7 @@ import { Loader2 } from "lucide-react"
 interface Column<T> {
   key: keyof T | string
   label: string
-  render?: (row: T) => React.ReactNode
+  render?: (row: T, index?: number) => React.ReactNode
   className?: string
 }
 
@@ -129,7 +129,8 @@ export function DataTable<T>({
                     // className="py-2.5"
                     className={`py-2.5 ${col.className || ""}`}
                   >
-                    {col.render ? col.render(row) : (row[col.key as keyof T] as any)}
+                    {/* {col.render ? col.render(row) : (row[col.key as keyof T] as any)} */}
+                    {col.render ? col.render(row, index) : (row[col.key as keyof T] as any)}
                   </TableCell>
                 ))}
               </TableRow>

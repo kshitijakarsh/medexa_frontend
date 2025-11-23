@@ -84,7 +84,7 @@
 // // //             {node.label}
 // // //           </div>
 // // //         )}
-        
+
 // // //         <div className="flex flex-wrap gap-x-6 gap-y-3 items-center">
 // // //           {/* All Checkbox */}
 // // //           <div className="flex items-center gap-2.5 min-w-[80px]">
@@ -139,7 +139,7 @@
 // // //               <div className="px-5 py-4 bg-gradient-to-b from-white to-[#F9FAFB] border-b border-gray-200">
 // // //                 {renderActionRow(node, false)}
 // // //               </div>
-              
+
 // // //               {/* Children sections */}
 // // //               <div className="divide-y divide-gray-200">
 // // //                 {node.children?.map((child) => (
@@ -207,7 +207,7 @@
 // //   useEffect(() => {
 // //     // Initialize permissions structure from modules
 // //     const initialPermissions: Record<string, any> = { ...value };
-    
+
 // //     const initializeNode = (node: PermissionNode) => {
 // //       if (!initialPermissions[node.key]) {
 // //         initialPermissions[node.key] = {};
@@ -217,7 +217,7 @@
 // //           initialPermissions[node.key][action] = false;
 // //         }
 // //       });
-      
+
 // //       if (node.children) {
 // //         node.children.forEach((child) => {
 // //           if (!initialPermissions[child.key]) {
@@ -246,12 +246,12 @@
 // //     const actions = node.actions || [];
 // //     const nodePermissions = permissions[node.key] || {};
 // //     const allActionsChecked = actions.every((act) => nodePermissions[act] === true);
-    
+
 // //     if (node.children) {
 // //       const allChildrenChecked = node.children.every((child) => isAllChecked(child));
 // //       return allActionsChecked && allChildrenChecked;
 // //     }
-    
+
 // //     return allActionsChecked;
 // //   };
 
@@ -260,11 +260,11 @@
 // //     if (!updated[node.key]) {
 // //       updated[node.key] = {};
 // //     }
-    
+
 // //     (node.actions || []).forEach((act) => {
 // //       updated[node.key][act] = checked;
 // //     });
-    
+
 // //     (node.children || []).forEach((child) => {
 // //       toggleAllBranch(child, checked, updated);
 // //     });
@@ -273,11 +273,11 @@
 // //   // Update "All" checkbox when individual actions change
 // //   const handleActionChange = (node: PermissionNode, action: string, checked: boolean) => {
 // //     const updated = JSON.parse(JSON.stringify(permissions)); // Deep clone
-    
+
 // //     if (!updated[node.key]) {
 // //       updated[node.key] = {};
 // //     }
-    
+
 // //     updated[node.key][action] = checked;
 
 // //     updatePermissions(updated);
@@ -296,7 +296,7 @@
 // //             {node.label}
 // //           </div>
 // //         )}
-        
+
 // //         <div className="flex flex-wrap gap-x-6 gap-y-3 items-center">
 // //           {/* All Checkbox */}
 // //           <div className="flex items-center gap-2.5 min-w-[80px]">
@@ -351,7 +351,7 @@
 // //               <div className="px-5 py-4 bg-gradient-to-b from-white to-[#F9FAFB] border-b border-gray-200">
 // //                 {renderActionRow(node, false)}
 // //               </div>
-              
+
 // //               {/* Children sections */}
 // //               <div className="divide-y divide-gray-200">
 // //                 {node.children?.map((child) => (
@@ -416,7 +416,7 @@
 //   useEffect(() => {
 //     // Open all main modules by default
 //     setOpenMainModules(mainModules.map((m) => m.key));
-    
+
 //     // Open all sub-modules by default
 //     const allSubModules: string[] = [];
 //     mainModules.forEach((main) => {
@@ -689,7 +689,7 @@ export const PermissionAccordion = ({
   useEffect(() => {
     // Open all main modules by default
     setOpenMainModules(mainModules.map((m) => m.key));
-    
+
     // Open all sub-modules by default
     const allSubModules: string[] = [];
     mainModules.forEach((main) => {
@@ -711,7 +711,7 @@ export const PermissionAccordion = ({
         initialPermissions[mainModule.key][subModule.key] = {};
 
         (subModule.actions || []).forEach((action) => {
-          initialPermissions[mainModule.key][subModule.key][action] = 
+          initialPermissions[mainModule.key][subModule.key][action] =
             value[mainModule.key]?.[subModule.key]?.[action] || false;
         });
 
@@ -720,7 +720,7 @@ export const PermissionAccordion = ({
           subModule.children.forEach((child) => {
             initialPermissions[mainModule.key][child.key] = {};
             (child.actions || []).forEach((action) => {
-              initialPermissions[mainModule.key][child.key][action] = 
+              initialPermissions[mainModule.key][child.key][action] =
                 value[mainModule.key]?.[child.key]?.[action] || false;
             });
           });
@@ -736,6 +736,15 @@ export const PermissionAccordion = ({
     onChange?.(updated);
   };
 
+  // Check if all Mian actions in a node are checked
+  const isMainModuleAllChecked = (main: MainModule): boolean => {
+    const mainKey = main.key;
+
+    // Every sub and child action must be checked
+    return main.subModules.every((sub) => isAllChecked(mainKey, sub));
+  };
+
+
   // Check if all actions in a node are checked
   const isAllChecked = (mainModuleKey: string, node: PermissionNode): boolean => {
     const actions = node.actions || [];
@@ -743,7 +752,7 @@ export const PermissionAccordion = ({
     const allActionsChecked = actions.every((act) => nodePermissions[act] === true);
 
     if (node.children) {
-      const allChildrenChecked = node.children.every((child) => 
+      const allChildrenChecked = node.children.every((child) =>
         isAllChecked(mainModuleKey, child)
       );
       return allActionsChecked && allChildrenChecked;
@@ -751,6 +760,31 @@ export const PermissionAccordion = ({
 
     return allActionsChecked;
   };
+
+  // Toggle all main checkboxes 
+  const toggleMainModuleAll = (
+    main: MainModule,
+    checked: boolean
+  ) => {
+    const updated = JSON.parse(JSON.stringify(permissions));
+    const mainKey = main.key;
+
+    if (!updated[mainKey]) updated[mainKey] = {};
+
+    // Loop through every sub module
+    main.subModules.forEach((sub) => {
+      // Toggle the main submodule
+      toggleAllBranch(mainKey, sub, checked, updated);
+
+      // Toggle children (if exists)
+      sub.children?.forEach((child) => {
+        toggleAllBranch(mainKey, child, checked, updated);
+      });
+    });
+
+    updatePermissions(updated);
+  };
+
 
   // Toggle all checkboxes for a node and its children
   const toggleAllBranch = (
@@ -882,20 +916,66 @@ export const PermissionAccordion = ({
     );
   };
 
-  // Render main module with simple, clean UI matching sub-modules
+  // // Render main module with simple, clean UI matching sub-modules
+  // const renderMainModule = (mainModule: MainModule) => {
+  //   return (
+  //     <AccordionItem
+  //       key={mainModule.key}
+  //       value={mainModule.key}
+  //       className="border-2 border-[#3B82F6] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 bg-white mb-5"
+  //     >
+  //       <AccordionTrigger className="px-5 py-3 text-base font-bold text-[#1E40AF] hover:bg-[#EFF6FF] bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE] transition-colors duration-150">
+  //         <span className="flex items-center gap-3">
+  //           {mainModule.icon && <span className="text-xl">{mainModule.icon}</span>}
+  //           {mainModule.label}
+  //         </span>
+  //       </AccordionTrigger>
+  //       <AccordionContent className="bg-[#F8FAFC] px-5 py-5">
+  //         <Accordion
+  //           type="multiple"
+  //           value={openSubModules}
+  //           onValueChange={setOpenSubModules}
+  //           className="space-y-3"
+  //         >
+  //           {mainModule.subModules.map((subModule) =>
+  //             renderSubModule(mainModule.key, subModule)
+  //           )}
+  //         </Accordion>
+  //       </AccordionContent>
+  //     </AccordionItem>
+  //   );
+  // };
   const renderMainModule = (mainModule: MainModule) => {
+    const Icon = mainModule.icon;
+
     return (
       <AccordionItem
         key={mainModule.key}
         value={mainModule.key}
         className="border-2 border-[#3B82F6] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 bg-white mb-5"
       >
-        <AccordionTrigger className="px-5 py-3 text-base font-bold text-[#1E40AF] hover:bg-[#EFF6FF] bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE] transition-colors duration-150">
-          <span className="flex items-center gap-3">
-            {mainModule.icon && <span className="text-xl">{mainModule.icon}</span>}
-            {mainModule.label}
-          </span>
+        <AccordionTrigger className="px-5 py-3 text-base font-bold text-[#1E40AF] flex justify-between items-center hover:bg-[#EFF6FF] bg-gradient-to-r from-[#DBEAFE] to-[#BFDBFE] transition-colors duration-150">
+          <div className="flex justify-between w-full">
+            {/* LEFT: ICON + TITLE */}
+            <span className="flex items-center gap-3">
+              {Icon && <Icon className="w-5 h-5 text-blue-700" />}
+              {mainModule.label}
+            </span>
+
+            {/* RIGHT: SELECT ALL */}
+            <div
+              className="flex items-center gap-2 mr-3"
+              onClick={(e) => e.stopPropagation()} // prevent accordion toggle
+            >
+              <CustomCheckbox
+                checked={isMainModuleAllChecked(mainModule)}
+                onChange={(checked) => toggleMainModuleAll(mainModule, checked)}
+              />
+              <span className="text-sm font-medium text-blue-900">All</span>
+            </div>
+          </div>
         </AccordionTrigger>
+
         <AccordionContent className="bg-[#F8FAFC] px-5 py-5">
           <Accordion
             type="multiple"
