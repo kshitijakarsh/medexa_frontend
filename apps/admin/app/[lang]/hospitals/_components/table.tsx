@@ -226,21 +226,24 @@
 //   )
 // }
 
-
 "use client"
 
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
 import { LocaleLink } from "@/components/locale-link"
 import { FilterInput } from "@/components/filter-input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu"
 import { EllipsisVertical } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { createTenantApiClient, type Tenant } from "@/lib/api/tenant"
 import { DataTable } from "@/components/common/data-table"
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
-import { Hospital_Domain } from "@/utils/src/constants/domain"
 import Link from "next/link"
 
 const getStatusBadgeVariant = (status: string) => {
@@ -314,22 +317,25 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
     {
       key: "domain_url",
       label: "Domain URL",
-      render: (r: any) => (
-        <Link
-          href={`https://${r.id}.${Hospital_Domain}`}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {`${r.id}.${Hospital_Domain}`}
-        </Link>
-      ),
+      render: (r: any) => {
+        const domainUrl =
+          process.env.NEXT_PUBLIC_ENV === "development"
+            ? `http://${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}:3001`
+            : `https://${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`
+        return (
+          <Link href={domainUrl} target="_blank" rel="noopener noreferrer">
+            {`${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`}
+          </Link>
+        )
+      },
     },
     {
       key: "status",
       label: "Status",
       render: (tenant: Tenant) => (
         <Badge className={getStatusBadgeVariant(tenant.status)}>
-          {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1).toLowerCase()}
+          {tenant.status.charAt(0).toUpperCase() +
+            tenant.status.slice(1).toLowerCase()}
         </Badge>
       ),
     },
@@ -347,7 +353,9 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
           <DropdownMenuContent align="end">
             {tenant.status.toLowerCase() === "pending" && (
               <DropdownMenuItem asChild>
-                <LocaleLink href={`/onboarding/modules?hospitalId=${tenant.id}`}>
+                <LocaleLink
+                  href={`/onboarding/modules?hospitalId=${tenant.id}`}
+                >
                   Get Onboarded
                 </LocaleLink>
               </DropdownMenuItem>
@@ -373,12 +381,18 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
         />
       }
       headerActions={
-        <Button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700" asChild>
-          <LocaleLink href="/create-hospital">{dict.pages.hospitals.table.onboardNew}</LocaleLink>
+        <Button
+          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
+          asChild
+        >
+          <LocaleLink href="/create-hospital">
+            {dict.pages.hospitals.table.onboardNew}
+          </LocaleLink>
         </Button>
       }
       pagination={
-        !loading && tenants.length > 0 && (
+        !loading &&
+        tenants.length > 0 && (
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
               Showing {tenants.length} of {totalData} hospitals
@@ -398,7 +412,9 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
                 disabled={currentPage === totalPages}
               >
                 Next
@@ -410,4 +426,3 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
     />
   )
 }
-

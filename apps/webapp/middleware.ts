@@ -70,13 +70,13 @@ export async function middleware(request: NextRequest) {
 
       // Get tenant ID from tenant slug
       const tenantId = await getTenantIdFromSlug(tenant, authToken)
-      if (!tenantId) {
-        // Tenant not found, redirect to error page
-        const errorUrl = request.nextUrl.clone()
-        errorUrl.pathname = `/t/${tenant}/error`
-        errorUrl.searchParams.set("message", "Tenant not found")
-        return NextResponse.redirect(errorUrl)
-      }
+      // if (!tenantId) {
+      //   // Tenant not found, redirect to error page
+      //   const errorUrl = request.nextUrl.clone()
+      //   errorUrl.pathname = `/t/${tenant}/error`
+      //   errorUrl.searchParams.set("message", "Tenant not found")
+      //   return NextResponse.redirect(errorUrl)
+      // }
 
       const tenantStatus = await getTenantStatus(tenantId, authToken)
 

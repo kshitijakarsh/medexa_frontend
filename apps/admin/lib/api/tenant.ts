@@ -3,6 +3,7 @@ import { PaymentConfig } from "./payment"
 import { License } from "./license"
 import { Module } from "./modules"
 import { Document } from "./regulatory"
+import { getIdToken } from "../api"
 
 interface ApiConfig {
   baseUrl?: string
@@ -108,15 +109,28 @@ class TenantApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  // private getJsonRequestConfig(): AxiosRequestConfig {
+  //   return {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${getIdToken()}`,
+  //     },
+  //   }
+  // }
+
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken();
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
-    }
+    };
   }
+
 
   async getTenants(
     params: GetTenantsParams = {}
@@ -132,10 +146,9 @@ class TenantApiClient {
       })
 
       return await axios.get<TenantsListResponse>(
-        `${this.baseUrl}/api/v1/tenants${
-          queryParams.toString() ? `?${queryParams.toString()}` : ""
+        `${this.baseUrl}/api/v1/tenants${queryParams.toString() ? `?${queryParams.toString()}` : ""
         }`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -156,7 +169,7 @@ class TenantApiClient {
     try {
       return await axios.get<TenantResponse>(
         `${this.baseUrl}/api/v1/tenants/${tenantId}`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -178,7 +191,7 @@ class TenantApiClient {
       return await axios.post<TenantResponse>(
         `${this.baseUrl}/api/v1/tenants`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -198,7 +211,7 @@ class TenantApiClient {
     try {
       return await axios.get<CountriesListResponse>(
         `${this.baseUrl}/api/v1/countries`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -219,7 +232,7 @@ class TenantApiClient {
     try {
       return await axios.get<{ success: boolean; message?: string }>(
         `${this.baseUrl}/api/v1/tenant/activateTenant/${tenantId}`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {

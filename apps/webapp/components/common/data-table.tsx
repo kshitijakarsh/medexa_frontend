@@ -1,5 +1,6 @@
 "use client"
 
+import { Skeleton } from "@workspace/ui/components/skeleton"
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import { Loader2 } from "lucide-react"
 interface Column<T> {
   key: keyof T | string
   label: string
-  render?: (row: T) => React.ReactNode
+  render?: (row: T, index?: number) => React.ReactNode
   className?: string
 }
 
@@ -84,12 +85,23 @@ export function DataTable<T>({
 
         <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
           {loading ? (
+            // <>
+            //   {[...Array(5)].map((_, i) => (
+            //     <TableRow key={i} className="animate-pulse">
+            //       {columns.map((_, j) => (
+            //         <TableCell key={j} className="py-4">
+            //           <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+            //         </TableCell>
+            //       ))}
+            //     </TableRow>
+            //   ))}
+            // </>
             <>
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
                   {columns.map((_, j) => (
                     <TableCell key={j} className="py-4">
-                      <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
+                      <Skeleton className="h-4 w-full rounded-md" />
                     </TableCell>
                   ))}
                 </TableRow>
@@ -117,7 +129,8 @@ export function DataTable<T>({
                     // className="py-2.5"
                     className={`py-2.5 ${col.className || ""}`}
                   >
-                    {col.render ? col.render(row) : (row[col.key as keyof T] as any)}
+                    {/* {col.render ? col.render(row) : (row[col.key as keyof T] as any)} */}
+                    {col.render ? col.render(row, index) : (row[col.key as keyof T] as any)}
                   </TableCell>
                 ))}
               </TableRow>
