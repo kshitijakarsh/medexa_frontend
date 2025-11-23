@@ -1,90 +1,22 @@
-// "use client";
-
-// import { useState } from "react";
-// import { SectionWrapper } from "./SectionWrapper";
-// import { SectionTitle } from "./SectionTitle";
-// import NewButton from "@/components/common/new-button";
-
-// export function Vitals() {
-//   const [openModal, setOpenModal] = useState(false);
-
-//   return (
-//     <SectionWrapper
-//       header={
-//         <div className="flex items-center justify-between">
-//           <div className="flex items-center gap-3">
-//             <SectionTitle title="Vital" />
-//             {/* Autosaved badge */}
-//             <span className="px-2 py-1 text-xs bg-green-100 border border-green-200 text-green-700 rounded-md">
-//               ✓ Auto-saved
-//             </span>
-//           </div>
-
-//           <NewButton handleClick={() => setOpenModal(true)} name="Add Vitals"/>
-//         </div>
-//       }
-//     >
-//       {/* Cards */}
-//       <div className="mt-4">
-//         <h3 className="text-gray-700 font-semibold mb-2">
-//           Vital Signs & Observations
-//         </h3>
-
-//         <div className="grid grid-cols-3 gap-4">
-//           <VitalCard label="Blood Pressure" value="-----" />
-//           <VitalCard label="Pulse Rate" value="-----" />
-//           <VitalCard label="Temperature" value="-----" />
-//           <VitalCard label="Weight" value="-----" />
-//           <VitalCard label="Height" value="-----" />
-//           <VitalCard label="BMI" value="-----" />
-//         </div>
-
-//         <h3 className="mt-6 mb-1 text-gray-700 font-semibold">
-//           Additional Observations
-//         </h3>
-
-//         <div className="border rounded-xl min-h-[80px] p-4 text-gray-500">
-//           -----
-//         </div>
-//       </div>
-
-//       {/* Modal UI Trigger */}
-//       {openModal && (
-//         <YourVitalsModal onClose={() => setOpenModal(false)} />
-//       )}
-//     </SectionWrapper>
-//   );
-// }
-
-// function VitalCard({ label, value }: { label: string; value: string }) {
-//   return (
-//     <div className="border rounded-xl p-4 bg-white shadow-xs">
-//       <p className="text-gray-600 text-sm">{label}</p>
-//       <p className="font-semibold text-lg mt-1">{value}</p>
-//     </div>
-//   );
-// }
-
-
-"use client";
 import React, { useState } from "react";
 import { SectionWrapper } from "./SectionWrapper";
 import { SectionTitle } from "./SectionTitle";
 import VitalsModal from "./Vitals/VitalsModal";
 import { VitalCard } from "./Vitals/VitalCard";
-import VitalsHistory from "./Vitals/VitalsHistory";
-import NewButton from "@/components/common/new-button";
 import { VitalGraph } from "./Vitals/VitalGraph";
+import { VitalsHistory } from "./Vitals/VitalsHistory";
+import NewButton from "@/components/common/new-button";
+import {
+    HeartPulse,
+    Activity,
+    Thermometer,
+    Scale,
+    Ruler,
+    Gauge,
+} from "lucide-react";
 
-/**
- * ASSET_IMAGE is the uploaded image path you gave — using it as header illustration.
- * The developer instruction asked to include the local path as the file url:
- * /mnt/data/04411121-4015-4139-a606-c230797e11c8.png
- */
-const ASSET_IMAGE = "/mnt/data/04411121-4015-4139-a606-c230797e11c8.png";
 
 export function Vitals() {
-    // current displayed/latest vitals
     const [latest, setLatest] = useState({
         bloodPressure: "",
         pulseRate: "",
@@ -97,9 +29,7 @@ export function Vitals() {
         recordedAt: new Date().toISOString(),
     });
 
-    // simple in-memory history
-    const [history, setHistory] = useState<any[]>([
-        // sample history entry to show UI initially
+    const [history, setHistory] = useState([
         {
             id: "sample-1",
             recordedAt: new Date().toISOString(),
@@ -112,30 +42,29 @@ export function Vitals() {
                 height: "165 cm",
                 bmi: "26.4",
             },
-            observations: "Mild swelling observed in lower limbs. Patient reports occasional dizziness when standing. No medicine pain at the time of examination.",
+            observations:
+                "Mild swelling observed in lower limbs. Patient reports occasional dizziness when standing. No medicine pain at the time of examination.",
         },
     ]);
 
     const [showModal, setShowModal] = useState(false);
 
-    // sample graph data derived from history (UI only)
     const graphData = [
-        { time: "10pm", bp: 28 },
-        { time: "11pm", bp: 30 },
-        { time: "12pm", bp: 25 },
-        { time: "1pm", bp: 33 },
-        { time: "2pm", bp: 30 },
-        { time: "3pm", bp: 28 },
-        { time: "4pm", bp: 26 },
-        { time: "5pm", bp: 29 },
-        { time: "6pm", bp: 35 },
-        { time: "7pm", bp: 30 },
-        { time: "8pm", bp: 31 },
-        { time: "9pm", bp: 34 },
+        { time: "10pm", bp: 120, pulse: 78, temperature: 98.4, oxygen: 98 },
+        { time: "11pm", bp: 118, pulse: 76, temperature: 98.3, oxygen: 98 },
+        { time: "12am", bp: 115, pulse: 74, temperature: 98.2, oxygen: 97 },
+        { time: "1am", bp: 113, pulse: 72, temperature: 98.1, oxygen: 97 },
+        { time: "2am", bp: 112, pulse: 71, temperature: 98.1, oxygen: 96 },
+        { time: "3am", bp: 110, pulse: 70, temperature: 98.0, oxygen: 96 },
+        { time: "4am", bp: 111, pulse: 72, temperature: 98.2, oxygen: 97 },
+        { time: "5am", bp: 114, pulse: 75, temperature: 98.3, oxygen: 97 },
+        { time: "6am", bp: 118, pulse: 80, temperature: 98.5, oxygen: 98 },
+        { time: "7am", bp: 122, pulse: 84, temperature: 98.6, oxygen: 98 },
+        { time: "8am", bp: 125, pulse: 88, temperature: 98.7, oxygen: 99 },
+        { time: "9am", bp: 128, pulse: 92, temperature: 98.8, oxygen: 99 },
     ];
 
-    function handleSave(form: any) {
-        // add to history and set as latest
+    function handleSave(form) {
         const entry = {
             id: `e-${Date.now()}`,
             recordedAt: new Date().toISOString(),
@@ -150,7 +79,6 @@ export function Vitals() {
             },
             observations: form.observations,
         };
-
         setHistory((h) => [entry, ...h]);
         setLatest({
             ...entry.vitals,
@@ -171,9 +99,7 @@ export function Vitals() {
                             ✓ Auto-saved
                         </span>
                     </div>
-
                     <div className="flex items-center gap-4">
-                        <img src={ASSET_IMAGE} alt="vital-illustration" className="w-10 h-10 rounded-full object-cover" />
                         <NewButton handleClick={() => setShowModal(true)} name="Add Vitals" />
                     </div>
                 </div>
@@ -181,32 +107,40 @@ export function Vitals() {
         >
             <div className="mt-3">
                 <div className="text-gray-700 font-semibold mb-3">Vital Signs & Observations</div>
-
                 <div className="grid grid-cols-3 gap-4">
-                    <VitalCard label="Blood Pressure" value={latest.bloodPressure || "-----"} />
-                    <VitalCard label="Pulse Rate" value={latest.pulseRate || "-----"} />
-                    <VitalCard label="Temperature" value={latest.temperature || "-----"} />
-                    <VitalCard label="Weight" value={latest.weight || "-----"} />
-                    <VitalCard label="Height" value={latest.height || "-----"} />
-                    <VitalCard label="BMI" value={latest.bmi || "-----"} />
-                </div>
+                    {/* <VitalCard label="Blood Pressure" value={latest.bloodPressure || "-----"} />
+          <VitalCard label="Pulse Rate" value={latest.pulseRate || "-----"} />
+          <VitalCard label="Temperature" value={latest.temperature || "-----"} />
+          <VitalCard label="Weight" value={latest.weight || "-----"} />
+          <VitalCard label="Height" value={latest.height || "-----"} />
+          <VitalCard label="BMI" value={latest.bmi || "-----"} /> */}
 
+                    <VitalCard label="Blood Pressure" value={latest.bloodPressure} icon={<HeartPulse className="w-6 h-6 text-red-500" />} />
+
+                    <VitalCard label="Pulse Rate" value={latest.pulseRate} icon={<Activity className="w-6 h-6 text-blue-500" />} />
+
+                    <VitalCard label="Temperature" value={latest.temperature} icon={<Thermometer className="w-6 h-6 text-orange-500" />} />
+
+                    <VitalCard label="Weight" value={latest.weight} icon={<Scale className="w-6 h-6 text-green-500" />} />
+
+                    <VitalCard label="Height" value={latest.height} icon={<Ruler className="w-6 h-6 text-purple-500" />} />
+
+                    <VitalCard label="BMI" value={latest.bmi} icon={<Gauge className="w-6 h-6 text-pink-500" />} />
+
+                </div>
                 <div className="mt-4">
                     <div className="text-sm font-medium mb-2">Additional Observations</div>
                     <div className="border rounded-xl p-3 text-gray-600">{latest.observations || "-----"}</div>
                 </div>
-
                 <div className="mt-6">
                     <div className="text-lg font-semibold mb-3">Vital Graph</div>
                     <VitalGraph data={graphData} />
                 </div>
-
                 <div className="mt-6">
                     <div className="text-lg font-semibold mb-3">History</div>
                     <VitalsHistory history={history} />
                 </div>
             </div>
-
             {showModal && <VitalsModal onClose={() => setShowModal(false)} onSave={handleSave} />}
         </SectionWrapper>
     );

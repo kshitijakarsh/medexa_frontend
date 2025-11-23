@@ -1,347 +1,215 @@
-// "use client";
-
-// import React from "react";
-
-
-// import {
-//     Tabs,
-//     TabsList,
-//     TabsTrigger,
-//     TabsContent,
-// } from "@workspace/ui/components/tabs";
-
-// import { ChartContainer, ChartTooltip } from "@workspace/ui/components/chart";
-// import { Line } from "@workspace/ui/lib/rechart";
-
-// // Register chart.js components
-// ChartJS.register(
-//     LineElement,
-//     PointElement,
-//     CategoryScale,
-//     LinearScale,
-//     Tooltip,
-//     Legend
-// );
-
-// interface Props {
-//     data: {
-//         time: string;
-//         bp: number;
-//         pulse: number;
-//         temperature: number;
-//         oxygen: number;
-//     }[];
-// }
-
-// export function VitalGraph({ data }: Props) {
-//     const labels = data.map((d) => d.time);
-
-//     const chartConfig = {
-//         responsive: true,
-//         maintainAspectRatio: false,
-//         scales: {
-//             x: { grid: { display: false } },
-//             y: { grid: { color: "#f2f6fb" } },
-//         },
-//         plugins: {
-//             legend: { display: false },
-//             tooltip: {
-//                 enabled: false,
-//                 external: ChartTooltip,
-//             },
-//         },
-//     };
-
-//     return (
-//         <div className="bg-white border rounded-xl p-4">
-//             <Tabs defaultValue="bp" className="w-full">
-//                 {/* TOP BUTTONS */}
-//                 <div className="flex items-center justify-between mb-3">
-//                     <TabsList className="flex gap-2">
-//                         <TabsTrigger
-//                             className="px-3 py-1 rounded-md bg-blue-100 text-blue-700 data-[state=active]:bg-blue-200"
-//                             value="bp"
-//                         >
-//                             Blood Pressure
-//                         </TabsTrigger>
-//                         <TabsTrigger
-//                             className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-//                             value="pulse"
-//                         >
-//                             Pulse Rate
-//                         </TabsTrigger>
-//                         <TabsTrigger
-//                             className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-//                             value="temperature"
-//                         >
-//                             Temperature
-//                         </TabsTrigger>
-//                         <TabsTrigger
-//                             className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-//                             value="oxygen"
-//                         >
-//                             Oxygen
-//                         </TabsTrigger>
-//                     </TabsList>
-
-//                     <select className="border rounded-md px-2 py-1">
-//                         <option>24 hours</option>
-//                         <option>7 days</option>
-//                     </select>
-//                 </div>
-
-//                 {/* BP Chart */}
-//                 <TabsContent value="bp">
-//                     <ChartContainer className="h-[260px] w-full">
-//                         <Line
-//                             data={{
-//                                 labels,
-//                                 datasets: [
-//                                     {
-//                                         label: "Blood Pressure",
-//                                         data: data.map((d) => d.bp),
-//                                         borderColor: "#2b9af3",
-//                                         backgroundColor: "rgba(43,154,243,0.4)",
-//                                         borderWidth: 2,
-//                                         tension: 0.4,
-//                                         pointRadius: 3,
-//                                     },
-//                                 ],
-//                             }}
-//                             options={chartConfig}
-//                         />
-//                     </ChartContainer>
-//                 </TabsContent>
-
-//                 {/* Pulse Chart */}
-//                 <TabsContent value="pulse">
-//                     <ChartContainer className="h-[260px] w-full">
-//                         <Line
-//                             data={{
-//                                 labels,
-//                                 datasets: [
-//                                     {
-//                                         label: "Pulse Rate",
-//                                         data: data.map((d) => d.pulse),
-//                                         borderColor: "#ff7e55",
-//                                         backgroundColor: "rgba(255,126,85,0.4)",
-//                                         borderWidth: 2,
-//                                         tension: 0.4,
-//                                         pointRadius: 3,
-//                                     },
-//                                 ],
-//                             }}
-//                             options={chartConfig}
-//                         />
-//                     </ChartContainer>
-//                 </TabsContent>
-
-//                 {/* Temperature Chart */}
-//                 <TabsContent value="temperature">
-//                     <ChartContainer className="h-[260px] w-full">
-//                         <Line
-//                             data={{
-//                                 labels,
-//                                 datasets: [
-//                                     {
-//                                         label: "Temperature",
-//                                         data: data.map((d) => d.temperature),
-//                                         borderColor: "#ffb74d",
-//                                         backgroundColor: "rgba(255,183,77,0.4)",
-//                                         borderWidth: 2,
-//                                         tension: 0.4,
-//                                         pointRadius: 3,
-//                                     },
-//                                 ],
-//                             }}
-//                             options={chartConfig}
-//                         />
-//                     </ChartContainer>
-//                 </TabsContent>
-
-//                 {/* Oxygen Chart */}
-//                 <TabsContent value="oxygen">
-//                     <ChartContainer className="h-[260px] w-full">
-//                         <Line
-//                             data={{
-//                                 labels,
-//                                 datasets: [
-//                                     {
-//                                         label: "Oxygen",
-//                                         data: data.map((d) => d.oxygen),
-//                                         borderColor: "#4caf50",
-//                                         backgroundColor: "rgba(76,175,80,0.4)",
-//                                         borderWidth: 2,
-//                                         tension: 0.4,
-//                                         pointRadius: 3,
-//                                     },
-//                                 ],
-//                             }}
-//                             options={chartConfig}
-//                         />
-//                     </ChartContainer>
-//                 </TabsContent>
-//             </Tabs>
-//         </div>
-//     );
-// }
-
-
 "use client";
 
-import React from "react";
+import * as React from "react";
 
 import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@workspace/ui/components/tabs";
-
-import { ChartContainer, ChartTooltip } from "@workspace/ui/components/chart";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip as RechartTooltip,
-  CartesianGrid,
-  ResponsiveContainer,
+    Area,
+    AreaChart,
+    Line,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    ResponsiveContainer,
 } from "@workspace/ui/lib/rechart";
 
-interface Props {
-  data: {
-    time: string;
-    bp: number;
-    pulse: number;
-    temperature: number;
-    oxygen: number;
-  }[];
-}
+import {
+    Tabs,
+    TabsList,
+    TabsTrigger,
+    TabsContent,
+} from "@workspace/ui/components/tabs";
 
-export function VitalGraph({ data }: Props) {
-  return (
-    <div className="bg-white border rounded-xl p-4">
-      <Tabs defaultValue="bp" className="w-full">
-        {/* HEADER BUTTONS */}
-        <div className="flex items-center justify-between mb-3">
-          <TabsList className="flex gap-2">
-            <TabsTrigger
-              value="bp"
-              className="px-3 py-1 rounded-md bg-blue-100 text-blue-700 data-[state=active]:bg-blue-200"
-            >
-              Blood Pressure
-            </TabsTrigger>
-            <TabsTrigger
-              value="pulse"
-              className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-            >
-              Pulse Rate
-            </TabsTrigger>
-            <TabsTrigger
-              value="temperature"
-              className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-            >
-              Temperature
-            </TabsTrigger>
-            <TabsTrigger
-              value="oxygen"
-              className="px-3 py-1 rounded-md border text-gray-600 data-[state=active]:bg-gray-200"
-            >
-              Oxygen
-            </TabsTrigger>
-          </TabsList>
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@workspace/ui/components/card";
 
-          <select className="border rounded-md px-2 py-1">
-            <option>24 hours</option>
-            <option>7 days</option>
-          </select>
-        </div>
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+} from "@workspace/ui/components/chart";
 
-        {/* BP CHART */}
-        <TabsContent value="bp">
-          <ChartContainer className="h-[260px] w-full">
-            <ResponsiveContainer>
-              <LineChart data={data}>
-                <CartesianGrid vertical={false} stroke="#f2f6fb" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <RechartTooltip content={<ChartTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="bp"
-                  stroke="#2b9af3"
-                  strokeWidth={2}
-                  dot
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </TabsContent>
+import { cn } from "@workspace/ui/lib/utils";
 
-        {/* PULSE CHART */}
-        <TabsContent value="pulse">
-          <ChartContainer className="h-[260px] w-full">
-            <ResponsiveContainer>
-              <LineChart data={data}>
-                <CartesianGrid vertical={false} stroke="#f2f6fb" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <RechartTooltip content={<ChartTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="pulse"
-                  stroke="#ff7e55"
-                  strokeWidth={2}
-                  dot
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </TabsContent>
+const vitalsData = [
+    { time: "10pm", bp: 120, pulse: 78, temp: 98.4, oxygen: 98 },
+    { time: "11pm", bp: 118, pulse: 76, temp: 98.3, oxygen: 98 },
+    { time: "12am", bp: 115, pulse: 74, temp: 98.2, oxygen: 97 },
+    { time: "1am", bp: 113, pulse: 72, temp: 98.1, oxygen: 97 },
+    { time: "2am", bp: 112, pulse: 71, temp: 98.1, oxygen: 96 },
+    { time: "3am", bp: 110, pulse: 70, temp: 98.0, oxygen: 96 },
+    { time: "4am", bp: 111, pulse: 72, temp: 98.2, oxygen: 97 },
+    { time: "5am", bp: 114, pulse: 75, temp: 98.3, oxygen: 97 },
+    { time: "6am", bp: 118, pulse: 80, temp: 98.5, oxygen: 98 },
+    { time: "7am", bp: 122, pulse: 84, temp: 98.6, oxygen: 98 },
+];
 
-        {/* TEMPERATURE CHART */}
-        <TabsContent value="temperature">
-          <ChartContainer className="h-[260px] w-full">
-            <ResponsiveContainer>
-              <LineChart data={data}>
-                <CartesianGrid vertical={false} stroke="#f2f6fb" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <RechartTooltip content={<ChartTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="temperature"
-                  stroke="#ffb74d"
-                  strokeWidth={2}
-                  dot
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </TabsContent>
+const vitalTabs = {
+  bp: {
+    label: "Blood Pressure",
+    key: "bp",
+    gradient: "gradBP",
+    color: "#ef4444", // red-500
+    unit: "mmHg",
+  },
+  pulse: {
+    label: "Pulse Rate",
+    key: "pulse",
+    gradient: "gradPulse",
+    color: "#3b82f6", // blue-500
+    unit: "bpm",
+  },
+  temp: {
+    label: "Temperature",
+    key: "temp",
+    gradient: "gradTemp",
+    color: "#f97316", // orange-500
+    unit: "°C",
+  },
+  oxygen: {
+    label: "Oxygen",
+    key: "oxygen",
+    gradient: "gradOxy",
+    color: "#ec4899", // pink-500
+    unit: "%",
+  },
+};
 
-        {/* OXYGEN CHART */}
-        <TabsContent value="oxygen">
-          <ChartContainer className="h-[260px] w-full">
-            <ResponsiveContainer>
-              <LineChart data={data}>
-                <CartesianGrid vertical={false} stroke="#f2f6fb" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <RechartTooltip content={<ChartTooltip />} />
-                <Line
-                  type="monotone"
-                  dataKey="oxygen"
-                  stroke="#4caf50"
-                  strokeWidth={2}
-                  dot
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
+
+export function VitalGraph({ className }: { className?: string }) {
+    return (
+        <Card className={cn("@container/card", className)}>
+            <CardHeader className="px-6">
+                <CardTitle>Vital Graph</CardTitle>
+                <CardDescription>
+                    Blood Pressure, Pulse, Temperature & Oxygen
+                </CardDescription>
+            </CardHeader>
+
+            <CardContent className="px-6">
+                <Tabs defaultValue="bp" className="w-full">
+                    <TabsList className="mb-4 grid grid-cols-4 w-full rounded-xl bg-gray-100 p-1">
+                        {Object.entries(vitalTabs).map(([key, cfg]) => (
+                            <TabsTrigger
+                                key={key}
+                                value={key}
+                                className="rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                            >
+                                {cfg.label}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+
+                    {/* CONTENT */}
+                    {Object.entries(vitalTabs).map(([id, cfg]) => (
+                        <TabsContent key={id} value={id}>
+                            {/* <ChartContainer className="h-72 w-full" config={{}}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart
+                                        data={vitalsData}
+                                        margin={{ left: 12, right: 12 }}
+                                    >
+                                        <CartesianGrid vertical={false} stroke="#f1f1f1" />
+
+                                        <XAxis
+                                            dataKey="time"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tickMargin={10}
+                                        />
+
+                                        <YAxis hide />
+
+                                        <ChartTooltip
+                                            cursor={false}
+                                            content={<ChartTooltipContent indicator="dot" />}
+                                        />
+
+                                        {/* GRADIENT 
+                                        <defs>
+                                            <linearGradient id={cfg.gradient} x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor={cfg.color} stopOpacity={0.4} />
+                                                <stop offset="70%" stopColor={cfg.color} stopOpacity={0.1} />
+                                                <stop offset="100%" stopColor={cfg.color} stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+
+                                        {/* LIGHT AREA UNDER LINE 
+                                        <Area
+                                            type="natural"
+                                            dataKey={cfg.key}
+                                            fill={`url(#${cfg.gradient})`}
+                                            stroke="transparent"
+                                            fillOpacity={1}
+                                        />
+
+                                        {/* MAIN LINE
+                                        <Line
+                                            type="natural"
+                                            dataKey={cfg.key}
+                                            stroke={cfg.color}
+                                            strokeWidth={3}
+                                          dot={{ r: 4, fill: cfg.color }}
+                                          activeDot={{
+                                            r: 6,
+                                            fill: cfg.color,
+                                            stroke: "#fff",
+                                            strokeWidth: 2,
+                                          }}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </ChartContainer> */}
+                            <ChartContainer
+                                config={{}}
+                                className="h-72 w-full"
+                            >
+                                <AreaChart
+                                    data={vitalsData}
+                                    accessibilityLayer
+                                    margin={{ left: 12, right: 12 }}
+                                >
+                                    <CartesianGrid vertical={false} />
+
+                                    <XAxis
+                                        dataKey="time"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
+                                    />
+
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent />}
+                                    />
+
+                                    {/* Gradient */}
+                                    <defs>
+                                        <linearGradient id={cfg.gradient} x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor={cfg.color} stopOpacity={0.8} />
+                                            <stop offset="95%" stopColor={cfg.color} stopOpacity={0.1} />
+                                        </linearGradient>
+                                    </defs>
+
+                                    {/* Area line */}
+                                    <Area
+                                        dataKey={cfg.key}
+                                        type="natural"
+                                        fill={`url(#${cfg.gradient})`}
+                                        stroke={cfg.color}
+                                        strokeWidth={2}
+                                        fillOpacity={0.4}
+                                    />
+                                </AreaChart>
+                            </ChartContainer>
+                        </TabsContent>
+                    ))}
+                </Tabs>
+            </CardContent>
+        </Card>
+    );
 }
