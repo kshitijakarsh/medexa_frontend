@@ -13,11 +13,9 @@ import { MoreVertical } from "lucide-react"
 
 export function RowActionMenu({
   onEdit,
-  onView,
   onDelete,
 }: {
   onEdit: () => void
-  onView: () => void
   onDelete: () => void
 }) {
   return (
@@ -41,12 +39,6 @@ export function RowActionMenu({
           onClick={onEdit}
         >
           Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-sm font-medium text-gray-800 rounded-md px-3 py-2 cursor-pointer bg-[#28B469] text-white hover:bg-[#32C676] transition-colors"
-          onClick={onView}
-        >
-          View
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-sm font-medium text-gray-700 rounded-md px-3 py-2 cursor-pointer bg-white hover:bg-red-500 hover:text-white transition-colors"

@@ -172,10 +172,11 @@ interface AddDialogProps {
   open: boolean;
   onClose: () => void;
   mode: "designation" | "specialization" | "roles";
-  onSave?: (data: any[]) => void;
+  onSave?: (data: any[]) => void | Promise<void>;
+  isLoading?: boolean;
 }
 
-export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
+export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: AddDialogProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -204,10 +205,16 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
     roles: "User Role Name",
   };
 
-  const handleSave = (values: FormSchema) => {
-    console.log(`✅ Saved ${mode}:`, values.items);
-    if (onSave) onSave(values.items);
-    onClose();
+  const handleSave = async (values: FormSchema) => {
+    try {
+      if (onSave) {
+        await onSave(values.items);
+      }
+      onClose();
+    } catch (error) {
+      // Error handling is done in the parent component
+      console.error(`Failed to save ${mode}:`, error);
+    }
   };
 
   const isSingle = mode === "roles";
@@ -247,6 +254,7 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                             <Input
                               placeholder={`Enter ${labelMap[mode]}`}
                               {...field}
+                              disabled={isLoading}
                             />
                           </FormControl>
                           <FormMessage />
@@ -274,6 +282,7 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                                 <StatusSwitch
                                   checked={field.value}
                                   onCheckedChange={field.onChange}
+                                  disabled={isLoading}
                                 />
                               </FormControl>
                               <span
@@ -316,6 +325,7 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                   variant="ghost"
                   className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:bg-green-50 cursor-pointer"
                   onClick={() => append({ name: "", active: false })}
+                  disabled={isLoading}
                 >
                   Add Row{" "}
                   <span className="bg-green-500 p-2 rounded-full">
@@ -333,14 +343,16 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
               variant="outline"
               onClick={onClose}
               className="text-blue-600 border-blue-500"
+              disabled={isLoading}
             >
               Cancel
             </Button>
             <Button
               type="submit"
               className="bg-green-500 hover:bg-green-600 text-white"
+              disabled={isLoading}
             >
-              Save
+              {isLoading ? "Saving..." : "Save"}
             </Button>
           </div>
         </form>
