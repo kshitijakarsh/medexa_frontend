@@ -1,267 +1,215 @@
-// "use client"
-
-// import { useEffect, useState } from "react"
-// import { Button } from "@workspace/ui/components/button"
-// import { Input } from "@workspace/ui/components/input"
-// import { MoveLeft, Plus, Search, Loader2 } from "lucide-react"
-// import { DataTable } from "@/components/common/data-table"
-// import { Header } from "@/components/header"
-// import { useRouter } from "next/navigation"
-// import AddDepartmentModal from "./_components/AddDepartmentModal"
-// import { QuickActionsMenu } from "./_components/QuickActionsMenu"
-// import { RowActionMenu } from "./_components/RowActionMenu"
-// import SearchInput from "@/components/common/search-input"
-// import { PageHeader } from "@/components/common/PageHeader"
-// import NewButton from "@/components/common/new-button"
-
-// interface Department {
-//   id: number
-//   name: string
-//   status: "Active" | "Inactive"
-//   createdOn: string
-//   addedBy: string
-// }
-
-// export default function DepartmentsPage() {
-//   const [search, setSearch] = useState("")
-//   const [departments, setDepartments] = useState<Department[]>([])
-//   const [loading, setLoading] = useState(true)
-//   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-//   const router = useRouter()
-
-//   // Simulated API call
-//   useEffect(() => {
-//     setLoading(true)
-//     const timer = setTimeout(() => {
-//       setDepartments([
-//         {
-//           id: 1,
-//           name: "Neuro surgery",
-//           status: "Active",
-//           createdOn: "2025-09-27 19:30",
-//           addedBy: "Dr. Ahmed Al-Mansouri",
-//         },
-//         {
-//           id: 2,
-//           name: "Dental",
-//           status: "Active",
-//           createdOn: "2025-09-27 19:30",
-//           addedBy: "Dr. Ahmed Al-Mansouri",
-//         },
-//         {
-//           id: 3,
-//           name: "Urology",
-//           status: "Active",
-//           createdOn: "2025-09-27 19:30",
-//           addedBy: "Dr. Ahmed Al-Mansouri",
-//         },
-//       ])
-//       setLoading(false)
-//     }, 1200)
-
-//     return () => clearTimeout(timer)
-//   }, [])
-
-//   const columns = [
-//     {
-//       key: "id",
-//       label: "Sr.No",
-//       render: (row: Department) => row.id,
-//       className: "w-[60px] text-center",
-//     },
-//     {
-//       key: "name",
-//       label: "Department Name",
-//       render: (row: Department) => (
-//         <span className="font-medium text-gray-700">{row.name}</span>
-//       ),
-//     },
-//     {
-//       key: "status",
-//       label: "Department Status",
-//       render: (row: Department) => (
-//         <span
-//           className={`font-semibold ${row.status === "Active" ? "text-green-500" : "text-red-500"
-//             }`}
-//         >
-//           {row.status}
-//         </span>
-//       ),
-//     },
-//     {
-//       key: "createdOn",
-//       label: "Created On",
-//       render: (row: Department) => (
-//         <span className="text-gray-600">{row.createdOn}</span>
-//       ),
-//     },
-//     {
-//       key: "addedBy",
-//       label: "Added By",
-//       render: (row: Department) => (
-//         <span className="text-gray-700">{row.addedBy}</span>
-//       ),
-//     },
-//     // {
-//     //   key: "action",
-//     //   label: "Action",
-//     //   render: () => (
-//     //     <div className="flex justify-center items-center">
-//     //       <Button
-//     //         variant="ghost"
-//     //         size="icon"
-//     //         className="hover:bg-gray-100 text-gray-600"
-//     //       >
-//     //         ⋮
-//     //       </Button>
-//     //     </div>
-//     //   ),
-//     //   className: "text-center w-[80px]",
-//     // },
-//     {
-//       key: "action",
-//       label: "Action",
-//       render: (row: Department) => (
-//         <RowActionMenu
-//           onEdit={() => console.log("Edit", row.name)}
-//           onDelete={() => console.log("Delete", row.name)}
-//         />
-//       ),
-//       className: "text-center w-[80px]",
-//     }
-
-//   ]
-
-//   return (
-// <>
-
-//       <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
-//         {/* Title & Back */}
-//         {/* <div className="flex items-center gap-3">
-//           <Button
-//             variant="ghost"
-//             className="bg-blue-700 hover:bg-blue-500 text-white p-1 rounded-md hover:text-white cursor-pointer"
-//             onClick={() => router.back()}
-//           >
-//             <MoveLeft className="w-5 h-5" />
-//           </Button>
-//           <h1 className="text-xl font-semibold text-gray-800">Departments</h1>
-//         </div> */}
-//         <PageHeader title="Departments" />
-
-//         {/* Card */}
-//         <div className="space-y-4 bg-white p-5 rounded-md shadow-sm">
-//           {/* Header Actions */}
-//           <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
-//             <div className="flex items-center gap-3">
-
-//               {/* Customized with a different icon, width, and placeholder */}
-//               <SearchInput
-//                 value={search}
-//                 onChange={setSearch}
-//                 placeholder="Search users..."
-//               />
-
-//               <QuickActionsMenu />
-
-//               <NewButton handleClick={() => setIsAddModalOpen(true)} className="cursor-pointer" />
-//             </div>
-//           </div>
-
-//           {/* Table */}
-//           <div className="mt-2">
-//             <DataTable
-//               columns={columns}
-//               data={departments}
-//               loading={loading}
-//               striped
-//             />
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Add Department Modal */}
-//       <AddDepartmentModal
-//         open={isAddModalOpen}
-//         onClose={() => setIsAddModalOpen(false)}
-//       />
-//     </>
-//   )
-// }
-
-
-
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { Header } from "@/components/header";
 import { PageHeader } from "@/components/common/PageHeader";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
-import { DataTable } from "@/components/common/data-table";
+import FilterButton from "@/components/common/filter-button";
 import { QuickActions } from "./_components/QuickActions";
 import { RowActionMenu } from "./_components/RowActionMenu";
 import AddDepartmentModal from "./_components/AddDepartmentModal";
 import FilterDialog from "./_components/FilterDialog";
-import { fetchDepartments, filterDepartments } from "./_components/api";
-import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAuthToken } from "@/app/utils/onboarding";
+import { createDepartmentApiClient } from "@/lib/api/administration/department";
+import { toast } from "@workspace/ui/lib/sonner";
+import { getIdToken } from "@/app/utils/auth";
 
-interface Department {
-  id: number;
+
+interface DepartmentRow {
+  id: string;
   name: string;
-  status: "Active" | "Inactive";
+  status: string;
   createdOn: string;
   addedBy: string;
 }
 
+
 export default function DepartmentsPage() {
   const [search, setSearch] = useState("");
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [authToken, setAuthToken] = useState("");
+  const [editingRow, setEditingRow] = useState<any>(null);
+  const [filterParams, setFilterParams] = useState<any>({});
+  const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<any>({});
 
-  // Fetch initial department list
+  /* ---------------------------------------
+         Filter Clearing
+   ---------------------------------------- */
+  const clearAllFilters = () => {
+    setFilters({})
+  }
+
+  /* ------------------------
+     AUTH TOKEN
+  -------------------------*/
   useEffect(() => {
-    loadDepartments();
+    const loadToken = async () => {
+      const token = await getAuthToken();
+      await getIdToken()
+      setAuthToken(token);
+    };
+    loadToken();
   }, []);
 
-  const loadDepartments = async () => {
-    setLoading(true);
-    const res = await fetchDepartments();
-    setDepartments(res);
-    setLoading(false);
+  const api = authToken ? createDepartmentApiClient({ authToken }) : null;
+
+  /* ------------------------
+     QUERY: LIST DEPARTMENTS
+  -------------------------*/
+  // const { data: departmentList, isLoading } = useQuery({
+  //   queryKey: ["departments", filterParams],
+  //   enabled: !!api,
+  //   queryFn: async () => {
+  //     const res = await api!.getDepartments(filterParams);
+  //     return res.data.data.map((item) => ({
+  //       id: item.id,
+  //       name: item.department_name,
+  //       status: item.status === "active" ? "Active" : "Inactive",
+  //       createdOn: "—",
+  //       addedBy: item.addedBy?.name || "—",
+  //     }));
+  //   },
+  // });
+
+  // const { data: departmentList, isLoading } = useQuery<DepartmentRow[]>({
+  //   queryKey: ["departments", filterParams],
+  //   enabled: !!api,
+  //   initialData: [], // ✅ FIX: ensures it's never undefined
+  //   queryFn: async () => {
+  //     const res = await api!.getDepartments(filterParams);
+  //     return res.data.data.map((item) => ({
+  //       id: item.id,
+  //       name: item.department_name,
+  //       status: item.status === "active" ? "Active" : "Inactive",
+  //       createdOn: "—",
+  //       addedBy: item.addedBy?.name || "—",
+  //     }));
+  //   },
+  // });
+
+
+  // const { data: departmentList, isLoading } = useQuery({
+  //   queryKey: ["departments", filterParams, authToken],  // <-- important
+  //   enabled: !!authToken,                                // <-- triggers when token exists
+  //   initialData: [],
+  //   queryFn: async () => {
+  //     const res = await api!.getDepartments(filterParams);
+  //     return res.data.data.map((item) => ({
+  //       id: item.id,
+  //       name: item.department_name,
+  //       status: item.status === "active" ? "Active" : "Inactive",
+  //       createdOn: "—",
+  //       addedBy: item.addedBy?.name || "—",
+  //     }));
+  //   },
+  // });
+
+  const { data: departmentList = [], isLoading } = useQuery({
+    queryKey: ["departments", filterParams],
+    enabled: !!authToken,          // depends only on token
+    queryFn: async () => {
+      const client = createDepartmentApiClient({ authToken });
+      const res = await client.getDepartments(filterParams);
+      return res.data.data.map((item) => ({
+        id: item.id,
+        name: item.department_name,
+        status: item.status === "active" ? "Active" : "Inactive",
+        createdOn: "—",
+        addedBy: item.addedBy?.name || "—",
+      }));
+    },
+  });
+
+
+  /* ------------------------
+     CREATE DEPARTMENT
+  -------------------------*/
+  const createMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      return api!.createDepartment(payload);
+    },
+    onSuccess: () => {
+      toast.success("Department added successfully");
+      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      setIsAddModalOpen(false);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+
+  /* ------------------------
+     UPDATE DEPARTMENT
+  -------------------------*/
+  const updateMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      return api!.updateDepartment(payload.id, {
+        department_name: payload.name,
+        status: payload.active ? "active" : "inactive",
+      });
+    },
+    onSuccess: () => {
+      toast.success("Department updated");
+      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      setIsAddModalOpen(false);
+      setEditingRow(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+
+  /* ------------------------
+     DELETE DEPARTMENT
+  -------------------------*/
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => api!.deleteDepartment(id),
+    onSuccess: () => {
+      toast.success("Department deleted");
+      queryClient.invalidateQueries({ queryKey: ["departments"] });
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  /* ------------------------
+     APPLY FILTERS
+  -------------------------*/
+  const handleApplyFilters = (values: any) => {
+    setFilterParams(values);
   };
 
-  // Apply Filters
-  const handleApplyFilters = async (filterValues: any) => {
-    setLoading(true);
-    const filtered = await filterDepartments(filterValues);
-    setDepartments(filtered);
-    setLoading(false);
-  };
+  /* ------------------------------------------
+     FILTERED LIST
+  ---------------------------------------------*/
+  const filteredList: DepartmentRow[] = search
+    ? departmentList.filter((d) =>
+      d.name.toLowerCase().includes(search.toLowerCase())
+    )
+    : departmentList
 
-  // Table Columns
+  /* ------------------------------------------
+   TABLE COLUMNS (WITH PROPER TYPES)
+---------------------------------------------*/
   const columns = [
     {
       key: "id",
       label: "Sr.No",
-      render: (row: Department) => row.id,
+      render: (row: DepartmentRow) => row.id,
       className: "w-[60px] text-center",
     },
     {
       key: "name",
       label: "Department Name",
-      render: (row: Department) => (
+      render: (row: DepartmentRow) => (
         <span className="font-medium text-gray-700">{row.name}</span>
       ),
     },
     {
       key: "status",
       label: "Department Status",
-      render: (row: Department) => (
+      render: (row: DepartmentRow) => (
         <span
           className={`font-semibold ${row.status === "Active" ? "text-green-500" : "text-red-500"
             }`}
@@ -273,99 +221,122 @@ export default function DepartmentsPage() {
     {
       key: "createdOn",
       label: "Created On",
-      render: (row: Department) => (
+      render: (row: DepartmentRow) => (
         <span className="text-gray-600">{row.createdOn}</span>
       ),
     },
     {
       key: "addedBy",
       label: "Added By",
-      render: (row: Department) => (
+      render: (row: DepartmentRow) => (
         <span className="text-gray-700">{row.addedBy}</span>
       ),
     },
     {
       key: "action",
       label: "Action",
-      render: (row: Department) => (
+      render: (row: DepartmentRow) => (
         <RowActionMenu
-          onEdit={() => console.log("Edit:", row)}
-          onDelete={() => console.log("Delete:", row)}
+          onEdit={() => {
+            setEditingRow(row);
+            setIsAddModalOpen(true);
+          }}
+          onDelete={() => deleteMutation.mutate(row.id)}
         />
       ),
       className: "text-center w-[80px]",
     },
   ];
 
+
   return (
     <>
       <div className="py-6 px-3 md:px-6 min-h-screen space-y-8">
-        {/* Page Title */}
         <PageHeader title="Departments" />
 
-        {/* Card */}
         <div className="bg-white p-5 rounded-md shadow-sm space-y-5">
           {/* Top Actions */}
-          <div className="flex flex-col md:flex-row md:justify-end md:items-center gap-4">
-            <div className="flex items-center gap-3">
-              <FilterButton onClick={() => setIsFilterOpen(true)} />
+          <div className="flex flex-wrap md:flex-row gap-4 justify-end">
+            <FilterButton
+              filters={filters}
+              onClick={() => setIsFilterOpen(true)}
+              onClear={() => clearAllFilters()}
 
-              <SearchInput
-                value={search}
-                onChange={setSearch}
-                placeholder="Search departments..."
-              />
-
-              <QuickActions />
-
-              <NewButton
-                handleClick={() => setIsAddModalOpen(true)}
-                className="cursor-pointer"
-              />
-            </div>
+            />
+            <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
+            <QuickActions />
+            <NewButton handleClick={() => setIsAddModalOpen(true)} />
           </div>
 
           {/* Table */}
-          {/* <DataTable
-            columns={columns}
-            data={
-              search
-                ? departments.filter((d) =>
-                    d.name.toLowerCase().includes(search.toLowerCase())
-                  )
-                : departments
-            }
-            loading={loading}
-            striped
-          /> */}
           <ResponsiveDataTable
             columns={columns}
-            data={
-              search
-                ? departments.filter((d) =>
-                  d.name.toLowerCase().includes(search.toLowerCase())
-                )
-                : departments
-            }
-            loading={loading}
+            // data={
+            //   search
+            //     ? departmentList?.filter((d) =>
+            //         d.name.toLowerCase().includes(search.toLowerCase())
+            //       )
+            //     : departmentList || []
+            // }
+            data={filteredList}
+            loading={isLoading}
             striped
           />
-
         </div>
       </div>
 
-      {/* Add Modal */}
-      <AddDepartmentModal
+      {/* Add Department */}
+      {/* <AddDepartmentModal
         open={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+        onSave={(departments) => {
+          departments.forEach((d) =>
+            createMutation.mutate({
+              department_name: d.name,
+              status: d.active ? "active" : "inactive",
+            })
+          );
+        }}
+      /> */}
+      <AddDepartmentModal
+        open={isAddModalOpen}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setEditingRow(null);
+        }}
+        editData={editingRow ? {
+          id: editingRow.id,
+          name: editingRow.name,
+          active: editingRow.status === "Active"
+        } : null}
+        onSave={(departments) => {
+          const first = departments?.[0];
+          if (!first) return;
+          if (editingRow) {
+            updateMutation.mutate({
+              id: editingRow.id,
+              name: first.name,
+              active: first.active,
+            });
+          } else {
+            // CREATE FLOW
+            departments.forEach((d) =>
+              createMutation.mutate({
+                department_name: d.name,
+                status: d.active ? "active" : "inactive",
+              })
+            );
+          }
+        }}
       />
 
-      {/* Filter Modal */}
+
+      {/* Filters */}
       <FilterDialog
         open={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
         onApply={handleApplyFilters}
-        isLoading={loading}
+        isLoading={isLoading}
       />
     </>
   );
