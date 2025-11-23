@@ -396,23 +396,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { toast } from "@workspace/ui/lib/sonner";
 
-import { PageHeader } from "@/components/common/PageHeader";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 import { QuickActions } from "./_components/QuickActions";
 import { EmployeeRowActions } from "./_components/EmployeeRowActions";
 import { FilterDialog } from "./_components/FilterDialog";
-import { AddDialog } from "./_components/AddDialog";
-import SearchInput from "@/components/common/search-input";
-import NewButton from "@/components/common/new-button";
 import { getMockEmployees } from "./_components/api";
 import { PageHeader } from "@/components/common/page-header";
-import { useRouter } from "next/navigation";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
-
-import { FilterDialog } from "./_components/FilterDialog";
 import { AddRoleDialog } from "./_components/AddDialog";
 
 import { createRoleApiClient } from "@/lib/api/administration/roles";
