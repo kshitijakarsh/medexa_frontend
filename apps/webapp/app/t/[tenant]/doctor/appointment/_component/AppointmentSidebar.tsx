@@ -226,18 +226,8 @@
 "use client";
 
 import { AppointmentSidebarSection } from "./AppointmentSidebarSection";
-import { SectionCard } from "./SectionCard";
 import { AppointmentItem } from "./types/appointment";
-
-import { ListFilter, MoveRight, SlidersHorizontal } from "lucide-react";
-import {
-    Select,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
-    SelectValue,
-} from "@workspace/ui/components/select";
-import { CardBlock } from "@/components/common/pasient-card/card-block";
+import {MoveRight} from "lucide-react";
 import { useState } from "react";
 import { FilterDropdown } from "./filter/filterDropdown";
 import { ViewAllLink } from "../../dashboard/_components/ui/ViewAllLink";

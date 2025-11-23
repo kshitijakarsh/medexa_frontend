@@ -8,4 +8,10 @@ export interface AppointmentItem {
   room: string;
   time: string;
   status: string;
+  insurance: string;
+  details: string;
+  insuranceName: string;
+  note: string;
+  age: string;
+  phone: string;
 }

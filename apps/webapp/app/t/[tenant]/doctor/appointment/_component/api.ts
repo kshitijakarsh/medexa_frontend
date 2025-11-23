@@ -1,4 +1,4 @@
-// lib/appointmentApi.ts
+// _component/api.ts
 
 export async function getAppointments() {
   return new Promise((resolve) => {
@@ -19,12 +19,26 @@ export async function getAppointments() {
           age: "55Y / Male",
           phone: "283041234567",
         },
-
-        {
+ {
           id: "2",
           name: "Fatima Al-Sabah",
           mrn: "2501",
-          avatar: "/avatar.png",
+          avatar: "/avatar 1.png",
+          vip: false,
+          type: "emergency",
+          room: "T-101",
+          time: "09:00",
+          status: "in-progress",
+          note: "Stomach discomfort for 2 weeks",
+          insurance: "Kuwait Insurance",
+          age: "55Y / Male",
+          phone: "283041234567",
+        },
+        {
+          id: "3",
+          name: "Fatima Al-Sabah",
+          mrn: "2501",
+          avatar: "/avatar 1.png",
           vip: true,
           type: "vip",
           room: "T-101",
@@ -33,12 +47,35 @@ export async function getAppointments() {
           note: "Follow up",
           insurance: "Gulf Insurance",
         },
-
-        {
-          id: "3",
+  {
+          id: "4",
           name: "Fatima Al-Sabah",
           mrn: "2501",
-          avatar: "/avatar.png",
+          avatar: "/avatar 1.png",
+          vip: true,
+          type: "vip",
+          room: "T-101",
+          time: "09:00",
+          status: "waiting",
+          note: "Follow up",
+          insurance: "Gulf Insurance",
+        },
+        {
+          id: "5",
+          name: "Fatima Al-Sabah",
+          mrn: "2501",
+          avatar: "/avatar 1.png",
+          vip: false,
+          type: "general",
+          room: "T-101",
+          time: "09:00",
+          status: "waiting",
+        },
+          {
+          id: "6",
+          name: "Fatima Al-Sabah",
+          mrn: "2501",
+          avatar: "/avatar 1.png",
           vip: false,
           type: "general",
           room: "T-101",

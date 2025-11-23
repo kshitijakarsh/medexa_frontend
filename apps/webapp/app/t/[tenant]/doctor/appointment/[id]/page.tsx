@@ -141,13 +141,15 @@ export default function ConsultationDetailPage() {
 
   return (
     <div className="w-full flex flex-col gap-4">
+
+      {/* HEADER */}
       <AppointmentDetailHeader item={selected} />
 
+      {/* TABS */}
       <AppointmentDetailTabs active={activeTab} onChange={setActiveTab} />
 
-      <div className="bg-white rounded-2xl shadow-sm p-4 min-h-[500px]">
-        <AppointmentDetailContent activeTab={activeTab} />
-      </div>
+      {/* CONTENT */}
+      <AppointmentDetailContent activeTab={activeTab} />
     </div>
   );
 }
