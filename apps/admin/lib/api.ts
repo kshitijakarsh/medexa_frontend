@@ -194,6 +194,37 @@ export function logoutCognitoUser(): void {
 }
 
 
+export function getIdToken(): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    const user: CognitoUser | null = userPool.getCurrentUser();
+
+    if (!user) {
+      console.warn("No user is currently logged in");
+      resolve(null);
+      return;
+    }
+
+    user.getSession((err:any, session:any) => {
+      if (err) {
+        console.error("Failed to get session", err);
+        reject(err);
+        return;
+      }
+
+      if (!session?.isValid()) {
+        console.warn("Session is not valid");
+        resolve(null);
+        return;
+      }
+
+      const idToken = session.getIdToken().getJwtToken();
+      resolve(idToken);
+    });
+  });
+}
+
+
+
 
 // To ge the token here 
 //  useEffect(() => {

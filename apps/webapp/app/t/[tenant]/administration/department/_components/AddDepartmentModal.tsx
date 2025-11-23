@@ -558,9 +558,13 @@ type FormSchema = z.infer<typeof formSchema>;
 interface AddDepartmentModalProps {
   open: boolean;
   onClose: () => void;
+  onSave: (departments: { name: string; active: boolean }[]) => void;
+  editData?: { id: string; name: string; active: boolean } | null;
+
 }
 
-export default function AddDepartmentModal({ open, onClose }: AddDepartmentModalProps) {
+
+export default function AddDepartmentModal({ open, onClose, onSave, editData }: AddDepartmentModalProps) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -573,17 +577,34 @@ export default function AddDepartmentModal({ open, onClose }: AddDepartmentModal
     name: "departments",
   });
 
-  useEffect(() => {
-    if (!open) form.reset({ departments: [{ name: "", active: false }] });
-  }, [open, form]);
+  // useEffect(() => {
+  //   if (!open) form.reset({ departments: [{ name: "", active: false }] });
+  // }, [open, form]);
 
   const handleSave = (values: FormSchema) => {
-    console.log("✅ Departments Saved:", values.departments);
-    onClose();
+    onSave(values.departments);   // ← SEND DATA TO PAGE for API call
   };
 
+  useEffect(() => {
+  if (editData) {
+    form.reset({
+      departments: [
+        {
+          name: editData.name,
+          active: editData.active,
+        },
+      ],
+    });
+  } else if (!open) {
+    form.reset({
+      departments: [{ name: "", active: false }],
+    });
+  }
+}, [editData, open, form]);
+
+
   return (
-    <AppDialog open={open} onClose={onClose} title="Add Department">
+    <AppDialog open={open} onClose={onClose} title="Add Department" maxWidth="md:max-w-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
           {/* Body */}
@@ -661,7 +682,7 @@ export default function AddDepartmentModal({ open, onClose }: AddDepartmentModal
               ))}
             </div>
 
-            <div className="flex justify-end mt-4">
+            {/* <div className="flex justify-end mt-4">
               <Button
                 type="button"
                 variant="ghost"
@@ -670,7 +691,7 @@ export default function AddDepartmentModal({ open, onClose }: AddDepartmentModal
               >
                 Add Row <span className="bg-green-500 p-2 rounded-full"><Plus className="w-6 h-6 bg-white rounded-full" /></span>
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {/* Footer */}
