@@ -51,7 +51,7 @@ export default function FilterButton({
   const appliedCount = Object.values(filters).filter(Boolean).length;
 
   const hasFilters = appliedCount > 0;
-
+//  console.log(filters, appliedCount)
   return (
     <div className="flex items-center gap-3">
       {/* FILTER BUTTON */}
@@ -84,7 +84,8 @@ export default function FilterButton({
               w-6 h-6 rounded-full shadow-md
             "
           >
-            {count}
+            {appliedCount}
+            {/* {count ?? appliedCount} */}
           </span>
         )}
       </Button>

@@ -114,7 +114,7 @@ import { MoveRight, SquareArrowOutUpRight } from "lucide-react";
 interface Column<T> {
     key: keyof T | string;
     label: string;
-    render?: (row: T) => React.ReactNode;
+    render?: (row: T, i?:number) => React.ReactNode;
 }
 
 interface Props<T> {
@@ -187,7 +187,8 @@ export function DataTableMobile<T>({ columns, data, loading }: Props<T>) {
 
                                         {/* Value */}
                                         <span className="text-[14px] font-semibold text-blue-700 text-right">
-                                            {col.render ? col.render(row) : (row[col.key] ?? "-")}
+                                            {/* {col.render ? col.render(row) : (row[col.key] ?? "-")} */}
+                                            {col.render ? col.render(row, i) : (row[col.key] ?? "-")}
                                         </span>
                                     </div>
                                 ))}
