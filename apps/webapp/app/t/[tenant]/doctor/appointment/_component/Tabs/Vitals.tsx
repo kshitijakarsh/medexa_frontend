@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { SectionWrapper } from "./SectionWrapper";
 import { SectionTitle } from "./SectionTitle";
-import VitalsModal from "./Vitals/VitalsModal";
-import { VitalCard } from "./Vitals/VitalCard";
-import { VitalGraph } from "./Vitals/VitalGraph";
-import { VitalsHistory } from "./Vitals/VitalsHistory";
+import VitalsModal from "./vitals/VitalsModal";
+import { VitalCard } from "./vitals/VitalCard";
+import { VitalGraph } from "./vitals/VitalGraph";
+import { VitalsHistory } from "./vitals/VitalsHistory";
 import NewButton from "@/components/common/new-button";
 import {
     HeartPulse,
@@ -141,7 +141,7 @@ export function Vitals() {
                     <VitalsHistory history={history} />
                 </div>
             </div>
-            {showModal && <VitalsModal onClose={() => setShowModal(false)} onSave={handleSave} />}
+            {showModal && <VitalsModal open={showModal} onClose={() => setShowModal(false)} onSave={handleSave} />}
         </SectionWrapper>
     );
 }
