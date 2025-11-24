@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "@workspace/ui/lib/sonner"
@@ -30,7 +30,7 @@ interface TableUserRow {
   addedBy: string | null
 }
 
-export default function EmployeeConfigurationPage() {
+function EmployeeConfigurationPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
@@ -272,5 +272,13 @@ export default function EmployeeConfigurationPage() {
         onApply={handleApplyFilters}
       />
     </>
+  )
+}
+
+export default function EmployeeConfigurationPage() {
+  return (
+    <Suspense fallback={<div className="p-5">Loading...</div>}>
+      <EmployeeConfigurationPageContent />
+    </Suspense>
   )
 }
