@@ -209,7 +209,7 @@ import { Button } from "@workspace/ui/components/button"
 import { SlidersHorizontal } from "lucide-react"
 import { Header } from "@/components/header"
 import { DataTable } from "@/components/common/data-table"
-import { QuickActionsMenu } from "./_components/QuickActionsMenu"
+import { QuickActions } from "./_components/QuickActionsMenu"
 import { RowActionMenu } from "./_components/RowActionMenu"
 import { FilterDialog } from "./_components/FilterDialog"
 import { AddDialog } from "./_components/AddDialog"
@@ -219,7 +219,7 @@ import { EditDesignationDialog } from "./_components/EditDesignationDialog"
 import SearchInput from "@/components/common/search-input"
 import NewButton from "@/components/common/new-button"
 import { getMockEmployees } from "./_components/api"
-import { PageHeader } from "@/components/common/PageHeader"
+import { PageHeader } from "@/components/common/page-header"
 import { useRouter } from "next/navigation"
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -901,7 +901,7 @@ export default function EmployeeConfigurationPage() {
               </div>
 
               {/* Quick Actions */}
-              <QuickActionsMenu />
+              <QuickActions />
 
               {/* New Button */}
               <div className="ml-auto w-full sm:w-auto flex justify-end">

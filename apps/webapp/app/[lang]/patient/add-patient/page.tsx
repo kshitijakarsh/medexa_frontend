@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { Header } from "@/components/header"
-import { PageHeader } from "@/components/common/PageHeader"
+import { PageHeader } from "@/components/common/page-header"
 import { FormInput } from "@/components/ui/form-input"
 import { FormSelect } from "@/components/ui/form-select"
 import { FormDate } from "@/components/ui/form-date"
@@ -523,4 +523,3 @@ export default function AddPatientPage() {
     </main>
   )
 }
-

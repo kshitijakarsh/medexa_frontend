@@ -79,6 +79,8 @@
 //     </main>
 //   );
 // }
+
+
 "use client";
 
 import { useState } from "react";
@@ -87,7 +89,7 @@ import { z } from "@workspace/ui/lib/zod";
 import { zodResolver } from "@workspace/ui/lib/zod";
 import { Form } from "@workspace/ui/components/form";
 import { Button } from "@workspace/ui/components/button";
-import { PageHeader } from "@/components/common/PageHeader";
+import { PageHeader } from "@/components/common/page-header";
 import { TopEmployeeInfo } from "./_components/TopEmployeeInfo";
 import { EmployeeFormTabs } from "./_components/EmployeeFormTabs";
 import { Header } from "@/components/header";

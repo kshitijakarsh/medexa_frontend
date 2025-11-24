@@ -63,7 +63,7 @@ class ModulesApiClient {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: `Bearer ${this.authToken}`,
       },
     }
   }
