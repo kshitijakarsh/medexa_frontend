@@ -1,7 +1,7 @@
-// /app/.../_components/AddDialog.tsx
+// /app/.../_components/EditDialog.tsx
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { z } from "@workspace/ui/lib/zod"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import { useForm } from "@workspace/ui/hooks/use-form"
@@ -16,16 +16,15 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form"
 import { AppDialog } from "@/components/common/app-dialog"
-import { StatusSwitch } from "@/components/common/switch-green"
-import { DynamicSelect } from "@/components/common/dynamic-select"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "@workspace/ui/lib/sonner"
-import { createUserApiClient } from "@/lib/api/administration/users"
-import { createRoleApiClient } from "@/lib/api/administration/roles"
-import type { RoleItem } from "@/lib/api/administration/roles"
+import {
+  createUserApiClient,
+  type UserItem,
+} from "@/lib/api/administration/users"
 import { Check, X } from "lucide-react"
 
-/* Password validation schema */
+/* Password validation schema - same as AddDialog */
 const passwordSchema = z
   .string()
   .min(8, { message: "Password must be at least 8 characters long." })
@@ -39,47 +38,45 @@ const passwordSchema = z
     message: "Password must contain at least one special character.",
   })
 
-const itemSchema = z.object({
-  role: z.string().min(1, "Role is required"),
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Enter a valid email"),
-  phone: z.string().min(5, "Enter a valid phone"),
-  password: passwordSchema,
-  status: z.boolean().catch(false),
-})
-
-const formSchema = z.object({
-  items: z.array(itemSchema).min(1),
-})
+const formSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    password: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    // If password is provided and not empty, validate it
+    if (data.password && data.password.trim() !== "") {
+      const result = passwordSchema.safeParse(data.password)
+      if (!result.success) {
+        result.error.issues.forEach((issue) => {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: issue.message,
+            path: ["password"],
+          })
+        })
+      }
+    }
+  })
 
 type FormSchema = z.infer<typeof formSchema>
 
-interface AddDialogProps {
+interface EditDialogProps {
   open: boolean
   onClose: () => void
-  mode?: "roles" | "users"
-  onSave?: (data: any[]) => void
+  user: UserItem | null
 }
 
-export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
+export function EditDialog({ open, onClose, user }: EditDialogProps) {
   const queryClient = useQueryClient()
   const userApi = createUserApiClient({})
-  const roleApi = createRoleApiClient({})
   const [password, setPassword] = useState("")
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      items: [
-        {
-          role: "",
-          name: "",
-          email: "",
-          phone: "",
-          password: "",
-          status: false,
-        },
-      ],
+      name: "",
+      password: "",
     },
   })
 
@@ -91,106 +88,61 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
     hasSpecialChar: /[^A-Za-z0-9]/.test(password),
   }
 
-  /* Fetch roles for dropdown */
-  const { data: rolesData, isLoading: loadingRoles } = useQuery({
-    queryKey: ["roles"],
-    queryFn: async () => {
-      const response = await roleApi.getRoles({ limit: 100 })
-      return response.data
-    },
-  })
-
-  const roleOptions = useMemo(() => {
-    if (!rolesData?.data) return []
-    return rolesData.data.map((role: RoleItem) => ({
-      label: role.name,
-      value: role.id.toString(),
-    }))
-  }, [rolesData])
-
-  /* Create role map for role_id lookup */
-  const rolesMap = useMemo(() => {
-    const map = new Map<string, number>()
-    if (rolesData?.data) {
-      rolesData.data.forEach((role: RoleItem) => {
-        map.set(role.id.toString(), Number(role.id))
-      })
-    }
-    return map
-  }, [rolesData])
-
-  /* Create user mutation */
-  const createUserMutation = useMutation({
-    mutationFn: async (payload: {
-      email: string
-      name: string
-      password: string
-      phone: string
-      role_id: number
-    }) => {
-      const response = await userApi.createUser(payload)
+  /* Update user mutation */
+  const updateUserMutation = useMutation({
+    mutationFn: async (payload: { name: string; password?: string }) => {
+      if (!user) throw new Error("No user selected")
+      const response = await userApi.updateUser(user.id.toString(), payload)
       return response.data
     },
     onSuccess: () => {
-      toast.success("User created successfully")
+      toast.success("User updated successfully")
       queryClient.invalidateQueries({ queryKey: ["users"] })
-      if (onSave) onSave([])
       onClose()
     },
     onError: (error: any) => {
-      toast.error(error?.message || "Failed to create user")
+      toast.error(error?.message || "Failed to update user")
     },
   })
 
+  /* Reset form when dialog opens/closes or user changes */
   useEffect(() => {
-    if (!open) {
+    if (open && user) {
       form.reset({
-        items: [
-          {
-            role: "",
-            name: "",
-            email: "",
-            phone: "",
-            password: "",
-            status: false,
-          },
-        ],
+        name: user.name,
+        password: "",
+      })
+      setPassword("")
+    } else if (!open) {
+      form.reset({
+        name: "",
+        password: "",
       })
       setPassword("")
     }
-  }, [open, form])
+  }, [open, user, form])
 
   const handleSave = async (values: FormSchema) => {
-    const item = values.items[0]
-
-    if (!item) {
-      toast.error("Please fill in all required fields")
-      return
+    const payload: { name: string; password?: string } = {
+      name: values.name,
     }
 
-    const roleId = rolesMap.get(item.role)
-
-    if (!roleId) {
-      toast.error("Please select a valid role")
-      return
+    // Only include password if it's provided and not empty
+    // Form validation already ensures password meets requirements if provided
+    if (values.password && values.password.trim() !== "") {
+      payload.password = values.password
     }
 
-    // Note: API doesn't require name field based on the schema, but we'll use email as name if needed
-    // Based on API spec: { email, name, password, phone, role_id }
-    createUserMutation.mutate({
-      email: item.email,
-      name: item.name,
-      password: item.password,
-      phone: item.phone,
-      role_id: roleId,
-    })
+    updateUserMutation.mutate(payload)
   }
+
+  if (!user) return null
 
   return (
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Add New User"
+      title="Edit User"
       maxWidth="md:max-w-1xl"
     >
       <Form {...form}>
@@ -199,28 +151,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
             <div className="grid grid-cols-1 gap-6">
               <FormField
                 control={form.control}
-                name="items.0.role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <FormControl>
-                      <DynamicSelect
-                        options={roleOptions}
-                        value={field.value}
-                        onChange={(v) => field.onChange(v as string)}
-                        placeholder={
-                          loadingRoles ? "Loading roles..." : "Select role"
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="items.0.name"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Name</FormLabel>
@@ -234,43 +165,16 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
 
               <FormField
                 control={form.control}
-                name="items.0.email"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="items.0.phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="items.0.password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Password (Optional)</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter password"
+                        placeholder="Leave empty to keep current password"
                         type="password"
                         {...field}
+                        value={field.value || ""}
                         onChange={(e) => {
                           field.onChange(e)
                           setPassword(e.target.value)
@@ -329,40 +233,31 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                     )}
                     {!password && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Password must be at least 8 characters with 1 uppercase,
-                        1 number, and 1 special character.
+                        Leave empty to keep current password. If provided,
+                        password must meet all requirements above.
                       </p>
                     )}
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="items.0.status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <div
-                      className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"} h-9 px-2 rounded-md`}
-                    >
-                      <span className="text-sm text-red-500">Inactive</span>
-                      <FormControl>
-                        <StatusSwitch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <span
-                        className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"}`}
-                      >
-                        Active
-                      </span>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>
+                  <span className="font-medium">Email:</span> {user.email}
+                </p>
+                <p>
+                  <span className="font-medium">Status:</span>{" "}
+                  <span
+                    className={
+                      user.status === "active"
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }
+                  >
+                    {user.status === "active" ? "Active" : "Inactive"}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
@@ -377,10 +272,10 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
             </Button>
             <Button
               type="submit"
-              disabled={createUserMutation.isPending}
+              disabled={updateUserMutation.isPending}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
-              {createUserMutation.isPending ? "Saving..." : "Save"}
+              {updateUserMutation.isPending ? "Updating..." : "Update"}
             </Button>
           </div>
         </form>
@@ -389,4 +284,4 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
   )
 }
 
-export default AddDialog
+export default EditDialog

@@ -1,23 +1,24 @@
 // /app/.../_components/FilterDialog.tsx
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { z } from "@workspace/ui/lib/zod";
-import { zodResolver } from "@workspace/ui/lib/zod";
-import { useForm } from "@workspace/ui/hooks/use-form";
+import { useEffect, useMemo } from "react"
+import { z } from "@workspace/ui/lib/zod"
+import { zodResolver } from "@workspace/ui/lib/zod"
+import { useForm } from "@workspace/ui/hooks/use-form"
 import {
   Form,
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-} from "@workspace/ui/components/form";
-import { Input } from "@workspace/ui/components/input";
-import { Button } from "@workspace/ui/components/button";
-import { AppDialog } from "@/components/common/app-dialog";
-import { fetchUserRoles } from "./api";
-import { DynamicSelect } from "@/components/common/dynamic-select";
-import { AppSelect } from "@/components/common/app-select";
+} from "@workspace/ui/components/form"
+import { Input } from "@workspace/ui/components/input"
+import { Button } from "@workspace/ui/components/button"
+import { AppDialog } from "@/components/common/app-dialog"
+import { DynamicSelect } from "@/components/common/dynamic-select"
+import { AppSelect } from "@/components/common/app-select"
+import { useQuery } from "@tanstack/react-query"
+import { createRoleApiClient } from "@/lib/api/administration/roles"
 
 const filterSchema = z.object({
   role: z.string().optional(),
@@ -25,42 +26,68 @@ const filterSchema = z.object({
   phone: z.string().optional(),
   status: z.string().optional(),
   date: z.string().optional(),
-});
+})
 
-type FilterSchema = z.infer<typeof filterSchema>;
+type FilterSchema = z.infer<typeof filterSchema>
 
 interface FilterDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onApply: (filters: FilterSchema) => void;
-  isLoading?: boolean;
+  open: boolean
+  onClose: () => void
+  onApply: (filters: FilterSchema) => void
+  isLoading?: boolean
 }
 
-export function FilterDialog({ open, onClose, onApply, isLoading }: FilterDialogProps) {
+export function FilterDialog({
+  open,
+  onClose,
+  onApply,
+  isLoading,
+}: FilterDialogProps) {
   const form = useForm<FilterSchema>({
     resolver: zodResolver(filterSchema),
     defaultValues: { role: "", email: "", phone: "", status: "", date: "" },
-  });
+  })
 
-  const [roleOptions, setRoleOptions] = useState<{ label: string; value: string }[]>([]);
+  const roleApi = createRoleApiClient({})
+
+  /* Fetch roles for filter dropdown */
+  const { data: rolesData } = useQuery({
+    queryKey: ["roles"],
+    queryFn: async () => {
+      const response = await roleApi.getRoles({ limit: 100 })
+      return response.data
+    },
+  })
+
+  const roleOptions = useMemo(() => {
+    if (!rolesData?.data) return []
+    return rolesData.data.map((role) => ({
+      label: role.name,
+      value: role.id.toString(),
+    }))
+  }, [rolesData])
 
   useEffect(() => {
-    if (!open) form.reset();
-  }, [open, form]);
-
-  useEffect(() => {
-    fetchUserRoles().then((r: any) => setRoleOptions(r));
-  }, []);
+    if (!open) form.reset()
+  }, [open, form])
 
   const handleApply = (values: FilterSchema) => {
-    onApply(values);
-    onClose();
-  };
+    onApply(values)
+    onClose()
+  }
 
   return (
-    <AppDialog open={open} onClose={onClose} title="Filter Users" maxWidth="md:max-w-3xl">
+    <AppDialog
+      open={open}
+      onClose={onClose}
+      title="Filter Users"
+      maxWidth="md:max-w-3xl"
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleApply)} className="space-y-6 py-3">
+        <form
+          onSubmit={form.handleSubmit(handleApply)}
+          className="space-y-6 py-3"
+        >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <FormField
               control={form.control}
@@ -69,7 +96,12 @@ export function FilterDialog({ open, onClose, onApply, isLoading }: FilterDialog
                 <FormItem>
                   <FormLabel>Role</FormLabel>
                   <FormControl>
-                    <DynamicSelect options={roleOptions} value={field.value} onChange={(v) => field.onChange(v as string)} placeholder="Select role" />
+                    <DynamicSelect
+                      options={roleOptions}
+                      value={field.value}
+                      onChange={(v) => field.onChange(v as string)}
+                      placeholder="Select role"
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -121,7 +153,6 @@ export function FilterDialog({ open, onClose, onApply, isLoading }: FilterDialog
                         // { label: "", value: "Any" },
                         { label: "Active", value: "Active" },
                         { label: "Inactive", value: "Inactive" },
-
                       ]}
                       error={form.formState.errors.status}
                     />
@@ -145,13 +176,29 @@ export function FilterDialog({ open, onClose, onApply, isLoading }: FilterDialog
           </div>
 
           <div className="flex justify-end gap-3 pt-6 border-t">
-            <Button type="button" variant="outline" onClick={() => { form.reset(); onClose(); }} className="text-blue-600 border-blue-500">Cancel</Button>
-            <Button type="submit" disabled={isLoading} className="bg-green-500 hover:bg-green-600 text-white">{isLoading ? "Applying..." : "Apply Filters"}</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                form.reset()
+                onClose()
+              }}
+              className="text-blue-600 border-blue-500"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              {isLoading ? "Applying..." : "Apply Filters"}
+            </Button>
           </div>
         </form>
       </Form>
     </AppDialog>
-  );
+  )
 }
 
-export default FilterDialog;
+export default FilterDialog
