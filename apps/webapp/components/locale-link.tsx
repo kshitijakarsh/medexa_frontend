@@ -2,6 +2,7 @@
 
 import Link, { LinkProps } from "next/link"
 import { useParams } from "next/navigation"
+import { defaultLocale } from "@/i18n/locales"
 
 interface LocaleLinkProps extends Omit<LinkProps, "href"> {
   href: string
@@ -16,15 +17,17 @@ export function LocaleLink({
   ...props
 }: LocaleLinkProps) {
   const params = useParams<{ lang?: string }>()
+  const lang = params?.lang || defaultLocale
 
-  // Add locale prefix to the href if locale exists in params
-  const localizedHref = params?.lang
-    ? href.startsWith("/")
-      ? `/${params.lang}${href}`
-      : `/${params.lang}/${href}`
-    : href.startsWith("/")
-    ? href
-    : `/${href}`
+  // Construct URL with lang: /[lang]/[path] or just /[path] for default locale
+  const localizedHref =
+    lang === defaultLocale
+      ? href.startsWith("/")
+        ? href
+        : `/${href}`
+      : href.startsWith("/")
+        ? `/${lang}${href}`
+        : `/${lang}/${href}`
 
   return (
     <Link href={localizedHref} className={className} {...props}>
