@@ -32,6 +32,9 @@ const schema = z.object({
   priceVaryVip: z.number().optional(),
 });
 
+type StatusType = "Active" | "Inactive";
+
+
 export default function AddServicePage() {
   const router = useRouter();
   const form = useForm({ resolver: zodResolver(schema), defaultValues: { serviceName: "", chargeCategory: "", unit: "", chargeType: "", taxCategory: "", taxPercent: 0, description: "", standardCharge: 0, status: true, priceVaryOn: false, priceVaryStandard: 0, priceVaryNormal: 0, priceVaryVip: 0 } });
@@ -48,6 +51,19 @@ export default function AddServicePage() {
 
   const onSubmit = async (vals: any) => {
     setSaving(true);
+    // const payload = {
+    //   serviceName: vals.serviceName,
+    //   chargeType: vals.chargeType,
+    //   chargeCategory: vals.chargeCategory,
+    //   unit: vals.unit,
+    //   tax: vals.taxCategory,
+    //   standardCharge: Number(vals.standardCharge || 0),
+    //   description: vals.description,
+    //   // status: vals.status ? "Active" : "Inactive",
+    //   status: (vals.status ? "Active" : "Inactive") as StatusType,
+    //   priceVaryOn: vals.priceVaryOn,
+    //   priceVaryOptions: vals.priceVaryOn ? { standard: Number(vals.priceVaryStandard || 0), normal: Number(vals.priceVaryNormal || 0), vip: Number(vals.priceVaryVip || 0) } : {},
+    // };
     const payload = {
       serviceName: vals.serviceName,
       chargeType: vals.chargeType,
@@ -56,9 +72,15 @@ export default function AddServicePage() {
       tax: vals.taxCategory,
       standardCharge: Number(vals.standardCharge || 0),
       description: vals.description,
-      status: vals.status ? "Active" : "Inactive",
+      status: (vals.status ? "Active" : "Inactive") as StatusType,
       priceVaryOn: vals.priceVaryOn,
-      priceVaryOptions: vals.priceVaryOn ? { standard: Number(vals.priceVaryStandard || 0), normal: Number(vals.priceVaryNormal || 0), vip: Number(vals.priceVaryVip || 0) } : {},
+      priceVaryOptions: vals.priceVaryOn
+        ? {
+          standard: Number(vals.priceVaryStandard || 0),
+          normal: Number(vals.priceVaryNormal || 0),
+          vip: Number(vals.priceVaryVip || 0),
+        }
+        : undefined, 
     };
     await addServices([payload]);
     setSaving(false);
@@ -105,33 +127,33 @@ export default function AddServicePage() {
                   //     <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
                   //   </div>
                   // </FormItem>
-                   <FormItem>
-                      <div className="flex flex-col rounded-md px-3">
-                        <FormLabel className="pb-2">Status</FormLabel>
-                        <div
-                          className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"
-                            } h-9 px-2`}
+                  <FormItem>
+                    <div className="flex flex-col rounded-md px-3">
+                      <FormLabel className="pb-2">Status</FormLabel>
+                      <div
+                        className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"
+                          } h-9 px-2`}
+                      >
+                        <span className="text-sm text-red-500">
+                          Inactive
+                        </span>
+                        <FormControl>
+                          <StatusSwitch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <span
+                          className={`text-sm ${field.value
+                            ? "text-green-600"
+                            : "text-gray-400"
+                            }`}
                         >
-                          <span className="text-sm text-red-500">
-                            Inactive
-                          </span>
-                          <FormControl>
-                            <StatusSwitch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <span
-                            className={`text-sm ${field.value
-                              ? "text-green-600"
-                              : "text-gray-400"
-                              }`}
-                          >
-                            Active
-                          </span>
-                        </div>
+                          Active
+                        </span>
                       </div>
-                    </FormItem>
+                    </div>
+                  </FormItem>
                 )} />
               </div>
 
@@ -181,7 +203,7 @@ export default function AddServicePage() {
                     <div className="flex items-center gap-3">
                       <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
                     </div>
-                   
+
 
                   )} />
                 </div>
