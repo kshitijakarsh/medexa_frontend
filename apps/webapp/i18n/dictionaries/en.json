@@ -1,0 +1,58 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading...",
+    "back": "Back"
+  },
+  "nav": {
+    "organizationSetup": "Organization Setup",
+    "dashboard": "Dashboard",
+    "settings": "Settings"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "login": {
+      "title": "Login"
+    },
+    "onboarding": {
+      "title": "Onboarding"
+    },
+    "organizationSetup": {
+      "title": "Organization Setup"
+    },
+    "department": {
+      "title": "Department"
+    },
+    "unitsWardsBeds": {
+      "title": "Units, Wards & Beds"
+    },
+    "operationTheatres": {
+      "title": "Operation Theatres"
+    },
+    "employeeConfiguration": {
+      "title": "Employee Configuration"
+    },
+    "insurance": {
+      "title": "Insurance"
+    },
+    "tpaProvider": {
+      "title": "TPA Provider"
+    },
+    "operation": {
+      "title": "Operation"
+    },
+    "settings": {
+      "title": "Settings"
+    }
+  },
+  "metadata": {
+    "title": "MedExe - Hospital Portal",
+    "description": "Hospital Portal"
+  }
+}

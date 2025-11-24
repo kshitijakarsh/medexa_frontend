@@ -100,6 +100,26 @@ interface CreateTenantParams {
   // user_password: string
 }
 
+interface UpdateTenantParams {
+  tenant_key?: string
+  external_id?: string
+  name_en?: string
+  name_local?: string
+  country_id?: number
+  regulatory_authority_id?: number
+  license_number?: string
+  license_expiry?: string
+  license_type?: string
+  commercial_reg_no?: string
+  primary_admin_name?: string
+  primary_admin_email?: string
+  primary_admin_id_no?: string
+  primary_admin_password?: string
+  currency_code?: string
+  vat_registered?: boolean
+  vat_number?: string
+}
+
 class TenantApiClient {
   private baseUrl: string
   private authToken: string
@@ -120,7 +140,7 @@ class TenantApiClient {
   // }
 
   private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
-    const token = await getIdToken();
+    const token = await getIdToken()
 
     return {
       headers: {
@@ -128,9 +148,8 @@ class TenantApiClient {
         Accept: "application/json",
         Authorization: token ? `Bearer ${token}` : "",
       },
-    };
+    }
   }
-
 
   async getTenants(
     params: GetTenantsParams = {}
@@ -146,7 +165,8 @@ class TenantApiClient {
       })
 
       return await axios.get<TenantsListResponse>(
-        `${this.baseUrl}/api/v1/tenants${queryParams.toString() ? `?${queryParams.toString()}` : ""
+        `${this.baseUrl}/api/v1/tenants${
+          queryParams.toString() ? `?${queryParams.toString()}` : ""
         }`,
         await this.getJsonRequestConfig()
       )
@@ -226,6 +246,29 @@ class TenantApiClient {
     }
   }
 
+  async updateTenant(
+    tenantId: string,
+    params: UpdateTenantParams
+  ): Promise<AxiosResponse<TenantResponse>> {
+    try {
+      return await axios.put<TenantResponse>(
+        `${this.baseUrl}/api/v1/tenants/${tenantId}`,
+        params,
+        await this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Update tenant error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   async activateTenant(
     tenantId: string
   ): Promise<AxiosResponse<{ success: boolean; message?: string }>> {
@@ -264,4 +307,5 @@ export type {
   CountriesListResponse,
   GetTenantsParams,
   CreateTenantParams,
+  UpdateTenantParams,
 }

@@ -1,0 +1,58 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "edit": "Bewerken",
+    "delete": "Verwijderen",
+    "search": "Zoeken",
+    "loading": "Laden...",
+    "back": "Terug"
+  },
+  "nav": {
+    "organizationSetup": "Organisatie Setup",
+    "dashboard": "Dashboard",
+    "settings": "Instellingen"
+  },
+  "pages": {
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "login": {
+      "title": "Inloggen"
+    },
+    "onboarding": {
+      "title": "Onboarding"
+    },
+    "organizationSetup": {
+      "title": "Organisatie Setup"
+    },
+    "department": {
+      "title": "Afdeling"
+    },
+    "unitsWardsBeds": {
+      "title": "Eenheden, Afdelingen & Bedden"
+    },
+    "operationTheatres": {
+      "title": "Operatiekamers"
+    },
+    "employeeConfiguration": {
+      "title": "Medewerker Configuratie"
+    },
+    "insurance": {
+      "title": "Verzekering"
+    },
+    "tpaProvider": {
+      "title": "TPA Leverancier"
+    },
+    "operation": {
+      "title": "Operatie"
+    },
+    "settings": {
+      "title": "Instellingen"
+    }
+  },
+  "metadata": {
+    "title": "MedExe - Ziekenhuisportaal",
+    "description": "Ziekenhuisportaal"
+  }
+}

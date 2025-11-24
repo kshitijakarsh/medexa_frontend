@@ -360,7 +360,15 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
                 </LocaleLink>
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem disabled>Edit</DropdownMenuItem>
+            {tenant.status.toLowerCase() === "active" ? (
+              <DropdownMenuItem asChild>
+                <LocaleLink href={`/hospitals/${tenant.id}/edit`}>
+                  Edit
+                </LocaleLink>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem disabled>Edit</DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       ),

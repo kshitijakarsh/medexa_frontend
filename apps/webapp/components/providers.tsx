@@ -62,12 +62,14 @@ import { SidebarProvider } from "@workspace/ui/components/sidebar"
 import { usePathname } from "next/navigation"
 import { Toaster } from "@workspace/ui/components/sonner"
 import { AppSidebar } from "./app-sidebar"
+import type { Dictionary } from "@/i18n/get-dictionary"
 
 interface ProvidersProps {
   children: React.ReactNode
+  dict?: Dictionary
 }
 
-export function Providers({ children }: ProvidersProps) {
+export function Providers({ children, dict }: ProvidersProps) {
   const pathname = usePathname()
   const isStandalonePage =
     pathname.includes("/login") || pathname.includes("/onboarding")
