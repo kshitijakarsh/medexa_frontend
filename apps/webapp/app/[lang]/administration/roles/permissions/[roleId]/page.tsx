@@ -51,9 +51,10 @@ import { PermissionAccordion } from "../_components/PermissionAccordion";
 import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/lib/sonner";
 import { createRoleApiClient } from "@/lib/api/administration/roles";
-import { Skeleton } from "@workspace/ui/components/skeleton"; 
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { fetchAllowedModules } from "../_components/fetchAllowedModules";
 
 export default function PermissionAddPage() {
   const { roleId } = useParams();
@@ -92,6 +93,17 @@ export default function PermissionAddPage() {
 
   //   return result;
   // };
+
+  const [allowedModules, setAllowedModules] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadModules = async () => {
+      const mods = await fetchAllowedModules();
+      setAllowedModules(mods);
+    };
+    loadModules();
+  }, []);
+
   const convertFlatToNested = (permissions: string[]) => {
     const result: Record<string, any> = {};
 
@@ -180,40 +192,61 @@ export default function PermissionAddPage() {
   /* ------------------------------------------------------------
       UI
   ------------------------------------------------------------ */
-  if (loading) {
 
+  if (loading) {
     return (
       <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
         <div className="mx-auto rounded-lg shadow p-6 space-y-8">
 
           {/* Page Header Skeleton */}
-          <Skeleton className="h-8 w-64 rounded" />
-
-          {/* Main Card */}
-          <div className="border border-blue-100 rounded-lg p-4 bg-white space-y-4">
-
-            {/* Main Modules Skeleton */}
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="border-2 border-[#CBD5E1] rounded-xl bg-white shadow-sm p-4 space-y-4"
-                >
-                  {/* Main module title */}
-                  <Skeleton className="h-5 w-48 rounded" />
-
-                  {/* Submodule block */}
-                  <div className="space-y-3 pl-4">
-                    <Skeleton className="h-4 w-40 rounded" />
-                    <Skeleton className="h-4 w-56 rounded" />
-                    <Skeleton className="h-4 w-32 rounded" />
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div>
+            <Skeleton className="h-8 w-72 rounded" />
           </div>
 
-          {/* Footer Buttons Skeleton */}
+          {/* MAIN CARD */}
+          <div className="border border-blue-100 rounded-lg p-5 bg-white space-y-6">
+
+            {/* MAIN MODULE SKELETON */}
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="border-2 border-[#3B82F6] rounded-xl p-5 bg-white shadow-sm space-y-4"
+              >
+                {/* Main Module Header */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                    <Skeleton className="h-5 w-48 rounded" />
+                  </div>
+                  <Skeleton className="h-5 w-20 rounded" />
+                </div>
+
+                {/* Sub Modules */}
+                <div className="pl-4 space-y-4">
+                  {[1, 2].map((j) => (
+                    <div
+                      key={j}
+                      className="border border-slate-200 rounded-lg p-4 bg-slate-50 space-y-3"
+                    >
+                      <Skeleton className="h-4 w-40 rounded" />
+
+                      {/* Actions */}
+                      <div className="flex gap-6 flex-wrap pt-2">
+                        {[1, 2, 3, 4].map((a) => (
+                          <div key={a} className="flex items-center gap-2">
+                            <Skeleton className="h-4 w-4 rounded" />
+                            <Skeleton className="h-4 w-20 rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Skeleton className="h-10 w-24 rounded" />
             <Skeleton className="h-10 w-28 rounded" />
@@ -223,13 +256,14 @@ export default function PermissionAddPage() {
     );
   }
 
+
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
       <div className="mx-auto rounded-lg shadow p-6 space-y-8">
         <PageHeader title={`Permissions for Role: ${roleInfo?.name}`} />
 
         <div className="border border-blue-100 rounded-lg p-4 bg-white">
-          <PermissionAccordion value={permissionData} onChange={setPermissionData} />
+          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules}/>
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t">

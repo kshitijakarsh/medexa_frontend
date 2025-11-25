@@ -226,6 +226,8 @@ import {
   ClipboardList,
   BadgeCheck,
   Activity,
+  ClipboardSignature,
+  Accessibility,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -291,6 +293,21 @@ export const mainModules: MainModule[] = [
         label: "Employee Management",
         actions: ["view", "create", "edit", "delete"],
       },
+      {
+        key: "operation-theatres",
+        label: "Operation Theatres",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "insurance",
+        label: "Insurance",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "charges",
+        label: "Charges",
+        actions: ["view", "create", "edit", "delete"],
+      },
     ],
   },
 
@@ -315,7 +332,40 @@ export const mainModules: MainModule[] = [
       },
     ],
   },
-
+  {
+    key: "appointment",
+    label: "Appointment Management",
+    icon: ClipboardSignature,
+    subModules: [
+      {
+        key: "reception",
+        label: "Reception",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "appointment",
+        label: "Appointment Management",
+        actions: ["view", "create", "edit", "delete", "cancel"],
+      },
+    ],
+  },
+{
+    key: "patient_mgmt",
+    label: "Patient Management",
+    icon: Accessibility,
+    subModules: [
+      {
+        key: "reception",
+        label: "Reception",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "appointment",
+        label: "Appointment Management",
+        actions: ["view", "create", "edit", "delete", "cancel"],
+      },
+    ],
+  },
   {
     key: "diagnostics",
     label: "Diagnostics",
@@ -348,7 +398,7 @@ export const mainModules: MainModule[] = [
   },
 
   {
-    key: "billing_insurance",
+    key: "billing",
     label: "Billing & Insurance",
     icon: FileCog,
     subModules: [

@@ -140,17 +140,25 @@ export function SectionDropdown() {
         }
 
         // If no sections found, use default sections
-        if (dynamicSections.length === 0) {
-          setSections([
-            { label: "Administration", icon: Cog, moduleKey: "administration" },
-          ])
-        } else {
-          setSections(dynamicSections)
-        }
+        // if (dynamicSections.length === 0) {
+        //   setSections([
+        //     { label: "Administration", icon: Cog, moduleKey: "administration" },
+        //   ])
+        // } else {
+        //   setSections(dynamicSections)
+        // }
+
+        // After building dynamicSections
+        const finalSections = [
+          { label: "Administration", icon: Cog, moduleKey: "administration" },
+          ...dynamicSections,
+        ]
+
+        setSections(finalSections)
 
         // Set default selected to first module in the array
-        if (dynamicSections.length > 0 && dynamicSections[0]) {
-          setSelected(dynamicSections[0].label)
+        if (finalSections.length > 0 && finalSections[0]) {
+          setSelected(finalSections[0].label)
         }
       } catch (err) {
         console.error("Failed to fetch sections:", err)
