@@ -1,6 +1,6 @@
 # Turborepo Template.
 
-This is a monorepo template built with **Turborepo** that includes:
+This is a monorepo template built with **Turborepo** that includes::
 
 - 🚀 **Turborepo** - Fast, incremental builds for JavaScript and TypeScript codebases
 - 🎨 **shadcn/ui** - Beautiful and accessible UI components built with Radix UI and Tailwind CSS
