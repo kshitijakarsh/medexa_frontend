@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import { getIdToken } from "../api"
 
 interface ApiConfig {
   baseUrl?: string
@@ -71,21 +72,34 @@ class RegulatoryApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  // private getJsonRequestConfig(): AxiosRequestConfig {
+  //   return {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       // Authorization: `Bearer ${this.authToken}`,
+  //     },
+  //   }
+  // }
+
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken()
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     }
   }
+
 
   async getAuthoritesList(): Promise<AxiosResponse<AuthoritiesListResponse>> {
     try {
       return await axios.get<AuthoritiesListResponse>(
         `${this.baseUrl}/api/v1/regulatory_authorities`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -108,7 +122,7 @@ class RegulatoryApiClient {
       return await axios.post<DocumentResponse>(
         `${this.baseUrl}/api/v1/tenant/${tenantId}/document`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -131,7 +145,7 @@ class RegulatoryApiClient {
       return await axios.put<DocumentResponse>(
         `${this.baseUrl}/api/v1/tenant/document/${documentId}`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -150,7 +164,7 @@ class RegulatoryApiClient {
     try {
       return await axios.delete<void>(
         `${this.baseUrl}/api/v1/tenant/document/${documentId}`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -3,7 +3,12 @@
 import { z } from "@workspace/ui/lib/zod"
 
 export const editHospitalSchema = z.object({
-  tenant_key: z.string().min(1, "Tenant key is required"),
+  // tenant_key: z.string().min(1, "Tenant key is required").regex(/^[a-zA-Z0-9_-]+$/, "Tenant key must contain only letters, numbers, underscores, or hyphens"),
+  tenant_key: z
+		.string()
+		.min(3, { message: "Tenant key must be at least 3 characters long" })
+		.max(50, { message: "Tenant key cannot exceed 50 characters" })
+		.regex(/^[a-zA-Z0-9_-]+$/, { message: "Tenant key can only contain alphanumeric characters, hyphens, and underscores" }),
   external_id: z.string().min(1, "External ID is required"),
   name_en: z.string().min(3, "Hospital name (English) is required"),
   name_local: z.string().min(1, "Hospital name (Local) is required"),
