@@ -674,14 +674,22 @@ import { PermissionNode, MainModule, mainModules } from "./permissionsConfig";
 import { CustomCheckbox } from "./CustomCheckbox";
 
 interface PermissionAccordionProps {
+  allowedModules: string[];
   value?: Record<string, any>;
   onChange?: (updated: Record<string, any>) => void;
 }
 
 export const PermissionAccordion = ({
+  allowedModules = [],
   value = {},
   onChange,
 }: PermissionAccordionProps) => {
+  const visibleModules = mainModules.filter((m) =>
+    allowedModules.includes(m.key.toLowerCase())
+  );
+  console.log(allowedModules)
+
+
   const [permissions, setPermissions] = useState<Record<string, any>>({});
   const [openMainModules, setOpenMainModules] = useState<string[]>([]);
   const [openSubModules, setOpenSubModules] = useState<string[]>([]);
@@ -809,7 +817,26 @@ export const PermissionAccordion = ({
     });
   };
 
-  // Update individual action
+  // // Update individual action
+  // const handleActionChange = (
+  //   mainModuleKey: string,
+  //   node: PermissionNode,
+  //   action: string,
+  //   checked: boolean
+  // ) => {
+  //   const updated = JSON.parse(JSON.stringify(permissions));
+
+  //   if (!updated[mainModuleKey]) {
+  //     updated[mainModuleKey] = {};
+  //   }
+  //   if (!updated[mainModuleKey][node.key]) {
+  //     updated[mainModuleKey][node.key] = {};
+  //   }
+
+  //   updated[mainModuleKey][node.key][action] = checked;
+  //   updatePermissions(updated);
+  // };
+
   const handleActionChange = (
     mainModuleKey: string,
     node: PermissionNode,
@@ -825,9 +852,26 @@ export const PermissionAccordion = ({
       updated[mainModuleKey][node.key] = {};
     }
 
+    // Set the action state
     updated[mainModuleKey][node.key][action] = checked;
+
+    // 🔥 Auto-enable VIEW if any other action = true
+    if (checked && action !== "view") {
+      updated[mainModuleKey][node.key]["view"] = true;
+    }
+
+    // 🔥 If "view" gets unchecked → uncheck all other actions
+    if (!checked && action === "view") {
+      (node.actions || []).forEach((act) => {
+        if (act !== "view") {
+          updated[mainModuleKey][node.key][act] = false;
+        }
+      });
+    }
+
     updatePermissions(updated);
   };
+
 
   // Render action checkboxes
   const renderActionRow = (mainModuleKey: string, node: PermissionNode, isChild = false) => {
@@ -1000,7 +1044,8 @@ export const PermissionAccordion = ({
         onValueChange={setOpenMainModules}
         className="space-y-5"
       >
-        {mainModules.map((mainModule) => renderMainModule(mainModule))}
+        {/* {mainModules.map((mainModule) => renderMainModule(mainModule))} */}
+        {visibleModules.map((mainModule) => renderMainModule(mainModule))}
       </Accordion>
     </div>
   );
