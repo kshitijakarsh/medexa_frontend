@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import { getIdToken } from "../api"
 
 interface ApiConfig {
   baseUrl?: string
@@ -88,12 +89,24 @@ class PaymentConfigApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  // private getJsonRequestConfig(): AxiosRequestConfig {
+  //   return {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       // Authorization: `Bearer ${this.authToken}`,
+  //     },
+  //   }
+  // }
+
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken()
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     }
   }
@@ -102,7 +115,7 @@ class PaymentConfigApiClient {
     try {
       return await axios.get<PaymentGatewayResponse>(
         `${this.baseUrl}/api/v1/billing/payment-gateways`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -125,7 +138,7 @@ class PaymentConfigApiClient {
       return await axios.post<PaymentConfigResponse>(
         `${this.baseUrl}/api/v1/tenants/${tenantId}/payment-config`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -148,7 +161,7 @@ class PaymentConfigApiClient {
       return await axios.put<PaymentConfig>(
         `${this.baseUrl}/api/v1/tenants/payment-config/${configId}`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -167,7 +180,7 @@ class PaymentConfigApiClient {
     try {
       return await axios.delete<void>(
         `${this.baseUrl}/api/v1/tenants/payment-config/${configId}`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {

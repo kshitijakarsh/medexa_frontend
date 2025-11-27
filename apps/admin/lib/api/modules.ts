@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import { getIdToken } from "../api"
 
 interface ApiConfig {
   baseUrl?: string
@@ -58,12 +59,24 @@ class ModulesApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  // private getJsonRequestConfig(): AxiosRequestConfig {
+  //   return {
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${this.authToken}`,
+  //     },
+  //   }
+  // }
+
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken()
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     }
   }
@@ -72,7 +85,7 @@ class ModulesApiClient {
     try {
       return await axios.get<ModuleListResponse>(
         `${this.baseUrl}/api/v1/modules`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -95,7 +108,7 @@ class ModulesApiClient {
       return await axios.put<ModuleResponse>(
         `${this.baseUrl}/api/v1/tenants/${tenantId}/modules`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
