@@ -107,22 +107,38 @@ export function ModuleStepForm() {
   const form = useForm<Step2Values>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      modules: moduleState.selectedIds,
+      modules: moduleState.selectedIds || [],
     },
   })
 
+  // Watch form values for save
+  const formModules = form.watch("modules") || []
+
   useEffect(() => {
-    if (moduleState.selectedIds.length > 0) {
-      form.setValue("modules", moduleState.selectedIds)
+    // Sync form with store state only on initial load or when store changes from backend
+    // Only sync if form is empty and store has values (from backend)
+    const formCurrent = form.getValues("modules") || []
+    if (formCurrent.length === 0 && moduleState.selectedIds.length > 0) {
+      form.setValue("modules", moduleState.selectedIds, {
+        shouldValidate: false,
+        shouldDirty: false,
+      })
     }
   }, [moduleState.selectedIds, form])
 
   const handleSave = async () => {
-    const isValid = await form.trigger()
-    if (!isValid) return
+    try {
 
-    const values = form.getValues()
-    mutation.mutate(values.modules || [])
+      // Get current form values - use watched value which is always up-to-date
+      const modulesToSave =
+        formModules.length > 0 ? formModules : form.getValues("modules") || []
+
+
+
+      mutation.mutate(modulesToSave)
+    } catch (error) {
+      console.error("[ModuleStepForm] Error in handleSave:", error)
+    }
   }
 
   if (!hospitalId) {
@@ -148,7 +164,7 @@ export function ModuleStepForm() {
 
         <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center relative">
           {mutation.isError && (
-            <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full mb-2 text-sm text-red-600 bg-red-50 px-4 py-2 rounded-md border border-red-200 z-10">
               {mutation.error instanceof Error
                 ? mutation.error.message
                 : "Failed to save modules"}
@@ -183,9 +199,13 @@ export function ModuleStepForm() {
               </Button>
               <Button
                 type="button"
-                onClick={handleSave}
+                onClick={(e) => {
+                  e.preventDefault()
+                  console.log("[ModuleStepForm] Save button clicked")
+                  handleSave()
+                }}
                 disabled={mutation.isPending}
-                className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
+                className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {mutation.isPending ? "Saving..." : "Save & Continue"}
               </Button>

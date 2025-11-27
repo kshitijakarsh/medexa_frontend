@@ -233,7 +233,9 @@ export function PaymentStepForm() {
     if (confirm("Are you sure you want to delete this payment config?")) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
-          const updatedItems = paymentState.items.filter((item) => item.id !== id)
+          const updatedItems = paymentState.items.filter(
+            (item) => item.id !== id
+          )
           setPaymentItems(updatedItems)
         },
       })
@@ -427,7 +429,11 @@ export function PaymentStepForm() {
                     <Label>Payment Gateway *</Label>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
-                      value={String(field.value)}
+                      value={
+                        field.value && field.value !== 0
+                          ? String(field.value)
+                          : undefined
+                      }
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
@@ -436,7 +442,10 @@ export function PaymentStepForm() {
                       </FormControl>
                       <SelectContent>
                         {gateways.map((gateway) => (
-                          <SelectItem key={gateway.id} value={gateway.id}>
+                          <SelectItem
+                            key={gateway.id}
+                            value={String(gateway.id)}
+                          >
                             {gateway.name}
                           </SelectItem>
                         ))}

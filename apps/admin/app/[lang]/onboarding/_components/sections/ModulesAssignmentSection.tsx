@@ -76,11 +76,12 @@ export function ModuleAssignmentSection({
                     <CommandEmpty>No modules found.</CommandEmpty>
                     <CommandGroup>
                       {modules.map((m) => {
-                        const selected = selectedModules.includes(m.id)
+                        const moduleId = String(m.module_id)
+                        const selected = selectedModules.includes(moduleId)
                         return (
                           <CommandItem
                             key={m.id}
-                            onSelect={() => toggleModule(m.id)}
+                            onSelect={() => toggleModule(moduleId)}
                             className="flex flex-col items-start gap-1 py-3"
                           >
                             <div className="flex items-center w-full">
@@ -105,16 +106,24 @@ export function ModuleAssignmentSection({
             </Popover>
 
             {/* Selected modules as badges */}
-            {selectedModules.length > 0 && (
+            {selectedModules.length > 0 && modules.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {selectedModules.map((id: string) => {
-                  const mod = modules.find((m) => m.id === id)
+                  // Try to find module by comparing both module_id and id fields
+                  // Handle both string and number types
+                  const mod = modules.find((m) => {
+                    const searchId = String(id).trim()
+                    const moduleIdStr = String(m.module_id || "").trim()
+                    const idStr = String(m.id || "").trim()
+                    return moduleIdStr === searchId || idStr === searchId
+                  })
+
                   return (
                     <Badge
                       key={id}
                       className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-slate-100 text-slate-700"
                     >
-                      {mod?.name_en || id}
+                      {mod?.name_en || `Module ${id}`}
                       <X
                         size={14}
                         className="cursor-pointer hover:text-red-500"
