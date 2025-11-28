@@ -80,7 +80,7 @@ export function PatientSearchPanel({
       )
       setSearchResults(filtered)
       if (filtered.length === 1) {
-        onPatientSelect(filtered[0])
+        onPatientSelect(filtered[0] ?? null)
       } else {
         onPatientSelect(null)
       }
@@ -132,10 +132,7 @@ export function PatientSearchPanel({
       </div>
 
       {/* Patient Details Card */}
-      {selectedPatient && (
-        <PatientDetailsCard patient={selectedPatient} />
-      )}
+      {selectedPatient && <PatientDetailsCard patient={selectedPatient} />}
     </div>
   )
 }
-
