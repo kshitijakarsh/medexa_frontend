@@ -455,19 +455,54 @@ export default function MastersPage() {
   //     )
   //   );
   // }, [user]);
-  const allowedSubmodules = useMemo(() => {
-    const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
-      typeof p === "string" ? p : p.name
-    );
 
-    return Array.from(
-      new Set(
-        permissionStrings
-          .filter((p) => p.startsWith("administration:"))
-          .map((p) => p.split(":")[1]) // extract submodule
-      )
-    );
-  }, [user]);
+  // Required for all 
+  // const allowedSubmodules = useMemo(() => {
+  //   const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
+  //     typeof p === "string" ? p : p.name
+  //   );
+
+  //   return Array.from(
+  //     new Set(
+  //       permissionStrings
+  //         .filter((p) => p.startsWith("administration:"))
+  //         .map((p) => p.split(":")[1]) // extract submodule
+  //     )
+  //   );
+  // }, [user]);
+
+// temprerory fix
+  const allowedSubmodules = useMemo(() => {
+  const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
+    typeof p === "string" ? p : p.name
+  );
+
+  // normal extraction (your existing logic)
+  const subs = Array.from(
+    new Set(
+      permissionStrings
+        .filter((p) => p.startsWith("administration:"))
+        .map((p) => p.split(":")[1])
+    )
+  );
+
+  // SPECIAL RULE FOR "user" SUBMODULE
+  const userPermissions = permissionStrings.filter((p) =>
+    p.startsWith("administration:user:")
+  );
+
+  const hasOnlyViewOne =
+    userPermissions.length === 1 &&
+    userPermissions[0].endsWith("viewOne");
+
+  // If user ONLY has viewOne → remove "user" from allowed list
+  if (hasOnlyViewOne) {
+    return subs.filter((s) => s !== "user");
+  }
+
+  return subs;
+}, [user]);
+
 
 
   /* ------------------------------------------------------------
