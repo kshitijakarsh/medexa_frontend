@@ -337,25 +337,23 @@
 //   );
 // }
 
+"use client"
 
-
-"use client";
-
-import { useForm } from "@workspace/ui/hooks/use-form";
-import { Button } from "@workspace/ui/components/button";
+import { useForm } from "@workspace/ui/hooks/use-form"
+import { Button } from "@workspace/ui/components/button"
 import {
   Form,
   FormField,
   FormItem,
   FormLabel,
   FormControl,
-} from "@workspace/ui/components/form";
-import { z } from "@workspace/ui/lib/zod";
-import { zodResolver } from "@workspace/ui/lib/zod";
-import { AppDialog } from "@/components/common/app-dialog";
-import { CancelButton } from "@/components/common/cancel-button";
-import { ActionButton } from "@/components/common/action-button";
-import { AppSelect } from "@/components/common/app-select"; // ✅ Import your reusable select
+} from "@workspace/ui/components/form"
+import { z } from "@workspace/ui/lib/zod"
+import { zodResolver } from "@workspace/ui/lib/zod"
+import { AppDialog } from "@/components/common/app-dialog"
+import { CancelButton } from "@/components/common/cancel-button"
+import { ActionButton } from "@/components/common/action-button"
+import { AppSelect } from "@/components/common/app-select" // ✅ Import your reusable select
 
 // ✅ Validation Schema
 const filterSchema = z.object({
@@ -367,16 +365,16 @@ const filterSchema = z.object({
   status: z.string().optional(),
   billingStatus: z.string().optional(),
   createdBy: z.string().optional(),
-});
+})
 
-type FilterForm = z.infer<typeof filterSchema>;
+type FilterForm = z.infer<typeof filterSchema>
 
 interface FilterDialogProps {
-  open: boolean;
-  onClose: () => void;
-  mode: "humanResources" | "designation" | "specialization" | "roles";
-  onApply: (values: FilterForm) => void;
-  isLoading: boolean;
+  open: boolean
+  onClose: () => void
+  mode: "humanResources" | "designation" | "specialization" | "roles"
+  onApply: (values: FilterForm) => void
+  isLoading: boolean
 }
 
 export function FilterDialog({
@@ -398,24 +396,31 @@ export function FilterDialog({
       createdBy: "",
       role: "",
     },
-  });
+  })
 
   const handleApply = (values: FilterForm) => {
-    console.log("✅ Filters applied:", values);
-    onApply(values);
-    onClose();
-  };
+    console.log("✅ Filters applied:", values)
+    onApply(values)
+    onClose()
+  }
 
-  const isHR = mode === "humanResources";
-  const isDesignation = mode === "designation";
-  const isSpecialization = mode === "specialization";
-  const isRoles = mode === "roles";
+  const isHR = mode === "humanResources"
+  const isDesignation = mode === "designation"
+  const isSpecialization = mode === "specialization"
+  const isRoles = mode === "roles"
 
   return (
-    <AppDialog open={open} onClose={onClose} title="Filter" maxWidth="md:max-w-md">
+    <AppDialog
+      open={open}
+      onClose={onClose}
+      title="Filter"
+      maxWidth="md:max-w-md"
+    >
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleApply)} className="space-y-4 text-sm">
-
+        <form
+          onSubmit={form.handleSubmit(handleApply)}
+          className="space-y-4 text-sm"
+        >
           {/* 🧩 HUMAN RESOURCES FILTER */}
           {isHR && (
             <>
@@ -546,15 +551,21 @@ export function FilterDialog({
               {/* Name */}
               <FormField
                 control={form.control}
-                name={isDesignation ? "designation" : isSpecialization ? "specialization" : "role"}
+                name={
+                  isDesignation
+                    ? "designation"
+                    : isSpecialization
+                      ? "specialization"
+                      : "role"
+                }
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel>
                       {isDesignation
                         ? "Designation Name"
                         : isSpecialization
-                        ? "Specialization Name"
-                        : "User Role"}
+                          ? "Specialization Name"
+                          : "User Role"}
                     </FormLabel>
                     <FormControl>
                       <AppSelect
@@ -562,8 +573,8 @@ export function FilterDialog({
                           isDesignation
                             ? "Designation"
                             : isSpecialization
-                            ? "Specialization"
-                            : "Role"
+                              ? "Specialization"
+                              : "Role"
                         }`}
                         value={field.value}
                         onChange={field.onChange}
@@ -616,9 +627,15 @@ export function FilterDialog({
                         onChange={field.onChange}
                         error={fieldState.error}
                         options={[
-                          { label: "Dr. Ahmed Al-Mansouri", value: "Dr. Ahmed Al-Mansouri" },
+                          {
+                            label: "Dr. Ahmed Al-Mansouri",
+                            value: "Dr. Ahmed Al-Mansouri",
+                          },
                           { label: "Dr. Sara Malik", value: "Dr. Sara Malik" },
-                          { label: "Dr. Rajesh Kumar", value: "Dr. Rajesh Kumar" },
+                          {
+                            label: "Dr. Rajesh Kumar",
+                            value: "Dr. Rajesh Kumar",
+                          },
                         ]}
                       />
                     </FormControl>
@@ -636,5 +653,5 @@ export function FilterDialog({
         </form>
       </Form>
     </AppDialog>
-  );
+  )
 }

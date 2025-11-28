@@ -1,100 +1,17 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Button } from "@workspace/ui/components/button";
-// import { PageHeader } from "@/components/common/PageHeader";
-// import { EmployeeFormTabs } from "./_components/EmployeeFormTabs";
-// import { MoveLeft } from "lucide-react";
-// import { useRouter } from "next/navigation";
-
-// export default function AddEmployeePage() {
-//   const router = useRouter();
-//   const [status, setStatus] = useState(true); // active/inactive toggle
-
-//   return (
-//     <main className="min-h-screen bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] p-5">
-//       <div className="bg-white p-5 rounded-md shadow-sm">
-//         {/* Header */}
-//         <div className="flex items-center justify-between mb-4">
-//           <div className="flex items-center gap-3">
-//             <Button
-//               variant="ghost"
-//               className="bg-blue-700 hover:bg-blue-500 text-white p-1 rounded-md"
-//               onClick={() => router.back()}
-//             >
-//               <MoveLeft className="w-5 h-5" />
-//             </Button>
-//             <h1 className="text-lg font-semibold text-gray-800">
-//               Add Human Resource / New Employee
-//             </h1>
-//           </div>
-
-//           {/* Status toggle */}
-//           <div className="flex items-center gap-2">
-//             <span className="text-sm text-gray-500">Status</span>
-//             <div className="flex items-center gap-1 bg-gray-100 rounded-full px-2">
-//               <span
-//                 className={`text-sm px-2 py-1 rounded-full ${
-//                   !status ? "bg-red-100 text-red-600" : ""
-//                 }`}
-//               >
-//                 Inactive
-//               </span>
-//               <div
-//                 onClick={() => setStatus(!status)}
-//                 className={`w-12 h-6 rounded-full cursor-pointer transition-all relative ${
-//                   status ? "bg-green-500" : "bg-gray-300"
-//                 }`}
-//               >
-//                 <div
-//                   className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform ${
-//                     status ? "translate-x-6" : ""
-//                   }`}
-//                 />
-//               </div>
-//               <span
-//                 className={`text-sm px-2 py-1 rounded-full ${
-//                   status ? "bg-green-100 text-green-600" : ""
-//                 }`}
-//               >
-//                 Active
-//               </span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Tabs + Content */}
-//         <EmployeeFormTabs />
-
-//         {/* Action buttons */}
-//         <div className="flex justify-end mt-8 gap-3">
-//           <Button variant="outline" onClick={() => router.back()}>
-//             Cancel
-//           </Button>
-//           <Button className="bg-blue-600 text-white hover:bg-blue-500">
-//             Save
-//           </Button>
-//         </div>
-//       </div>
-//     </main>
-//   );
-// }
-
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useForm } from "@workspace/ui/hooks/use-form";
 import { z } from "@workspace/ui/lib/zod";
 import { zodResolver } from "@workspace/ui/lib/zod";
 import { Form } from "@workspace/ui/components/form";
 import { Button } from "@workspace/ui/components/button";
 import { PageHeader } from "@/components/common/page-header";
-import { TopEmployeeInfo } from "./_components/TopEmployeeInfo";
-import { EmployeeFormTabs } from "./_components/EmployeeFormTabs";
+import { TopEmployeeInfo } from "../../add/_components/TopEmployeeInfo";
+import { EmployeeFormTabs } from "../../add/_components/EmployeeFormTabs";
 import { Header } from "@/components/header";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createEmployeeApiClient } from "@/lib/api/employees";
 import { getAuthToken } from "@/app/utils/onboarding";
 
@@ -151,7 +68,8 @@ const employeeSchema = z.object({
     password: z.string().optional(),
 });
 
-export default function AddEmployeePage() {
+export default function EditEmployeePage() {
+    const { id } = useParams();
     const router = useRouter();
     const queryClient = useQueryClient();
     const [activeTab, setActiveTab] = useState("Personal Details");
@@ -174,6 +92,24 @@ export default function AddEmployeePage() {
         return createEmployeeApiClient({ authToken });
     }, [authToken]);
 
+    const {
+        data: employeeData,
+        isLoading,
+        error,
+    } = useQuery({
+        queryKey: ["employee", id],
+        queryFn: async () => {
+            if (!employeeClient || !id) throw new Error("API client not initialized");
+            // Note: The API doesn't have GET by ID, so we'll need to fetch from list
+            // For now, we'll handle this differently - fetch all and filter
+            const response = await employeeClient.getEmployees({ page: 1, limit: 1000 });
+            const employee = response.data.data.find((emp) => emp.id === Number(id));
+            if (!employee) throw new Error("Employee not found");
+            return employee;
+        },
+        enabled: !!employeeClient && !!id,
+    });
+
     const form = useForm({
         resolver: zodResolver(employeeSchema),
         defaultValues: {
@@ -187,10 +123,55 @@ export default function AddEmployeePage() {
         },
     });
 
-    const createMutation = useMutation({
+    // Populate form when employee data is loaded
+    useEffect(() => {
+        if (employeeData) {
+            form.reset({
+                first_name: employeeData.first_name || "",
+                last_name: employeeData.last_name || "",
+                department: employeeData.department_id?.toString() || "",
+                designation: employeeData.designation_id?.toString() || "",
+                specialization: employeeData.specialisation_id?.toString() || "",
+                role: employeeData.role_id?.toString() || "",
+                active: employeeData.status === "active",
+                gender: employeeData.gender || "",
+                dob: employeeData.dob || "",
+                marital_status: employeeData.marital_status || "",
+                nationality: employeeData.nationality || "",
+                cpr: employeeData.cpr || "",
+                cpr_expiration: employeeData.cpr_expiration || "",
+                blood_group: employeeData.blood_group || "",
+                employee_photo: employeeData.employee_photo || "",
+                phone: employeeData.phone || "",
+                email: employeeData.email || "",
+                office_email: employeeData.office_email || "",
+                emergency_contact: employeeData.emergency_contact || "",
+                local_address: employeeData.local_address || "",
+                permanent_address: employeeData.permanent_address || "",
+                language: employeeData.language || "",
+                qualification: employeeData.qualification || "",
+                years_experience: employeeData.years_experience || "",
+                visa_start: employeeData.visa_start || "",
+                visa_expiration: employeeData.visa_expiration || "",
+                passport_number: employeeData.passport_number || "",
+                passport_expiration: employeeData.passport_expiration || "",
+                license_number: employeeData.license_number || "",
+                license_expiration: employeeData.license_expiration || "",
+                joining_date: employeeData.joining_date || "",
+                contract_type: employeeData.contract_type || "",
+                contract_start_date: employeeData.contract_start_date || "",
+                contract_expiration_date: employeeData.contract_expiration_date || "",
+                basic_salary: employeeData.basic_salary || "",
+                username: employeeData.username || "",
+                password: employeeData.password || "",
+            });
+        }
+    }, [employeeData, form]);
+
+    const updateMutation = useMutation({
         mutationFn: async (values: any) => {
-            if (!employeeClient) throw new Error("API client not initialized");
-            await employeeClient.createEmployee({
+            if (!employeeClient || !id) throw new Error("API client not initialized");
+            await employeeClient.updateEmployee(Number(id), {
                 first_name: values.first_name,
                 last_name: values.last_name,
                 department_id: values.department ? Number(values.department) : undefined,
@@ -232,26 +213,59 @@ export default function AddEmployeePage() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["employees"] });
+            queryClient.invalidateQueries({ queryKey: ["employee", id] });
             router.push("/employee-configuration");
         },
     });
 
     const handleSave = async (values: any) => {
         try {
-            await createMutation.mutateAsync(values);
+            await updateMutation.mutateAsync(values);
         } catch (error) {
-            console.error("Failed to create employee:", error);
+            console.error("Failed to update employee:", error);
         }
     };
 
+    if (isLoading) {
+        return (
+            <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
+                <Header />
+                <div className="p-5 space-y-8">
+                    <div className="bg-white p-5 rounded-md shadow-sm">
+                        <div className="text-center py-8">Loading employee data...</div>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    if (error) {
+        return (
+            <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
+                <Header />
+                <div className="p-5 space-y-8">
+                    <div className="bg-white p-5 rounded-md shadow-sm">
+                        <div className="text-center py-8 text-red-600">
+                            {error instanceof Error ? error.message : "Failed to load employee"}
+                        </div>
+                        <div className="flex justify-center">
+                            <Button onClick={() => router.push("/employee-configuration")}>
+                                Go Back
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
     return (
-        // <main className="min-h-screen bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] p-5">
         <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
             <Header />
 
             <div className="p-5 space-y-8">
                 <div className="bg-white p-5 rounded-md shadow-sm space-y-6">
-                    <PageHeader title="Add Human Resource / New Employee" />
+                    <PageHeader title="Edit Human Resource / Employee" />
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
@@ -268,16 +282,16 @@ export default function AddEmployeePage() {
                                     variant="outline"
                                     className="text-blue-600 border-blue-500"
                                     onClick={() => router.push("/employee-configuration")}
-                                    disabled={createMutation.isPending}
+                                    disabled={updateMutation.isPending}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     className="bg-green-500 hover:bg-green-600"
-                                    disabled={createMutation.isPending}
+                                    disabled={updateMutation.isPending}
                                 >
-                                    {createMutation.isPending ? "Saving..." : "Save"}
+                                    {updateMutation.isPending ? "Saving..." : "Save"}
                                 </Button>
                             </div>
                         </form>
@@ -287,3 +301,4 @@ export default function AddEmployeePage() {
         </main>
     );
 }
+

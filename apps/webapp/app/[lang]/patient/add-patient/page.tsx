@@ -11,10 +11,12 @@ import { UploadCard } from "@/components/common/upload-card"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
 import { CheckCircle2, Calendar, Printer } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 
 export default function AddPatientPage() {
   const router = useRouter()
+  const params = useParams<{ lang?: string }>()
+  const lang = params?.lang || "en"
   const [isSuccess, setIsSuccess] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [mrn, setMrn] = useState<string>("")
@@ -133,8 +135,8 @@ export default function AddPatientPage() {
   }
 
   const handleBookAppointment = () => {
-    // Reset form state to allow adding a new patient
-    resetForm()
+    // Navigate to book appointment page
+    router.push(`/${lang}/appointment/book`)
   }
 
   // Options for dropdowns
