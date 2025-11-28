@@ -9,6 +9,7 @@ interface PaginationProps {
 }
 
 export function PaginationControls({ page, totalPages, onPageChange }: PaginationProps) {
+
   const pages = [];
 
   const maxToShow = 5;
@@ -35,6 +36,7 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
         size="sm"
         variant="outline"
         disabled={page === 1}
+        className={`cursor-pointer`}
         onClick={() => onPageChange(page - 1)}
       >
         Prev
@@ -47,6 +49,8 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
           size="sm"
           variant={p === page ? "default" : "outline"}
           onClick={() => onPageChange(p)}
+          className={`cursor-pointer`}
+          disabled={totalPages === 0}
         >
           {p}
         </Button>
@@ -56,7 +60,8 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
       <Button
         size="sm"
         variant="outline"
-        disabled={page === totalPages}
+        disabled={page === totalPages || totalPages === 0}
+        className={`cursor-pointer`}
         onClick={() => onPageChange(page + 1)}
       >
         Next
@@ -66,11 +71,12 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
       <Button
         size="sm"
         variant="outline"
-        disabled={page === totalPages}
+        disabled={page === totalPages || totalPages === 0}
+        className={`cursor-pointer`}
         onClick={() => onPageChange(totalPages)}
       >
         Last
       </Button>
-    </div>
+    </div >
   );
 }

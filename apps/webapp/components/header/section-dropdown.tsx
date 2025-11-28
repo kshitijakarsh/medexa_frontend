@@ -506,6 +506,7 @@ import {
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
+import { usePathname } from "next/navigation"
 
 const moduleIconMap: Record<string, any> = {
   analytics: BarChart3,
@@ -528,6 +529,7 @@ const moduleIconMap: Record<string, any> = {
 const DefaultIcon = Cog
 
 export function SectionDropdown() {
+  const pathname = usePathname();
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
   const user = useUserStore((s) => s.user)
@@ -571,27 +573,56 @@ export function SectionDropdown() {
   //   // })),
   // ]
 
-  // Get unique module names from p.split(":")[0]
+  // Convert PermissionItem[] or string[] → string[]
+  const permissionStrings = permissions.map((p: any) =>
+    typeof p === "string" ? p : p.name
+  );
+
+  // Get unique module names
   const moduleKeys = Array.from(
-    new Set(
-      permissions.map((p) => p.split(":")[0]) // "administration" from "administration:bed:view"
-    )
-  )
+    new Set(permissionStrings.map((p) => p.split(":")[0]))
+  );
 
   // Build dropdown sections dynamically
   const sections = moduleKeys.map((moduleKey) => ({
     label: moduleKey
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (c : any) => c.toUpperCase()),
+      .replace(/\b\w/g, (c: any) => c.toUpperCase()),
     moduleKey,
     icon: moduleIconMap[moduleKey] || DefaultIcon,
-  }))
+  }));
 
   // console.log(user)
+
+
+  React.useEffect(() => {
+    if (!pathname || moduleKeys.length === 0) return;
+
+    // Get first segment from URL → "/administration/users" → "administration"
+    const firstSegment = pathname.split("/")[1] ?? "";
+
+    // Match with moduleKeys
+    const matched = moduleKeys.find(
+      (m) => m.toLowerCase() === firstSegment.toLowerCase()
+    );
+
+    if (matched) {
+      setSelected(
+        matched
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c: any) => c.toUpperCase())
+      );
+    } else {
+      // If nothing matches, fallback to first module
+      setSelected(sections[0]?.label ?? "Administration");
+    }
+  }, [pathname, moduleKeys, sections]);
+
 
   // const [selected, setSelected] = React.useState(sections[0].label)
   const [selected, setSelected] = React.useState(sections[0]?.label ?? "Administration")
   const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
+
 
   return (
     <div className="flex flex-col items-center">
