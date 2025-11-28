@@ -229,10 +229,11 @@ import { createRoleApiClient } from "@/lib/api/roles"
 import type { Role } from "@/lib/api/roles"
 import { createDesignationApiClient } from "@/lib/api/designations"
 import type { Designation } from "@/lib/api/designations"
+import { createEmployeeApiClient } from "@/lib/api/employees"
 import { getAuthToken } from "@/app/utils/onboarding"
 
 const employeeConfigurationSection = [
-  { key: "humanResources", label: "Human Resources" },
+  { key: "humanResources", label: "Employee" },
   { key: "designation", label: "Designation Master" },
   { key: "specialization", label: "Specialization" },
   { key: "roles", label: "User Roles" },
@@ -310,6 +311,12 @@ export default function EmployeeConfigurationPage() {
     return createDesignationApiClient({ authToken })
   }, [authToken])
 
+  // React Query for employees
+  const employeeClient = useMemo(() => {
+    if (!authToken) return null
+    return createEmployeeApiClient({ authToken })
+  }, [authToken])
+
   const {
     data: specialisationsData,
     isLoading: isLoadingSpecialisations,
@@ -364,6 +371,25 @@ export default function EmployeeConfigurationPage() {
       return response.data
     },
     enabled: activeTab === "designation" && !!designationClient,
+  })
+
+  const {
+    data: employeesData,
+    isLoading: isLoadingEmployees,
+    error: employeesError,
+  } = useQuery({
+    queryKey: ["employees", page, limit, filters.status, debouncedSearch],
+    queryFn: async () => {
+      if (!employeeClient) throw new Error("API client not initialized")
+      const response = await employeeClient.getEmployees({
+        page,
+        limit,
+        status: filters.status as "active" | "inactive" | undefined,
+        search: debouncedSearch.length >= 2 ? debouncedSearch : undefined,
+      })
+      return response.data
+    },
+    enabled: activeTab === "humanResources" && !!employeeClient,
   })
 
   // Create mutation for specialisations
@@ -503,23 +529,50 @@ export default function EmployeeConfigurationPage() {
     },
   })
 
-  // Load mock data for other tabs (humanResources)
+  // Delete mutation for employees
+  const deleteEmployeeMutation = useMutation({
+    mutationFn: async (id: number) => {
+      if (!employeeClient) throw new Error("API client not initialized")
+      await employeeClient.deleteEmployee(id)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] })
+    },
+  })
+
+  // Map employees data to table format
   useEffect(() => {
-    if (activeTab === "humanResources") {
-      setLoading(true)
-      const timer = setTimeout(() => {
-        setData(getMockEmployees(activeTab))
-        setLoading(false)
-      }, 800)
-      return () => clearTimeout(timer)
+    if (activeTab === "humanResources" && employeesData) {
+      const mappedData = employeesData.data.map((item, index) => {
+        const date = item.created_at ? new Date(item.created_at) : new Date()
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
+
+        return {
+          id: item.id,
+          name: `${item.first_name} ${item.last_name}`,
+          designation: item.designation_id?.toString() || "N/A",
+          department: item.department_id?.toString() || "N/A",
+          contact: item.phone || "N/A",
+          createdOn: formattedDate,
+          addedBy: item.created_by ? `User ${item.created_by}` : "N/A",
+          status: item.status === "active" ? "Active" : "Inactive",
+          avatar:
+            item.employee_photo ||
+            "https://i.pravatar.cc/100?img=" + (index + 1),
+          _raw: item, // Store raw data for mutations
+        }
+      })
+      setData(mappedData)
+      setLoading(false)
     } else if (
       activeTab !== "specialization" &&
       activeTab !== "roles" &&
-      activeTab !== "designation"
+      activeTab !== "designation" &&
+      activeTab !== "humanResources"
     ) {
       setLoading(false)
     }
-  }, [activeTab])
+  }, [employeesData, activeTab, page, limit])
 
   // Map specialisations data to table format
   useEffect(() => {
@@ -657,10 +710,17 @@ export default function EmployeeConfigurationPage() {
               </Button>
               <RowActionMenu
                 onEdit={() => {
-                  console.log("Edit clicked for:", r.name)
+                  if (r._raw) {
+                    router.push(`/employee-configuration/${r._raw.id}/edit`)
+                  }
                 }}
                 onDelete={() => {
-                  console.log("Delete clicked for:", r.name)
+                  if (
+                    r._raw &&
+                    confirm("Are you sure you want to delete this employee?")
+                  ) {
+                    deleteEmployeeMutation.mutate(r._raw.id)
+                  }
                 }}
               />
             </div>
@@ -836,7 +896,7 @@ export default function EmployeeConfigurationPage() {
       <Header />
 
       <div className="p-5 space-y-8">
-        <PageHeader title="Employee Configuration" />
+        <PageHeader title="Human Resources" />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Tabs and Actions */}
@@ -918,7 +978,8 @@ export default function EmployeeConfigurationPage() {
               loading ||
               isLoadingSpecialisations ||
               isLoadingRoles ||
-              isLoadingDesignations
+              isLoadingDesignations ||
+              isLoadingEmployees
             }
             error={
               specialisationsError
@@ -933,20 +994,27 @@ export default function EmployeeConfigurationPage() {
                     ? designationsError instanceof Error
                       ? designationsError.message
                       : "Failed to load designations"
-                    : null
+                    : employeesError
+                      ? employeesError instanceof Error
+                        ? employeesError.message
+                        : "Failed to load employees"
+                      : null
             }
             pagination={
               (activeTab === "specialization" &&
                 specialisationsData?.pagination) ||
               (activeTab === "roles" && rolesData?.pagination) ||
-              (activeTab === "designation" && designationsData?.pagination)
+              (activeTab === "designation" && designationsData?.pagination) ||
+              (activeTab === "humanResources" && employeesData?.pagination)
                 ? (() => {
                     const paginationData =
                       activeTab === "specialization"
                         ? specialisationsData?.pagination
                         : activeTab === "roles"
                           ? rolesData?.pagination
-                          : designationsData?.pagination
+                          : activeTab === "designation"
+                            ? designationsData?.pagination
+                            : employeesData?.pagination
                     if (!paginationData) return null
                     return (
                       <div className="flex items-center justify-between pb-4 px-4">
