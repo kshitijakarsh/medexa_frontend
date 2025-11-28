@@ -59,6 +59,7 @@
 // //   )
 // // }
 
+import { hasPermission, PERMISSIONS } from "@/app/utils/permissions";
 import { RowActionMenu } from "@/components/common/row-action-menu";
 import { Pencil, Eye, Trash2, ShieldCheck } from "lucide-react";
 import { ReactNode } from "react";
@@ -82,14 +83,43 @@ interface RowAction {
   disabled?: boolean;
 }
 
-export function EmployeeRowActions({ onEdit, onView, onDelete, onPermission }: any) {
+export function RoleRowActions({ onEdit, onView, onDelete, onPermission, userPermissions }: any) {
   
-  const rowActions: RowAction[] = [
-    { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: onEdit, variant: "success" },
-    // { label: "View", icon: <Eye className="w-4 h-4" />, onClick: onView, variant: "success" },
-    { label: "Permissions", icon: <ShieldCheck className="w-4 h-4" />, onClick: onPermission, variant: "success" },
-    { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: onDelete, variant: "danger" },
-  ];
+  // const rowActions: RowAction[] = [
+  //   { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: onEdit, variant: "success" },
+  //   // { label: "View", icon: <Eye className="w-4 h-4" />, onClick: onView, variant: "success" },
+  //   { label: "Permissions", icon: <ShieldCheck className="w-4 h-4" />, onClick: onPermission, variant: "success" },
+  //   { label: "Delete", icon: <Trash2 className="w-4 h-4" />, onClick: onDelete, variant: "danger" },
+  // ];
+
+   const rowActions: RowAction[] = [];
+  
+    if (hasPermission(userPermissions, PERMISSIONS.ROLE.EDIT)) {
+      rowActions.push({
+        label: "Edit",
+        icon: <Pencil className="w-4 h-4" />,
+        onClick: onEdit,
+        variant: "success",
+      });
+    }
+     if (hasPermission(userPermissions, PERMISSIONS.ROLE.EDIT)) {
+      rowActions.push({
+        label: "Permissions",
+        icon: <ShieldCheck className="w-4 h-4" />,
+        onClick: onPermission,
+        variant: "success",
+      });
+    }
+  
+    if (hasPermission(userPermissions, PERMISSIONS.ROLE.DELETE)) {
+      rowActions.push({
+        label: "Delete",
+        icon: <Trash2 className="w-4 h-4" />,
+        onClick: onDelete,
+        variant: "danger",
+      });
+    }
+
 
   return <RowActionMenu actions={rowActions} />;
 }

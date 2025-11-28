@@ -226,6 +226,8 @@ import {
   ClipboardList,
   BadgeCheck,
   Activity,
+  ClipboardSignature,
+  Accessibility,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -254,41 +256,56 @@ export const mainModules: MainModule[] = [
       {
         key: "department",
         label: "Department",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
         key: "ward",
         label: "Ward",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
-        key: "ward_type",
+        key: "wardType",
         label: "Ward Type",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
-        key: "bed_type",
+        key: "bedType",
         label: "Bed Type",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
         key: "floor",
         label: "Floor",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
-        key: "roles",
+        key: "role",
         label: "User Roles",
-        actions: ["view", "create", "edit", "delete", "permission_manage"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
-        key: "users",
+        key: "user",
         label: "Users",
-        actions: ["view", "create", "edit", "delete", "assign_role"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
         key: "employee",
         label: "Employee Management",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "operation-theatres",
+        label: "Operation Theatres",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "insurance",
+        label: "Insurance",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "charges",
+        label: "Charges",
         actions: ["view", "create", "edit", "delete"],
       },
     ],
@@ -315,7 +332,40 @@ export const mainModules: MainModule[] = [
       },
     ],
   },
-
+  {
+    key: "appointment",
+    label: "Appointment Management",
+    icon: ClipboardSignature,
+    subModules: [
+      {
+        key: "reception",
+        label: "Reception",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "appointment",
+        label: "Appointment Management",
+        actions: ["view", "create", "edit", "delete", "cancel"],
+      },
+    ],
+  },
+{
+    key: "patient_mgmt",
+    label: "Patient Management",
+    icon: Accessibility,
+    subModules: [
+      {
+        key: "reception",
+        label: "Reception",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "appointment",
+        label: "Appointment Management",
+        actions: ["view", "create", "edit", "delete", "cancel"],
+      },
+    ],
+  },
   {
     key: "diagnostics",
     label: "Diagnostics",
@@ -348,7 +398,7 @@ export const mainModules: MainModule[] = [
   },
 
   {
-    key: "billing_insurance",
+    key: "billing",
     label: "Billing & Insurance",
     icon: FileCog,
     subModules: [
