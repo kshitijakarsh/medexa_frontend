@@ -37,6 +37,7 @@ import {
 } from "@/lib/api/regulatory"
 import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { getIdToken } from "@/lib/api"
 import {
   Select,
   SelectContent,
@@ -80,6 +81,21 @@ export function RegulatoryDocsStepForm() {
   const [docPreview, setDocPreview] = useState<string | null>(null)
   const [isActivating, setIsActivating] = useState(false)
   const [activationError, setActivationError] = useState<string | null>(null)
+  const [authToken, setAuthToken] = useState<string>("")
+
+  // Retrieve token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getIdToken()
+        setAuthToken(token || "")
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+        setAuthToken("")
+      }
+    }
+    fetchToken()
+  }, [])
 
   useEffect(() => {
     if (!hospitalId) {
@@ -89,13 +105,14 @@ export function RegulatoryDocsStepForm() {
 
   // Fetch tenant data to populate regulatory documents from backend
   const { data: tenantData } = useQuery({
-    queryKey: ["tenant", hospitalId],
+    queryKey: ["tenant", hospitalId, authToken],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createTenantApiClient({ authToken: token })
       const response = await client.getTenantById(hospitalId)
       return response.data.data
     },
-    enabled: !!hospitalId,
+    enabled: !!hospitalId && !!authToken,
   })
 
   // Populate store with tenant regulatory documents when data loads
@@ -114,19 +131,22 @@ export function RegulatoryDocsStepForm() {
   const { data: authorities = [], isLoading: isLoadingAuthorites } = useQuery<
     Authority[]
   >({
-    queryKey: ["authorites"],
+    queryKey: ["authorites", authToken],
     queryFn: async () => {
-      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createRegulatoryApiClient({ authToken: token })
       const response = await client.getAuthoritesList()
       return response.data.data // Extract data array from response
     },
+    enabled: !!authToken,
   })
 
   const createMutation = useMutation({
     mutationFn: async (
       payload: Omit<Document, "id" | "tenant_id" | "created_at" | "updated_at">
     ) => {
-      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createRegulatoryApiClient({ authToken: token })
       const response = await client.createDocument(hospitalId, payload)
       return response.data.data
     },
@@ -143,7 +163,8 @@ export function RegulatoryDocsStepForm() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...payload }: { id: string } & Step5Values) => {
-      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createRegulatoryApiClient({ authToken: token })
       const response = await client.updateDocument(id, payload)
       return response.data.data
     },
@@ -163,7 +184,8 @@ export function RegulatoryDocsStepForm() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createRegulatoryApiClient({ authToken: token })
       await client.deleteDocument(id)
     },
     onSuccess: () => {
@@ -273,7 +295,8 @@ export function RegulatoryDocsStepForm() {
       setActivationError(null)
 
       // Create tenant API client and activate tenant
-      const tenantApiClient = createTenantApiClient({ authToken: "" })
+      const token = authToken || (await getIdToken()) || ""
+      const tenantApiClient = createTenantApiClient({ authToken: token })
       await tenantApiClient.activateTenant(hospitalId)
 
       // Save state and reset

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -16,6 +16,7 @@ import {
 import { createModulesApiClient } from "@/lib/api/modules"
 import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { getIdToken } from "@/lib/api"
 import { ArrowLeft } from "lucide-react"
 
 export function ModuleStepForm() {
@@ -30,6 +31,21 @@ export function ModuleStepForm() {
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
 
   const { modules: moduleState, setModules, saveModules } = useOnboardingStore()
+  const [authToken, setAuthToken] = useState<string>("")
+
+  // Retrieve token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getIdToken()
+        setAuthToken(token || "")
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+        setAuthToken("")
+      }
+    }
+    fetchToken()
+  }, [])
 
   useEffect(() => {
     if (!hospitalId) {
@@ -38,23 +54,26 @@ export function ModuleStepForm() {
   }, [hospitalId, router, createHospitalPath])
 
   const { data: modules = [], isLoading: isLoadingModules } = useQuery({
-    queryKey: ["modules"],
+    queryKey: ["modules", authToken],
     queryFn: async () => {
-      const client = createModulesApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createModulesApiClient({ authToken: token })
       const response = await client.getModules()
       return response.data.data // Extract data array from paginated response
     },
+    enabled: !!authToken,
   })
 
   // Fetch tenant data to populate modules from backend
   const { data: tenantData } = useQuery({
-    queryKey: ["tenant", hospitalId],
+    queryKey: ["tenant", hospitalId, authToken],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createTenantApiClient({ authToken: token })
       const response = await client.getTenantById(hospitalId)
       return response.data.data
     },
-    enabled: !!hospitalId,
+    enabled: !!hospitalId && !!authToken,
   })
 
   // Populate store with tenant modules when data loads
@@ -76,7 +95,8 @@ export function ModuleStepForm() {
   const mutation = useMutation({
     mutationKey: ["tenant", "modules"],
     mutationFn: async (selectedIds: string[]) => {
-      const client = createModulesApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createModulesApiClient({ authToken: token })
       // Convert string IDs to numbers for the API
       const moduleIds = selectedIds
         .map((id) => parseInt(id, 10))

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { getIdToken } from "@/lib/api"
 import {
   Form,
   FormField,
@@ -84,6 +85,21 @@ export function LicenceHistoryStepForm() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<License | null>(null)
+  const [authToken, setAuthToken] = useState<string>("")
+
+  // Retrieve token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getIdToken()
+        setAuthToken(token || "")
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+        setAuthToken("")
+      }
+    }
+    fetchToken()
+  }, [])
 
   useEffect(() => {
     if (!hospitalId) {
@@ -93,13 +109,14 @@ export function LicenceHistoryStepForm() {
 
   // Fetch tenant data to populate license history from backend
   const { data: tenantData } = useQuery({
-    queryKey: ["tenant", hospitalId],
+    queryKey: ["tenant", hospitalId, authToken],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createTenantApiClient({ authToken: token })
       const response = await client.getTenantById(hospitalId)
       return response.data.data
     },
-    enabled: !!hospitalId,
+    enabled: !!hospitalId && !!authToken,
   })
 
   // Populate store with tenant license history when data loads
@@ -119,7 +136,8 @@ export function LicenceHistoryStepForm() {
     mutationFn: async (
       payload: Omit<License, "id" | "tenant_id" | "created_at" | "updated_at">
     ) => {
-      const client = createLicenseApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createLicenseApiClient({ authToken: token })
       const response = await client.createLicense(hospitalId, payload)
       return response.data.data
     },
@@ -134,7 +152,8 @@ export function LicenceHistoryStepForm() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, ...payload }: { id: string } & Step4Values) => {
-      const client = createLicenseApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createLicenseApiClient({ authToken: token })
       const response = await client.updateLicense(id, payload)
       return response.data.data
     },
@@ -152,7 +171,8 @@ export function LicenceHistoryStepForm() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const client = createLicenseApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createLicenseApiClient({ authToken: token })
       await client.deleteLicense(id)
     },
     onSuccess: () => {

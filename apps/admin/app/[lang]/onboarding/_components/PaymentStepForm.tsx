@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -45,6 +45,7 @@ import {
 } from "@/lib/api/payment"
 import { createTenantApiClient, type Country } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
+import { getIdToken } from "@/lib/api"
 
 const defaultValues: Step3Values = {
   gateway_id: 0,
@@ -79,11 +80,27 @@ export function PaymentStepForm() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<PaymentConfig | null>(null)
+  const [authToken, setAuthToken] = useState<string>("")
 
-  // Create API client instance
-  const paymentApiClient = createPaymentConfigApiClient({
-    authToken: "", // TODO: Get from auth context
-  })
+  // Retrieve token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getIdToken()
+        setAuthToken(token || "")
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+        setAuthToken("")
+      }
+    }
+    fetchToken()
+  }, [])
+
+  // Create API client instance with retrieved token
+  const paymentApiClient = useMemo(
+    () => createPaymentConfigApiClient({ authToken }),
+    [authToken]
+  )
 
   useEffect(() => {
     if (!hospitalId) {
@@ -93,13 +110,14 @@ export function PaymentStepForm() {
 
   // Fetch tenant data to populate payment configs from backend
   const { data: tenantData } = useQuery({
-    queryKey: ["tenant", hospitalId],
+    queryKey: ["tenant", hospitalId, authToken],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createTenantApiClient({ authToken: token })
       const response = await client.getTenantById(hospitalId)
       return response.data.data
     },
-    enabled: !!hospitalId,
+    enabled: !!hospitalId && !!authToken,
   })
 
   const { data: gateways = [], isLoading: isLoadingGateways } = useQuery({
@@ -113,12 +131,14 @@ export function PaymentStepForm() {
   const { data: countries = [], isLoading: isLoadingCountries } = useQuery<
     Country[]
   >({
-    queryKey: ["countries"],
+    queryKey: ["countries", authToken],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "" })
+      const token = authToken || (await getIdToken()) || ""
+      const client = createTenantApiClient({ authToken: token })
       const response = await client.getCountriesList()
       return response.data.data
     },
+    enabled: !!authToken,
   })
 
   // Populate store with tenant payment configs when data loads

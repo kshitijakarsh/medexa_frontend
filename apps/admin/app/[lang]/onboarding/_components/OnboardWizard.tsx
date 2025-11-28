@@ -1,7 +1,7 @@
 // Multi-step Onboarding Wizard
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useForm } from "@workspace/ui/hooks/use-form"
 import { zodResolver } from "@workspace/ui/lib/zod"
 import { Form } from "@workspace/ui/components/form"
@@ -30,6 +30,7 @@ import { createModulesApiClient } from "@/lib/api/modules"
 import { createPaymentConfigApiClient } from "@/lib/api/payment"
 import { createLicenseApiClient } from "@/lib/api/license"
 import { createRegulatoryApiClient } from "@/lib/api/regulatory"
+import { getIdToken } from "@/lib/api"
 
 const TOTAL_STEPS = 5
 
@@ -38,13 +39,43 @@ export default function OnboardWizard() {
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+  const [authToken, setAuthToken] = useState<string>("")
 
-  // Create API clients
-  const tenantApiClient = createTenantApiClient({ authToken: "" })
-  const modulesApiClient = createModulesApiClient({ authToken: "" })
-  const paymentApiClient = createPaymentConfigApiClient({ authToken: "" })
-  const licenseApiClient = createLicenseApiClient({ authToken: "" })
-  const regulatoryApiClient = createRegulatoryApiClient({ authToken: "" })
+  // Retrieve token on component mount
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getIdToken()
+        setAuthToken(token || "")
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+        setAuthToken("")
+      }
+    }
+    fetchToken()
+  }, [])
+
+  // Create API clients with retrieved token
+  const tenantApiClient = useMemo(
+    () => createTenantApiClient({ authToken }),
+    [authToken]
+  )
+  const modulesApiClient = useMemo(
+    () => createModulesApiClient({ authToken }),
+    [authToken]
+  )
+  const paymentApiClient = useMemo(
+    () => createPaymentConfigApiClient({ authToken }),
+    [authToken]
+  )
+  const licenseApiClient = useMemo(
+    () => createLicenseApiClient({ authToken }),
+    [authToken]
+  )
+  const regulatoryApiClient = useMemo(
+    () => createRegulatoryApiClient({ authToken }),
+    [authToken]
+  )
 
   // Step 1: Hospital Base
   const [logoFile, setLogoFile] = useState<File | null>(null)

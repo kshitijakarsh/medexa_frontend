@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { FormField, FormItem, FormMessage } from "@workspace/ui/components/form"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -35,16 +35,45 @@ export function ModuleAssignmentSection({
 }: ModuleAssignmentSectionProps) {
   const [open, setOpen] = useState(false)
   const selectedModules = form.watch("modules") || []
+  const isSelectingRef = useRef(false)
 
   const toggleModule = (id: string) => {
+    isSelectingRef.current = true
     const current = form.getValues("modules") || []
     if (current.includes(id)) {
       form.setValue(
         "modules",
-        current.filter((m: string) => m !== id)
+        current.filter((m: string) => m !== id),
+        { shouldDirty: true, shouldValidate: true }
       )
     } else {
-      form.setValue("modules", [...current, id])
+      form.setValue("modules", [...current, id], {
+        shouldDirty: true,
+        shouldValidate: true,
+      })
+    }
+    // Keep popover open for multi-select - reset flag after a short delay
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        isSelectingRef.current = false
+        // Ensure popover stays open
+        if (!open) {
+          setOpen(true)
+        }
+      })
+    })
+  }
+
+  const handleOpenChange = (newOpen: boolean) => {
+    // Prevent closing if we just selected an item (multi-select mode)
+    if (!newOpen && isSelectingRef.current) {
+      // Keep it open
+      return
+    }
+    setOpen(newOpen)
+    // Reset the flag when actually closing
+    if (!newOpen) {
+      isSelectingRef.current = false
     }
   }
 
@@ -56,7 +85,7 @@ export function ModuleAssignmentSection({
         render={() => (
           <FormItem className="space-y-3">
             {/* Dropdown */}
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover open={open} onOpenChange={handleOpenChange}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -76,13 +105,16 @@ export function ModuleAssignmentSection({
                     <CommandEmpty>No modules found.</CommandEmpty>
                     <CommandGroup>
                       {modules.map((m) => {
-                        const moduleId = String(m.module_id)
+                        const moduleId = String(m.id)
                         const selected = selectedModules.includes(moduleId)
                         return (
                           <CommandItem
                             key={m.id}
-                            onSelect={() => toggleModule(moduleId)}
-                            className="flex flex-col items-start gap-1 py-3"
+                            value={m.name_en}
+                            onSelect={() => {
+                              toggleModule(moduleId)
+                            }}
+                            className="flex flex-col items-start gap-1 py-3 cursor-pointer"
                           >
                             <div className="flex items-center w-full">
                               <Check
@@ -109,14 +141,7 @@ export function ModuleAssignmentSection({
             {selectedModules.length > 0 && modules.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {selectedModules.map((id: string) => {
-                  // Try to find module by comparing both module_id and id fields
-                  // Handle both string and number types
-                  const mod = modules.find((m) => {
-                    const searchId = String(id).trim()
-                    const moduleIdStr = String(m.module_id || "").trim()
-                    const idStr = String(m.id || "").trim()
-                    return moduleIdStr === searchId || idStr === searchId
-                  })
+                  const mod = modules.find((m) => String(m.id) === id)
 
                   return (
                     <Badge
@@ -124,11 +149,18 @@ export function ModuleAssignmentSection({
                       className="px-3 py-1 rounded-full text-sm flex items-center gap-1 bg-slate-100 text-slate-700"
                     >
                       {mod?.name_en || `Module ${id}`}
-                      <X
-                        size={14}
-                        className="cursor-pointer hover:text-red-500"
-                        onClick={() => toggleModule(id)}
-                      />
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => {
+                          toggleModule(id)
+                        }}
+                      >
+                        <X
+                          size={14}
+                          className="cursor-pointer hover:text-red-500"
+                        />
+                      </Button>
                     </Badge>
                   )
                 })}
