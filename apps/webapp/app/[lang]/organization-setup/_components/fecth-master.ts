@@ -22,9 +22,21 @@ export async function fetchMasters() {
       active: 120,
       category: "Organization Setup",
     },
+     {
+      title: "Employees",
+      subtitle: "Employees creation, etc.",
+      active: 10,
+      category: "Organization Setup",
+    },
     {
       title: "Human Resource",
       subtitle: "Eg: Doctor, Nurse, Designation, etc.",
+      active: 100,
+      category: "Staff & Roles",
+    },
+    {
+      title: "Roles",
+      subtitle: "Eg: Roles, etc.",
       active: 100,
       category: "Staff & Roles",
     },
@@ -115,9 +127,18 @@ export const masterConfig: Record<
     route: ROUTES.ADMINISTRATION_OPERATION_THEATRES,
     addOptions: ["Theatre", "Procedure Room"],
   },
+   "Employees": {
+    route: ROUTES.ADMINISTRATION_USER,
+    addOptions: ["Employee"],
+  },
   "Human Resource": {
     route: "/employee-configuration",
     addOptions: ["Doctor", "Nurse", "Designation", "Role"],
+  },
+ 
+  "Roles": {
+    route: ROUTES.ADMINISTRATION_ROLES,
+    addOptions: ["Role"],
   },
   "Shifts & Attendance Configuration": {
     route: "/masters/shifts",

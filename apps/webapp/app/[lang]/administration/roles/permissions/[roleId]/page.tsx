@@ -108,7 +108,7 @@ export default function PermissionAddPage() {
     const result: Record<string, any> = {};
 
     permissions.forEach((perm) => {
-      const parts = perm.split(".");
+      const parts = perm.split(":");
 
       // Must be exactly: main.sub.action
       if (parts.length !== 3) return;
@@ -136,11 +136,17 @@ export default function PermissionAddPage() {
         const role = res.data.data;
         setRoleInfo(role);
 
+        // const nested = convertFlatToNested(
+        //   role.permissions?.map((p: any) => p.permission) || []
+        // );
+        // const nested = convertFlatToNested((role.permissions || []) as string[]);
         const nested = convertFlatToNested(
-          role.permissions?.map((p: any) => p.permission) || []
+          (role.permissions as unknown as string[]) || []
         );
 
+        console.log(role)
         setPermissionData(nested);
+
       } catch (err) {
         toast.error("Failed to load permissions");
       } finally {
@@ -161,7 +167,7 @@ export default function PermissionAddPage() {
       Object.entries(subModules as any).forEach(([subKey, actions]) => {
         Object.entries(actions as any).forEach(([actionKey, isChecked]) => {
           if (isChecked === true) {
-            result.push(`${mainKey}.${subKey}.${actionKey}`);
+            result.push(`${mainKey}:${subKey}:${actionKey}`);
           }
         });
       });
