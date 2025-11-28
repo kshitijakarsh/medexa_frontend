@@ -1843,7 +1843,7 @@ const formatDate = (d?: string) =>
 
 export const PERMISSION_MAP = {
   ward: PERMISSIONS.WARD,
-  wardType: PERMISSIONS.BED_TYPE,
+  wardType: PERMISSIONS.WARD_TYPE,
   bedType: PERMISSIONS.BED_TYPE,
   floor: PERMISSIONS.FLOOR,
 };
@@ -1878,6 +1878,16 @@ function UnitsWardsBedsPageContent() {
   const limit = 10
 
   const clearAllFilters = () => setFilters({})
+
+  /* ---------------------------------------
+        FILTER TABS AS PER PEMISSION
+  ---------------------------------------- */
+  const filteredTabs = Tabs.filter((t) => {
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
+    return perm?.VIEW ? userPermissions?.includes(perm.VIEW) : true
+  })
+  console.log(filteredTabs, Tabs, userPermissions)
+
 
   /* ---------------------------------------
         UPDATE URL
@@ -2408,6 +2418,8 @@ function UnitsWardsBedsPageContent() {
             },
           ]
 
+
+
   /* ---------------------------------------
                 UI
   ---------------------------------------- */
@@ -2419,7 +2431,7 @@ function UnitsWardsBedsPageContent() {
           {/* HEADER */}
           <div className="flex flex-col md:flex-row justify-between gap-4">
             <DynamicTabs
-              tabs={Tabs}
+              tabs={filteredTabs}
               defaultTab={initialTab}
               onChange={(key) => {
                 setAddMode(key)
