@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
+import { getIdToken } from "../api"
 
 interface ApiConfig {
   baseUrl?: string
@@ -53,12 +54,14 @@ class LicenseApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken()
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        // Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     }
   }
@@ -71,7 +74,7 @@ class LicenseApiClient {
       return await axios.post<LicenseResponse>(
         `${this.baseUrl}/api/v1/tenant/${tenantId}/license`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -94,7 +97,7 @@ class LicenseApiClient {
       return await axios.put<LicenseResponse>(
         `${this.baseUrl}/api/v1/tenant/license/${licenseId}`,
         params,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -113,7 +116,7 @@ class LicenseApiClient {
     try {
       return await axios.delete<void>(
         `${this.baseUrl}/api/v1/tenant/license/${licenseId}`,
-        this.getJsonRequestConfig()
+        await this.getJsonRequestConfig()
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
