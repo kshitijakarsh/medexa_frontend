@@ -22,7 +22,7 @@ export async function fetchMasters() {
       active: 120,
       category: "Organization Setup",
     },
-     {
+    {
       title: "Employees",
       subtitle: "Employees creation, etc.",
       active: 10,
@@ -113,32 +113,40 @@ export async function fetchMasters() {
 
 export const masterConfig: Record<
   string,
-  { route: string; addOptions: string[] }
+  { route: string; addOptions: string[], submoduleKeys?: string[]; }
 > = {
   "Departments": {
     route: ROUTES.ADMINISTRATION_DEPARTMENT,
     addOptions: ["Department"],
+    submoduleKeys: ["department"]
   },
   "Ward/ Beds": {
     route: ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS,
     addOptions: ["Bed", "Bed Type", "Ward", "Floor"],
+    submoduleKeys: ["bed_type", "floor", "ward", "ward_type"]
+
   },
   "Operation Theatres / Procedure Rooms": {
     route: ROUTES.ADMINISTRATION_OPERATION_THEATRES,
     addOptions: ["Theatre", "Procedure Room"],
+    submoduleKeys: ["operation"]
+
   },
-   "Employees": {
+  "Employees": {
     route: ROUTES.ADMINISTRATION_USER,
     addOptions: ["Employee"],
+    submoduleKeys: ["user"]
   },
   "Human Resource": {
     route: "/employee-configuration",
     addOptions: ["Doctor", "Nurse", "Designation", "Role"],
   },
- 
+
   "Roles": {
     route: ROUTES.ADMINISTRATION_ROLES,
-    addOptions: ["Role"],
+    addOptions: ["Roles"],
+    submoduleKeys: ["role"]
+
   },
   "Shifts & Attendance Configuration": {
     route: "/masters/shifts",

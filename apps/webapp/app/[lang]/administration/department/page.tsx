@@ -353,7 +353,7 @@ import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 import { QuickActions } from "./_components/QuickActions";
-import { RowActionMenu } from "./_components/RowActionMenu";
+import { DepartmentRowActionMenu } from "./_components/DepartmentRowActionMenu";
 import FilterDialog from "./_components/FilterDialog";
 import AddDepartmentModal from "./_components/AddDepartmentModal";
 
@@ -367,10 +367,15 @@ import { createDepartmentApiClient } from "@/lib/api/administration/department";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { getAuthToken } from "@/app/utils/onboarding";
 import { getIdToken } from "@/app/utils/auth";
+import { useUserStore } from "@/store/useUserStore";
+import { Can } from "@/components/common/app-can";
+import { PERMISSIONS } from "@/app/utils/permissions";
 
 const limit = 10;
 
 function DepartmentsContent() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
@@ -427,8 +432,8 @@ function DepartmentsContent() {
             filters?.status === "Active"
               ? "active"
               : filters?.status === "Inactive"
-              ? "inactive"
-              : undefined,
+                ? "inactive"
+                : undefined,
         })
       ).data,
   });
@@ -523,12 +528,14 @@ function DepartmentsContent() {
       key: "action",
       label: "Action",
       render: (row: any) => (
-        <RowActionMenu
+        <DepartmentRowActionMenu
           onEdit={() => {
             setEditingRow(row);
             setIsAddModalOpen(true);
           }}
           onDelete={() => deleteMutation.mutate(row.id)}
+          userPermissions={userPermissions}
+
         />
       ),
       className: "text-center w-[80px]",
@@ -559,7 +566,12 @@ function DepartmentsContent() {
 
             <QuickActions />
 
-            <NewButton handleClick={() => setIsAddModalOpen(true)} />
+            <Can
+              permission={PERMISSIONS.DEPARTMENT.CREATE}
+              userPermissions={userPermissions}
+            >
+              <NewButton handleClick={() => setIsAddModalOpen(true)} />
+            </Can>
           </div>
 
           {/* Table */}
@@ -589,10 +601,10 @@ function DepartmentsContent() {
         editData={
           editingRow
             ? {
-                id: editingRow.id,
-                name: editingRow.name,
-                active: editingRow.status === "Active",
-              }
+              id: editingRow.id,
+              name: editingRow.name,
+              active: editingRow.status === "Active",
+            }
             : null
         }
         onSave={(departments) => {

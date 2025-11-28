@@ -1806,7 +1806,7 @@ import SearchInput from "@/components/common/search-input"
 import FilterButton from "@/components/common/filter-button"
 import NewButton from "@/components/common/new-button"
 import { QuickActions } from "./_components/QuickActions"
-import { RowActionMenu } from "./_components/RowActionMenu"
+import { UnitsWardsBedsRowActions } from "./_components/UnitsWardsBedsRowActions"
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable"
 import { PaginationControls } from "@/components/common/data-table/PaginationControls"
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
@@ -1827,6 +1827,9 @@ import { createFloorApiClient } from "@/lib/api/administration/floors"
 import { createBedTypeApiClient } from "@/lib/api/administration/bedTypes"
 import { createWardTypeApiClient } from "@/lib/api/administration/wardTypes"
 import { createWardApiClient } from "@/lib/api/administration/wards"
+import { useUserStore } from "@/store/useUserStore"
+import { Can } from "@/components/common/app-can"
+import { PERMISSIONS } from "@/app/utils/permissions"
 
 const Tabs = [
   { key: "ward", label: "Ward" },
@@ -1838,7 +1841,16 @@ const Tabs = [
 const formatDate = (d?: string) =>
   d ? format(new Date(d), "dd MMM yyyy, hh:mm a") : "—"
 
+export const PERMISSION_MAP = {
+  ward: PERMISSIONS.WARD,
+  wardType: PERMISSIONS.BED_TYPE,
+  bedType: PERMISSIONS.BED_TYPE,
+  floor: PERMISSIONS.FLOOR,
+};
+
+
 function UnitsWardsBedsPageContent() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
@@ -2223,22 +2235,61 @@ function UnitsWardsBedsPageContent() {
   const columns =
     addMode === "ward"
       ? [
+        { key: "id", label: "ID", render: (r: any) => r.id },
+        {
+          key: "ward_number",
+          label: "Ward Number",
+          render: (r: any) => r.ward_number,
+        },
+        {
+          key: "ward_type",
+          label: "Ward Type",
+          render: (r: any) => r.wardType?.name ?? "—",
+        },
+        {
+          key: "floor",
+          label: "Floor",
+          render: (r: any) => r.floor?.floor_name ?? "—",
+        },
+        {
+          key: "status",
+          label: "Status",
+          render: (r: any) => (
+            <span
+              className={
+                r.status === "active" ? "text-green-500" : "text-red-500"
+              }
+            >
+              {r.status}
+            </span>
+          ),
+        },
+        {
+          key: "created_at",
+          label: "Created On",
+          render: (r: any) => formatDate(r.created_at),
+        },
+        {
+          key: "action",
+          label: "Action",
+          render: (r: any) => (
+            <UnitsWardsBedsRowActions
+              onEdit={() => {
+                setDialogMode("edit")
+                setEditData(r)
+                setIsAddDialogOpen(true)
+              }}
+              onDelete={() => deleteWardMutation.mutate(r.id)}
+              userPermissions={userPermissions}
+              mode={addMode}
+            />
+          ),
+        },
+      ]
+      : addMode === "bedType"
+        ? [
           { key: "id", label: "ID", render: (r: any) => r.id },
-          {
-            key: "ward_number",
-            label: "Ward Number",
-            render: (r: any) => r.ward_number,
-          },
-          {
-            key: "ward_type",
-            label: "Ward Type",
-            render: (r: any) => r.wardType?.name ?? "—",
-          },
-          {
-            key: "floor",
-            label: "Floor",
-            render: (r: any) => r.floor?.floor_name ?? "—",
-          },
+          { key: "name", label: "Name", render: (r: any) => r.name },
           {
             key: "status",
             label: "Status",
@@ -2261,19 +2312,21 @@ function UnitsWardsBedsPageContent() {
             key: "action",
             label: "Action",
             render: (r: any) => (
-              <RowActionMenu
+              <UnitsWardsBedsRowActions
                 onEdit={() => {
                   setDialogMode("edit")
                   setEditData(r)
                   setIsAddDialogOpen(true)
                 }}
-                onDelete={() => deleteWardMutation.mutate(r.id)}
+                onDelete={() => deleteBedTypeMutation.mutate(r.id)}
+                userPermissions={userPermissions}
+                mode={addMode}
               />
             ),
           },
         ]
-      : addMode === "bedType"
-        ? [
+        : addMode === "wardType"
+          ? [
             { key: "id", label: "ID", render: (r: any) => r.id },
             { key: "name", label: "Name", render: (r: any) => r.name },
             {
@@ -2298,95 +2351,62 @@ function UnitsWardsBedsPageContent() {
               key: "action",
               label: "Action",
               render: (r: any) => (
-                <RowActionMenu
+                <UnitsWardsBedsRowActions
                   onEdit={() => {
                     setDialogMode("edit")
                     setEditData(r)
                     setIsAddDialogOpen(true)
                   }}
-                  onDelete={() => deleteBedTypeMutation.mutate(r.id)}
+                  onDelete={() => deleteWardTypeMutation.mutate(r.id)}
+                  userPermissions={userPermissions}
+                  mode={addMode}
                 />
               ),
             },
           ]
-        : addMode === "wardType"
-          ? [
-              { key: "id", label: "ID", render: (r: any) => r.id },
-              { key: "name", label: "Name", render: (r: any) => r.name },
-              {
-                key: "status",
-                label: "Status",
-                render: (r: any) => (
-                  <span
-                    className={
-                      r.status === "active" ? "text-green-500" : "text-red-500"
-                    }
-                  >
-                    {r.status}
-                  </span>
-                ),
-              },
-              {
-                key: "created_at",
-                label: "Created On",
-                render: (r: any) => formatDate(r.created_at),
-              },
-              {
-                key: "action",
-                label: "Action",
-                render: (r: any) => (
-                  <RowActionMenu
-                    onEdit={() => {
-                      setDialogMode("edit")
-                      setEditData(r)
-                      setIsAddDialogOpen(true)
-                    }}
-                    onDelete={() => deleteWardTypeMutation.mutate(r.id)}
-                  />
-                ),
-              },
-            ]
           : [
-              // floors
-              { key: "id", label: "ID", render: (r: any) => r.id },
-              {
-                key: "floor_name",
-                label: "Floor",
-                render: (r: any) => r.floor_name,
-              },
-              {
-                key: "status",
-                label: "Status",
-                render: (r: any) => (
-                  <span
-                    className={
-                      r.status === "active" ? "text-green-500" : "text-red-500"
-                    }
-                  >
-                    {r.status}
-                  </span>
-                ),
-              },
-              {
-                key: "created_at",
-                label: "Created On",
-                render: (r: any) => formatDate(r.created_at),
-              },
-              {
-                key: "action",
-                label: "Action",
-                render: (r: any) => (
-                  <RowActionMenu
-                    onEdit={() => {
-                      setDialogMode("edit")
-                      setEditData(r)
-                      setIsAddDialogOpen(true)
-                    }}
-                    onDelete={() => deleteFloorMutation.mutate(r.id)}
-                  />
-                ),
-              },
-            ]
+            // floors
+            { key: "id", label: "ID", render: (r: any) => r.id },
+            {
+              key: "floor_name",
+              label: "Floor",
+              render: (r: any) => r.floor_name,
+            },
+            {
+              key: "status",
+              label: "Status",
+              render: (r: any) => (
+                <span
+                  className={
+                    r.status === "active" ? "text-green-500" : "text-red-500"
+                  }
+                >
+                  {r.status}
+                </span>
+              ),
+            },
+            {
+              key: "created_at",
+              label: "Created On",
+              render: (r: any) => formatDate(r.created_at),
+            },
+            {
+              key: "action",
+              label: "Action",
+              render: (r: any) => (
+                <UnitsWardsBedsRowActions
+                  onEdit={() => {
+                    setDialogMode("edit")
+                    setEditData(r)
+                    setIsAddDialogOpen(true)
+                  }}
+                  onDelete={() => deleteFloorMutation.mutate(r.id)}
+                  userPermissions={userPermissions}
+                  mode={addMode}
+                />
+              ),
+            },
+          ]
 
   /* ---------------------------------------
                 UI
@@ -2424,14 +2444,19 @@ function UnitsWardsBedsPageContent() {
               />
 
               <QuickActions />
+              <Can
+                permission={PERMISSION_MAP[addMode as keyof typeof PERMISSION_MAP]?.CREATE}
+                userPermissions={userPermissions}
+              >
+                <NewButton
+                  handleClick={() => {
+                    setDialogMode("add")
+                    setEditData(null)
+                    setIsAddDialogOpen(true)
+                  }}
+                />
+              </Can>
 
-              <NewButton
-                handleClick={() => {
-                  setDialogMode("add")
-                  setEditData(null)
-                  setIsAddDialogOpen(true)
-                }}
-              />
             </div>
           </div>
 

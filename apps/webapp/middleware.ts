@@ -124,18 +124,18 @@ export async function middleware(request: NextRequest) {
 
       // Get tenant ID from tenant slug
       const tenantId = await getTenantIdFromSlug(tenant, authToken)
-      if (!tenantId) {
-        // Tenant not found, redirect to error page
-        const locale = pathnameLocale || getLocale(request)
-        const errorUrl = request.nextUrl.clone()
-        if (locale === defaultLocale) {
-          errorUrl.pathname = "/error"
-        } else {
-          errorUrl.pathname = `/${locale}/error`
-        }
-        errorUrl.searchParams.set("message", "Tenant not found")
-        return NextResponse.redirect(errorUrl)
-      }
+      // if (!tenantId) {
+      //   // Tenant not found, redirect to error page
+      //   const locale = pathnameLocale || getLocale(request)
+      //   const errorUrl = request.nextUrl.clone()
+      //   if (locale === defaultLocale) {
+      //     errorUrl.pathname = "/error"
+      //   } else {
+      //     errorUrl.pathname = `/${locale}/error`
+      //   }
+      //   errorUrl.searchParams.set("message", "Tenant not found")
+      //   return NextResponse.redirect(errorUrl)
+      // }
 
       const tenantStatus = await getTenantStatus(tenantId, authToken)
 

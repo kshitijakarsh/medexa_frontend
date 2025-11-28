@@ -55,14 +55,20 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
 import { fetchAllowedModules } from "../_components/fetchAllowedModules";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function PermissionAddPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
   const { roleId } = useParams();
   const roleApi = createRoleApiClient({});
 
   const [permissionData, setPermissionData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [roleInfo, setRoleInfo] = useState<any>(null);
+  const queryClient = useQueryClient();
+
 
   /* ------------------------------------------------------------
       API → Nested UI Structure
@@ -157,6 +163,38 @@ export default function PermissionAddPage() {
     fetchRole();
   }, [roleId]);
 
+  // const {
+  //   data: roleInfo,
+  //   isLoading: loadingRole
+  // } = useQuery({
+  //   queryKey: ["role", roleId,],
+  //   enabled: !!roleId,
+  //   queryFn: async () => {
+  //     const res = await roleApi.getRoleById(roleId as string);
+  //     const role = res.data.data;
+
+  //     const nested = convertFlatToNested(
+  //       (role.permissions as unknown as string[]) || []
+  //     );
+
+  //     // console.log(role)
+  //     setPermissionData(nested);
+  //     return res.data.data;
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (!roleInfo) return;
+
+  //   const nested = convertFlatToNested(
+  //     (roleInfo.permissions as unknown as string[]) || []
+  //   );
+
+  //   setPermissionData(nested);
+  // }, [roleInfo]);
+
+
+
   /* ------------------------------------------------------------
       NESTED UI → API Flat Array
   ------------------------------------------------------------ */
@@ -179,20 +217,51 @@ export default function PermissionAddPage() {
   /* ------------------------------------------------------------
       SAVE / UPDATE PERMISSIONS
   ------------------------------------------------------------ */
-  const handleSave = async () => {
+  // const handleSave = async () => {
+  //   const permissionsArray = flattenPermissions(permissionData);
+
+  //   try {
+  //     await roleApi.updateRole(roleId as string, {
+  //       name: roleInfo.name,               // Required by backend
+  //       status: roleInfo.status,           // Required by backend
+  //       permissions: permissionsArray      // Updated permission list
+  //     });
+
+  //     toast.success("Permissions updated successfully!");
+  //   } catch (err: any) {
+  //     toast.error(err?.response?.data?.message || "Failed to update permissions");
+  //   }
+  // };
+
+  type UpdateRolePayload = {
+    name: string;
+    status: "active" | "inactive" | undefined;
+    permissions: string[];
+  };
+
+  const updatePermissionMutation = useMutation({
+    mutationFn: async (payload: UpdateRolePayload) => {
+      return roleApi.updateRole(roleId as string, payload);
+    },
+    onSuccess: () => {
+      toast.success("Permissions updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["role", roleId] });
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || "Failed to update permissions");
+    },
+  });
+
+  // handleSave: guard and pass payload
+  const handleSave = () => {
+    if (!roleInfo) return; // safety guard
     const permissionsArray = flattenPermissions(permissionData);
 
-    try {
-      await roleApi.updateRole(roleId as string, {
-        name: roleInfo.name,               // Required by backend
-        status: roleInfo.status,           // Required by backend
-        permissions: permissionsArray      // Updated permission list
-      });
-
-      toast.success("Permissions updated successfully!");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to update permissions");
-    }
+    updatePermissionMutation.mutate({
+      name: roleInfo.name || "",
+      status: roleInfo.status || "inactive",
+      permissions: permissionsArray,
+    });
   };
 
   /* ------------------------------------------------------------
@@ -261,7 +330,7 @@ export default function PermissionAddPage() {
       </main>
     );
   }
-
+  console.log(permissionData)
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
@@ -269,7 +338,7 @@ export default function PermissionAddPage() {
         <PageHeader title={`Permissions for Role: ${roleInfo?.name}`} />
 
         <div className="border border-blue-100 rounded-lg p-4 bg-white">
-          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules}/>
+          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules} />
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t">
@@ -283,7 +352,9 @@ export default function PermissionAddPage() {
           >
             Save
           </Button> */}
-          <PrimaryButton onClick={handleSave} />
+          {/* <PrimaryButton onClick={handleSave} loading={}/> */}
+          <PrimaryButton onClick={handleSave} loading={updatePermissionMutation.isPending} />
+
         </div>
       </div>
     </main>

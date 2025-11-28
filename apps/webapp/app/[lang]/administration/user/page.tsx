@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "@workspace/ui/lib/sonner"
 import { QuickActions } from "./_components/QuickActions"
-import EmployeeRowActions from "./_components/EmployeeRowActions"
+import { UserRowActions } from "./_components/UserRowActions"
 import FilterDialog from "./_components/FilterDialog"
 import AddDialog from "./_components/AddDialog"
 import EditDialog from "./_components/EditDialog"
@@ -17,6 +17,9 @@ import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDa
 import { PaginationControls } from "@/components/common/data-table/PaginationControls"
 import { createUserApiClient } from "@/lib/api/administration/users"
 import type { UserItem } from "@/lib/api/administration/users"
+import { Can } from "@/components/common/app-can"
+import { PERMISSIONS } from "@/app/utils/permissions"
+import { useUserStore } from "@/store/useUserStore"
 
 const limit = 10
 
@@ -31,6 +34,7 @@ interface TableUserRow {
 }
 
 function EmployeeConfigurationPageContent() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
@@ -177,7 +181,7 @@ function EmployeeConfigurationPageContent() {
       key: "action",
       label: "Action",
       render: (r: TableUserRow) => (
-        <EmployeeRowActions
+        <UserRowActions
           onEdit={() => {
             const user = usersMap.get(r.id)
             if (user) {
@@ -186,6 +190,7 @@ function EmployeeConfigurationPageContent() {
             }
           }}
           onDelete={() => handleDelete(r)}
+          userPermissions={userPermissions}
         />
       ),
       className: "text-center w-[80px]",
@@ -222,8 +227,12 @@ function EmployeeConfigurationPageContent() {
               </div>
 
               <QuickActions />
-
-              <NewButton handleClick={() => setIsAddDialogOpen(true)} />
+              <Can
+                permission={PERMISSIONS.USER.CREATE}
+                userPermissions={userPermissions}
+              >
+                <NewButton handleClick={() => setIsAddDialogOpen(true)} />
+              </Can>
             </div>
           </div>
 

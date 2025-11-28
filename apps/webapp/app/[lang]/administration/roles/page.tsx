@@ -396,7 +396,7 @@ import SearchInput from "@/components/common/search-input"
 import NewButton from "@/components/common/new-button"
 import FilterButton from "@/components/common/filter-button"
 import { QuickActions } from "./_components/QuickActions"
-import { EmployeeRowActions } from "./_components/EmployeeRowActions"
+import { RoleRowActions } from "./_components/RoleRowActions"
 import { FilterDialog } from "./_components/FilterDialog"
 import { PageHeader } from "@/components/common/page-header"
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable"
@@ -405,10 +405,14 @@ import { AddRoleDialog } from "./_components/AddDialog"
 
 import { createRoleApiClient } from "@/lib/api/administration/roles"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useUserStore } from "@/store/useUserStore"
+import { PERMISSIONS } from "@/app/utils/permissions"
+import { Can } from "@/components/common/app-can"
 
 const limit = 10
 
 function RolesPageContent() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
@@ -525,8 +529,8 @@ function RolesPageContent() {
         const safeIndex = typeof index === "number" ? index : 0
         const sno =
           Number.isFinite(safeIndex) &&
-          Number.isFinite(page) &&
-          Number.isFinite(limit)
+            Number.isFinite(page) &&
+            Number.isFinite(limit)
             ? safeIndex + 1 + (page - 1) * limit
             : "-"
         return sno
@@ -560,17 +564,18 @@ function RolesPageContent() {
       key: "action",
       label: "Action",
       render: (r: any) => (
-        <EmployeeRowActions
+        <RoleRowActions
           onEdit={() => {
             setDialogMode("edit")
             setEditData(r)
             setIsAddDialogOpen(true)
           }}
-          onView={() => console.log("View", r)}
+          // onView={() => console.log("View", r)}
           onPermission={() =>
             router.push(`/administration/roles/permissions/${r.id}`)
           }
           onDelete={() => deleteRoleMutation.mutate(r.id)}
+          userPermissions={userPermissions}
         />
       ),
       className: "text-center w-[80px]",
@@ -602,14 +607,19 @@ function RolesPageContent() {
             />
 
             <QuickActions />
+            <Can
+              permission={PERMISSIONS.ROLE.CREATE}
+              userPermissions={userPermissions}
+            >
+              <NewButton
+                handleClick={() => {
+                  setDialogMode("add")
+                  setEditData(null)
+                  setIsAddDialogOpen(true)
+                }}
+              />
+            </Can>
 
-            <NewButton
-              handleClick={() => {
-                setDialogMode("add")
-                setEditData(null)
-                setIsAddDialogOpen(true)
-              }}
-            />
           </div>
 
           {/* Table */}
