@@ -571,21 +571,24 @@ export function SectionDropdown() {
   //   // })),
   // ]
 
-  // Get unique module names from p.split(":")[0]
+  // Convert PermissionItem[] or string[] → string[]
+  const permissionStrings = permissions.map((p: any) =>
+    typeof p === "string" ? p : p.name
+  );
+
+  // Get unique module names
   const moduleKeys = Array.from(
-    new Set(
-      permissions.map((p) => p.split(":")[0]) // "administration" from "administration:bed:view"
-    )
-  )
+    new Set(permissionStrings.map((p) => p.split(":")[0]))
+  );
 
   // Build dropdown sections dynamically
   const sections = moduleKeys.map((moduleKey) => ({
     label: moduleKey
       .replace(/_/g, " ")
-      .replace(/\b\w/g, (c : any) => c.toUpperCase()),
+      .replace(/\b\w/g, (c: any) => c.toUpperCase()),
     moduleKey,
     icon: moduleIconMap[moduleKey] || DefaultIcon,
-  }))
+  }));
 
   // console.log(user)
 

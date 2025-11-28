@@ -429,7 +429,8 @@ interface MasterData {
   category: string;
   route?: string;
   addOptions?: string[];
-  submoduleKey?: string;
+  // submoduleKey?: string;
+  submoduleKeys?: string[];
 }
 
 export default function MastersPage() {
@@ -443,17 +444,31 @@ export default function MastersPage() {
       Extract allowed submodules from user permissions
       administration:department:view → department
   ------------------------------------------------------------ */
+  // const allowedSubmodules = useMemo(() => {
+  //   const permissions = (user?.role?.permissions || []) as string[];
+
+  //   return Array.from(
+  //     new Set(
+  //       permissions
+  //         .filter((p) => p.startsWith("administration:"))
+  //         .map((p) => p.split(":")[1]) // extract submodule
+  //     )
+  //   );
+  // }, [user]);
   const allowedSubmodules = useMemo(() => {
-    const permissions = (user?.role?.permissions || []) as string[];
+    const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
+      typeof p === "string" ? p : p.name
+    );
 
     return Array.from(
       new Set(
-        permissions
+        permissionStrings
           .filter((p) => p.startsWith("administration:"))
           .map((p) => p.split(":")[1]) // extract submodule
       )
     );
   }, [user]);
+
 
   /* ------------------------------------------------------------
       Load masters and assign submoduleKey from masterConfig

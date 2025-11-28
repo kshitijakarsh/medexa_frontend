@@ -1841,7 +1841,7 @@ const Tabs = [
 const formatDate = (d?: string) =>
   d ? format(new Date(d), "dd MMM yyyy, hh:mm a") : "—"
 
-export const PERMISSION_MAP = {
+const PERMISSION_MAP = {
   ward: PERMISSIONS.WARD,
   wardType: PERMISSIONS.WARD_TYPE,
   bedType: PERMISSIONS.BED_TYPE,
@@ -1882,10 +1882,19 @@ function UnitsWardsBedsPageContent() {
   /* ---------------------------------------
         FILTER TABS AS PER PEMISSION
   ---------------------------------------- */
+  // const filteredTabs = Tabs.filter((t) => {
+  //   const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
+  //   return perm?.VIEW ? userPermissions?.includes(perm.VIEW) : true
+  // })
+  const permissionStrings =
+    (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+
   const filteredTabs = Tabs.filter((t) => {
-    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
-    return perm?.VIEW ? userPermissions?.includes(perm.VIEW) : true
-  })
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
+  });
+
+
   console.log(filteredTabs, Tabs, userPermissions)
 
 
