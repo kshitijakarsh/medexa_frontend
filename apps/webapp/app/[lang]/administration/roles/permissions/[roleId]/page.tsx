@@ -51,17 +51,24 @@ import { PermissionAccordion } from "../_components/PermissionAccordion";
 import { Button } from "@workspace/ui/components/button";
 import { toast } from "@workspace/ui/lib/sonner";
 import { createRoleApiClient } from "@/lib/api/administration/roles";
-import { Skeleton } from "@workspace/ui/components/skeleton"; 
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { fetchAllowedModules } from "../_components/fetchAllowedModules";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function PermissionAddPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
   const { roleId } = useParams();
   const roleApi = createRoleApiClient({});
 
   const [permissionData, setPermissionData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [roleInfo, setRoleInfo] = useState<any>(null);
+  const queryClient = useQueryClient();
+
 
   /* ------------------------------------------------------------
       API → Nested UI Structure
@@ -92,11 +99,22 @@ export default function PermissionAddPage() {
 
   //   return result;
   // };
+
+  const [allowedModules, setAllowedModules] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadModules = async () => {
+      const mods = await fetchAllowedModules();
+      setAllowedModules(mods);
+    };
+    loadModules();
+  }, []);
+
   const convertFlatToNested = (permissions: string[]) => {
     const result: Record<string, any> = {};
 
     permissions.forEach((perm) => {
-      const parts = perm.split(".");
+      const parts = perm.split(":");
 
       // Must be exactly: main.sub.action
       if (parts.length !== 3) return;
@@ -124,11 +142,17 @@ export default function PermissionAddPage() {
         const role = res.data.data;
         setRoleInfo(role);
 
+        // const nested = convertFlatToNested(
+        //   role.permissions?.map((p: any) => p.permission) || []
+        // );
+        // const nested = convertFlatToNested((role.permissions || []) as string[]);
         const nested = convertFlatToNested(
-          role.permissions?.map((p: any) => p.permission) || []
+          (role.permissions as unknown as string[]) || []
         );
 
+        console.log(role)
         setPermissionData(nested);
+
       } catch (err) {
         toast.error("Failed to load permissions");
       } finally {
@@ -138,6 +162,38 @@ export default function PermissionAddPage() {
 
     fetchRole();
   }, [roleId]);
+
+  // const {
+  //   data: roleInfo,
+  //   isLoading: loadingRole
+  // } = useQuery({
+  //   queryKey: ["role", roleId,],
+  //   enabled: !!roleId,
+  //   queryFn: async () => {
+  //     const res = await roleApi.getRoleById(roleId as string);
+  //     const role = res.data.data;
+
+  //     const nested = convertFlatToNested(
+  //       (role.permissions as unknown as string[]) || []
+  //     );
+
+  //     // console.log(role)
+  //     setPermissionData(nested);
+  //     return res.data.data;
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   if (!roleInfo) return;
+
+  //   const nested = convertFlatToNested(
+  //     (roleInfo.permissions as unknown as string[]) || []
+  //   );
+
+  //   setPermissionData(nested);
+  // }, [roleInfo]);
+
+
 
   /* ------------------------------------------------------------
       NESTED UI → API Flat Array
@@ -149,7 +205,7 @@ export default function PermissionAddPage() {
       Object.entries(subModules as any).forEach(([subKey, actions]) => {
         Object.entries(actions as any).forEach(([actionKey, isChecked]) => {
           if (isChecked === true) {
-            result.push(`${mainKey}.${subKey}.${actionKey}`);
+            result.push(`${mainKey}:${subKey}:${actionKey}`);
           }
         });
       });
@@ -161,59 +217,111 @@ export default function PermissionAddPage() {
   /* ------------------------------------------------------------
       SAVE / UPDATE PERMISSIONS
   ------------------------------------------------------------ */
-  const handleSave = async () => {
+  // const handleSave = async () => {
+  //   const permissionsArray = flattenPermissions(permissionData);
+
+  //   try {
+  //     await roleApi.updateRole(roleId as string, {
+  //       name: roleInfo.name,               // Required by backend
+  //       status: roleInfo.status,           // Required by backend
+  //       permissions: permissionsArray      // Updated permission list
+  //     });
+
+  //     toast.success("Permissions updated successfully!");
+  //   } catch (err: any) {
+  //     toast.error(err?.response?.data?.message || "Failed to update permissions");
+  //   }
+  // };
+
+  type UpdateRolePayload = {
+    name: string;
+    status: "active" | "inactive" | undefined;
+    permissions: string[];
+  };
+
+  const updatePermissionMutation = useMutation({
+    mutationFn: async (payload: UpdateRolePayload) => {
+      return roleApi.updateRole(roleId as string, payload);
+    },
+    onSuccess: () => {
+      toast.success("Permissions updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["role", roleId] });
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || "Failed to update permissions");
+    },
+  });
+
+  // handleSave: guard and pass payload
+  const handleSave = () => {
+    if (!roleInfo) return; // safety guard
     const permissionsArray = flattenPermissions(permissionData);
 
-    try {
-      await roleApi.updateRole(roleId as string, {
-        name: roleInfo.name,               // Required by backend
-        status: roleInfo.status,           // Required by backend
-        permissions: permissionsArray      // Updated permission list
-      });
-
-      toast.success("Permissions updated successfully!");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Failed to update permissions");
-    }
+    updatePermissionMutation.mutate({
+      name: roleInfo.name || "",
+      status: roleInfo.status || "inactive",
+      permissions: permissionsArray,
+    });
   };
 
   /* ------------------------------------------------------------
       UI
   ------------------------------------------------------------ */
-  if (loading) {
 
+  if (loading) {
     return (
       <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
         <div className="mx-auto rounded-lg shadow p-6 space-y-8">
 
           {/* Page Header Skeleton */}
-          <Skeleton className="h-8 w-64 rounded" />
-
-          {/* Main Card */}
-          <div className="border border-blue-100 rounded-lg p-4 bg-white space-y-4">
-
-            {/* Main Modules Skeleton */}
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="border-2 border-[#CBD5E1] rounded-xl bg-white shadow-sm p-4 space-y-4"
-                >
-                  {/* Main module title */}
-                  <Skeleton className="h-5 w-48 rounded" />
-
-                  {/* Submodule block */}
-                  <div className="space-y-3 pl-4">
-                    <Skeleton className="h-4 w-40 rounded" />
-                    <Skeleton className="h-4 w-56 rounded" />
-                    <Skeleton className="h-4 w-32 rounded" />
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div>
+            <Skeleton className="h-8 w-72 rounded" />
           </div>
 
-          {/* Footer Buttons Skeleton */}
+          {/* MAIN CARD */}
+          <div className="border border-blue-100 rounded-lg p-5 bg-white space-y-6">
+
+            {/* MAIN MODULE SKELETON */}
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="border-2 border-[#3B82F6] rounded-xl p-5 bg-white shadow-sm space-y-4"
+              >
+                {/* Main Module Header */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                    <Skeleton className="h-5 w-48 rounded" />
+                  </div>
+                  <Skeleton className="h-5 w-20 rounded" />
+                </div>
+
+                {/* Sub Modules */}
+                <div className="pl-4 space-y-4">
+                  {[1, 2].map((j) => (
+                    <div
+                      key={j}
+                      className="border border-slate-200 rounded-lg p-4 bg-slate-50 space-y-3"
+                    >
+                      <Skeleton className="h-4 w-40 rounded" />
+
+                      {/* Actions */}
+                      <div className="flex gap-6 flex-wrap pt-2">
+                        {[1, 2, 3, 4].map((a) => (
+                          <div key={a} className="flex items-center gap-2">
+                            <Skeleton className="h-4 w-4 rounded" />
+                            <Skeleton className="h-4 w-20 rounded" />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Skeleton className="h-10 w-24 rounded" />
             <Skeleton className="h-10 w-28 rounded" />
@@ -222,6 +330,7 @@ export default function PermissionAddPage() {
       </main>
     );
   }
+  console.log(permissionData)
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
@@ -229,7 +338,7 @@ export default function PermissionAddPage() {
         <PageHeader title={`Permissions for Role: ${roleInfo?.name}`} />
 
         <div className="border border-blue-100 rounded-lg p-4 bg-white">
-          <PermissionAccordion value={permissionData} onChange={setPermissionData} />
+          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules} />
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t">
@@ -243,7 +352,9 @@ export default function PermissionAddPage() {
           >
             Save
           </Button> */}
-          <PrimaryButton onClick={handleSave} />
+          {/* <PrimaryButton onClick={handleSave} loading={}/> */}
+          <PrimaryButton onClick={handleSave} loading={updatePermissionMutation.isPending} />
+
         </div>
       </div>
     </main>

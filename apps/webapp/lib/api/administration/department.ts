@@ -229,6 +229,10 @@ export interface Department {
     department_name: string;
     status: "active" | "inactive";
     added_by?: string;
+    // created_at?: string;
+    // createdBy?: {
+    //     name: string
+    // };
     tenant_id?: string;
 }
 
@@ -248,7 +252,9 @@ export interface DepartmentDetailResponse {
         id: string;
         department_name: string;
         status: "active" | "inactive";
-        addedBy: DepartmentUser;
+        // addedBy: DepartmentUser;
+        created_at?: string;
+        createdBy?: DepartmentUser;
         tenant: TenantInfo;
     };
     success: boolean;
@@ -261,6 +267,7 @@ export interface DepartmentListResponse {
         limit: number;
         offset: number;
         hasMore: boolean;
+        totalPages?: number;
     };
     success: boolean;
 }
@@ -303,6 +310,7 @@ class DepartmentApiClient {
         status?: string;
         limit?: number;
         offset?: number;
+        search?: string;
     }): Promise<AxiosResponse<DepartmentListResponse>> {
         try {
             const config = await this.getJsonRequestConfig();

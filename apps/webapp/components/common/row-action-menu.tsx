@@ -98,6 +98,7 @@ import { MoreVertical } from "lucide-react";
 interface RowAction {
   label: string;
   onClick?: () => void;
+  variant?: "default" | "danger" | "success" | "info";
   disabled?: boolean;
 }
 
@@ -134,7 +135,8 @@ export function RowActionMenu({
             onClick={action.onClick}
             className={`flex items-center gap-2 text-sm rounded-md px-3 py-2 
             cursor-pointer transition-colors
-            hover:!bg-green-500 hover:!text-white
+             hover:!text-white
+            ${action.variant === "danger" ? "hover:!bg-red-500" : "hover:!bg-green-500"}
             ${action.disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {action.label}
