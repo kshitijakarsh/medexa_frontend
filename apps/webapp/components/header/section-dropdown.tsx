@@ -506,6 +506,7 @@ import {
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
+import { usePathname } from "next/navigation"
 
 const moduleIconMap: Record<string, any> = {
   analytics: BarChart3,
@@ -528,6 +529,7 @@ const moduleIconMap: Record<string, any> = {
 const DefaultIcon = Cog
 
 export function SectionDropdown() {
+  const pathname = usePathname();
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
   const user = useUserStore((s) => s.user)
@@ -592,9 +594,35 @@ export function SectionDropdown() {
 
   // console.log(user)
 
+
+  React.useEffect(() => {
+    if (!pathname || moduleKeys.length === 0) return;
+
+    // Get first segment from URL → "/administration/users" → "administration"
+    const firstSegment = pathname.split("/")[1] ?? "";
+
+    // Match with moduleKeys
+    const matched = moduleKeys.find(
+      (m) => m.toLowerCase() === firstSegment.toLowerCase()
+    );
+
+    if (matched) {
+      setSelected(
+        matched
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c: any) => c.toUpperCase())
+      );
+    } else {
+      // If nothing matches, fallback to first module
+      setSelected(sections[0]?.label ?? "Administration");
+    }
+  }, [pathname, moduleKeys, sections]);
+
+
   // const [selected, setSelected] = React.useState(sections[0].label)
   const [selected, setSelected] = React.useState(sections[0]?.label ?? "Administration")
   const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
+
 
   return (
     <div className="flex flex-col items-center">
