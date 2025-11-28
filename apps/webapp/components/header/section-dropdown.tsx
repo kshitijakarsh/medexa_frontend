@@ -506,7 +506,7 @@ import {
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 const moduleIconMap: Record<string, any> = {
   analytics: BarChart3,
@@ -528,7 +528,25 @@ const moduleIconMap: Record<string, any> = {
 
 const DefaultIcon = Cog
 
+// Map moduleKey → landing route
+const moduleLandingPath: Record<string, string> = {
+  administration: "/organization-setup",
+  doctor: "/doctor/dashboard",
+  frontoffice: "/frontoffice",
+  appointment: "/appointment/calendar",
+  patient_mgmt: "/patient_mgmt",
+  billing: "/billing",
+  lab: "/lab/dashboard",
+  pharmacy: "/pharmacy",
+  inventory: "/inventory",
+  analytics: "/analytics",
+  hr_payroll: "/hr-payroll",
+  // add more when developed…
+}
+
+
 export function SectionDropdown() {
+  const router = useRouter();
   const pathname = usePathname();
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
@@ -624,6 +642,20 @@ export function SectionDropdown() {
   const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
 
 
+  // ⭐ NEW — Handle navigation
+  const handleSelect = (section: any) => {
+    setSelected(section.label);
+
+    const path = moduleLandingPath[section.moduleKey];
+
+    if (path) {
+      router.push(path);
+    } else {
+      // fallback if no path defined
+      router.push(`/${section.moduleKey}`);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       <DropdownMenu>
@@ -648,7 +680,8 @@ export function SectionDropdown() {
             return (
               <DropdownMenuItem
                 key={section.moduleKey}
-                onClick={() => setSelected(section.label)}
+                // onClick={() => setSelected(section.label)}
+                onClick={() => handleSelect(section)}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2",
                   active
