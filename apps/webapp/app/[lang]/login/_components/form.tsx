@@ -17,7 +17,7 @@ import { Button } from "@workspace/ui/components/button"
 import { User, Lock, Eye, EyeOff, Fingerprint } from "lucide-react"
 import { Label } from "@workspace/ui/components/label"
 import { loginUserCognito } from "@/app/utils/auth"
-import { setAuthTokenCookie } from "@/app/utils/onboarding"
+import { setAuthCookies } from "@/app/utils/onboarding"
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -63,8 +63,22 @@ export function LoginForm() {
           // localStorage.setItem("id_token", res.tokens.IdToken);
           // localStorage.setItem("refresh_token", res.tokens.RefreshToken);
 
-          // Set cookie for middleware authentication check
-          setAuthTokenCookie(res.tokens.AccessToken)
+          // Set cookies for middleware authentication check
+          // This includes access token, username, and refresh token for session management
+          if (res.tokens.RefreshToken) {
+            setAuthCookies(
+              res.tokens.AccessToken,
+              values.username,
+              res.tokens.RefreshToken
+            )
+          } else {
+            // Fallback if refresh token is not available
+            setAuthCookies(
+              res.tokens.AccessToken,
+              values.username,
+              ""
+            )
+          }
 
           toast.success(res.message || "Login successful! Redirecting...", {
             description: "Redirecting to your dashboard...",

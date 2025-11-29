@@ -44,6 +44,74 @@ export function removeAuthTokenCookie(): void {
 }
 
 /**
+ * Set username cookie for session management in middleware
+ * This allows middleware to create CognitoUser instance for getSession()
+ */
+export function setUsernameCookie(username: string): void {
+  if (typeof document !== "undefined") {
+    const expires = new Date()
+    expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    document.cookie = `cognito_username=${encodeURIComponent(username)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+  }
+}
+
+/**
+ * Remove username cookie
+ */
+export function removeUsernameCookie(): void {
+  if (typeof document !== "undefined") {
+    document.cookie =
+      "cognito_username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+  }
+}
+
+/**
+ * Set refresh token cookie for session management in middleware
+ * This allows middleware to refresh tokens when needed
+ */
+export function setRefreshTokenCookie(refreshToken: string): void {
+  if (typeof document !== "undefined") {
+    const expires = new Date()
+    expires.setTime(expires.getTime() + 30 * 24 * 60 * 60 * 1000) // 30 days (refresh tokens last longer)
+    document.cookie = `cognito_refresh_token=${encodeURIComponent(refreshToken)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`
+  }
+}
+
+/**
+ * Remove refresh token cookie
+ */
+export function removeRefreshTokenCookie(): void {
+  if (typeof document !== "undefined") {
+    document.cookie =
+      "cognito_refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+  }
+}
+
+/**
+ * Set all authentication cookies (access token, username, refresh token)
+ * Called after successful login
+ */
+export function setAuthCookies(
+  accessToken: string,
+  username: string,
+  refreshToken: string
+): void {
+  setAuthTokenCookie(accessToken)
+  setUsernameCookie(username)
+  setRefreshTokenCookie(refreshToken)
+}
+
+/**
+ * Remove all authentication cookies
+ * Called during logout
+ */
+export function removeAuthCookies(): void {
+  removeAuthTokenCookie()
+  removeUsernameCookie()
+  removeRefreshTokenCookie()
+}
+
+/**
  * Utility functions for managing onboarding state in localStorage
  * Only stores welcome page status - all other steps are determined by server status
  * All keys are tenant-specific to support multi-tenant scenarios
