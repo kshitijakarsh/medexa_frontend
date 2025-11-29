@@ -1,33 +1,24 @@
 import { NextRequest } from "next/server"
 import { createTenantApiClient } from "./tenant"
+import { getIdToken } from "@/app/utils/auth"
 
 /**
  * Get authentication token from request cookies or headers
  * Cognito stores tokens in localStorage on client, but we can check for a cookie
  * that should be set during login
  */
-export function getAuthTokenFromRequest(request: NextRequest): string | null {
+export async function getAuthTokenFromRequest(): Promise<string | null> {
   // Check for access token in cookie (set during login)
-  const accessToken = request.cookies.get("access_token")?.value
-
-  if (accessToken) {
-    return accessToken
-  }
-
-  // Fallback: check Authorization header
-  const authHeader = request.headers.get("authorization")
-  if (authHeader?.startsWith("Bearer ")) {
-    return authHeader.substring(7)
-  }
-
-  return null
+  const accessToken = await getIdToken()
+  return accessToken
 }
 
 /**
  * Check if user is authenticated based on request
  */
-export function isAuthenticated(request: NextRequest): boolean {
-  return getAuthTokenFromRequest(request) !== null
+export async function isAuthenticated(): Promise<boolean> {
+  const accessToken = await getIdToken()
+  return accessToken !== null
 }
 
 /**

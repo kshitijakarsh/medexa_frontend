@@ -93,7 +93,7 @@ export async function middleware(request: NextRequest) {
     actualPath === "/onboarding" || actualPath.startsWith("/onboarding/")
 
   // Check authentication
-  const authenticated = isAuthenticated(request)
+  const authenticated = await isAuthenticated()
 
   if (!authenticated && !isLoginPage) {
     const locale = pathnameLocale || getLocale(request)
@@ -110,7 +110,7 @@ export async function middleware(request: NextRequest) {
   // If authenticated, check tenant status
   if (authenticated && !isLoginPage && !isOnboardingPage) {
     try {
-      const authToken = getAuthTokenFromRequest(request)
+      const authToken = await getAuthTokenFromRequest()
       if (!authToken) {
         const locale = pathnameLocale || getLocale(request)
         const loginUrl = request.nextUrl.clone()
