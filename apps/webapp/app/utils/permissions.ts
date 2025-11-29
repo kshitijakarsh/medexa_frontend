@@ -80,7 +80,7 @@ export const PERMISSIONS = {
         VIEW: "administration:operation:view",
         VIEW_ONE: "administration:operation:viewOne",
     },
-     OPERATION_CATEGORY: {
+    OPERATION_CATEGORY: {
         CREATE: "administration:operationCategory:create",
         EDIT: "administration:operationCategory:edit",
         DELETE: "administration:operationCategory:delete",
@@ -94,6 +94,29 @@ export const PERMISSIONS = {
         VIEW: "administration:user:view",
         VIEW_ONE: "administration:user:viewOne",
     },
+    // Human resources
+    EMPLOYEE: {
+        CREATE: "hr:employee:create",
+        EDIT: "hr:employee:edit",
+        DELETE: "hr:employee:delete",
+        VIEW: "hr:employee:view",
+        VIEW_ONE: "hr:employee:viewOne",
+    },
+    DESIGNATION: {
+        CREATE: "hr:designation:create",
+        EDIT: "hr:designation:edit",
+        DELETE: "hr:designation:delete",
+        VIEW: "hr:designation:view",
+        VIEW_ONE: "hr:designation:viewOne",
+    },
+    SPECIALISATION: {
+        CREATE: "hr:specialisation:create",
+        EDIT: "hr:specialisation:edit",
+        DELETE: "hr:specialisation:delete",
+        VIEW: "hr:specialisation:view",
+        VIEW_ONE: "hr:specialisation:viewOne",
+    },
+
     TENANT: {
         VIEW_ONE: "administration:tenant:viewOne",
     },

@@ -229,6 +229,8 @@ import {
   ClipboardSignature,
   Accessibility,
   BriefcaseBusiness,
+  BriefcaseMedical,
+  IdCard,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -326,12 +328,12 @@ export const mainModules: MainModule[] = [
         label: "Unit",
         actions: ["view", "create", "edit", "delete"],
       },
-        {
+      {
         key: "operation",
         label: "Operation",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
-       {
+      {
         key: "operationCategory",
         label: "Operation Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
@@ -424,8 +426,13 @@ export const mainModules: MainModule[] = [
     key: "hr",
     id: 6,
     label: "Human Resources",
-    icon: ClipboardSignature,
+    icon: IdCard,
     subModules: [
+      {
+        key: "employee",
+        label: "Employee Management",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
       {
         key: "designation",
         label: "Designation",
@@ -436,11 +443,7 @@ export const mainModules: MainModule[] = [
         label: "Specialisation Management",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
-      {
-        key: "employee",
-        label: "Employee Management",
-        actions: ["view", "create", "edit", "delete", "viewOne"],
-      },
+
     ],
   },
   {
@@ -461,7 +464,7 @@ export const mainModules: MainModule[] = [
     key: "doctor",
     id: 8,
     label: "Doctor",
-    icon: BriefcaseBusiness,
+    icon: BriefcaseMedical,
     subModules: [
       {
         key: "reception",

@@ -210,7 +210,7 @@ import { SlidersHorizontal } from "lucide-react"
 import { Header } from "@/components/header"
 import { DataTable } from "@/components/common/data-table"
 import { QuickActions } from "./_components/QuickActionsMenu"
-import { RowActionMenu } from "./_components/RowActionMenu"
+import { EmployeeConfigurationRowActions } from "./_components/EmployeeConfigurationRowActions"
 import { FilterDialog } from "./_components/FilterDialog"
 import { AddDialog } from "./_components/AddDialog"
 import { EditSpecializationDialog } from "./_components/EditSpecializationDialog"
@@ -231,6 +231,10 @@ import { createDesignationApiClient } from "@/lib/api/designations"
 import type { Designation } from "@/lib/api/designations"
 import { createEmployeeApiClient } from "@/lib/api/employees"
 import { getAuthToken } from "@/app/utils/onboarding"
+import { useUserStore } from "@/store/useUserStore"
+import { PERMISSIONS } from "@/app/utils/permissions"
+import FilterButton from "@/components/common/filter-button"
+import { Can } from "@/components/common/app-can"
 
 const employeeConfigurationSection = [
   { key: "humanResources", label: "Employee" },
@@ -238,8 +242,16 @@ const employeeConfigurationSection = [
   { key: "specialization", label: "Specialization" },
   { key: "roles", label: "User Roles" },
 ]
+const PERMISSION_MAP = {
+  humanResources: PERMISSIONS.EMPLOYEE,
+  designation: PERMISSIONS.DESIGNATION,
+  specialization: PERMISSIONS.SPECIALISATION,
+  roles: PERMISSIONS.ROLE,
+};
+
 
 export default function EmployeeConfigurationPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
@@ -263,6 +275,24 @@ export default function EmployeeConfigurationPage() {
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [debouncedSearch, setDebouncedSearch] = useState("")
+
+
+  /* ---------------------------------------
+        FILTER TABS AS PER PEMISSION
+  ---------------------------------------- */
+  // const filteredTabs = Tabs.filter((t) => {
+  //   const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
+  //   return perm?.VIEW ? userPermissions?.includes(perm.VIEW) : true
+  // })
+  const permissionStrings =
+    (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+
+  const filteredTabs = employeeConfigurationSection.filter((t) => {
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
+  });
+
+
 
   // Debounce search input
   useEffect(() => {
@@ -708,7 +738,7 @@ export default function EmployeeConfigurationPage() {
               >
                 View
               </Button>
-              <RowActionMenu
+              <EmployeeConfigurationRowActions
                 onEdit={() => {
                   if (r._raw) {
                     router.push(`/employee-configuration/${r._raw.id}/edit`)
@@ -722,6 +752,8 @@ export default function EmployeeConfigurationPage() {
                     deleteEmployeeMutation.mutate(r._raw.id)
                   }
                 }}
+                userPermissions={userPermissions}
+                mode={activeTab}
               />
             </div>
           ),
@@ -782,7 +814,7 @@ export default function EmployeeConfigurationPage() {
         key: "action",
         label: "Action",
         render: (r: any) => (
-          <RowActionMenu
+          <EmployeeConfigurationRowActions
             onEdit={() => {
               if (activeTab === "specialization" && r._raw) {
                 setEditingSpecialization(r._raw)
@@ -816,6 +848,8 @@ export default function EmployeeConfigurationPage() {
                 }
               }
             }}
+            userPermissions={userPermissions}
+            mode={activeTab}
           />
         ),
         className: "text-center w-[80px]",
@@ -928,45 +962,52 @@ export default function EmployeeConfigurationPage() {
             {/* Tabs */}
             <div className="flex-shrink-0 w-full lg:w-auto">
               <DynamicTabs
-                tabs={employeeConfigurationSection}
+                tabs={filteredTabs}
                 defaultTab="humanResources"
                 onChange={(tabKey) => setActiveTab(tabKey as any)}
               />
             </div>
 
             {/* Right Side Controls */}
-            <div
+            {/* <div
               className="
         flex flex-wrap items-center justify-start lg:justify-end
         gap-3 flex-1
       "
-            >
+            > */}
+            <div className="flex gap-3">
               {/* Filter */}
-              <Button
+              {/* <Button
                 onClick={() => setIsFilterDialogOpen(true)}
                 variant="outline"
                 className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filter</span>
-              </Button>
+              </Button> */}
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
 
               {/* Search Input */}
-              <div className="flex-grow min-w-[180px] sm:min-w-[220px] md:min-w-[260px]">
-                <SearchInput
-                  value={search}
-                  onChange={setSearch}
-                  placeholder="Search..."
-                />
-              </div>
+              {/* <div className="flex-grow min-w-[180px] sm:min-w-[220px] md:min-w-[260px]"> */}
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Search..."
+              />
+              {/* </div> */}
 
               {/* Quick Actions */}
               <QuickActions />
+              <Can
+                permission={PERMISSION_MAP[activeTab as keyof typeof PERMISSION_MAP]?.CREATE}
+                userPermissions={userPermissions}
+              >
+                {/* New Button */}
+                <div className="ml-auto w-full sm:w-auto flex justify-end">
+                  <NewButton handleClick={handleNew} />
+                </div>
+              </Can>
 
-              {/* New Button */}
-              <div className="ml-auto w-full sm:w-auto flex justify-end">
-                <NewButton handleClick={handleNew} />
-              </div>
             </div>
           </div>
 
@@ -1003,55 +1044,55 @@ export default function EmployeeConfigurationPage() {
             pagination={
               (activeTab === "specialization" &&
                 specialisationsData?.pagination) ||
-              (activeTab === "roles" && rolesData?.pagination) ||
-              (activeTab === "designation" && designationsData?.pagination) ||
-              (activeTab === "humanResources" && employeesData?.pagination)
+                (activeTab === "roles" && rolesData?.pagination) ||
+                (activeTab === "designation" && designationsData?.pagination) ||
+                (activeTab === "humanResources" && employeesData?.pagination)
                 ? (() => {
-                    const paginationData =
-                      activeTab === "specialization"
-                        ? specialisationsData?.pagination
-                        : activeTab === "roles"
-                          ? rolesData?.pagination
-                          : activeTab === "designation"
-                            ? designationsData?.pagination
-                            : employeesData?.pagination
-                    if (!paginationData) return null
-                    return (
-                      <div className="flex items-center justify-between pb-4 px-4">
-                        <div className="text-sm text-muted-foreground">
-                          Showing {data.length} of{" "}
-                          {paginationData.totalData}{" "}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            disabled={page === 1 || loading}
-                          >
-                            Previous
-                          </Button>
-                          <div className="text-sm">
-                            Page {page} of {paginationData.totalPages}
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setPage((p) =>
-                                Math.min(paginationData.totalPages, p + 1)
-                              )
-                            }
-                            disabled={
-                              page === paginationData.totalPages || loading
-                            }
-                          >
-                            Next
-                          </Button>
-                        </div>
+                  const paginationData =
+                    activeTab === "specialization"
+                      ? specialisationsData?.pagination
+                      : activeTab === "roles"
+                        ? rolesData?.pagination
+                        : activeTab === "designation"
+                          ? designationsData?.pagination
+                          : employeesData?.pagination
+                  if (!paginationData) return null
+                  return (
+                    <div className="flex items-center justify-between pb-4 px-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing {data.length} of{" "}
+                        {paginationData.totalData}{" "}
                       </div>
-                    )
-                  })()
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page === 1 || loading}
+                        >
+                          Previous
+                        </Button>
+                        <div className="text-sm">
+                          Page {page} of {paginationData.totalPages}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setPage((p) =>
+                              Math.min(paginationData.totalPages, p + 1)
+                            )
+                          }
+                          disabled={
+                            page === paginationData.totalPages || loading
+                          }
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })()
                 : undefined
             }
             striped

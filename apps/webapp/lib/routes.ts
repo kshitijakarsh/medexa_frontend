@@ -1,22 +1,27 @@
-const ADMINISTRATION_BASE = '/administration';
-const DOCTOR_BASE = '/doctor'
+export const ADMINISTRATION_BASE = '/administration';
+export const DOCTOR_BASE = '/doctor'
+export const HR = '/hr'
 
 export const ROUTES = {
-    ADMINISTRATION: ADMINISTRATION_BASE,
-    ADMINISTRATION_CHARGES: `${ADMINISTRATION_BASE}/charges`,
-    ADMINISTRATION_CHARGES_ADD: `${ADMINISTRATION_BASE}/charges/add`,
-    ADMINISTRATION_DEPARTMENT: `${ADMINISTRATION_BASE}/department`,
-    ADMINISTRATION_INSURANCE: `${ADMINISTRATION_BASE}/insurance`,
-    ADMINISTRATION_INSURANCE_ADD: `${ADMINISTRATION_BASE}/insurance/add`,
-    ADMINISTRATION_OPERATION: `${ADMINISTRATION_BASE}/operation`,
-    ADMINISTRATION_OPERATION_THEATRES: `${ADMINISTRATION_BASE}/operation-theatres`,
-    ADMINISTRATION_ROLES: `${ADMINISTRATION_BASE}/roles`,
-    ADMINISTRATION_ROLES_PERMISSIONS: `${ADMINISTRATION_BASE}/roles/permissions`,
-    ADMINISTRATION_UNITS_WARDS_BEDS: `${ADMINISTRATION_BASE}/units-wards-beds`,
-    ADMINISTRATION_USER: `${ADMINISTRATION_BASE}/user`,
+  ORGANIZATION: `/organization-setup`,
+  ADMINISTRATION: ADMINISTRATION_BASE,
+  ADMINISTRATION_CHARGES: `${ADMINISTRATION_BASE}/charges`,
+  ADMINISTRATION_CHARGES_ADD: `${ADMINISTRATION_BASE}/charges/add`,
+  ADMINISTRATION_DEPARTMENT: `${ADMINISTRATION_BASE}/department`,
+  ADMINISTRATION_INSURANCE: `${ADMINISTRATION_BASE}/insurance`,
+  ADMINISTRATION_INSURANCE_ADD: `${ADMINISTRATION_BASE}/insurance/add`,
+  ADMINISTRATION_OPERATION: `${ADMINISTRATION_BASE}/operation`,
+  ADMINISTRATION_OPERATION_THEATRES: `${ADMINISTRATION_BASE}/operation-theatres`,
+  ADMINISTRATION_ROLES: `${ADMINISTRATION_BASE}/roles`,
+  ADMINISTRATION_ROLES_PERMISSIONS: `${ADMINISTRATION_BASE}/roles/permissions`,
+  ADMINISTRATION_UNITS_WARDS_BEDS: `${ADMINISTRATION_BASE}/units-wards-beds`,
+  ADMINISTRATION_USER: `${ADMINISTRATION_BASE}/user`,
 
-    DOCTOR_DASHBOARD: `${DOCTOR_BASE}/dashboard`,
-    DOCTOR_VIEW_ALL: `${DOCTOR_BASE}/dashboard/view-all`,
+  DOCTOR_DASHBOARD: `${DOCTOR_BASE}/dashboard`,
+  DOCTOR_VIEW_ALL: `${DOCTOR_BASE}/dashboard/view-all`,
+
+  // HR
+  HR: `${HR}/employee-configuration`,
 
 };
 
@@ -35,7 +40,7 @@ export function buildUrl(path: string, params?: Record<string, any>) {
 
 
 // 🔹 All doctor tabs at one place
-export const DoctorTabs: [ { key: string; label: string }, ...Array<{ key: string; label: string }> ] = [
+export const DoctorTabs: [{ key: string; label: string }, ...Array<{ key: string; label: string }>] = [
   { key: "all", label: "All" },
   { key: "emergency", label: "Emergency Appointments" },
   { key: "vip", label: "VIP Appointments" },
