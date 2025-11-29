@@ -588,7 +588,7 @@ export default function EmployeeConfigurationPage() {
           addedBy: item.created_by ? `User ${item.created_by}` : "N/A",
           status: item.status === "active" ? "Active" : "Inactive",
           avatar:
-            item.employee_photo ||
+            item.photo_url ||
             "https://i.pravatar.cc/100?img=" + (index + 1),
           _raw: item, // Store raw data for mutations
         }

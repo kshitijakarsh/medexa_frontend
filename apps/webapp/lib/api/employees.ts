@@ -8,127 +8,161 @@ interface ApiConfig {
 interface CreateEmployeeParams {
   first_name: string
   last_name: string
-  department_id?: number
-  designation_id?: number
-  specialisation_id?: number
-  role_id?: number
   gender?: string
-  dob?: string
+  date_of_birth?: string
   marital_status?: string
-  nationality?: string
-  cpr?: string
-  cpr_expiration?: string
+  crp_nid?: string
+  crp_nid_expiry?: string
   blood_group?: string
-  employee_photo?: any
+  photo_url?: string
   phone?: string
-  email?: string
   office_email?: string
-  emergency_contact?: string
   local_address?: string
   permanent_address?: string
+  emergency_contact?: string
   language?: string
   qualification?: string
-  years_experience?: string
+  year_of_experience?: number
   visa_start?: string
-  visa_expiration?: string
-  passport_number?: string
-  passport_expiration?: string
-  license_number?: string
-  license_expiration?: string
+  visa_end?: string
+  passport_no?: string
+  passport_expiry?: string
+  license_no?: string
+  license_expiry?: string
   joining_date?: string
-  contract_type?: string
-  contract_start_date?: string
-  contract_expiration_date?: string
-  basic_salary?: string
-  username?: string
-  password?: string
-  status?: "active" | "inactive"
+  last_working_date?: string
+  contract_renewal_date?: string
+  contract_expiry_date?: string
+  notice_period?: number
+  bank_name?: string
+  iban?: string
+  account_name?: string
+  account_no?: string
+  swift_code?: string
+  date_from?: string
+  date_to?: string
+  basic_salary?: number
+  gosi_deduction_percentage?: number
+  gosi?: number
+  housing_allowance?: number
+  qchp_document_url?: string
+  passport_document_url?: string
+  id_proof_document_url?: string
+  contract_document_url?: string
+  signature_document_url?: string
+  country_id?: number
+  specialisation_id?: number
+  department_id?: number
+  designation_id?: number
 }
 
 interface UpdateEmployeeParams {
   first_name?: string
   last_name?: string
-  department_id?: number
-  designation_id?: number
-  specialisation_id?: number
-  role_id?: number
   gender?: string
-  dob?: string
+  date_of_birth?: string
   marital_status?: string
-  nationality?: string
-  cpr?: string
-  cpr_expiration?: string
+  crp_nid?: string
+  crp_nid_expiry?: string
   blood_group?: string
-  employee_photo?: any
+  photo_url?: string
   phone?: string
-  email?: string
   office_email?: string
-  emergency_contact?: string
   local_address?: string
   permanent_address?: string
+  emergency_contact?: string
   language?: string
   qualification?: string
-  years_experience?: string
+  year_of_experience?: number
   visa_start?: string
-  visa_expiration?: string
-  passport_number?: string
-  passport_expiration?: string
-  license_number?: string
-  license_expiration?: string
+  visa_end?: string
+  passport_no?: string
+  passport_expiry?: string
+  license_no?: string
+  license_expiry?: string
   joining_date?: string
-  contract_type?: string
-  contract_start_date?: string
-  contract_expiration_date?: string
-  basic_salary?: string
-  username?: string
-  password?: string
-  status?: "active" | "inactive"
+  last_working_date?: string
+  contract_renewal_date?: string
+  contract_expiry_date?: string
+  notice_period?: number
+  bank_name?: string
+  iban?: string
+  account_name?: string
+  account_no?: string
+  swift_code?: string
+  date_from?: string
+  date_to?: string
+  basic_salary?: number
+  gosi_deduction_percentage?: number
+  gosi?: number
+  housing_allowance?: number
+  qchp_document_url?: string
+  passport_document_url?: string
+  id_proof_document_url?: string
+  contract_document_url?: string
+  signature_document_url?: string
+  country_id?: number
+  specialisation_id?: number
+  department_id?: number
+  designation_id?: number
 }
 
 interface Employee {
   id: number
   first_name: string
   last_name: string
-  department_id?: number
-  designation_id?: number
-  specialisation_id?: number
-  role_id?: number
   gender?: string
-  dob?: string
+  date_of_birth?: string
   marital_status?: string
-  nationality?: string
-  cpr?: string
-  cpr_expiration?: string
+  crp_nid?: string
+  crp_nid_expiry?: string
   blood_group?: string
-  employee_photo?: string
+  photo_url?: string
   phone?: string
-  email?: string
   office_email?: string
-  emergency_contact?: string
   local_address?: string
   permanent_address?: string
+  emergency_contact?: string
   language?: string
   qualification?: string
-  years_experience?: string
+  year_of_experience?: number
   visa_start?: string
-  visa_expiration?: string
-  passport_number?: string
-  passport_expiration?: string
-  license_number?: string
-  license_expiration?: string
+  visa_end?: string
+  passport_no?: string
+  passport_expiry?: string
+  license_no?: string
+  license_expiry?: string
   joining_date?: string
-  contract_type?: string
-  contract_start_date?: string
-  contract_expiration_date?: string
-  basic_salary?: string
-  username?: string
-  password?: string
-  status?: "active" | "inactive"
+  last_working_date?: string
+  contract_renewal_date?: string
+  contract_expiry_date?: string
+  notice_period?: number
+  bank_name?: string
+  iban?: string
+  account_name?: string
+  account_no?: string
+  swift_code?: string
+  date_from?: string
+  date_to?: string
+  basic_salary?: number
+  gosi_deduction_percentage?: number
+  gosi?: number
+  housing_allowance?: number
+  qchp_document_url?: string
+  passport_document_url?: string
+  id_proof_document_url?: string
+  contract_document_url?: string
+  signature_document_url?: string
+  country_id?: number
+  specialisation_id?: number
+  department_id?: number
+  designation_id?: number
   tenant_id?: number
   created_at?: string
   updated_at?: string
   created_by?: number
   updated_by?: number
+  status?: "active" | "inactive"
 }
 
 interface EmployeeResponse {
@@ -281,4 +315,3 @@ export type {
   EmployeesListResponse,
   GetEmployeesParams,
 }
-

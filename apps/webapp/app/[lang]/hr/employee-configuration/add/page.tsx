@@ -1,289 +1,336 @@
-// "use client";
+"use client"
 
-// import { useState } from "react";
-// import { Button } from "@workspace/ui/components/button";
-// import { PageHeader } from "@/components/common/PageHeader";
-// import { EmployeeFormTabs } from "./_components/EmployeeFormTabs";
-// import { MoveLeft } from "lucide-react";
-// import { useRouter } from "next/navigation";
+import { useState, useEffect, useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "@workspace/ui/hooks/use-form"
+import { z } from "@workspace/ui/lib/zod"
+import { zodResolver } from "@workspace/ui/lib/zod"
+import { Form } from "@workspace/ui/components/form"
+import { Button } from "@workspace/ui/components/button"
+import { PageHeader } from "@/components/common/page-header"
+import { TopEmployeeInfo } from "./_components/TopEmployeeInfo"
+import { EmployeeFormTabs } from "./_components/EmployeeFormTabs"
+import { Header } from "@/components/header"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { createEmployeeApiClient } from "@/lib/api/employees"
+import { getAuthToken } from "@/app/utils/onboarding"
 
-// export default function AddEmployeePage() {
-//   const router = useRouter();
-//   const [status, setStatus] = useState(true); // active/inactive toggle
+// Helper for optional number fields that handles empty strings
+const optionalNumber = z
+  .union([
+    z.string().transform((val) => (val === "" ? undefined : Number(val))),
+    z.number(),
+    z.undefined(),
+  ])
+  .optional()
 
-//   return (
-//     <main className="min-h-screen bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] p-5">
-//       <div className="bg-white p-5 rounded-md shadow-sm">
-//         {/* Header */}
-//         <div className="flex items-center justify-between mb-4">
-//           <div className="flex items-center gap-3">
-//             <Button
-//               variant="ghost"
-//               className="bg-blue-700 hover:bg-blue-500 text-white p-1 rounded-md"
-//               onClick={() => router.back()}
-//             >
-//               <MoveLeft className="w-5 h-5" />
-//             </Button>
-//             <h1 className="text-lg font-semibold text-gray-800">
-//               Add Human Resource / New Employee
-//             </h1>
-//           </div>
-
-//           {/* Status toggle */}
-//           <div className="flex items-center gap-2">
-//             <span className="text-sm text-gray-500">Status</span>
-//             <div className="flex items-center gap-1 bg-gray-100 rounded-full px-2">
-//               <span
-//                 className={`text-sm px-2 py-1 rounded-full ${
-//                   !status ? "bg-red-100 text-red-600" : ""
-//                 }`}
-//               >
-//                 Inactive
-//               </span>
-//               <div
-//                 onClick={() => setStatus(!status)}
-//                 className={`w-12 h-6 rounded-full cursor-pointer transition-all relative ${
-//                   status ? "bg-green-500" : "bg-gray-300"
-//                 }`}
-//               >
-//                 <div
-//                   className={`absolute top-[2px] left-[2px] w-5 h-5 bg-white rounded-full shadow transition-transform ${
-//                     status ? "translate-x-6" : ""
-//                   }`}
-//                 />
-//               </div>
-//               <span
-//                 className={`text-sm px-2 py-1 rounded-full ${
-//                   status ? "bg-green-100 text-green-600" : ""
-//                 }`}
-//               >
-//                 Active
-//               </span>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Tabs + Content */}
-//         <EmployeeFormTabs />
-
-//         {/* Action buttons */}
-//         <div className="flex justify-end mt-8 gap-3">
-//           <Button variant="outline" onClick={() => router.back()}>
-//             Cancel
-//           </Button>
-//           <Button className="bg-blue-600 text-white hover:bg-blue-500">
-//             Save
-//           </Button>
-//         </div>
-//       </div>
-//     </main>
-//   );
-// }
-
-
-"use client";
-
-import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "@workspace/ui/hooks/use-form";
-import { z } from "@workspace/ui/lib/zod";
-import { zodResolver } from "@workspace/ui/lib/zod";
-import { Form } from "@workspace/ui/components/form";
-import { Button } from "@workspace/ui/components/button";
-import { PageHeader } from "@/components/common/page-header";
-import { TopEmployeeInfo } from "./_components/TopEmployeeInfo";
-import { EmployeeFormTabs } from "./_components/EmployeeFormTabs";
-import { Header } from "@/components/header";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEmployeeApiClient } from "@/lib/api/employees";
-import { getAuthToken } from "@/app/utils/onboarding";
+// Convert YYYY-MM-DD to ISO datetime for API
+const toISODateTime = (dateStr: string | undefined): string | undefined => {
+  if (!dateStr) return undefined
+  return new Date(dateStr).toISOString()
+}
 
 const employeeSchema = z.object({
-    // Common fields
-    first_name: z.string().min(1, "Required"),
-    last_name: z.string().min(1, "Required"),
-    department: z.string().min(1, "Required"),
-    designation: z.string().min(1, "Required"),
-    specialization: z.string().min(1, "Required"),
-    role: z.string().min(1, "Required"),
-    active: z.boolean().catch(false),
+  // Required fields
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
 
-    // Personal Details
-    gender: z.string().optional(),
-    dob: z.string().optional(),
-    marital_status: z.string().optional(),
-    nationality: z.string().optional(),
-    cpr: z.string().optional(),
-    cpr_expiration: z.string().optional(),
-    blood_group: z.string().optional(),
-    employee_photo: z.any().optional(),
+  // Dropdown IDs (stored as strings from select, converted to numbers on submit)
+  department_id: z.string().optional(),
+  designation_id: z.string().optional(),
+  specialisation_id: z.string().optional(),
+  country_id: z.string().optional(),
 
-    // Contact Details
-    phone: z.string().optional(),
-    email: z.string().optional(),
-    office_email: z.string().optional(),
-    emergency_contact: z.string().optional(),
-    local_address: z.string().optional(),
-    permanent_address: z.string().optional(),
-    language: z.string().optional(),
+  // Personal Details
+  gender: z.string().optional(),
+  date_of_birth: z.string().optional(),
+  marital_status: z.string().optional(),
+  crp_nid: z.string().optional(),
+  crp_nid_expiry: z.string().optional(),
+  blood_group: z.string().optional(),
+  photo_url: z.string().optional(),
 
-    // Employment
-    qualification: z.string().optional(),
-    years_experience: z.string().optional(),
+  // Contact Details
+  phone: z.string().optional(),
+  office_email: z
+    .string()
+    .email("Invalid email format")
+    .optional()
+    .or(z.literal("")),
+  local_address: z.string().optional(),
+  permanent_address: z.string().optional(),
+  emergency_contact: z.string().optional(),
+  language: z.string().optional(),
 
-    // Visa / License
-    visa_start: z.string().optional(),
-    visa_expiration: z.string().optional(),
-    passport_number: z.string().optional(),
-    passport_expiration: z.string().optional(),
-    license_number: z.string().optional(),
-    license_expiration: z.string().optional(),
+  // Employment
+  qualification: z.string().optional(),
+  year_of_experience: optionalNumber,
 
-    // Contract & Payroll
-    joining_date: z.string().optional(),
-    contract_type: z.string().optional(),
-    contract_start_date: z.string().optional(),
-    contract_expiration_date: z.string().optional(),
-    basic_salary: z.string().optional(),
+  // Visa / License
+  visa_start: z.string().optional(),
+  visa_end: z.string().optional(),
+  passport_no: z.string().optional(),
+  passport_expiry: z.string().optional(),
+  license_no: z.string().optional(),
+  license_expiry: z.string().optional(),
 
-    // System Access
-    username: z.string().optional(),
-    password: z.string().optional(),
-});
+  // Contract Details
+  joining_date: z.string().optional(),
+  last_working_date: z.string().optional(),
+  contract_renewal_date: z.string().optional(),
+  contract_expiry_date: z.string().optional(),
+  notice_period: optionalNumber,
+
+  // Bank Details
+  bank_name: z.string().optional(),
+  iban: z.string().optional(),
+  account_name: z.string().optional(),
+  account_no: z.string().optional(),
+  swift_code: z.string().optional(),
+
+  // Payroll
+  date_from: z.string().optional(),
+  date_to: z.string().optional(),
+  basic_salary: optionalNumber,
+  gosi_deduction_percentage: optionalNumber,
+  gosi: optionalNumber,
+  housing_allowance: optionalNumber,
+
+  // Documents
+  qchp_document_url: z.string().optional(),
+  passport_document_url: z.string().optional(),
+  id_proof_document_url: z.string().optional(),
+  contract_document_url: z.string().optional(),
+  signature_document_url: z.string().optional(),
+})
 
 export default function AddEmployeePage() {
-    const router = useRouter();
-    const queryClient = useQueryClient();
-    const [activeTab, setActiveTab] = useState("Personal Details");
-    const [authToken, setAuthToken] = useState<string>("");
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useState("Personal Details")
+  const [authToken, setAuthToken] = useState<string>("")
 
-    useEffect(() => {
-        const fetchToken = async () => {
-            try {
-                const token = await getAuthToken();
-                setAuthToken(token);
-            } catch (error) {
-                console.error("Failed to get auth token:", error);
-            }
-        };
-        fetchToken();
-    }, []);
+  useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const token = await getAuthToken()
+        setAuthToken(token)
+      } catch (error) {
+        console.error("Failed to get auth token:", error)
+      }
+    }
+    fetchToken()
+  }, [])
 
-    const employeeClient = useMemo(() => {
-        if (!authToken) return null;
-        return createEmployeeApiClient({ authToken });
-    }, [authToken]);
+  const employeeClient = useMemo(() => {
+    if (!authToken) return null
+    return createEmployeeApiClient({ authToken })
+  }, [authToken])
 
-    const form = useForm({
-        resolver: zodResolver(employeeSchema),
-        defaultValues: {
-            first_name: "",
-            last_name: "",
-            department: "",
-            designation: "",
-            specialization: "",
-            role: "",
-            active: true,
-        },
-    });
+  const form = useForm({
+    resolver: zodResolver(employeeSchema),
+    defaultValues: {
+      // Required fields
+      first_name: "",
+      last_name: "",
 
-    const createMutation = useMutation({
-        mutationFn: async (values: any) => {
-            if (!employeeClient) throw new Error("API client not initialized");
-            await employeeClient.createEmployee({
-                first_name: values.first_name,
-                last_name: values.last_name,
-                department_id: values.department ? Number(values.department) : undefined,
-                designation_id: values.designation ? Number(values.designation) : undefined,
-                specialisation_id: values.specialization ? Number(values.specialization) : undefined,
-                role_id: values.role ? Number(values.role) : undefined,
-                status: values.active ? "active" : "inactive",
-                gender: values.gender || undefined,
-                dob: values.dob || undefined,
-                marital_status: values.marital_status || undefined,
-                nationality: values.nationality || undefined,
-                cpr: values.cpr || undefined,
-                cpr_expiration: values.cpr_expiration || undefined,
-                blood_group: values.blood_group || undefined,
-                employee_photo: values.employee_photo || undefined,
-                phone: values.phone || undefined,
-                email: values.email || undefined,
-                office_email: values.office_email || undefined,
-                emergency_contact: values.emergency_contact || undefined,
-                local_address: values.local_address || undefined,
-                permanent_address: values.permanent_address || undefined,
-                language: values.language || undefined,
-                qualification: values.qualification || undefined,
-                years_experience: values.years_experience || undefined,
-                visa_start: values.visa_start || undefined,
-                visa_expiration: values.visa_expiration || undefined,
-                passport_number: values.passport_number || undefined,
-                passport_expiration: values.passport_expiration || undefined,
-                license_number: values.license_number || undefined,
-                license_expiration: values.license_expiration || undefined,
-                joining_date: values.joining_date || undefined,
-                contract_type: values.contract_type || undefined,
-                contract_start_date: values.contract_start_date || undefined,
-                contract_expiration_date: values.contract_expiration_date || undefined,
-                basic_salary: values.basic_salary || undefined,
-                username: values.username || undefined,
-                password: values.password || undefined,
-            });
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["employees"] });
-            router.push("/employee-configuration");
-        },
-    });
+      // Dropdown IDs
+      department_id: "",
+      designation_id: "",
+      specialisation_id: "",
+      country_id: "",
 
-    const handleSave = async (values: any) => {
-        try {
-            await createMutation.mutateAsync(values);
-        } catch (error) {
-            console.error("Failed to create employee:", error);
-        }
-    };
+      // Personal Details
+      gender: "",
+      date_of_birth: "",
+      marital_status: "",
+      crp_nid: "",
+      crp_nid_expiry: "",
+      blood_group: "",
+      photo_url: "",
 
-    return (
-        // <main className="min-h-screen bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] p-5">
-        <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
-            <Header />
+      // Contact Details
+      phone: "",
+      office_email: "",
+      local_address: "",
+      permanent_address: "",
+      emergency_contact: "",
+      language: "",
 
-            <div className="p-5 space-y-8">
-                <div className="bg-white p-5 rounded-md shadow-sm space-y-6">
-                    <PageHeader title="Add Human Resource / New Employee" />
+      // Employment
+      qualification: "",
+      year_of_experience: "",
 
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
-                            {/* Always visible top info */}
-                            <TopEmployeeInfo form={form} />
+      // Visa / License
+      visa_start: "",
+      visa_end: "",
+      passport_no: "",
+      passport_expiry: "",
+      license_no: "",
+      license_expiry: "",
 
-                            {/* Tabs for section forms */}
-                            <EmployeeFormTabs form={form} activeTab={activeTab} setActiveTab={setActiveTab} />
+      // Contract Details
+      joining_date: "",
+      last_working_date: "",
+      contract_renewal_date: "",
+      contract_expiry_date: "",
+      notice_period: "",
 
-                            {/* Save/Cancel */}
-                            <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="text-blue-600 border-blue-500"
-                                    onClick={() => router.push("/employee-configuration")}
-                                    disabled={createMutation.isPending}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    className="bg-green-500 hover:bg-green-600"
-                                    disabled={createMutation.isPending}
-                                >
-                                    {createMutation.isPending ? "Saving..." : "Save"}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-                </div>
-            </div>
-        </main>
-    );
+      // Bank Details
+      bank_name: "",
+      iban: "",
+      account_name: "",
+      account_no: "",
+      swift_code: "",
+
+      // Payroll
+      date_from: "",
+      date_to: "",
+      basic_salary: "",
+      gosi_deduction_percentage: "",
+      gosi: "",
+      housing_allowance: "",
+
+      // Documents
+      qchp_document_url: "",
+      passport_document_url: "",
+      id_proof_document_url: "",
+      contract_document_url: "",
+      signature_document_url: "",
+    },
+  })
+
+  const createMutation = useMutation({
+    mutationFn: async (values: any) => {
+      if (!employeeClient) throw new Error("API client not initialized")
+      await employeeClient.createEmployee({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        // IDs - convert string to number
+        department_id: values.department_id
+          ? Number(values.department_id)
+          : undefined,
+        designation_id: values.designation_id
+          ? Number(values.designation_id)
+          : undefined,
+        specialisation_id: values.specialisation_id
+          ? Number(values.specialisation_id)
+          : undefined,
+        country_id: values.country_id ? Number(values.country_id) : undefined,
+        // Personal Details
+        gender: values.gender || undefined,
+        date_of_birth: toISODateTime(values.date_of_birth),
+        marital_status: values.marital_status || undefined,
+        crp_nid: values.crp_nid || undefined,
+        crp_nid_expiry: toISODateTime(values.crp_nid_expiry),
+        blood_group: values.blood_group || undefined,
+        photo_url: values.photo_url || undefined,
+        // Contact Details
+        phone: values.phone || undefined,
+        office_email: values.office_email || undefined,
+        local_address: values.local_address || undefined,
+        permanent_address: values.permanent_address || undefined,
+        emergency_contact: values.emergency_contact || undefined,
+        language: values.language || undefined,
+        // Employment
+        qualification: values.qualification || undefined,
+        year_of_experience: values.year_of_experience || undefined,
+        // Visa / License
+        visa_start: toISODateTime(values.visa_start),
+        visa_end: toISODateTime(values.visa_end),
+        passport_no: values.passport_no || undefined,
+        passport_expiry: toISODateTime(values.passport_expiry),
+        license_no: values.license_no || undefined,
+        license_expiry: toISODateTime(values.license_expiry),
+        // Contract Details
+        joining_date: toISODateTime(values.joining_date),
+        last_working_date: toISODateTime(values.last_working_date),
+        contract_renewal_date: toISODateTime(values.contract_renewal_date),
+        contract_expiry_date: toISODateTime(values.contract_expiry_date),
+        notice_period: values.notice_period || undefined,
+        // Bank Details
+        bank_name: values.bank_name || undefined,
+        iban: values.iban || undefined,
+        account_name: values.account_name || undefined,
+        account_no: values.account_no || undefined,
+        swift_code: values.swift_code || undefined,
+        // Payroll
+        date_from: toISODateTime(values.date_from),
+        date_to: toISODateTime(values.date_to),
+        basic_salary: values.basic_salary || undefined,
+        gosi_deduction_percentage:
+          values.gosi_deduction_percentage || undefined,
+        gosi: values.gosi || undefined,
+        housing_allowance: values.housing_allowance || undefined,
+        // Documents
+        qchp_document_url: values.qchp_document_url || undefined,
+        passport_document_url: values.passport_document_url || undefined,
+        id_proof_document_url: values.id_proof_document_url || undefined,
+        contract_document_url: values.contract_document_url || undefined,
+        signature_document_url: values.signature_document_url || undefined,
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] })
+      router.push("/employee-configuration")
+    },
+  })
+
+  const handleSave = async (values: any) => {
+    try {
+      await createMutation.mutateAsync(values)
+    } catch (error) {
+      console.error("Failed to create employee:", error)
+    }
+  }
+
+  return (
+    <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
+      <Header />
+
+      <div className="p-5 space-y-8">
+        <div className="bg-white p-5 rounded-md shadow-sm space-y-6">
+          <PageHeader title="Add Human Resource / New Employee" />
+
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleSave)}
+              className="space-y-6"
+            >
+              {/* Always visible top info */}
+              <TopEmployeeInfo form={form} authToken={authToken} />
+
+              {/* Tabs for section forms */}
+              <EmployeeFormTabs
+                form={form}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                authToken={authToken}
+              />
+
+              {/* Save/Cancel */}
+              <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="text-blue-600 border-blue-500"
+                  onClick={() => router.push("/employee-configuration")}
+                  disabled={createMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-green-500 hover:bg-green-600"
+                  disabled={createMutation.isPending}
+                >
+                  {createMutation.isPending ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>
+    </main>
+  )
 }

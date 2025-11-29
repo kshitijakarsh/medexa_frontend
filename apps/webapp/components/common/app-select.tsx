@@ -18,6 +18,7 @@ interface AppSelectProps {
   triggerClassName?: string;
   contentClassName?: string;
   itemClassName?: string;
+  disabled?: boolean;
 }
 
 export function AppSelect({
@@ -29,15 +30,16 @@ export function AppSelect({
   triggerClassName = "",
   contentClassName = "",
   itemClassName = "",
+  disabled = false,
 }: AppSelectProps) {
   const hasError = !!error;
 
   return (
-        <Select onValueChange={onChange} defaultValue={value}>
+        <Select onValueChange={onChange} defaultValue={value} disabled={disabled}>
           <SelectTrigger
             className={`w-full text-sm rounded-md ${
               hasError ? "border-red-500 focus:ring-red-500" : ""
-            } ${triggerClassName}`}
+            } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${triggerClassName}`}
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>

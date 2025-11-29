@@ -1,18 +1,94 @@
 "use client";
 
-import { FormField, FormItem, FormLabel, FormControl } from "@workspace/ui/components/form";
+import { useMemo } from "react";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@workspace/ui/components/select";
-import { StatusSwitch } from "@/components/common/switch-green";
 import { AppSelect } from "@/components/common/app-select";
+import { useQuery } from "@tanstack/react-query";
+import { createDepartmentApiClient } from "@/lib/api/administration/department";
+import { createDesignationApiClient } from "@/lib/api/designations";
+import { createSpecialisationApiClient } from "@/lib/api/specialisations";
 
-export function TopEmployeeInfo({ form }: { form: any }) {
+interface TopEmployeeInfoProps {
+    form: any;
+    authToken: string;
+}
+
+export function TopEmployeeInfo({ form, authToken }: TopEmployeeInfoProps) {
+    // API Clients
+    const departmentClient = useMemo(() => {
+        if (!authToken) return null;
+        return createDepartmentApiClient({ authToken });
+    }, [authToken]);
+
+    const designationClient = useMemo(() => {
+        if (!authToken) return null;
+        return createDesignationApiClient({ authToken });
+    }, [authToken]);
+
+    const specialisationClient = useMemo(() => {
+        if (!authToken) return null;
+        return createSpecialisationApiClient({ authToken });
+    }, [authToken]);
+
+    // Fetch Departments
+    const { data: departmentsData, isLoading: isLoadingDepartments } = useQuery({
+        queryKey: ["departments-dropdown"],
+        queryFn: async () => {
+            if (!departmentClient) throw new Error("API client not initialized");
+            const response = await departmentClient.getDepartments({ limit: 100 });
+            return response.data;
+        },
+        enabled: !!departmentClient,
+    });
+
+    // Fetch Designations
+    const { data: designationsData, isLoading: isLoadingDesignations } = useQuery({
+        queryKey: ["designations-dropdown"],
+        queryFn: async () => {
+            if (!designationClient) throw new Error("API client not initialized");
+            const response = await designationClient.getDesignations({ limit: 100 });
+            return response.data;
+        },
+        enabled: !!designationClient,
+    });
+
+    // Fetch Specialisations
+    const { data: specialisationsData, isLoading: isLoadingSpecialisations } = useQuery({
+        queryKey: ["specialisations-dropdown"],
+        queryFn: async () => {
+            if (!specialisationClient) throw new Error("API client not initialized");
+            const response = await specialisationClient.getSpecialisations({ limit: 100, status: "active" });
+            return response.data;
+        },
+        enabled: !!specialisationClient,
+    });
+
+    // Transform data to dropdown options
+    const departmentOptions = useMemo(() => {
+        if (!departmentsData?.data) return [];
+        return departmentsData.data.map((dept) => ({
+            value: String(dept.id),
+            label: dept.department_name,
+        }));
+    }, [departmentsData]);
+
+    const designationOptions = useMemo(() => {
+        if (!designationsData?.data) return [];
+        return designationsData.data.map((des) => ({
+            value: String(des.id),
+            label: des.name,
+        }));
+    }, [designationsData]);
+
+    const specialisationOptions = useMemo(() => {
+        if (!specialisationsData?.data) return [];
+        return specialisationsData.data.map((spec) => ({
+            value: String(spec.id),
+            label: spec.name,
+        }));
+    }, [specialisationsData]);
+
     return (
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 border-b border-gray-200 pb-4">
             {/* Left Fields */}
@@ -20,135 +96,67 @@ export function TopEmployeeInfo({ form }: { form: any }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField control={form.control} name="first_name" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>First Name</FormLabel>
-                            <FormControl><Input placeholder="Enter Name" {...field} /></FormControl>
+                            <FormLabel>First Name <span className="text-red-500">*</span></FormLabel>
+                            <FormControl><Input placeholder="Enter First Name" {...field} /></FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="last_name" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Last Name</FormLabel>
-                            <FormControl><Input placeholder="Enter Name" {...field} /></FormControl>
+                            <FormLabel>Last Name <span className="text-red-500">*</span></FormLabel>
+                            <FormControl><Input placeholder="Enter Last Name" {...field} /></FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <FormField control={form.control} name="department" render={({ field }) => (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormField control={form.control} name="department_id" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Department</FormLabel>
                             <FormControl>
-                                {/* <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger><SelectValue placeholder="Department" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cardiology">Cardiology</SelectItem>
-                    <SelectItem value="neurology">Neurology</SelectItem>
-                  </SelectContent>
-                </Select> */}
                                 <AppSelect
-                                    placeholder="Select Department"
+                                    placeholder={isLoadingDepartments ? "Loading..." : "Select Department"}
                                     value={field.value}
                                     onChange={field.onChange}
-                                    options={[
-                                        { label: "cardiology", value: "Cardiology" },
-                                        { label: "nneurology", value: "Neurology" },
-                                    ]}
-                                    error={form.formState.errors.floor}
+                                    options={departmentOptions}
+                                    disabled={isLoadingDepartments}
                                 />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
-                    <FormField control={form.control} name="designation" render={({ field }) => (
+                    <FormField control={form.control} name="designation_id" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Designation</FormLabel>
                             <FormControl>
-                                {/* <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger><SelectValue placeholder="Designation" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="doctor">Doctor</SelectItem>
-                    <SelectItem value="nurse">Nurse</SelectItem>
-                  </SelectContent>
-                </Select> */}
                                 <AppSelect
-                                    placeholder="Select Designation"
+                                    placeholder={isLoadingDesignations ? "Loading..." : "Select Designation"}
                                     value={field.value}
                                     onChange={field.onChange}
-                                    options={[
-                                        { label: "doctor", value: "Doctor" },
-                                        { label: "nurse", value: "Nurse" },
-                                    ]}
-                                    error={form.formState.errors.floor}
+                                    options={designationOptions}
+                                    disabled={isLoadingDesignations}
                                 />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
-                    <FormField control={form.control} name="specialization" render={({ field }) => (
+                    <FormField control={form.control} name="specialisation_id" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Specialization</FormLabel>
                             <FormControl>
-                                {/* <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger><SelectValue placeholder="Specialization" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cardiology">Cardiology</SelectItem>
-                    <SelectItem value="radiology">Radiology</SelectItem>
-                  </SelectContent>
-                </Select> */}
                                 <AppSelect
-                                    placeholder="Select Qualification"
+                                    placeholder={isLoadingSpecialisations ? "Loading..." : "Select Specialization"}
                                     value={field.value}
                                     onChange={field.onChange}
-                                    options={[
-                                        { label: "cardiology", value: "Cardiology" },
-                                        { label: "radiology", value: "Radiology" },
-                                    ]}
-                                    error={form.formState.errors.floor}
+                                    options={specialisationOptions}
+                                    disabled={isLoadingSpecialisations}
                                 />
                             </FormControl>
-                        </FormItem>
-                    )} />
-                    <FormField control={form.control} name="role" render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Role</FormLabel>
-                            <FormControl>
-                                {/* <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="staff">Staff</SelectItem>
-                  </SelectContent>
-                </Select> */}
-                                <AppSelect
-                                    placeholder="Select Qualification"
-                                    value={field.value}
-                                    onChange={field.onChange}
-                                    options={[
-                                        { label: "admin", value: "Admin" },
-                                        { label: "staff", value: "Staff" },
-                                    ]}
-                                    error={form.formState.errors.floor}
-                                />
-                            </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )} />
                 </div>
-            </div>
-
-            {/* Status Toggle */}
-            <div className="flex items-center gap-3 min-w-[180px]">
-                <FormField control={form.control} name="active" render={({ field }) => (
-                    <FormItem className="w-full">
-                        <FormLabel>Status</FormLabel>
-                        <div
-                            className={`flex items-center gap-3 rounded-md px-3 py-2 ${field.value ? "bg-green-50" : "bg-gray-50"
-                                }`}
-                        >
-                            <span className="text-sm text-red-500">Inactive</span>
-                            <FormControl>
-                                <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
-                            </FormControl>
-                            <span className="text-sm text-green-600">Active</span>
-                        </div>
-                    </FormItem>
-                )} />
             </div>
         </div>
     );
