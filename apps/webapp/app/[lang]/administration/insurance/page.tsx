@@ -9,14 +9,18 @@ import NewButton from "@/components/common/new-button";
 import { DataTable } from "@/components/common/data-table";
 import { getMockCompanies } from "./_components/api";
 import { QuickActions } from "./_components/QuickActions";
-import { RowActionMenu } from "./_components/RowActionMenu";
+import { InsuranceRowActionMenu } from "./_components/InsuranceRowActionMenu";
 import { AddDialog } from "./_components/AddDialog";
 import { FilterDialog } from "./_components/FilterDialog";
 import { useRouter } from "next/navigation";
 import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { PERMISSIONS } from "@/app/utils/permissions";
+import { Can } from "@/components/common/app-can";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function CompanyListPage() {
+    const userPermissions = useUserStore((s) => s.user?.role.permissions);
     const router = useRouter();
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -73,10 +77,11 @@ export default function CompanyListPage() {
             key: "action",
             label: "Action",
             render: (r: any) => (
-                <RowActionMenu
+                <InsuranceRowActionMenu
                     onView={() => router.push(`/insurance/${r.id}`)}
                     onEdit={() => alert(`Edit ${r.companyName} (not implemented)`)}
                     onDelete={() => setData((p) => p.filter((x) => x.id !== r.id))}
+                    userPermissions={userPermissions}
                 />
             ),
             className: "w-[80px] text-center",
@@ -119,7 +124,12 @@ export default function CompanyListPage() {
                   <Plus className="w-4 h-4" />
                   Add New
                 </button> */}
-                                <NewButton handleClick={handleNew} />
+                                <Can
+                                    permission={PERMISSIONS.INSURANCE.CREATE}
+                                    userPermissions={userPermissions}
+                                >
+                                    <NewButton handleClick={handleNew} />
+                                </Can>
                             </div>
                         </div>
                     </div>

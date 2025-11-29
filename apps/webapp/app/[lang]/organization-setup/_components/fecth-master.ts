@@ -29,6 +29,12 @@ export async function fetchMasters() {
       category: "Organization Setup",
     },
     {
+      title: "Charges",
+      subtitle: "Adding charges tax units and categoryes",
+      active: 10,
+      category: "Organization Setup",
+    },
+    {
       title: "Human Resource",
       subtitle: "Eg: Doctor, Nurse, Designation, etc.",
       active: 100,
@@ -171,6 +177,10 @@ export const masterConfig: Record<
   "Package / Scheme / Policy Setup": {
     route: "/masters/packages",
     addOptions: ["Package", "Scheme", "Policy"],
+  },
+  "Charges": {
+    route: ROUTES.ADMINISTRATION_CHARGES,
+    addOptions: ["Service", "Category", "Tax", "Unit"],
   },
   "Tariff / Pricing / Service Charges": {
     route: "/masters/tariff",

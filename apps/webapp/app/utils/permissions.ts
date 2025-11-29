@@ -36,6 +36,36 @@ export const PERMISSIONS = {
         DELETE: "administration:role:delete",
         VIEW: "administration:role:view",
     },
+     INSURANCE: {
+        CREATE: "administration:insurance:create",
+        EDIT: "administration:insurance:edit",
+        DELETE: "administration:insurance:delete",
+        VIEW: "administration:insurance:view",
+    },
+    SERVICE: {
+        CREATE: "administration:service:create",
+        EDIT: "administration:service:edit",
+        DELETE: "administration:service:delete",
+        VIEW: "administration:service:view",
+    },
+    CATEGORY: {
+        CREATE: "administration:category:create",
+        EDIT: "administration:category:edit",
+        DELETE: "administration:category:delete",
+        VIEW: "administration:category:view",
+    },
+    TAX: {
+        CREATE: "administration:tax:create",
+        EDIT: "administration:tax:edit",
+        DELETE: "administration:tax:delete",
+        VIEW: "administration:tax:view",
+    },
+    UNIT: {
+        CREATE: "administration:unit:create",
+        EDIT: "administration:unit:edit",
+        DELETE: "administration:unit:delete",
+        VIEW: "administration:unit:view",
+    },
     TENANT: {
         VIEW_ONE: "administration:tenant:viewOne",
     },

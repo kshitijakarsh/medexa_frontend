@@ -19,6 +19,9 @@ import { QuickActions } from "./_components/QuickActions";
 import FilterButton from "@/components/common/filter-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { useUserStore } from "@/store/useUserStore";
+import { PERMISSIONS } from "@/app/utils/permissions";
+import { Can } from "@/components/common/app-can";
 
 
 const ChargesSection = [
@@ -27,10 +30,18 @@ const ChargesSection = [
   { key: "tax", label: "Tax Category" },
   { key: "unit", label: "Unit Type" },
 ];
+const PERMISSION_MAP = {
+  service: PERMISSIONS.SERVICE,
+  category: PERMISSIONS.CATEGORY,
+  tax: PERMISSIONS.TAX,
+  unit: PERMISSIONS.UNIT,
+};
 
 
 
 export default function ChargesPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
   const router = useRouter();
   const [tab, setTab] = useState<"service" | "category" | "tax" | "unit">("service");
   const [data, setData] = useState<any[]>([]);
@@ -40,7 +51,8 @@ export default function ChargesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isBulkOpen, setIsBulkOpen] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
-
+  /* -------------------- Filters -------------------- */
+  const [filters, setFilters] = useState<any>({});
   useEffect(() => { load(); }, [tab]);
 
   const load = async () => {
@@ -81,18 +93,43 @@ export default function ChargesPage() {
         { key: "tax", label: "Tax", render: (r: any) => r.taxLabel || r.tax || "" },
         { key: "standardCharge", label: "Standard Charge", render: (r: any) => r.standardCharge },
         { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} />, className: "text-center w-[80px]" },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/> , className: "text-center w-[80px]" },
       ];
     }
-    // category / tax / unit table
-    return [
-      { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-      { key: "name", label: t === "unit" ? "Unit Type" : t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
-      { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-      { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
-      { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-      { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} />, className: "text-center w-[80px]" },
-    ];
+   
+    if (t === "tax") {
+      // category / tax / unit table
+      return [
+        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label:  t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "tax" ? r.taxName : r.chargeName) },
+        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
+        { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+      ];
+    }
+    if (t === "category") {
+      // category / tax / unit table
+      return [
+        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label:  "Charge Name", render: (r: any) => ( r.chargeName) },
+        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
+        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+      ];
+    }
+    //  if (t === "unit") {
+      // category / tax / unit table
+      return [
+        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label: t === "unit" ? "Unit Type" : t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
+        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
+        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+      ];
+    // }
   };
 
   const onApplyFilters = (f: any) => {
@@ -115,6 +152,16 @@ export default function ChargesPage() {
     setData(filtered);
     setLoading(false);
   };
+
+
+  const permissionStrings =
+    (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+
+  const filteredTabs = ChargesSection.filter((t) => {
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
+  });
+
 
   return (
     < >
@@ -163,7 +210,7 @@ export default function ChargesPage() {
           /> */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <DynamicTabs
-              tabs={ChargesSection}
+              tabs={filteredTabs}
               defaultTab="service"
               onChange={(tabKey) => setTab(tabKey as any)}
             />
@@ -178,7 +225,12 @@ export default function ChargesPage() {
               <SlidersHorizontal /> Filter
             </Button> */}
 
-              <FilterButton onClick={() => setIsFilterOpen(true)} />
+              {/* <FilterButton onClick={() => setIsFilterOpen(true)} /> */}
+              <FilterButton
+                filters={filters}
+                onClick={() => setIsFilterOpen(true)}
+                onClear={() => setFilters({})}
+              />
 
 
               <div className="min-w-[220px]">
@@ -190,14 +242,18 @@ export default function ChargesPage() {
               </div>
 
               <QuickActions />
-
-              <NewButton
-                handleClick={() => {
-                  if (tab === "service") router.push("/administration/charges/add");
-                  else if (bulkMode) setIsBulkOpen(true);
-                  else setIsAddOpen(true);
-                }}
-              />
+              <Can
+                permission={PERMISSION_MAP[tab as keyof typeof PERMISSION_MAP]?.CREATE}
+                userPermissions={userPermissions}
+              >
+                <NewButton
+                  handleClick={() => {
+                    if (tab === "service") router.push("/administration/charges/add");
+                    else if (bulkMode) setIsBulkOpen(true);
+                    else setIsAddOpen(true);
+                  }}
+                />
+              </Can>
             </div>
           </div>
           {/* Table */}

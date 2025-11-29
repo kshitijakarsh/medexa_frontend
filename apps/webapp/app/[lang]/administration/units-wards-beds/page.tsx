@@ -1895,7 +1895,7 @@ function UnitsWardsBedsPageContent() {
   });
 
 
-  console.log(filteredTabs, Tabs, userPermissions)
+  // console.log(filteredTabs, Tabs, userPermissions)
 
 
   /* ---------------------------------------

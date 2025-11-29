@@ -1,51 +1,3 @@
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@workspace/ui/components/dropdown-menu"
-// import { Button } from "@workspace/ui/components/button"
-// import { MoreVertical } from "lucide-react"
-
-// export function RowActionMenu({
-//   onEdit,
-//   onDelete,
-// }: {
-//   onEdit: () => void
-//   onDelete: () => void
-// }) {
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger asChild>
-//         <Button
-//           variant="ghost"
-//           size="icon"
-//           className="text-gray-600 hover:bg-gray-100"
-//         >
-//           <MoreVertical className="w-5 h-5" />
-//         </Button>
-//       </DropdownMenuTrigger>
-
-//       <DropdownMenuContent
-//         align="end"
-//         className="min-w-[140px] bg-white border border-gray-200 shadow-md rounded-md overflow-hidden p-1"
-//       >
-//         <DropdownMenuItem
-//           className="text-sm font-medium text-gray-800 rounded-md px-3 py-2 cursor-pointer hover:bg-green-500 hover:text-white"
-//           onClick={onEdit}
-//         >
-//           Edit
-//         </DropdownMenuItem>
-//         <DropdownMenuItem
-//           className="text-sm font-medium text-gray-800 rounded-md px-3 py-2 cursor-pointer hover:bg-red-500 hover:text-white"
-//           onClick={onDelete}
-//         >
-//           Delete
-//         </DropdownMenuItem>
-//       </DropdownMenuContent>
-//     </DropdownMenu>
-//   )
-// }
 
 
 // "use client"
@@ -61,9 +13,11 @@
 
 // export function RowActionMenu({
 //   onEdit,
+//   onView,
 //   onDelete,
 // }: {
 //   onEdit: () => void
+//   onView: () => void
 //   onDelete: () => void
 // }) {
 //   return (
@@ -72,7 +26,7 @@
 //         <Button
 //           variant="ghost"
 //           size="icon"
-//           className="rounded-md text-[#0056D2] hover:bg-blue-50 focus:ring-1 focus:ring-blue-200 transition-all"
+//           className="rounded-md text-[#0056D2] hover:bg-blue-50 focus:ring-1 focus:ring-blue-200 transition-all cursor-pointer"
 //         >
 //           <MoreVertical className="w-5 h-5" />
 //         </Button>
@@ -87,6 +41,12 @@
 //           onClick={onEdit}
 //         >
 //           Edit
+//         </DropdownMenuItem>
+//         <DropdownMenuItem
+//           className="text-sm font-medium text-gray-800 rounded-md px-3 py-2 cursor-pointer bg-[#28B469] text-white hover:bg-[#32C676] transition-colors"
+//           onClick={onView}
+//         >
+//           View
 //         </DropdownMenuItem>
 //         <DropdownMenuItem
 //           className="text-sm font-medium text-gray-700 rounded-md px-3 py-2 cursor-pointer bg-white hover:bg-red-500 hover:text-white transition-colors"
@@ -116,7 +76,7 @@ interface RowAction {
 }
 
 
-export function DepartmentRowActionMenu({ onEdit, onView, onDelete, userPermissions }: any) {
+export function InsuranceRowActionMenu({ onEdit, onView, onDelete, userPermissions }: any) {
 
   // const rowActions: RowAction[] = [
   //   { label: "Edit", icon: <Pencil className="w-4 h-4" />, onClick: onEdit, variant: "success" },
@@ -125,7 +85,7 @@ export function DepartmentRowActionMenu({ onEdit, onView, onDelete, userPermissi
 
   const rowActions: RowAction[] = [];
 
-  if (hasPermission(userPermissions, PERMISSIONS.DEPARTMENT.EDIT)) {
+  if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.EDIT)) {
     rowActions.push({
       label: "Edit",
       icon: <Pencil className="w-4 h-4" />,
@@ -134,7 +94,16 @@ export function DepartmentRowActionMenu({ onEdit, onView, onDelete, userPermissi
     });
   }
 
-  if (hasPermission(userPermissions, PERMISSIONS.DEPARTMENT.DELETE)) {
+  if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.EDIT)) {
+    rowActions.push({
+      label: "View",
+      icon: <Eye className="w-4 h-4" />,
+      onClick: onView,
+      variant: "success",
+    });
+  }
+
+  if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.DELETE)) {
     rowActions.push({
       label: "Delete",
       icon: <Trash2 className="w-4 h-4" />,

@@ -308,6 +308,21 @@ export const mainModules: MainModule[] = [
         label: "Charges",
         actions: ["view", "create", "edit", "delete"],
       },
+       {
+        key: "tax",
+        label: "Tax",
+        actions: ["view", "create", "edit", "delete"],
+      },
+       {
+        key: "category",
+        label: "Category",
+        actions: ["view", "create", "edit", "delete"],
+      },
+       {
+        key: "unit",
+        label: "Unit",
+        actions: ["view", "create", "edit", "delete"],
+      },
     ],
   },
 
