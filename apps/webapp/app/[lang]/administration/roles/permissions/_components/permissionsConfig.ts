@@ -297,7 +297,7 @@ export const mainModules: MainModule[] = [
       //   actions: ["view", "create", "edit", "delete", "viewOne"],
       // },
       {
-        key: "operation-theatres",
+        key: "operationTheatres",
         label: "Operation Theatres",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
@@ -325,6 +325,16 @@ export const mainModules: MainModule[] = [
         key: "unit",
         label: "Unit",
         actions: ["view", "create", "edit", "delete"],
+      },
+        {
+        key: "operation",
+        label: "Operation",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+       {
+        key: "operationCategory",
+        label: "Operation Category",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
     ],
   },

@@ -6,7 +6,7 @@ import { SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/header";
 import { DataTable } from "@/components/common/data-table";
 import { QuickActions } from "./_components/QuickActions";
-import { RowActionMenu } from "./_components/RowActionMenu";
+import { OperationTheatresRowActionMenu } from "./_components/OperationTheatresRowActionMenu";
 import { FilterDialog } from "./_components/FilterDialog";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
@@ -15,8 +15,13 @@ import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/common/page-header";
 import { AddOperationTheatreDialog } from "./_components/AddOperationTheatreDialog";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { useUserStore } from "@/store/useUserStore";
+import FilterButton from "@/components/common/filter-button";
+import { Can } from "@/components/common/app-can";
+import { PERMISSIONS } from "@/app/utils/permissions";
 
 export default function OperationTheatresPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -44,7 +49,7 @@ export default function OperationTheatresPage() {
     {
       key: "action",
       label: "Action",
-      render: (row: any) => <RowActionMenu onEdit={() => {}} onDelete={() => {}} />,
+      render: (row: any) => <OperationTheatresRowActionMenu onEdit={() => { }} onDelete={() => { }} userPermissions={userPermissions} />,
       className: "text-center w-[80px]",
     },
   ];
@@ -60,19 +65,24 @@ export default function OperationTheatresPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div></div>
             <div className="flex items-center gap-3">
-              <Button
+              {/* <Button
                 onClick={() => setIsFilterDialogOpen(true)}
                 variant="outline"
                 className="flex items-center gap-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Filter
                 <SlidersHorizontal className="w-5 h-5" />
-              </Button>
-
+              </Button> */}
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
               <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
               <QuickActions />
+              <Can
+                permission={PERMISSIONS.OPERATION_THEATRES.CREATE}
+                userPermissions={userPermissions}
+              >
+                <NewButton handleClick={() => setIsAddDialogOpen(true)} className="cursor-pointer" />
+              </Can>
 
-              <NewButton handleClick={() => setIsAddDialogOpen(true)} className="cursor-pointer" />
             </div>
           </div>
 
@@ -86,7 +96,7 @@ export default function OperationTheatresPage() {
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
       />
-      <FilterDialog open={isFilterDialogOpen} onClose={() => setIsFilterDialogOpen(false)} isLoading={false}/>
+      <FilterDialog open={isFilterDialogOpen} onClose={() => setIsFilterDialogOpen(false)} isLoading={false} />
     </>
   );
 }

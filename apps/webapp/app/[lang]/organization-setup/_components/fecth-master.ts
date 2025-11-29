@@ -22,18 +22,18 @@ export async function fetchMasters() {
       active: 120,
       category: "Organization Setup",
     },
-     {
+    {
       title: "User",
       subtitle: "User creation, etc.",
       active: 10,
       category: "Organization Setup",
     },
-    {
-      title: "Insurance",
-      subtitle: "Health Insurance, Life Insurance, etc.",
-      active: 90,
-      category: "Organization Setup",
-    },
+    // {
+    //   title: "Insurance",
+    //   subtitle: "Health Insurance, Life Insurance, etc.",
+    //   active: 90,
+    //   category: "Organization Setup",
+    // },
     {
       title: "Employees",
       subtitle: "Employees creation, etc.",
@@ -44,6 +44,12 @@ export async function fetchMasters() {
       title: "Charges",
       subtitle: "Adding charges tax units and categoryes",
       active: 10,
+      category: "Organization Setup",
+    },
+    {
+      title: "Operation / Operation Category",
+      subtitle: "OT1, OT2, minor procedure rooms, etc.",
+      active: 120,
       category: "Organization Setup",
     },
     {
@@ -70,6 +76,7 @@ export async function fetchMasters() {
       active: 90,
       category: "Services & Procedure",
     },
+
     {
       title: "Medical Procedure / Treatment Master",
       subtitle: "Cardiology, Neuro, Ortho, etc.",
@@ -147,17 +154,25 @@ export const masterConfig: Record<
   "Operation Theatres / Procedure Rooms": {
     route: ROUTES.ADMINISTRATION_OPERATION_THEATRES,
     addOptions: ["Theatre", "Procedure Room"],
-    submoduleKeys: ["operation-theatres"]
+    submoduleKeys: ["operationTheatres"]
 
   },
   "Insurance": {
     route: ROUTES.ADMINISTRATION_INSURANCE,
-    addOptions: ["insurance"],
+    addOptions: ["Insurance"],
+    submoduleKeys: ["insurance"]
+
   },
   "User": {
     route: ROUTES.ADMINISTRATION_USER,
     addOptions: ["User"],
     submoduleKeys: ["user"]
+  },
+  "Operation / Operation Category": {
+    route: ROUTES.ADMINISTRATION_OPERATION,
+    addOptions: ["Operation", "Operation Category"],
+    submoduleKeys: ["operationCategory"]
+
   },
   "Human Resource": {
     route: "/employee-configuration",
@@ -193,6 +208,7 @@ export const masterConfig: Record<
   "Charges": {
     route: ROUTES.ADMINISTRATION_CHARGES,
     addOptions: ["Service", "Category", "Tax", "Unit"],
+    submoduleKeys: ["charges"]
   },
   "Tariff / Pricing / Service Charges": {
     route: "/masters/tariff",

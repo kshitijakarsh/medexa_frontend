@@ -211,11 +211,13 @@ import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { QuickActions } from "./_components/QuickActions";
-import { RowActionMenu } from "./_components/RowActionMenu";
+import { OperationRowActionMenu } from "./_components/OperationRowActionMenu";
 import { AddDialog } from "./_components/AddDialog";
 import { FilterDialog } from "./_components/FilterDialog";
 import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { useUserStore } from "@/store/useUserStore";
+import { PERMISSIONS } from "@/app/utils/permissions";
 
 const operationTabs = [
   { key: "operation", label: "Operation" },
@@ -238,7 +240,13 @@ function getMockOperations(mode: string) {
   ];
 }
 
+const PERMISSION_MAP = {
+  operation: PERMISSIONS.OPERATION,
+  operationCategory: PERMISSIONS.OPERATION_CATEGORY,
+}
+
 export default function OperationManagementPage() {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"operation" | "operationCategory">("operation");
   const [data, setData] = useState<any[]>([]);
@@ -246,6 +254,16 @@ export default function OperationManagementPage() {
   const [search, setSearch] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+
+  const permissionStrings =
+    (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+
+  const filteredTabs = operationTabs.filter((t) => {
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
+  });
+
+
 
   useEffect(() => {
     setLoading(true);
@@ -260,18 +278,18 @@ export default function OperationManagementPage() {
     const newEntry =
       activeTab === "operation"
         ? {
-            sno: data.length + 1,
-            name: values.name,
-            category: values.category,
-            status: "Active",
-          }
+          sno: data.length + 1,
+          name: values.name,
+          category: values.category,
+          status: "Active",
+        }
         : {
-            sno: data.length + 1,
-            category: values.category,
-            createdOn: values.createdOn,
-            addedBy: values.addedBy,
-            status: "Active",
-          };
+          sno: data.length + 1,
+          category: values.category,
+          createdOn: values.createdOn,
+          addedBy: values.addedBy,
+          status: "Active",
+        };
 
     setData((prev) => [...prev, newEntry]);
   };
@@ -291,10 +309,12 @@ export default function OperationManagementPage() {
           key: "action",
           label: "Action",
           render: (r: any) => (
-            <RowActionMenu
+            <OperationRowActionMenu
               onEdit={() => console.log("Edit", r.name)}
-                                      onView={() => { }}
+              onView={() => { }}
               onDelete={() => console.log("Delete", r.name)}
+              userPermissions={userPermissions}
+              mode={activeTab}
             />
           ),
           className: "text-center w-[80px]",
@@ -316,10 +336,12 @@ export default function OperationManagementPage() {
         key: "action",
         label: "Action",
         render: (r: any) => (
-          <RowActionMenu
+          <OperationRowActionMenu
             onEdit={() => console.log("Edit", r.category)}
-                                                  onView={() => { }}
+            onView={() => { }}
             onDelete={() => console.log("Delete", r.category)}
+            userPermissions={userPermissions}
+            mode={activeTab}
           />
         ),
         className: "text-center w-[80px]",
@@ -338,7 +360,7 @@ export default function OperationManagementPage() {
             {/* Tabs */}
             <div className="flex-shrink-0">
               <DynamicTabs
-                tabs={operationTabs}
+                tabs={filteredTabs}
                 defaultTab="operation"
                 onChange={(tabKey) => setActiveTab(tabKey as any)}
               />
@@ -354,7 +376,7 @@ export default function OperationManagementPage() {
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filter</span>
               </Button> */}
-              <FilterButton  onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
               <SearchInput
                 value={search}
                 onChange={setSearch}
@@ -382,7 +404,7 @@ export default function OperationManagementPage() {
         open={isFilterDialogOpen}
         onClose={() => setIsFilterDialogOpen(false)}
         mode={activeTab}
-        onApply={() => {}}
+        onApply={() => { }}
         isLoading={false}
       />
     </>

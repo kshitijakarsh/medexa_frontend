@@ -5,18 +5,20 @@ import { Grip } from "lucide-react"
 import { SectionDropdown } from "./header/section-dropdown"
 import { TopActionButtons } from "./header/top-action-menu-buttons"
 import { Button } from "@workspace/ui/components/button"
+import { useUserStore } from "@/store/useUserStore"
 
 export const Header = () => {
   // const handleLogout = () => {
   //   logoutCognitoUser();
   //   window.location.href = "/login"; // full page reload
   // };
-
+  const user = useUserStore((s) => s.user);
+  // ⭐ CLEAN & SAFE MAPPING
   const userData = {
-    name: "Dr. Ahmed Al-Mansouri",
-    role: "HOSPITAL ADMIN",
-    employeeId: "EMP-2024-1847",
-    accountStatus: "Active" as const,
+    name: user?.name ?? "Dr. Ahmed Al-Mansouri",
+    role: user?.role?.name ?? "HOSPITAL ADMIN",
+    employeeId: "EMP-2024-1847", // Static – update if needed
+    accountStatus: (user?.status ?? "Active") as "Active" | "Inactive",
     lastLogin: "Today at 09:42 AM",
     avatar: "/images/user.svg",
     hospital: {
@@ -26,7 +28,7 @@ export const Header = () => {
       address: "Doha, Qatar",
       logo: "/images/user.svg",
     },
-  }
+  };
 
   const { toggleSidebar } = useSidebar()
 

@@ -36,7 +36,7 @@ export const PERMISSIONS = {
         DELETE: "administration:role:delete",
         VIEW: "administration:role:view",
     },
-     INSURANCE: {
+    INSURANCE: {
         CREATE: "administration:insurance:create",
         EDIT: "administration:insurance:edit",
         DELETE: "administration:insurance:delete",
@@ -66,8 +66,26 @@ export const PERMISSIONS = {
         DELETE: "administration:unit:delete",
         VIEW: "administration:unit:view",
     },
-    TENANT: {
-        VIEW_ONE: "administration:tenant:viewOne",
+    OPERATION_THEATRES: {
+        CREATE: "administration:operationTheatres:create",
+        EDIT: "administration:operationTheatres:edit",
+        DELETE: "administration:operationTheatres:delete",
+        VIEW: "administration:operationTheatres:view",
+        VIEW_ONE: "administration:operationTheatres:viewOne",
+    },
+    OPERATION: {
+        CREATE: "administration:operation:create",
+        EDIT: "administration:operation:edit",
+        DELETE: "administration:operation:delete",
+        VIEW: "administration:operation:view",
+        VIEW_ONE: "administration:operation:viewOne",
+    },
+     OPERATION_CATEGORY: {
+        CREATE: "administration:operationCategory:create",
+        EDIT: "administration:operationCategory:edit",
+        DELETE: "administration:operationCategory:delete",
+        VIEW: "administration:operationCategory:view",
+        VIEW_ONE: "administration:operationCategory:viewOne",
     },
     USER: {
         CREATE: "administration:user:create",
@@ -76,6 +94,10 @@ export const PERMISSIONS = {
         VIEW: "administration:user:view",
         VIEW_ONE: "administration:user:viewOne",
     },
+    TENANT: {
+        VIEW_ONE: "administration:tenant:viewOne",
+    },
+
     TENANT_MODULE: {
         VIEW: "administration:tenantModule:view",
         VIEW_ONE: "administration:tenantModule:viewOne",
