@@ -3,6 +3,7 @@
 
 import AppointmentCard from "@/components/common/pasient-card/appointment-card";
 import AppointmentCardSkeleton from "./AppointmentCardSkeleton";
+import { useRouter } from "next/navigation";
 
 
 
@@ -13,6 +14,11 @@ export default function AppointmentGrid({
   items: any[];
   loading: boolean;
 }) {
+  const router = useRouter()
+  const handleCardClick = (id : number) => {
+    router.push(`/doctor/appointment/${id}`)
+
+  }
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
@@ -34,7 +40,7 @@ export default function AppointmentGrid({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
       {items.map((it: any) => (
-        <AppointmentCard key={it.id} item={it} />
+        <AppointmentCard key={it.id} item={it} onClick={() => handleCardClick(it.id)} />
       ))}
     </div>
   );

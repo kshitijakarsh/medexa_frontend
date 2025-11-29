@@ -674,7 +674,7 @@ import { PermissionNode, MainModule, mainModules } from "./permissionsConfig";
 import { CustomCheckbox } from "./CustomCheckbox";
 
 interface PermissionAccordionProps {
-  allowedModules: string[];
+  allowedModules: Array<{ id?: string; key: string }> | string[];
   value?: Record<string, any>;
   onChange?: (updated: Record<string, any>) => void;
 }
@@ -685,9 +685,14 @@ export const PermissionAccordion = ({
   onChange,
 }: PermissionAccordionProps) => {
   const visibleModules = mainModules.filter((m) =>
-    allowedModules.includes(m.key.toLowerCase())
+    allowedModules.some((allow) => {
+      if (typeof allow === "string") {
+        return allow.toLowerCase() === m.key.toLowerCase();
+      }
+      return allow.id === m.id || allow.key.toLowerCase() === m.key.toLowerCase();
+    })
   );
-  console.log(allowedModules)
+
 
 
   const [permissions, setPermissions] = useState<Record<string, any>>({});

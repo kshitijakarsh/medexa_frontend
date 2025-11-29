@@ -503,6 +503,8 @@ import {
   Users,
   FlaskConical,
   Briefcase,
+  BriefcaseMedical,
+  IdCard,
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
@@ -514,8 +516,10 @@ const moduleIconMap: Record<string, any> = {
   billing: FileText,
   patient_mgmt: Users,
   hr_payroll: Briefcase,
+  hr: IdCard,
   lab: FlaskConical,
   pharmacy: Pill,
+  doctor: BriefcaseMedical,
 
   hospital: Building2,
   diagnostics: Activity,
@@ -540,9 +544,12 @@ const moduleLandingPath: Record<string, string> = {
   pharmacy: "/pharmacy",
   inventory: "/inventory",
   analytics: "/analytics",
+  hr: "/employee-configuration",
   hr_payroll: "/hr-payroll",
   // add more when developed…
 }
+
+
 
 
 export function SectionDropdown() {
@@ -570,7 +577,7 @@ export function SectionDropdown() {
   }
 
   // Extract modules from permissions
-  const permissions = user.role?.permissions || []
+  const permissions = user.role?.permissions || [];
 
   // // const modules = Array.from(
   // //   new Map(
@@ -595,6 +602,7 @@ export function SectionDropdown() {
   const permissionStrings = permissions.map((p: any) =>
     typeof p === "string" ? p : p.name
   );
+  // permissionStrings.push("doctor:check:view");
 
   // Get unique module names
   const moduleKeys = Array.from(

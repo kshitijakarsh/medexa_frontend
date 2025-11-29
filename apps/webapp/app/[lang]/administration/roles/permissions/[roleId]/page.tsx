@@ -58,6 +58,10 @@ import { fetchAllowedModules } from "../_components/fetchAllowedModules";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserStore } from "@/store/useUserStore";
 
+type AllowedModule = { id: number; key: string };
+
+type AllowedModuleForUI = { id?: string; key: string };
+
 export default function PermissionAddPage() {
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
 
@@ -66,6 +70,7 @@ export default function PermissionAddPage() {
 
   const [permissionData, setPermissionData] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
+  const [modulesLoading, setModulesLoading] = useState(true);
   const [roleInfo, setRoleInfo] = useState<any>(null);
   const queryClient = useQueryClient();
 
@@ -100,12 +105,16 @@ export default function PermissionAddPage() {
   //   return result;
   // };
 
-  const [allowedModules, setAllowedModules] = useState<string[]>([]);
+  const [allowedModules, setAllowedModules] = useState<AllowedModule[]>([]);
 
   useEffect(() => {
     const loadModules = async () => {
+      setModulesLoading(true);
+      // const mods = await fetchAllowedModules();
       const mods = await fetchAllowedModules();
       setAllowedModules(mods);
+      setModulesLoading(false);
+
     };
     loadModules();
   }, []);
@@ -150,7 +159,7 @@ export default function PermissionAddPage() {
           (role.permissions as unknown as string[]) || []
         );
 
-        console.log(role)
+        // console.log(role)
         setPermissionData(nested);
 
       } catch (err) {
@@ -268,7 +277,7 @@ export default function PermissionAddPage() {
       UI
   ------------------------------------------------------------ */
 
-  if (loading) {
+  if (loading && modulesLoading) {
     return (
       <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
         <div className="mx-auto rounded-lg shadow p-6 space-y-8">
@@ -330,7 +339,6 @@ export default function PermissionAddPage() {
       </main>
     );
   }
-  console.log(permissionData)
 
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
@@ -338,7 +346,7 @@ export default function PermissionAddPage() {
         <PageHeader title={`Permissions for Role: ${roleInfo?.name}`} />
 
         <div className="border border-blue-100 rounded-lg p-4 bg-white">
-          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules} />
+          <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules.map(m => ({ ...m, id: String(m.id) }))} />
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t">

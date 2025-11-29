@@ -228,6 +228,7 @@ import {
   Activity,
   ClipboardSignature,
   Accessibility,
+  BriefcaseBusiness,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -239,6 +240,7 @@ export interface PermissionNode {
 
 export interface MainModule {
   key: string;
+  id?: Number;
   label: string;
   icon?: any;
   subModules: PermissionNode[];
@@ -250,6 +252,7 @@ export const mainModules: MainModule[] = [
   ------------------------------------------- */
   {
     key: "administration",
+    id: 0,
     label: "Administration",
     icon: Cog,
     subModules: [
@@ -308,17 +311,17 @@ export const mainModules: MainModule[] = [
         label: "Charges",
         actions: ["view", "create", "edit", "delete"],
       },
-       {
+      {
         key: "tax",
         label: "Tax",
         actions: ["view", "create", "edit", "delete"],
       },
-       {
+      {
         key: "category",
         label: "Category",
         actions: ["view", "create", "edit", "delete"],
       },
-       {
+      {
         key: "unit",
         label: "Unit",
         actions: ["view", "create", "edit", "delete"],
@@ -326,14 +329,11 @@ export const mainModules: MainModule[] = [
     ],
   },
 
-  /* ------------------------------------------
-     REMAINING MODULES (Dummy as you requested)
-  ------------------------------------------- */
-
   {
-    key: "front_office",
-    label: "Front Office",
-    icon: Building2,
+    key: "patient_management",
+    id: 1,
+    label: "Patient Management",
+    icon: Accessibility,
     subModules: [
       {
         key: "reception",
@@ -341,7 +341,7 @@ export const mainModules: MainModule[] = [
         actions: ["view", "create", "edit", "delete"],
       },
       {
-        key: "appointment",
+        key: "appointments",
         label: "Appointment Management",
         actions: ["view", "create", "edit", "delete", "cancel"],
       },
@@ -349,6 +349,7 @@ export const mainModules: MainModule[] = [
   },
   {
     key: "appointment",
+    id: 2,
     label: "Appointment Management",
     icon: ClipboardSignature,
     subModules: [
@@ -364,10 +365,126 @@ export const mainModules: MainModule[] = [
       },
     ],
   },
-{
-    key: "patient_mgmt",
-    label: "Patient Management",
-    icon: Accessibility,
+  {
+    key: "billing",
+    id: 3,
+    label: "Billing",
+    icon: BriefcaseBusiness,
+    subModules: [
+      {
+        key: "billing",
+        label: "Billing",
+        actions: ["view", "create", "edit", "delete"],
+      },
+    ],
+  },
+
+  {
+    key: "pharmacy",
+    id: 4,
+    label: "Pharmacy",
+    icon: BedDouble,
+    subModules: [
+      {
+        key: "pharmacy",
+        label: "Pharmacy Management",
+        actions: ["view", "create", "edit", "delete", "export_pdf", "import_excel"],
+      },
+    ],
+  },
+  {
+    key: "laboratory",
+    id: 5,
+    label: "Laboratory",
+    icon: Activity,
+    subModules: [
+      {
+        key: "lab",
+        label: "Laboratory",
+        actions: ["view", "create", "edit", "delete",],
+      },
+      {
+        key: "radiology",
+        label: "Radiology",
+        actions: ["view", "create", "edit", "delete",],
+      },
+    ],
+  },
+  {
+    key: "hr",
+    id: 6,
+    label: "Human Resources",
+    icon: ClipboardSignature,
+    subModules: [
+      {
+        key: "designation",
+        label: "Designation",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "specialisation",
+        label: "Specialisation Management",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "employee",
+        label: "Employee Management",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+    ],
+  },
+  {
+    key: "analytics",
+    id: 7,
+    label: "Analytics",
+    icon: BriefcaseBusiness,
+    subModules: [
+      {
+        key: "analytics",
+        label: "Analytics",
+        actions: ["view", "create", "edit", "delete"],
+      },
+    ],
+  },
+
+  {
+    key: "doctor",
+    id: 8,
+    label: "Doctor",
+    icon: BriefcaseBusiness,
+    subModules: [
+      {
+        key: "reception",
+        label: "Reception",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "appointment",
+        label: "Appointment Management",
+        actions: ["view", "create", "edit", "delete", "cancel"],
+      },
+      {
+        key: "prescription",
+        label: "Prescription Management",
+        actions: ["view", "create", "edit", "delete", "approve"],
+      },
+      {
+        key: "patient",
+        label: "Patient Records",
+        actions: ["view", "create", "edit", "delete", "export"],
+      },
+      {
+        key: "lab",
+        label: "Lab Reports",
+        actions: ["view", "upload", "edit", "delete"],
+      },
+    ],
+  },
+  {
+    key: "frontoffice",
+    id: 9,
+    label: "Front Office",
+    icon: Building2,
     subModules: [
       {
         key: "reception",
@@ -381,106 +498,81 @@ export const mainModules: MainModule[] = [
       },
     ],
   },
-  {
-    key: "diagnostics",
-    label: "Diagnostics",
-    icon: Activity,
-    subModules: [
-      {
-        key: "lab",
-        label: "Laboratory",
-        actions: ["view", "create", "edit", "delete", "approve"],
-      },
-      {
-        key: "radiology",
-        label: "Radiology",
-        actions: ["view", "create", "edit", "delete", "approve"],
-      },
-    ],
-  },
 
-  {
-    key: "pharmacy",
-    label: "Pharmacy",
-    icon: BedDouble,
-    subModules: [
-      {
-        key: "pharmacy",
-        label: "Pharmacy Management",
-        actions: ["view", "create", "edit", "delete", "export_pdf", "import_excel"],
-      },
-    ],
-  },
 
-  {
-    key: "billing",
-    label: "Billing & Insurance",
-    icon: FileCog,
-    subModules: [
-      {
-        key: "invoicing",
-        label: "Invoicing",
-        actions: ["view", "create", "edit", "delete", "print"],
-      },
-      {
-        key: "insurance_claims",
-        label: "Insurance Claims",
-        actions: ["view", "create", "edit", "delete", "submit"],
-      },
-    ],
-  },
+  // {
+  //   key: "billing",
+  //   id: 14,
+  //   label: "Billing & Insurance",
+  //   icon: FileCog,
+  //   subModules: [
+  //     {
+  //       key: "invoicing",
+  //       label: "Invoicing",
+  //       actions: ["view", "create", "edit", "delete", "print"],
+  //     },
+  //     {
+  //       key: "insurance_claims",
+  //       label: "Insurance Claims",
+  //       actions: ["view", "create", "edit", "delete", "submit"],
+  //     },
+  //   ],
+  // },
 
-  {
-    key: "inventory",
-    label: "Inventory",
-    icon: Blocks,
-    subModules: [
-      {
-        key: "stock",
-        label: "Stock Management",
-        actions: ["view", "create", "edit", "delete", "adjust"],
-      },
-      {
-        key: "purchase",
-        label: "Purchase Orders",
-        actions: ["view", "create", "edit", "delete", "approve"],
-      },
-    ],
-  },
+  // {
+  //   key: "inventory",
+  //   id: 15,
+  //   label: "Inventory",
+  //   icon: Blocks,
+  //   subModules: [
+  //     {
+  //       key: "stock",
+  //       label: "Stock Management",
+  //       actions: ["view", "create", "edit", "delete", "adjust"],
+  //     },
+  //     {
+  //       key: "purchase",
+  //       label: "Purchase Orders",
+  //       actions: ["view", "create", "edit", "delete", "approve"],
+  //     },
+  //   ],
+  // },
 
-  {
-    key: "reports_analytics",
-    label: "Reports & Analytics",
-    icon: ClipboardList,
-    subModules: [
-      {
-        key: "reports",
-        label: "Reports",
-        actions: ["view", "export_pdf", "export_excel"],
-      },
-      {
-        key: "analytics",
-        label: "Analytics Dashboard",
-        actions: ["view"],
-      },
-    ],
-  },
+  // {
+  //   key: "reports_analytics",
+  //   id: 16,
+  //   label: "Reports & Analytics",
+  //   icon: ClipboardList,
+  //   subModules: [
+  //     {
+  //       key: "reports",
+  //       label: "Reports",
+  //       actions: ["view", "export_pdf", "export_excel"],
+  //     },
+  //     {
+  //       key: "analytics",
+  //       label: "Analytics Dashboard",
+  //       actions: ["view"],
+  //     },
+  //   ],
+  // },
 
-  {
-    key: "settings",
-    label: "Settings",
-    icon: UserCog,
-    subModules: [
-      {
-        key: "system_settings",
-        label: "System Settings",
-        actions: ["view", "edit"],
-      },
-      {
-        key: "user_management",
-        label: "User Management",
-        actions: ["view", "create", "edit", "delete"],
-      },
-    ],
-  },
+  // {
+  //   key: "settings",
+  //   id: 17,
+  //   label: "Settings",
+  //   icon: UserCog,
+  //   subModules: [
+  //     {
+  //       key: "system_settings",
+  //       label: "System Settings",
+  //       actions: ["view", "edit"],
+  //     },
+  //     {
+  //       key: "user_management",
+  //       label: "User Management",
+  //       actions: ["view", "create", "edit", "delete"],
+  //     },
+  //   ],
+  // },
 ];
