@@ -22,6 +22,7 @@ export const ROUTES = {
 
   // HR
   HR: `${HR}/employee-configuration`,
+  HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
 
 };
 

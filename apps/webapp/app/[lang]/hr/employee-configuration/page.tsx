@@ -235,6 +235,7 @@ import { useUserStore } from "@/store/useUserStore"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import FilterButton from "@/components/common/filter-button"
 import { Can } from "@/components/common/app-can"
+import { ROUTES } from "@/lib/routes"
 
 const employeeConfigurationSection = [
   { key: "humanResources", label: "Employee" },
@@ -733,7 +734,7 @@ export default function EmployeeConfigurationPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push(`/employee-configuration/${r.id}`)}
+                onClick={() => router.push(`${ROUTES.HR}/${r.id}`)}
                 className="text-blue-600 hover:text-blue-700"
               >
                 View
@@ -859,7 +860,7 @@ export default function EmployeeConfigurationPage() {
 
   const handleNew = () => {
     if (activeTab === "humanResources") {
-      router.push("/employee-configuration/add")
+      router.push(ROUTES.HR_EMPLOYEE_ADD)
     } else {
       setIsAddDialogOpen(true)
     }
