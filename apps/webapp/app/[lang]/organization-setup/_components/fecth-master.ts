@@ -22,6 +22,18 @@ export async function fetchMasters() {
       active: 120,
       category: "Organization Setup",
     },
+     {
+      title: "User",
+      subtitle: "User creation, etc.",
+      active: 10,
+      category: "Organization Setup",
+    },
+    {
+      title: "Insurance",
+      subtitle: "Health Insurance, Life Insurance, etc.",
+      active: 90,
+      category: "Organization Setup",
+    },
     {
       title: "Employees",
       subtitle: "Employees creation, etc.",
@@ -135,12 +147,16 @@ export const masterConfig: Record<
   "Operation Theatres / Procedure Rooms": {
     route: ROUTES.ADMINISTRATION_OPERATION_THEATRES,
     addOptions: ["Theatre", "Procedure Room"],
-    submoduleKeys: ["operation"]
+    submoduleKeys: ["operation-theatres"]
 
   },
-  "Employees": {
+  "Insurance": {
+    route: ROUTES.ADMINISTRATION_INSURANCE,
+    addOptions: ["insurance"],
+  },
+  "User": {
     route: ROUTES.ADMINISTRATION_USER,
-    addOptions: ["Employee"],
+    addOptions: ["User"],
     submoduleKeys: ["user"]
   },
   "Human Resource": {
@@ -157,10 +173,6 @@ export const masterConfig: Record<
   "Shifts & Attendance Configuration": {
     route: "/masters/shifts",
     addOptions: ["Shift", "Attendance Type"],
-  },
-  "Insurance": {
-    route: ROUTES.ADMINISTRATION_INSURANCE,
-    addOptions: ["Insurance"],
   },
   "Medical Procedure / Treatment Master": {
     route: "/masters/procedures",

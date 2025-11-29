@@ -291,11 +291,11 @@ export const mainModules: MainModule[] = [
         label: "Users",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
-      {
-        key: "employee",
-        label: "Employee Management",
-        actions: ["view", "create", "edit", "delete", "viewOne"],
-      },
+      // {
+      //   key: "employee",
+      //   label: "Employee Management",
+      //   actions: ["view", "create", "edit", "delete", "viewOne"],
+      // },
       {
         key: "operation-theatres",
         label: "Operation Theatres",
