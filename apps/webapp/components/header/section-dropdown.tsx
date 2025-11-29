@@ -544,8 +544,8 @@ const moduleLandingPath: Record<string, string> = {
   pharmacy: "/pharmacy",
   inventory: "/inventory",
   analytics: "/analytics",
-  hr: "/employee-configuration",
-  hr_payroll: "/hr-payroll",
+  hr: "/hr/employee-configuration",
+  // hr_payroll: "/hr-payroll",
   // add more when developed…
 }
 
