@@ -23,6 +23,8 @@ function OnboardingShellContent({ children }: OnboardingShellProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const hospitalId = searchParams.get("hospitalId") || ""
+  const type = searchParams.get("type")
+  const isEditMode = type === "edit"
   const params = useParams<{ lang: string }>()
   const lang = params?.lang ?? "en"
   const basePath = `/${lang}/onboarding`
@@ -37,6 +39,9 @@ function OnboardingShellContent({ children }: OnboardingShellProps) {
     const path = `${basePath}/${slug}`
     if (!hospitalId) return path
     const query = new URLSearchParams({ hospitalId })
+    if (isEditMode) {
+      query.set("type", "edit")
+    }
     return `${path}?${query.toString()}`
   }
 
@@ -46,8 +51,10 @@ function OnboardingShellContent({ children }: OnboardingShellProps) {
       <div className="">
         <div className="flex flex-col items-start justify-between mb-6">
           <FormHeader
-            title="Hospital Onboarding"
-            backHref={`/${lang}/hospitals`}
+            title={
+              isEditMode ? "Edit Hospital Onboarding" : "Hospital Onboarding"
+            }
+            backHref={isEditMode ? undefined : `/${lang}/hospitals`}
           />
 
           <div className="w-full px-4 pb-3 pt-7">

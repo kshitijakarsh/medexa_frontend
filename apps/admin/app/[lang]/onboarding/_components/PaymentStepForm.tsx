@@ -46,6 +46,7 @@ import {
 import { createTenantApiClient, type Country } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
 import { getIdToken } from "@/lib/api"
+import { cn } from "@workspace/ui/lib/utils"
 
 const defaultValues: Step3Values = {
   gateway_id: 0,
@@ -70,6 +71,8 @@ export function PaymentStepForm() {
   const onboardingBase = `/${lang}/onboarding`
   const modulesPath = `${onboardingBase}/modules`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
+  const type = searchParams.get("type")
+  const isEditMode = type === "edit"
 
   const {
     payment: paymentState,
@@ -275,7 +278,11 @@ export function PaymentStepForm() {
 
   const handleSaveAndContinue = () => {
     savePayment()
-    router.push(`${onboardingBase}/licence-history?hospitalId=${hospitalId}`)
+    const params = new URLSearchParams({ hospitalId })
+    if (isEditMode) {
+      params.set("type", "edit")
+    }
+    router.push(`${onboardingBase}/licence-history?${params.toString()}`)
   }
 
   if (!hospitalId) {
@@ -373,7 +380,12 @@ export function PaymentStepForm() {
         )}
       </div>
 
-      <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
+      <div
+        className={cn(
+          "bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative",
+          isEditMode ? "justify-end" : "justify-between"
+        )}
+      >
         {(createMutation.isError ||
           updateMutation.isError ||
           deleteMutation.isError) && (
@@ -388,29 +400,35 @@ export function PaymentStepForm() {
           </div>
         )}
 
-        <div className="flex gap-3 items-center">
-          <Button
-            type="button"
-            variant="outline"
-            asChild
-            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
-          >
-            <Link href={`${modulesPath}?hospitalId=${hospitalId}`}>
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          </Button>
-        </div>
+        {!isEditMode && (
+          <div className="flex gap-3 items-center">
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+              className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
+            >
+              <Link href={`${modulesPath}?hospitalId=${hospitalId}`}>
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
           <Button
             type="button"
             variant="secondary"
-            onClick={() =>
+            onClick={() => {
+              const params = new URLSearchParams({ hospitalId })
+              if (isEditMode) {
+                params.set("type", "edit")
+              }
               router.push(
-                `${onboardingBase}/licence-history?hospitalId=${hospitalId}`
+                `${onboardingBase}/licence-history?${params.toString()}`
               )
-            }
+            }}
             className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
             Skip

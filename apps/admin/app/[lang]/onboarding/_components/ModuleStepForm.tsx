@@ -18,6 +18,7 @@ import { createTenantApiClient } from "@/lib/api/tenant"
 import { useOnboardingStore } from "@/stores/onboarding"
 import { getIdToken } from "@/lib/api"
 import { ArrowLeft } from "lucide-react"
+import { cn } from "@workspace/ui/lib/utils"
 
 export function ModuleStepForm() {
   const router = useRouter()
@@ -29,6 +30,8 @@ export function ModuleStepForm() {
   const onboardingBase = `/${lang}/onboarding`
   const createHospitalPath = `/${lang}/create-hospital`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
+  const type = searchParams.get("type")
+  const isEditMode = type === "edit"
 
   const { modules: moduleState, setModules, saveModules } = useOnboardingStore()
   const [authToken, setAuthToken] = useState<string>("")
@@ -113,7 +116,11 @@ export function ModuleStepForm() {
     },
     onSuccess: () => {
       saveModules()
-      router.push(`${onboardingBase}/payment?hospitalId=${hospitalId}`)
+      const params = new URLSearchParams({ hospitalId })
+      if (isEditMode) {
+        params.set("type", "edit")
+      }
+      router.push(`${onboardingBase}/payment?${params.toString()}`)
     },
     onError: (error, _variables, context) => {
       // Rollback optimistic update
@@ -190,29 +197,38 @@ export function ModuleStepForm() {
             </div>
           )}
 
-          <div className="flex gap-3 items-center justify-between w-full">
-            <Button
-              type="button"
-              variant="outline"
-              asChild
-              className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
-            >
-              <Link href={createHospitalPath}>
-                <ArrowLeft className="size-4" />
-                Back
-              </Link>
-            </Button>
+          <div
+            className={cn(
+              "flex gap-3 items-center w-full",
+              isEditMode ? "justify-end" : "justify-between"
+            )}
+          >
+            {!isEditMode && (
+              <Button
+                type="button"
+                variant="outline"
+                asChild
+                className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
+              >
+                <Link href={createHospitalPath}>
+                  <ArrowLeft className="size-4" />
+                  Back
+                </Link>
+              </Button>
+            )}
 
             <div className="flex gap-3 items-center">
               <Button
                 type="button"
                 variant="secondary"
                 className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
-                onClick={() =>
-                  router.push(
-                    `${onboardingBase}/payment?hospitalId=${hospitalId}`
-                  )
-                }
+                onClick={() => {
+                  const params = new URLSearchParams({ hospitalId })
+                  if (isEditMode) {
+                    params.set("type", "edit")
+                  }
+                  router.push(`${onboardingBase}/payment?${params.toString()}`)
+                }}
               >
                 Skip
               </Button>

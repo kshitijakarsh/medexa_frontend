@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { cn } from "@workspace/ui/lib/utils"
 
 const defaultValues: Step4Values = {
   plan_key: "",
@@ -76,6 +77,8 @@ export function LicenceHistoryStepForm() {
   const onboardingBase = `/${lang}/onboarding`
   const paymentPath = `${onboardingBase}/payment`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
+  const type = searchParams.get("type")
+  const isEditMode = type === "edit"
 
   const {
     licence: licenceState,
@@ -209,7 +212,9 @@ export function LicenceHistoryStepForm() {
     if (confirm("Are you sure you want to delete this license?")) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
-          const updatedItems = licenceState.items.filter((item) => item.id !== id)
+          const updatedItems = licenceState.items.filter(
+            (item) => item.id !== id
+          )
           setLicenceItems(updatedItems)
         },
       })
@@ -236,7 +241,11 @@ export function LicenceHistoryStepForm() {
 
   const handleSaveAndContinue = () => {
     saveLicence()
-    router.push(`${onboardingBase}/regulatory-docs?hospitalId=${hospitalId}`)
+    const params = new URLSearchParams({ hospitalId })
+    if (isEditMode) {
+      params.set("type", "edit")
+    }
+    router.push(`${onboardingBase}/regulatory-docs?${params.toString()}`)
   }
 
   if (!hospitalId) {
@@ -313,7 +322,12 @@ export function LicenceHistoryStepForm() {
         )}
       </div>
 
-      <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
+      <div
+        className={cn(
+          "bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative",
+          isEditMode ? "justify-end" : "justify-between"
+        )}
+      >
         {(createMutation.isError ||
           updateMutation.isError ||
           deleteMutation.isError) && (
@@ -328,29 +342,35 @@ export function LicenceHistoryStepForm() {
           </div>
         )}
 
-        <div className="flex gap-3 items-center">
-          <Button
-            type="button"
-            variant="outline"
-            asChild
-            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
-          >
-            <Link href={`${paymentPath}?hospitalId=${hospitalId}`}>
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          </Button>
-        </div>
+        {!isEditMode && (
+          <div className="flex gap-3 items-center">
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+              className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
+            >
+              <Link href={`${paymentPath}?hospitalId=${hospitalId}`}>
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
           <Button
             type="button"
             variant="secondary"
-            onClick={() =>
+            onClick={() => {
+              const params = new URLSearchParams({ hospitalId })
+              if (isEditMode) {
+                params.set("type", "edit")
+              }
               router.push(
-                `${onboardingBase}/regulatory-docs?hospitalId=${hospitalId}`
+                `${onboardingBase}/regulatory-docs?${params.toString()}`
               )
-            }
+            }}
             className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
             Skip

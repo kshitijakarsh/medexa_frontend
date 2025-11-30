@@ -45,6 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { cn } from "@workspace/ui/lib/utils"
 
 const defaultValues: Step5Values = {
   doc_type: "",
@@ -67,6 +68,8 @@ export function RegulatoryDocsStepForm() {
   const onboardingBase = `/${lang}/onboarding`
   const licenceHistoryPath = `${onboardingBase}/licence-history`
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
+  const type = searchParams.get("type")
+  const isEditMode = type === "edit"
 
   const {
     regulatory: regulatoryState,
@@ -235,7 +238,9 @@ export function RegulatoryDocsStepForm() {
     if (confirm("Are you sure you want to delete this regulatory document?")) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
-          const updatedItems = regulatoryState.items.filter((item) => item.id !== id)
+          const updatedItems = regulatoryState.items.filter(
+            (item) => item.id !== id
+          )
           setRegulatoryItems(updatedItems)
         },
       })
@@ -400,7 +405,12 @@ export function RegulatoryDocsStepForm() {
         )}
       </div>
 
-      <div className="bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative">
+      <div
+        className={cn(
+          "bg-white/80 rounded-lg p-4 md:p-6 flex flex-col md:flex-row items-center justify-between relative",
+          isEditMode ? "justify-end" : "justify-between"
+        )}
+      >
         {(createMutation.isError ||
           updateMutation.isError ||
           deleteMutation.isError ||
@@ -417,19 +427,21 @@ export function RegulatoryDocsStepForm() {
           </div>
         )}
 
-        <div className="flex gap-3 items-center">
-          <Button
-            type="button"
-            variant="outline"
-            asChild
-            className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
-          >
-            <Link href={`${licenceHistoryPath}?hospitalId=${hospitalId}`}>
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          </Button>
-        </div>
+        {!isEditMode && (
+          <div className="flex gap-3 items-center">
+            <Button
+              type="button"
+              variant="outline"
+              asChild
+              className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
+            >
+              <Link href={`${licenceHistoryPath}?hospitalId=${hospitalId}`}>
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            </Button>
+          </div>
+        )}
 
         <div className="flex gap-3 items-center mt-4 md:mt-0">
           <Button
@@ -438,7 +450,11 @@ export function RegulatoryDocsStepForm() {
             disabled={isActivating}
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isActivating ? "Saving..." : "Complete Onboarding"}
+            {isActivating
+              ? "Saving..."
+              : isEditMode
+                ? "Save"
+                : "Complete Onboarding"}
           </Button>
         </div>
       </div>
