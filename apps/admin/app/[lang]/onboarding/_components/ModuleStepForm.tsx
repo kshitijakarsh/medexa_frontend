@@ -80,17 +80,19 @@ export function ModuleStepForm() {
   useEffect(() => {
     if (tenantData?.tenant_modules !== undefined) {
       const moduleIds = tenantData.tenant_modules.map((module) =>
-        String(module.module_id)
+        String(module.id)
       )
-      // Only update if different from current state
+      // Only update if different from current state - use slice() to avoid mutating original arrays
+      const sortedModuleIds = [...moduleIds].sort()
+      const sortedSelectedIds = [...moduleState.selectedIds].sort()
       if (
-        JSON.stringify(moduleIds.sort()) !==
-        JSON.stringify(moduleState.selectedIds.sort())
+        JSON.stringify(sortedModuleIds) !== JSON.stringify(sortedSelectedIds)
       ) {
         setModules(moduleIds)
       }
     }
-  }, [tenantData, setModules, moduleState.selectedIds])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setModules is stable from Zustand
+  }, [tenantData])
 
   const mutation = useMutation({
     mutationKey: ["tenant", "modules"],
@@ -148,12 +150,9 @@ export function ModuleStepForm() {
 
   const handleSave = async () => {
     try {
-
       // Get current form values - use watched value which is always up-to-date
       const modulesToSave =
         formModules.length > 0 ? formModules : form.getValues("modules") || []
-
-
 
       mutation.mutate(modulesToSave)
     } catch (error) {
