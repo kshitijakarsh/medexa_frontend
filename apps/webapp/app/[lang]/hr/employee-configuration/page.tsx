@@ -248,11 +248,10 @@ const PERMISSION_MAP = {
   designation: PERMISSIONS.DESIGNATION,
   specialization: PERMISSIONS.SPECIALISATION,
   roles: PERMISSIONS.ROLE,
-};
-
+}
 
 export default function EmployeeConfigurationPage() {
-  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const userPermissions = useUserStore((s) => s.user?.role.permissions)
   const router = useRouter()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
@@ -277,7 +276,6 @@ export default function EmployeeConfigurationPage() {
   const [limit] = useState(10)
   const [debouncedSearch, setDebouncedSearch] = useState("")
 
-
   /* ---------------------------------------
         FILTER TABS AS PER PEMISSION
   ---------------------------------------- */
@@ -286,14 +284,12 @@ export default function EmployeeConfigurationPage() {
   //   return perm?.VIEW ? userPermissions?.includes(perm.VIEW) : true
   // })
   const permissionStrings =
-    (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+    userPermissions?.map((p: any) => (typeof p === "string" ? p : p.name)) ?? []
 
   const filteredTabs = employeeConfigurationSection.filter((t) => {
-    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
-    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
-  });
-
-
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false
+  })
 
   // Debounce search input
   useEffect(() => {
@@ -588,8 +584,7 @@ export default function EmployeeConfigurationPage() {
           addedBy: item.created_by ? `User ${item.created_by}` : "N/A",
           status: item.status === "active" ? "Active" : "Inactive",
           avatar:
-            item.photo_url ||
-            "https://i.pravatar.cc/100?img=" + (index + 1),
+            item.photo_url || "https://i.pravatar.cc/100?img=" + (index + 1),
           _raw: item, // Store raw data for mutations
         }
       })
@@ -731,14 +726,6 @@ export default function EmployeeConfigurationPage() {
           label: "Action",
           render: (r: any) => (
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push(`${ROUTES.HR}/${r.id}`)}
-                className="text-blue-600 hover:text-blue-700"
-              >
-                View
-              </Button>
               <EmployeeConfigurationRowActions
                 onEdit={() => {
                   if (r._raw) {
@@ -1000,7 +987,10 @@ export default function EmployeeConfigurationPage() {
               {/* Quick Actions */}
               <QuickActions />
               <Can
-                permission={PERMISSION_MAP[activeTab as keyof typeof PERMISSION_MAP]?.CREATE}
+                permission={
+                  PERMISSION_MAP[activeTab as keyof typeof PERMISSION_MAP]
+                    ?.CREATE
+                }
                 userPermissions={userPermissions}
               >
                 {/* New Button */}
@@ -1008,7 +998,6 @@ export default function EmployeeConfigurationPage() {
                   <NewButton handleClick={handleNew} />
                 </div>
               </Can>
-
             </div>
           </div>
 
@@ -1045,55 +1034,55 @@ export default function EmployeeConfigurationPage() {
             pagination={
               (activeTab === "specialization" &&
                 specialisationsData?.pagination) ||
-                (activeTab === "roles" && rolesData?.pagination) ||
-                (activeTab === "designation" && designationsData?.pagination) ||
-                (activeTab === "humanResources" && employeesData?.pagination)
+              (activeTab === "roles" && rolesData?.pagination) ||
+              (activeTab === "designation" && designationsData?.pagination) ||
+              (activeTab === "humanResources" && employeesData?.pagination)
                 ? (() => {
-                  const paginationData =
-                    activeTab === "specialization"
-                      ? specialisationsData?.pagination
-                      : activeTab === "roles"
-                        ? rolesData?.pagination
-                        : activeTab === "designation"
-                          ? designationsData?.pagination
-                          : employeesData?.pagination
-                  if (!paginationData) return null
-                  return (
-                    <div className="flex items-center justify-between pb-4 px-4">
-                      <div className="text-sm text-muted-foreground">
-                        Showing {data.length} of{" "}
-                        {paginationData.totalData}{" "}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          disabled={page === 1 || loading}
-                        >
-                          Previous
-                        </Button>
-                        <div className="text-sm">
-                          Page {page} of {paginationData.totalPages}
+                    const paginationData =
+                      activeTab === "specialization"
+                        ? specialisationsData?.pagination
+                        : activeTab === "roles"
+                          ? rolesData?.pagination
+                          : activeTab === "designation"
+                            ? designationsData?.pagination
+                            : employeesData?.pagination
+                    if (!paginationData) return null
+                    return (
+                      <div className="flex items-center justify-between pb-4 px-4">
+                        <div className="text-sm text-muted-foreground">
+                          Showing {data.length} of{" "}
+                          {paginationData.totalData}{" "}
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setPage((p) =>
-                              Math.min(paginationData.totalPages, p + 1)
-                            )
-                          }
-                          disabled={
-                            page === paginationData.totalPages || loading
-                          }
-                        >
-                          Next
-                        </Button>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage((p) => Math.max(1, p - 1))}
+                            disabled={page === 1 || loading}
+                          >
+                            Previous
+                          </Button>
+                          <div className="text-sm">
+                            Page {page} of {paginationData.totalPages}
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setPage((p) =>
+                                Math.min(paginationData.totalPages, p + 1)
+                              )
+                            }
+                            disabled={
+                              page === paginationData.totalPages || loading
+                            }
+                          >
+                            Next
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  )
-                })()
+                    )
+                  })()
                 : undefined
             }
             striped
