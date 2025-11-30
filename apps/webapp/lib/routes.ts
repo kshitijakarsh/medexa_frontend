@@ -1,6 +1,7 @@
-export const ADMINISTRATION_BASE = '/administration';
-export const DOCTOR_BASE = '/doctor'
-export const HR = '/hr'
+export const ADMINISTRATION_BASE = "/administration"
+export const DOCTOR_BASE = "/doctor"
+export const FRONTOFFICE_BASE = "/frontoffice"
+export const HR = "/hr"
 
 export const ROUTES = {
   ORGANIZATION: `/organization-setup`,
@@ -20,56 +21,54 @@ export const ROUTES = {
   DOCTOR_DASHBOARD: `${DOCTOR_BASE}/dashboard`,
   DOCTOR_VIEW_ALL: `${DOCTOR_BASE}/dashboard/view-all`,
 
+  FRONTOFFICE_DASHBOARD: `${FRONTOFFICE_BASE}/dashboard`,
+
   // HR
   HR: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
-
-};
+}
 
 // Build URL with query parameters
 export function buildUrl(path: string, params?: Record<string, any>) {
-  if (!params) return path;
+  if (!params) return path
 
-  const query = new URLSearchParams(params).toString();
-  return `${path}?${query}`;
+  const query = new URLSearchParams(params).toString()
+  return `${path}?${query}`
 }
 
-
-
-
-
-
-
 // 🔹 All doctor tabs at one place
-export const DoctorTabs: [{ key: string; label: string }, ...Array<{ key: string; label: string }>] = [
+export const DoctorTabs: [
+  { key: string; label: string },
+  ...Array<{ key: string; label: string }>,
+] = [
   { key: "all", label: "All" },
   { key: "emergency", label: "Emergency Appointments" },
   { key: "vip", label: "VIP Appointments" },
   { key: "follow", label: "Follow Up" },
   { key: "standard", label: "Standard Appointments" },
-];
+]
 
 // Only these 3 should show in Dashboard Table
-export const DoctorHomeTabKeys = ["all", "vip", "follow"] as const;
+export const DoctorHomeTabKeys = ["all", "vip", "follow"] as const
 
-export type DoctorHomeTabKey = typeof DoctorHomeTabKeys[number];
+export type DoctorHomeTabKey = (typeof DoctorHomeTabKeys)[number]
 
 // 4. Filtered home tab list (correct typing)
 export const DoctorHomeTabs = DoctorTabs.filter(
   (t): t is { key: DoctorHomeTabKey; label: string } =>
     DoctorHomeTabKeys.includes(t.key as DoctorHomeTabKey)
-);
+)
 
 // 🔹 Extract only keys (for validation)
-export const DoctorTabKeys = DoctorTabs.map((t) => t.key);
+export const DoctorTabKeys = DoctorTabs.map((t) => t.key)
 
 // 🔹 Default tab
-export const DOCTOR_DEFAULT_TAB = DoctorTabs[0].key; // "all"
+export const DOCTOR_DEFAULT_TAB = DoctorTabs[0].key // "all"
 
 // 🔹 Validate a tab (return safe value)
 export function validateDoctorTab(tab: string | null): string {
   if (!tab || !DoctorTabKeys.includes(tab)) {
-    return DOCTOR_DEFAULT_TAB;
+    return DOCTOR_DEFAULT_TAB
   }
-  return tab;
+  return tab
 }

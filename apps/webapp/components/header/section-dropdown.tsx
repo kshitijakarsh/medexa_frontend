@@ -257,9 +257,6 @@
 //   )
 // }
 
-
-
-
 // // "use client";
 
 // // import * as React from "react";
@@ -303,7 +300,6 @@
 // //   //   enabled: !!tenantId,
 // //   // });
 
-
 // //   // Fetch tenant data with all related arrays using React Query
 // //   const { data, isLoading, error } = useQuery({
 // //     queryKey: ["tenant", tenant],
@@ -323,7 +319,6 @@
 // //       return false
 // //     }
 // //   }
-
 
 // //   // Helper function to get base domain URL for error redirect
 // //   const getBaseDomainUrl = (path: string): string => {
@@ -384,14 +379,11 @@
 // //     initialize()
 // //   }, [tenant, router])
 
-
 // //   console.log(data)
-
 
 // //   // const modules = (data ?? []) as TenantModule[];
 // //   console.log(data)
 // //   // const modules = (data ?? []) as TenantModule[];
-
 
 // //   // React.useEffect(() => {
 // //   //   if (modules.length > 0 && !selected) {
@@ -528,6 +520,7 @@ const moduleIconMap: Record<string, any> = {
   reports: BarChart3,
   administration: Cog,
   settings: Settings,
+  frontoffice: BriefcaseMedical,
 }
 
 const DefaultIcon = Cog
@@ -536,7 +529,7 @@ const DefaultIcon = Cog
 const moduleLandingPath: Record<string, string> = {
   administration: "/organization-setup",
   doctor: "/doctor/dashboard",
-  frontoffice: "/frontoffice",
+  frontoffice: "/frontoffice/dashboard",
   appointment: "/appointment/calendar",
   patient_mgmt: "/patient_mgmt",
   billing: "/billing",
@@ -549,12 +542,9 @@ const moduleLandingPath: Record<string, string> = {
   // add more when developed…
 }
 
-
-
-
 export function SectionDropdown() {
-  const router = useRouter();
-  const pathname = usePathname();
+  const router = useRouter()
+  const pathname = usePathname()
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
   const user = useUserStore((s) => s.user)
@@ -577,7 +567,7 @@ export function SectionDropdown() {
   }
 
   // Extract modules from permissions
-  const permissions = user.role?.permissions || [];
+  const permissions = user.role?.permissions || []
 
   // // const modules = Array.from(
   // //   new Map(
@@ -601,13 +591,13 @@ export function SectionDropdown() {
   // Convert PermissionItem[] or string[] → string[]
   const permissionStrings = permissions.map((p: any) =>
     typeof p === "string" ? p : p.name
-  );
+  )
   // permissionStrings.push("doctor:check:view");
 
   // Get unique module names
   const moduleKeys = Array.from(
     new Set(permissionStrings.map((p) => p.split(":")[0]))
-  );
+  )
 
   // Build dropdown sections dynamically
   const sections = moduleKeys.map((moduleKey) => ({
@@ -616,53 +606,50 @@ export function SectionDropdown() {
       .replace(/\b\w/g, (c: any) => c.toUpperCase()),
     moduleKey,
     icon: moduleIconMap[moduleKey] || DefaultIcon,
-  }));
+  }))
 
   // console.log(user)
 
-
   React.useEffect(() => {
-    if (!pathname || moduleKeys.length === 0) return;
+    if (!pathname || moduleKeys.length === 0) return
 
     // Get first segment from URL → "/administration/users" → "administration"
-    const firstSegment = pathname.split("/")[1] ?? "";
+    const firstSegment = pathname.split("/")[1] ?? ""
 
     // Match with moduleKeys
     const matched = moduleKeys.find(
       (m) => m.toLowerCase() === firstSegment.toLowerCase()
-    );
+    )
 
     if (matched) {
       setSelected(
-        matched
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (c: any) => c.toUpperCase())
-      );
+        matched.replace(/_/g, " ").replace(/\b\w/g, (c: any) => c.toUpperCase())
+      )
     } else {
       // If nothing matches, fallback to first module
-      setSelected(sections[0]?.label ?? "Administration");
+      setSelected(sections[0]?.label ?? "Administration")
     }
-  }, [pathname, moduleKeys, sections]);
-
+  }, [pathname, moduleKeys, sections])
 
   // const [selected, setSelected] = React.useState(sections[0].label)
-  const [selected, setSelected] = React.useState(sections[0]?.label ?? "Administration")
+  const [selected, setSelected] = React.useState(
+    sections[0]?.label ?? "Administration"
+  )
   const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
-
 
   // ⭐ NEW — Handle navigation
   const handleSelect = (section: any) => {
-    setSelected(section.label);
+    setSelected(section.label)
 
-    const path = moduleLandingPath[section.moduleKey];
+    const path = moduleLandingPath[section.moduleKey]
 
     if (path) {
-      router.push(path);
+      router.push(path)
     } else {
       // fallback if no path defined
-      router.push(`/${section.moduleKey}`);
+      router.push(`/${section.moduleKey}`)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col items-center">

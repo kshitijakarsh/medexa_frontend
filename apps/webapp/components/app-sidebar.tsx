@@ -30,53 +30,71 @@ import { LOGOS } from "@/lib/logos"
 import Image from "next/image"
 import { useSidebar } from "@workspace/ui/components/sidebar"
 import { LocaleLink } from "./locale-link"
-import { ADMINISTRATION_BASE, DOCTOR_BASE, HR, ROUTES } from "@/lib/routes"
+import {
+  ADMINISTRATION_BASE,
+  DOCTOR_BASE,
+  HR,
+  ROUTES,
+  FRONTOFFICE_BASE,
+} from "@/lib/routes"
 
-export function AppSidebar({ }) {
+export function AppSidebar({}) {
   const pathname = usePathname()
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
     hr: pathname.includes(HR),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE),
   }
 
-
   const items = [
-    ...(!modulesAvailable.hr && !modulesAvailable.doctor ?
-      [{
-        title: "Organization Setup",
-        url: [
-          ROUTES.ORGANIZATION,
-          ROUTES.ADMINISTRATION_CHARGES,
-          ROUTES.ADMINISTRATION_ROLES,
-          ROUTES.ADMINISTRATION_OPERATION_THEATRES,
-          ROUTES.ADMINISTRATION_OPERATION,
-          ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS,
-          ROUTES.ADMINISTRATION_ROLES_PERMISSIONS,
-          ROUTES.ADMINISTRATION_INSURANCE,
-          ROUTES.ADMINISTRATION_USER,
-        ],
-        icon: Settings,
-      }] : []),
+    ...(!modulesAvailable.hr && !modulesAvailable.doctor
+      ? [
+          {
+            title: "Organization Setup",
+            url: [
+              ROUTES.ORGANIZATION,
+              ROUTES.ADMINISTRATION_CHARGES,
+              ROUTES.ADMINISTRATION_ROLES,
+              ROUTES.ADMINISTRATION_OPERATION_THEATRES,
+              ROUTES.ADMINISTRATION_OPERATION,
+              ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS,
+              ROUTES.ADMINISTRATION_ROLES_PERMISSIONS,
+              ROUTES.ADMINISTRATION_INSURANCE,
+              ROUTES.ADMINISTRATION_USER,
+            ],
+            icon: Settings,
+          },
+        ]
+      : []),
 
     ...(modulesAvailable.hr
       ? [
-        {
-          title: "HR Management",
-          url: [ROUTES.HR],
-          icon: IdCard,
-        },
-      ]
+          {
+            title: "HR Management",
+            url: [ROUTES.HR],
+            icon: IdCard,
+          },
+        ]
       : []),
 
     ...(modulesAvailable.doctor
       ? [
-        {
-          title: "Doctor",
-          url: [ROUTES.DOCTOR_DASHBOARD],
-          icon: BriefcaseMedical,
-        },
-      ]
+          {
+            title: "Doctor",
+            url: [ROUTES.DOCTOR_DASHBOARD],
+            icon: BriefcaseMedical,
+          },
+        ]
+      : []),
+    ...(modulesAvailable.frontoffice
+      ? [
+          {
+            title: "Frontoffice",
+            url: [ROUTES.FRONTOFFICE_DASHBOARD],
+            icon: BriefcaseMedical,
+          },
+        ]
       : []),
     // {
     //   title: "Hospital",
@@ -156,10 +174,11 @@ export function AppSidebar({ }) {
             alt="MedExe"
             width={130}
             height={50}
-            className={`transition-all duration-300 ease-in-out ${sidebarState === "expanded"
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-75 absolute"
-              }`}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "expanded"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
             priority
           />
           <Image
@@ -167,10 +186,11 @@ export function AppSidebar({ }) {
             alt="MedExe"
             width={30}
             height={25}
-            className={`transition-all duration-300 ease-in-out ${sidebarState === "collapsed"
-              ? "opacity-100 scale-100"
-              : "opacity-0 scale-75 absolute"
-              }`}
+            className={`transition-all duration-300 ease-in-out ${
+              sidebarState === "collapsed"
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-75 absolute"
+            }`}
             priority
           />
         </div>
@@ -221,8 +241,9 @@ export function AppSidebar({ }) {
                         href={item.url[0] || "" /* main URL for link */}
                       >
                         <item.icon
-                          className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
-                            }`}
+                          className={`transition-transform duration-300 ${
+                            sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
+                          }`}
                         />
                         <span className="text-base">{item.title}</span>
                       </LocaleLink>
