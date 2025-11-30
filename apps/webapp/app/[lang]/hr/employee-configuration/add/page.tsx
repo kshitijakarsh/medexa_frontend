@@ -40,6 +40,7 @@ const employeeSchema = z.object({
   designation_id: z.string().optional(),
   specialisation_id: z.string().optional(),
   country_id: z.string().optional(),
+  user_id: z.string().optional(),
 
   // Personal Details
   gender: z.string().optional(),
@@ -139,6 +140,7 @@ export default function AddEmployeePage() {
       designation_id: "",
       specialisation_id: "",
       country_id: "",
+      user_id: "",
 
       // Personal Details
       gender: "",
@@ -217,6 +219,7 @@ export default function AddEmployeePage() {
           ? Number(values.specialisation_id)
           : undefined,
         country_id: values.country_id ? Number(values.country_id) : undefined,
+        user_id: values.user_id ? Number(values.user_id) : undefined,
         // Personal Details
         gender: values.gender || undefined,
         date_of_birth: toISODateTime(values.date_of_birth),
@@ -272,7 +275,7 @@ export default function AddEmployeePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] })
-      router.push("/employee-configuration")
+      router.push("/hr/employee-configuration")
     },
   })
 
@@ -314,7 +317,7 @@ export default function AddEmployeePage() {
                   type="button"
                   variant="outline"
                   className="text-blue-600 border-blue-500"
-                  onClick={() => router.push("/employee-configuration")}
+                  onClick={() => router.push("/hr/employee-configuration")}
                   disabled={createMutation.isPending}
                 >
                   Cancel

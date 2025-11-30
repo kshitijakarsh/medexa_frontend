@@ -54,6 +54,7 @@ interface CreateEmployeeParams {
   specialisation_id?: number
   department_id?: number
   designation_id?: number
+  user_id?: number
 }
 
 interface UpdateEmployeeParams {
