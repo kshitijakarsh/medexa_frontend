@@ -87,10 +87,10 @@ export async function middleware(request: NextRequest) {
   const isOnboardingPage =
     actualPath === "/onboarding" || actualPath.startsWith("/onboarding/")
 
-  // If authenticated, check tenant status
+  // Basic auth check - tenant status is checked client-side in TenantStatusGuard
   if (!isLoginPage && !isOnboardingPage) {
     try {
-      const authToken = getAuthTokenFromRequest(request)
+      const authToken = await getAuthTokenFromRequest(request)
       if (!authToken) {
         const locale = pathnameLocale || getLocale(request)
         const loginUrl = request.nextUrl.clone()
