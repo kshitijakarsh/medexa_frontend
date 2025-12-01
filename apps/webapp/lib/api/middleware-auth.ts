@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server"
+import { headers, cookies } from "next/headers"
 import {
   CognitoUser,
   CognitoUserPool,
@@ -130,8 +131,6 @@ export async function getTenantIdFromSlug(
     // Try to get tenant by ID (assuming slug might be numeric ID)
     if (/^\d+$/.test(tenantSlug)) {
       try {
-        console.log("tenantSlug", tenantSlug)
-        console.log("accessToken", authToken)
         const response = await tenantClient.getTenantById(tenantSlug)
         return String(response.data.data.id)
       } catch {
@@ -172,6 +171,106 @@ export async function getTenantStatus(
     return response.data.data.status
   } catch (error) {
     console.error("Failed to get tenant status:", error)
+    return null
+  }
+}
+
+/**
+ * Get tenant from host header (for server components)
+ * Extracts tenant slug from hostname using headers()
+ */
+export async function getTenantFromHeaders(): Promise<string | null> {
+  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN
+  if (!BASE_DOMAIN) return null
+
+  const headersList = await headers()
+  const host = headersList.get("host")
+
+  if (!host) return null
+
+  const hostname = host.split(":")[0]
+  if (!hostname) return null
+
+  // Apex domain (domain.com) - no tenant
+  if (hostname === BASE_DOMAIN) return null
+
+  // Subdomain check (tenant.domain.com)
+  if (hostname.endsWith("." + BASE_DOMAIN)) {
+    const sub = hostname.slice(0, -(BASE_DOMAIN.length + 1))
+    if (!sub || sub === "www") return null
+    return sub
+  }
+
+  return null
+}
+
+/**
+ * Get authentication token from cookies (for server components)
+ * Uses cookies() from next/headers to get auth token
+ */
+export async function getAuthTokenFromCookies(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies()
+
+    // Try to get session from Cognito cookies
+    const usernameCookie = cookieStore.get("cognito_username")?.value
+    const refreshTokenCookie = cookieStore.get("cognito_refresh_token")?.value
+
+    if (usernameCookie && refreshTokenCookie) {
+      try {
+        const username = decodeURIComponent(usernameCookie)
+        const refreshTokenValue = decodeURIComponent(refreshTokenCookie)
+
+        // Create CognitoUser instance using username
+        const user = new CognitoUser({ Username: username, Pool: userPool })
+
+        // Create refresh token object
+        const refreshToken = new CognitoRefreshToken({
+          RefreshToken: refreshTokenValue,
+        })
+
+        // Refresh session to get latest tokens
+        const session = await new Promise<CognitoUserSession | null>(
+          (resolve) => {
+            user.refreshSession(
+              refreshToken,
+              (err: any, session: CognitoUserSession | null) => {
+                if (err || !session) {
+                  console.error("Failed to refresh session:", err)
+                  resolve(null)
+                  return
+                }
+
+                // Verify session is valid
+                if (session.isValid()) {
+                  resolve(session)
+                } else {
+                  console.error("Refreshed session is not valid")
+                  resolve(null)
+                }
+              }
+            )
+          }
+        )
+
+        if (session && session.isValid()) {
+          const accessToken = session.getAccessToken().getJwtToken()
+          return accessToken
+        }
+      } catch (error) {
+        console.error("Failed to get session from cookies:", error)
+      }
+    }
+
+    // Fallback: Check for access token in cookie (set during login)
+    const accessToken = cookieStore.get("access_token")?.value
+    if (accessToken) {
+      return accessToken
+    }
+
+    return null
+  } catch (error) {
+    console.error("Error getting auth token from cookies:", error)
     return null
   }
 }
