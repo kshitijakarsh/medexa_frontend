@@ -118,7 +118,6 @@
 //   )
 // }
 
-
 "use client"
 
 import * as React from "react"
@@ -131,6 +130,7 @@ import { AppSidebar } from "./app-sidebar"
 import type { Dictionary } from "@/i18n/get-dictionary"
 import { UserLoader } from "./user-loader"
 import { useUserStore } from "@/store/useUserStore"
+import { TenantStatusGuard } from "@/app/[lang]/components/tenant-status-guard"
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -156,12 +156,10 @@ export function Providers({ children, dict }: ProvidersProps) {
 
   if (isStandalonePage) {
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     )
   }
-  
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextThemesProvider
@@ -173,9 +171,9 @@ export function Providers({ children, dict }: ProvidersProps) {
       >
         <Toaster position="top-right" richColors closeButton expand />
         <UserLoader />
-        <SidebarWrapper>
-          {children}
-        </SidebarWrapper>
+        <TenantStatusGuard>
+          <SidebarWrapper>{children}</SidebarWrapper>
+        </TenantStatusGuard>
       </NextThemesProvider>
     </QueryClientProvider>
   )

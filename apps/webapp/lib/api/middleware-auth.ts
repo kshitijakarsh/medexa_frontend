@@ -130,8 +130,6 @@ export async function getTenantIdFromSlug(
     // Try to get tenant by ID (assuming slug might be numeric ID)
     if (/^\d+$/.test(tenantSlug)) {
       try {
-        console.log("tenantSlug", tenantSlug)
-        console.log("accessToken", authToken)
         const response = await tenantClient.getTenantById(tenantSlug)
         return String(response.data.data.id)
       } catch {
