@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import { SectionWrapper } from "./SectionWrapper"
-import { SectionTitle } from "./SectionTitle"
+import { SectionWrapper } from "./common/SectionWrapper"
+import { SectionTitle } from "./common/SectionTitle"
 import VitalsModal from "./vitals/VitalsModal"
 import { VitalCard } from "./vitals/VitalCard"
 import { VitalGraph } from "./vitals/VitalGraph"

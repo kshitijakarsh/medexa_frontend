@@ -252,10 +252,10 @@ export function AppointmentSidebar({
     const [filter, setFilter] = useState("All");
 
     return (
-        <div className="w-[300px] h-full flex flex-col gap-4 overflow-hidden rounded-xl border border-5 border-white p-4">
+        <div className="w-[300px] h-full flex flex-col gap-4 overflow-hidden rounded-xl border border-5 border-white ">
 
             {/* Top row */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center px-4 pt-4">
 
                 <FilterDropdown value={filter} onChange={setFilter} />
 
@@ -263,7 +263,7 @@ export function AppointmentSidebar({
             </div>
 
             {/* Scrollable sections */}
-            <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+            <div className="flex-1 overflow-y-auto px-4 space-y-3">
 
                 <AppointmentSidebarSection
                     title="Emergency Appointments"

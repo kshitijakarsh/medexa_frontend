@@ -2,8 +2,8 @@
 
 "use client";
 
-import { SectionWrapper } from "./SectionWrapper";
-import { SectionTitle } from "./SectionTitle";
+import { SectionWrapper } from "./common/SectionWrapper";
+import { SectionTitle } from "./common/SectionTitle";
 
 export function VisitPurpose() {
     return (
