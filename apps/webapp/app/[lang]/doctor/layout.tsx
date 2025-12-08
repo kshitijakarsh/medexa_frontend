@@ -10,9 +10,13 @@ export default async function TenantLayout({
 
 
     return (
-        <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
+        <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] overflow-x-hidden">
             <Header />
-            {children}
+            <div className="w-full">
+
+                {children}
+            </div>
+
         </main>
     )
 }

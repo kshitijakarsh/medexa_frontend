@@ -145,7 +145,8 @@ export default function ConsultationLayout({
       <div className="flex gap-6 w-full py-3">
         {/* LEFT SIDEBAR → Only show when on appointment page */}
         {showSidebar && (
-          <div className="w-[300px] min-w-[300px]">
+          // <div className="w-[300px] min-w-[300px]">
+          <div className="w-[300px] shrink-0">
             <AppointmentSidebar
               emergency={emergency}
               vip={vip}
@@ -160,7 +161,10 @@ export default function ConsultationLayout({
         )}
 
         {/* RIGHT CONTENT */}
-        <div className="flex-1 pr-4">{children}</div>
+        {/* <div className="flex-1 pr-4"> */}
+        <div className="flex-1 min-w-0 pr-4">
+          {children}
+        </div>
       </div>
     </div>
   );
