@@ -29,10 +29,28 @@
 // }
 
 
+// import { appointmentTabsConfig } from "./appointmentTabsConfig";
+
+// export function AppointmentDetailContent({ activeTab }: { activeTab: string }) {
+//   const tab = appointmentTabsConfig.find((t) => t.key === activeTab);
+
+//   return (
+//     <div className=" min-h-[400px]">
+//       {tab?.component || <p>No content found</p>}
+//     </div>
+//   );
+// }
+
+
+// AppointmentDetailContent.tsx
+
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 
-export function AppointmentDetailContent({ activeTab }: { activeTab: string }) {
-  const tab = appointmentTabsConfig.find((t) => t.key === activeTab);
+export function AppointmentDetailContent({ activeTab, injectedProps }: any) {
+
+  const tabs = appointmentTabsConfig(injectedProps); // turn config into function
+
+  const tab = tabs.find((t) => t.key === activeTab);
 
   return (
     <div className=" min-h-[400px]">

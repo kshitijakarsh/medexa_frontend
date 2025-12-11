@@ -244,10 +244,22 @@
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { UserAvatar } from "@/components/common/pasient-card/user-avatar";
 import { AppointmentItem } from "./types/appointment";
-import { Users, FileText, Share2, Clock } from "lucide-react";
+import { Users, FileText, Share2, Save } from "lucide-react";
 import { ActionButton } from "./button/ActionButton";
 
-export function AppointmentDetailHeader({ item }: { item: AppointmentItem }) {
+export function AppointmentDetailHeader({
+  item,
+  onSaveDraft,
+  onFinish,
+  saving,
+  finishing,
+}: {
+  item: AppointmentItem;
+  onSaveDraft: () => void;
+  onFinish: () => void;
+  saving: boolean;
+  finishing: boolean;
+}) {
   return (
     <div className="
       bg-white 
@@ -262,73 +274,58 @@ export function AppointmentDetailHeader({ item }: { item: AppointmentItem }) {
     ">
 
       {/* LEFT SECTION */}
-      <div className="flex items-start flex-col  gap-4">
+      <div className="flex items-start flex-col gap-4">
         <div className="flex gap-3">
-          {/* Avatar */}
           <UserAvatar src={item.avatar} size={60} />
 
-          {/* Patient Info */}
-          <div className="flex  gap-1 mt-1">
+          <div className="flex gap-1 mt-1">
             <div>
               <div className="text-lg font-semibold text-gray-900">
                 {item.name}
               </div>
-
               <div className="text-sm text-gray-500">MRN-{item.mrn}</div>
             </div>
-            {/* Status */}
             <div className="ml-4">
               <StatusPill status={item.status} />
             </div>
           </div>
         </div>
+
+        {/* Time + Info */}
         <div className="flex flex-col gap-1">
-          {/* Time Row */}
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-            <Clock size={16} className="text-gray-500" />
             <span>{item.time}</span>
           </div>
 
-          {/* Complaint + Age/Gender + Civil ID + Insurance */}
-          <div className="flex items-center flex-wrap gap-2 text-sm text-gray-700 mt-1">
+          <div className="flex items-center flex-wrap gap-2 text-sm text-gray-700">
             {item.note && <span>{item.note}</span>}
-
-            {item.age && (
-              <>
-                <span>•</span>
-                <span>{item.age}</span>
-              </>
-            )}
-
-            {item.phone && (
-              <>
-                <span>•</span>
-                <span>{item.phone}</span>
-              </>
-            )}
-
-            {item.insurance && (
-              <>
-                <span>•</span>
-                <span>{item.insurance}</span>
-              </>
-            )}
+            {item.age && <><span>•</span> <span>{item.age}</span></>}
+            {item.phone && <><span>•</span> <span>{item.phone}</span></>}
+            {item.insurance && <><span>•</span> <span>{item.insurance}</span></>}
           </div>
-
-          {/* Green Insurance Tag (ONLY if required) */}
-          {item.insurance && (
-            <div className="text-green-600 text-sm mt-1">
-              ✓ {item.insurance}
-            </div>
-          )}
         </div>
+        <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>
       </div>
-      {/* RIGHT SIDE BUTTONS */}
-      <div className="flex flex-col gap-3 w-[200px]">
+
+      {/* RIGHT SECTION ACTIONS */}
+      <div className="flex flex-col gap-3 w-[210px]">
+
+        {/* SAVE BUTTON (DRAFT) */}
         <ActionButton
-          label="Finish Consultation"
+          label={saving ? "Saving..." : "Save Draft"}
+          icon={<Save size={18} />}
+          variant="outline"
+          disabled={saving || finishing}
+          onClick={onSaveDraft}
+        />
+
+        {/* FINISH CONSULTATION */}
+        <ActionButton
+          label={finishing ? "Finishing..." : "Finish Consultation"}
           icon={<Users size={18} />}
           variant="solid"
+          disabled={finishing || saving}
+          onClick={onFinish}
         />
 
         <ActionButton
@@ -343,7 +340,6 @@ export function AppointmentDetailHeader({ item }: { item: AppointmentItem }) {
           variant="outline"
         />
       </div>
-
     </div>
   );
 }

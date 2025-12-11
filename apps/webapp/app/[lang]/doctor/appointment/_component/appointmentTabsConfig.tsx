@@ -9,8 +9,18 @@ import SurgerySection from "./Tabs/SurgerySection";
 import { VisitPurpose } from "./Tabs/VisitPurpose";
 import { Vitals } from "./Tabs/Vitals";
 
-export const appointmentTabsConfig = [
-    { key: "Visit purpose", label: "Visit purpose", component: <VisitPurpose /> },
+export const appointmentTabsConfig = (props: any) => [
+    {
+        key: "Visit purpose",
+        label: "Visit purpose",
+        component: (
+            <VisitPurpose
+                data={props.visitPurposeData}
+                setData={props.setVisitPurposeData}
+                setDirty={props.setVisitPurposeDirty}
+            />
+        ),
+    },
     { key: "SOAP Notes", label: "SOAP Notes", component: <SOAPNotes /> },
     { key: "Vitals", label: "Vitals", component: <Vitals /> },
     { key: "Prescription", label: "Prescription", component: <Prescription /> },
