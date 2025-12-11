@@ -44,6 +44,7 @@
 
 // AppointmentDetailContent.tsx
 
+
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 
 export function AppointmentDetailContent({ activeTab, injectedProps }: any) {

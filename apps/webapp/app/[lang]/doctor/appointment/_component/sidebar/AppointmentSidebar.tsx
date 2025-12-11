@@ -226,20 +226,20 @@
 "use client";
 
 import { AppointmentSidebarSection } from "./AppointmentSidebarSection";
-import { AppointmentItem } from "./types/appointment";
-import {MoveRight} from "lucide-react";
+import { SideBarAppointmentItem } from "../types/appointment";
+import { MoveRight } from "lucide-react";
 import { useState } from "react";
-import { FilterDropdown } from "./filter/filterDropdown";
-import { ViewAllLink } from "../../dashboard/_components/ui/ViewAllLink";
+import { FilterDropdown } from "../filter/filterDropdown";
+import { ViewAllLink } from "../../../dashboard/_components/ui/ViewAllLink";
 import { buildUrl, ROUTES } from "@/lib/routes";
 // import { FilterDropdown } from "./filter/filterDropdown";
 
 interface AppointmentSidebarProps {
-    emergency: AppointmentItem[];
-    vip: AppointmentItem[];
-    general: AppointmentItem[];
+    emergency: SideBarAppointmentItem[];
+    vip: SideBarAppointmentItem[];
+    general: SideBarAppointmentItem[];
     activeId?: string;
-    onSelect: (item: AppointmentItem) => void;
+    onSelect: (item: SideBarAppointmentItem) => void;
 }
 
 export function AppointmentSidebar({
@@ -252,7 +252,9 @@ export function AppointmentSidebar({
     const [filter, setFilter] = useState("All");
 
     return (
-        <div className="w-[300px] h-full flex flex-col gap-4 overflow-hidden rounded-xl border border-5 border-white ">
+        // <div className="w-[300px] h-auto flex flex-col gap-4 overflow-hidden rounded-xl border border-5 border-white ">
+        <div className="w-[300px] h-auto flex flex-col gap-4 rounded-xl border border-5 border-white">
+
 
             {/* Top row */}
             <div className="flex justify-between items-center px-4 pt-4">

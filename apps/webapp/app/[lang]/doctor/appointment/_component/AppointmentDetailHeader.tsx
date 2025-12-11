@@ -239,6 +239,7 @@
 //   );
 // }
 
+
 "use client";
 
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
@@ -246,6 +247,7 @@ import { UserAvatar } from "@/components/common/pasient-card/user-avatar";
 import { AppointmentItem } from "./types/appointment";
 import { Users, FileText, Share2, Save } from "lucide-react";
 import { ActionButton } from "./button/ActionButton";
+import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
 
 export function AppointmentDetailHeader({
   item,
@@ -260,6 +262,8 @@ export function AppointmentDetailHeader({
   saving: boolean;
   finishing: boolean;
 }) {
+
+
   return (
     <div className="
       bg-white 
@@ -276,19 +280,27 @@ export function AppointmentDetailHeader({
       {/* LEFT SECTION */}
       <div className="flex items-start flex-col gap-4">
         <div className="flex gap-3">
-          <UserAvatar src={item.avatar} size={60} />
+          {/* <UserAvatar src={item.avatar} size={60} />
 
           <div className="flex gap-1 mt-1">
             <div>
               <div className="text-lg font-semibold text-gray-900">
                 {item.name}
               </div>
-              <div className="text-sm text-gray-500">MRN-{item.mrn}</div>
+              <div className="text-sm text-gray-500">{item.mrn}</div>
             </div>
             <div className="ml-4">
               <StatusPill status={item.status} />
             </div>
-          </div>
+          </div> */}
+          <AppointmentPatientCell
+            name={item.name}
+            mrn={item.mrn}
+            avatar={item.avatar}
+            vip={item.status === "vip"}
+            status={item.status}
+            size={60}
+          />
         </div>
 
         {/* Time + Info */}
@@ -303,6 +315,7 @@ export function AppointmentDetailHeader({
             {item.phone && <><span>•</span> <span>{item.phone}</span></>}
             {item.insurance && <><span>•</span> <span>{item.insurance}</span></>}
           </div>
+          <div className="text-gray-700 text-sm mt-1">{item.permanent_address}</div>
         </div>
         <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>
       </div>

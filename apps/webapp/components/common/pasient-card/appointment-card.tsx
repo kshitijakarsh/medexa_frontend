@@ -9,6 +9,7 @@ import { VipCrownBadge } from "./vip-crown-badge";
 import { CardBlock } from "./card-block";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 import { MouseEventHandler } from "react";
+import { AppointmentPatientCell } from "./appointment-patient-cell";
 
 interface AppointmentCardProps {
     item: any,
@@ -18,32 +19,22 @@ interface AppointmentCardProps {
 }
 
 export default function AppointmentCard({ item, onClick, selected }: AppointmentCardProps) {
+    console.log(item)
     return (
         // <div className="bg-white rounded-2xl border border-[#E6F3FF] p-4 shadow-sm">
         <CardBlock
             onClick={onClick}
-            //     className={`px-4 py-4 
-            //         rounded-2xl 
-            //         border 
-            //         shadow-0
-            //         space-y-3
-            //          flex flex-col
-            //          bg-[#EFF4FF] 
-            //           ${selected
-            //             ? "border-[#E5EAF0] ring-l-blue-600 text-gray-600"
-            //             : "border-[#E5EAF0] text-gray-600"
-            //         }
-            //   `
-            //     }
             className={`
+                cursor-pointer
     px-4 py-4 rounded-2xl shadow-0 space-y-3 flex flex-col bg-[#EFF4FF]
-    border border-[#E5EAF0]    /* base border all sides */
+    border border-[#E5EAF0]  
+    hover:bg-gray-50
     ${selected ? "border-l-blue-600 border-l-3" : "border-l-[#E5EAF0] border-r"} 
   `}
         >
             {/* ROW 1 */}
             <div className="flex items-start gap-3">
-                <div className="relative">
+                {/* <div className="relative">
                     <UserAvatar
                         src={item.avatar}
                         size={44}
@@ -59,12 +50,19 @@ export default function AppointmentCard({ item, onClick, selected }: Appointment
 
                 <div className="flex-1">
                     <div className="font-semibold text-[15px]">{item.name}</div>
-                    <div className="text-xs text-gray-500">MRN-{item.mrn}</div>
+                    <div className="text-xs text-gray-500">{item.mrn}</div>
                 </div>
 
                 <div>
                     <StatusPill status={item.status} />
-                </div>
+                </div> */}
+                <AppointmentPatientCell
+                    name={item.name}
+                    mrn={item.mrn}
+                    avatar={item.avatar}
+                    vip={item.status === "vip"}
+                    status={item.status}
+                />
             </div>
 
             {/* ROW 2 */}

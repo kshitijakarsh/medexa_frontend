@@ -1,7 +1,66 @@
+// // // // app/doctor-dashboard/view-all/page.tsx
+// // // "use client";
+
+// // // import { useEffect, useState } from "react";
+
+// // // import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+// // // import { getAppointments } from "./_components/api";
+// // // import AppointmentGrid from "./_components/AppointmentGrid";
+
+// // // const tabs = [
+// // //   { key: "all", label: "All" },
+// // //   { key: "emergency", label: "Emergency Appointments" },
+// // //   { key: "vip", label: "VIP Appointments" },
+// // //   { key: "follow", label: "Follow Up" },
+// // //   { key: "standard", label: "Standard Appointments" },
+// // // ];
+
+// // // export default function ViewAllAppointmentsPage() {
+// // //   const [loading, setLoading] = useState(true);
+// // //   const [rows, setRows] = useState<any[]>([]);
+// // //   const [activeTab, setActiveTab] = useState<string>("all");
+
+// // //   useEffect(() => {
+// // //     setLoading(true);
+// // //     getAppointments().then((d) => {
+// // //       setRows(d);
+// // //       setLoading(false);
+// // //     });
+// // //   }, []);
+
+// // //   const filtered =
+// // //     activeTab === "all"
+// // //       ? rows
+// // //       : activeTab === "emergency"
+// // //       ? rows.filter((r) => r.type?.toLowerCase().includes("emergency"))
+// // //       : activeTab === "vip"
+// // //       ? rows.filter((r) => r.type?.toLowerCase().includes("vip"))
+// // //       : activeTab === "follow"
+// // //       ? rows.filter((r) => r.type?.toLowerCase().includes("follow"))
+// // //       : rows.filter((r) => r.type?.toLowerCase().includes("standard"));
+
+// // //   return (
+// // //     <div className="min-h-screen p-6 ">
+// // //       <div className="w-full mx-auto">
+// // //         <div className="mb-6">
+// // //           <DynamicTabs
+// // //             tabs={tabs}
+// // //             defaultTab="all"
+// // //             onChange={(k) => setActiveTab(k)}
+// // //           />
+// // //         </div>
+
+// // //         <AppointmentGrid items={filtered} loading={loading} />
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // }
+
 // // // app/doctor-dashboard/view-all/page.tsx
 // // "use client";
 
 // // import { useEffect, useState } from "react";
+// // import { useSearchParams, useRouter } from "next/navigation";
 
 // // import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 // // import { getAppointments } from "./_components/api";
@@ -16,9 +75,14 @@
 // // ];
 
 // // export default function ViewAllAppointmentsPage() {
+// //   const searchParams = useSearchParams();
+// //   const router = useRouter();
+
+// //   const initialTab = searchParams.get("tab") || "all";
+
+// //   const [activeTab, setActiveTab] = useState<string>(initialTab);
 // //   const [loading, setLoading] = useState(true);
 // //   const [rows, setRows] = useState<any[]>([]);
-// //   const [activeTab, setActiveTab] = useState<string>("all");
 
 // //   useEffect(() => {
 // //     setLoading(true);
@@ -31,22 +95,21 @@
 // //   const filtered =
 // //     activeTab === "all"
 // //       ? rows
-// //       : activeTab === "emergency"
-// //       ? rows.filter((r) => r.type?.toLowerCase().includes("emergency"))
-// //       : activeTab === "vip"
-// //       ? rows.filter((r) => r.type?.toLowerCase().includes("vip"))
-// //       : activeTab === "follow"
-// //       ? rows.filter((r) => r.type?.toLowerCase().includes("follow"))
-// //       : rows.filter((r) => r.type?.toLowerCase().includes("standard"));
+// //       : rows.filter((r) =>
+// //           r.type?.toLowerCase().includes(activeTab.toLowerCase())
+// //         );
 
 // //   return (
-// //     <div className="min-h-screen p-6 ">
+// //     <div className="min-h-screen p-6">
 // //       <div className="w-full mx-auto">
 // //         <div className="mb-6">
 // //           <DynamicTabs
 // //             tabs={tabs}
-// //             defaultTab="all"
-// //             onChange={(k) => setActiveTab(k)}
+// //             defaultTab={initialTab}
+// //             onChange={(k) => {
+// //               setActiveTab(k);
+// //               router.replace(`?tab=${k}`); // ← updates URL query
+// //             }}
 // //           />
 // //         </div>
 
@@ -57,126 +120,159 @@
 // // }
 
 // // app/doctor-dashboard/view-all/page.tsx
-// "use client";
+// "use client"
 
-// import { useEffect, useState } from "react";
-// import { useSearchParams, useRouter } from "next/navigation";
+// import { useEffect, useState, useMemo, Suspense } from "react"
+// import { useSearchParams, useRouter } from "next/navigation"
 
-// import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-// import { getAppointments } from "./_components/api";
-// import AppointmentGrid from "./_components/AppointmentGrid";
+// import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
+// import { getAppointments } from "./_components/api"
+// import AppointmentGrid from "./_components/AppointmentGrid"
+// import { DOCTOR_DEFAULT_TAB, DoctorTabKeys, DoctorTabs } from "@/lib/routes"
 
-// const tabs = [
-//   { key: "all", label: "All" },
-//   { key: "emergency", label: "Emergency Appointments" },
-//   { key: "vip", label: "VIP Appointments" },
-//   { key: "follow", label: "Follow Up" },
-//   { key: "standard", label: "Standard Appointments" },
-// ];
+// // Extract list of allowed tab keys for validation
+// // const allowedTabKeys = DoctorTabs.map((t) => t.key);
 
-// export default function ViewAllAppointmentsPage() {
-//   const searchParams = useSearchParams();
-//   const router = useRouter();
+// function ViewAllAppointmentsPageContent() {
+//   const searchParams = useSearchParams()
+//   const router = useRouter()
 
-//   const initialTab = searchParams.get("tab") || "all";
+//   let initialTab = searchParams.get("tab") || "all"
 
-//   const [activeTab, setActiveTab] = useState<string>(initialTab);
-//   const [loading, setLoading] = useState(true);
-//   const [rows, setRows] = useState<any[]>([]);
+//   // ❗ Validate query param → Fix invalid tabs
+//   if (!DoctorTabKeys.includes(initialTab)) {
+//     router.replace(`?tab=${DOCTOR_DEFAULT_TAB}`)
+//     initialTab = DOCTOR_DEFAULT_TAB
+//   }
 
+//   const [activeTab, setActiveTab] = useState<string>(initialTab)
+//   const [loading, setLoading] = useState(true)
+//   const [rows, setRows] = useState<any[]>([])
+
+//   // Fetch once
 //   useEffect(() => {
-//     setLoading(true);
+//     setLoading(true)
 //     getAppointments().then((d) => {
-//       setRows(d);
-//       setLoading(false);
-//     });
-//   }, []);
+//       setRows(d)
+//       setLoading(false)
+//     })
+//   }, [])
 
-//   const filtered =
-//     activeTab === "all"
-//       ? rows
-//       : rows.filter((r) =>
-//           r.type?.toLowerCase().includes(activeTab.toLowerCase())
-//         );
+//   // Handle tab change (with loading)
+//   const handleTabChange = (k: string) => {
+//     setLoading(true) // ← start loader immediately
+//     setActiveTab(k)
+//     router.replace(`?tab=${k}`)
+
+//     // Optional: small delay to show loading UX
+//     setTimeout(() => {
+//       setLoading(false)
+//     }, 300) // You can increase/decrease this
+//   }
+
+//   // Filtered list (memoized)
+//   const filtered = useMemo(() => {
+//     if (activeTab === DOCTOR_DEFAULT_TAB) return rows
+//     return rows.filter((r) =>
+//       r.type?.toLowerCase().includes(activeTab.toLowerCase())
+//     )
+//   }, [activeTab, rows])
 
 //   return (
 //     <div className="min-h-screen p-6">
 //       <div className="w-full mx-auto">
+//         {/* Tabs */}
 //         <div className="mb-6">
 //           <DynamicTabs
-//             tabs={tabs}
+//             tabs={DoctorTabs}
 //             defaultTab={initialTab}
-//             onChange={(k) => {
-//               setActiveTab(k);
-//               router.replace(`?tab=${k}`); // ← updates URL query
-//             }}
+//             onChange={handleTabChange}
 //           />
 //         </div>
 
+//         {/* Grid with loading */}
 //         <AppointmentGrid items={filtered} loading={loading} />
 //       </div>
 //     </div>
-//   );
+//   )
 // }
 
-// app/doctor-dashboard/view-all/page.tsx
-"use client"
+// export default function ViewAllAppointmentsPage() {
+//   return (
+//     <Suspense fallback={<div>Loading...</div>}>
+//       <ViewAllAppointmentsPageContent />
+//     </Suspense>
+//   )
+// }
 
-import { useEffect, useState, useMemo, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
 
-import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
-import { getAppointments } from "./_components/api"
-import AppointmentGrid from "./_components/AppointmentGrid"
-import { DOCTOR_DEFAULT_TAB, DoctorTabKeys, DoctorTabs } from "@/lib/routes"
 
-// Extract list of allowed tab keys for validation
-// const allowedTabKeys = DoctorTabs.map((t) => t.key);
+"use client";
+
+import { Suspense, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+
+import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import AppointmentGrid from "./_components/AppointmentGrid";
+
+import {
+  DOCTOR_DEFAULT_TAB,
+  DoctorTabKeys,
+  DoctorTabs,
+} from "@/lib/routes";
+import { useDoctorVisitsQuery } from "../_components/api";
+
+
+// Map visit item → AppointmentCard format
+function visitToAppointmentCard(visit: any) {
+  const fullName =
+    `${visit?.patient?.first_name || ""} ${visit?.patient?.last_name || ""}`.trim();
+
+  return {
+    id: visit.id,
+    name: fullName,
+    mrn: visit.patient?.civil_id || "-",
+    avatar: null,
+
+    time: visit.time_slot || "-",
+    room: visit.department?.department_name || "-",
+
+    type: visit.visit_type || "-",
+    status: visit.status || "-",
+
+    vip: visit.visit_type === "vip",
+  };
+}
 
 function ViewAllAppointmentsPageContent() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  let initialTab = searchParams.get("tab") || "all"
+  let initialTab = searchParams.get("tab") || DOCTOR_DEFAULT_TAB;
 
-  // ❗ Validate query param → Fix invalid tabs
   if (!DoctorTabKeys.includes(initialTab)) {
-    router.replace(`?tab=${DOCTOR_DEFAULT_TAB}`)
-    initialTab = DOCTOR_DEFAULT_TAB
+    initialTab = DOCTOR_DEFAULT_TAB;
+    router.replace(`?tab=${initialTab}`);
   }
 
-  const [activeTab, setActiveTab] = useState<string>(initialTab)
-  const [loading, setLoading] = useState(true)
-  const [rows, setRows] = useState<any[]>([])
+  const [activeTab, setActiveTab] = useState(initialTab);
 
-  // Fetch once
-  useEffect(() => {
-    setLoading(true)
-    getAppointments().then((d) => {
-      setRows(d)
-      setLoading(false)
-    })
-  }, [])
+  const status =
+    activeTab === "all" ? undefined : activeTab; // vip / followup / emergency
 
-  // Handle tab change (with loading)
+  const { data, isLoading } = useDoctorVisitsQuery({
+    status,
+    page: 1,
+    limit: 50,
+  });
+
+  const visits = data?.data ?? [];
+  const items = visits.map(visitToAppointmentCard);
+
   const handleTabChange = (k: string) => {
-    setLoading(true) // ← start loader immediately
-    setActiveTab(k)
-    router.replace(`?tab=${k}`)
-
-    // Optional: small delay to show loading UX
-    setTimeout(() => {
-      setLoading(false)
-    }, 300) // You can increase/decrease this
-  }
-
-  // Filtered list (memoized)
-  const filtered = useMemo(() => {
-    if (activeTab === DOCTOR_DEFAULT_TAB) return rows
-    return rows.filter((r) =>
-      r.type?.toLowerCase().includes(activeTab.toLowerCase())
-    )
-  }, [activeTab, rows])
+    setActiveTab(k);
+    router.replace(`?tab=${k}`);
+  };
 
   return (
     <div className="min-h-screen p-6">
@@ -190,11 +286,11 @@ function ViewAllAppointmentsPageContent() {
           />
         </div>
 
-        {/* Grid with loading */}
-        <AppointmentGrid items={filtered} loading={loading} />
+        {/* Grid */}
+        <AppointmentGrid items={items} loading={isLoading} />
       </div>
     </div>
-  )
+  );
 }
 
 export default function ViewAllAppointmentsPage() {
@@ -202,5 +298,5 @@ export default function ViewAllAppointmentsPage() {
     <Suspense fallback={<div>Loading...</div>}>
       <ViewAllAppointmentsPageContent />
     </Suspense>
-  )
+  );
 }
