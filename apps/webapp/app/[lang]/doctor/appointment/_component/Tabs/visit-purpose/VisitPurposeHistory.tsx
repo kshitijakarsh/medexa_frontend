@@ -128,7 +128,7 @@ export function VisitPurposeHistory({ patientId }: { patientId: string }) {
                 <div className="flex flex-col gap-4">
                     {history.map((item: any) => {
                         const createdAt = item.created_at ? new Date(item.created_at) : null;
-                        const recorderName = `${item.createdBy?.name ?? ""}(${item.createdBy?.role ?? ""})`.trim();
+                        const recorderName = `${item.createdBy?.name ?? ""}(${item.createdBy?.role?.name ?? ""})`.trim();
 
                         return (
                             <HistoryCard

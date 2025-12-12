@@ -137,7 +137,7 @@ export default function VisitPurposeHistoryDetails() {
                 <p className="text-xs text-gray-500">
                     Recorded by{" "}
                     {data.createdBy
-                        ? `${data.createdBy.name}(${data.createdBy.role})`
+                        ? `${data.createdBy.name}(${data.createdBy?.role?.name})`
                         : "Unknown"}
                     {createdAt && ` at ${format(createdAt, "hh:mm a")}`}
                 </p>
