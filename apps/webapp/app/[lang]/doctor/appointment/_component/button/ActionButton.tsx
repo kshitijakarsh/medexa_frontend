@@ -57,6 +57,7 @@ export function ActionButton({
   onClick,
   loading = false,
   disabled = false,
+  className =""
 }: {
   label: string;
   icon: React.ReactNode;
@@ -64,6 +65,7 @@ export function ActionButton({
   onClick?: () => void;
   loading?: boolean;
   disabled?: boolean;
+  className?: string;
 }) {
   const isDisabled = loading || disabled;
 
@@ -74,11 +76,13 @@ export function ActionButton({
       variant="ghost"
       className={cn(
         "w-full h-11 rounded-xl flex items-center justify-start gap-3 font-medium transition-all shadow-sm cursor-pointer",
+        "p-2 ",
         isDisabled && "opacity-70 cursor-not-allowed",
 
         variant === "solid"
           ? "bg-[#0094FF] text-white hover:bg-[#0085E6] hover:text-white"
-          : "bg-white border border-[#0094FF40] text-[#0066CC] hover:bg-blue-50 hover:text-[#0066CC]"
+          : "bg-white border border-blue-400 text-[#0066CC] hover:bg-blue-50 hover:text-[#0066CC]",
+          className
       )}
     >
       {/* LEFT ICON / LOADING SPINNER */}

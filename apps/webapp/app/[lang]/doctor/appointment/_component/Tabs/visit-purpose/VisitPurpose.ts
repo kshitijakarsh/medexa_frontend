@@ -6,7 +6,7 @@ export interface VisitPurposeData {
   onset: string;
   duration: string;
   severity: string;
-  notes: string;
+  additional_notes: string;
 }
 
 export interface VisitPurposeFormProps {
@@ -21,5 +21,5 @@ export interface VisitPurposeErrors {
   onset?: string;
   duration?: string;
   severity?: string;
-  notes?: string;
+  additional_notes?: string;
 }

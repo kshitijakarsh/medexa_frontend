@@ -15,6 +15,7 @@ export const appointmentTabsConfig = (props: any) => [
         label: "Visit purpose",
         component: (
             <VisitPurpose
+                patientId={props.patientId}
                 data={props.visitPurposeData}
                 setData={props.setVisitPurposeData}
                 setDirty={props.setVisitPurposeDirty}

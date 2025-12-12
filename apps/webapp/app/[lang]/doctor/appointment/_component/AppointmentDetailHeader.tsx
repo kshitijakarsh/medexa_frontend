@@ -317,20 +317,20 @@ export function AppointmentDetailHeader({
           </div>
           <div className="text-gray-700 text-sm mt-1">{item.permanent_address}</div>
         </div>
-        <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>
+        {item.insuranceName && <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>}
       </div>
 
       {/* RIGHT SECTION ACTIONS */}
       <div className="flex flex-col gap-3 w-[210px]">
 
         {/* SAVE BUTTON (DRAFT) */}
-        <ActionButton
+        {/* <ActionButton
           label={saving ? "Saving..." : "Save Draft"}
           icon={<Save size={18} />}
           variant="outline"
           disabled={saving || finishing}
           onClick={onSaveDraft}
-        />
+        /> */}
 
         {/* FINISH CONSULTATION */}
         <ActionButton

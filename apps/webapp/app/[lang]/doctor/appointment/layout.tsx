@@ -238,13 +238,13 @@ export default function ConsultationLayout({ children }: { children: React.React
     if (!loading && !currentId && firstAvailable) {
       router.replace(`/doctor/appointment/${firstAvailable.id}`);
     }
-  }, [ ]);
+  }, []);
 
   if (loading) {
     return (
-      <div className="flex gap-6">
+      <div className="flex gap-6 w-full py-3">
         {showSidebar && <AppointmentSidebarSkeleton />}
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 min-w-0 pr-4">{children}</div>
       </div>
     );
   }

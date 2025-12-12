@@ -1,5 +1,6 @@
 export interface AppointmentItem {
   id: string;
+  patient_id?: string;
   name: string;
   mrn: string;
   avatar: string;

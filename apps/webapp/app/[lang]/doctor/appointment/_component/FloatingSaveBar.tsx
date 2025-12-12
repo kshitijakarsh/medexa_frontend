@@ -19,7 +19,7 @@ export function FloatingSaveBar({
     <div
       className="
         fixed bottom-0 right-0
-        w-[calc(100%-260px)]   /* subtract sidebar width */
+        w-[calc(100%-260px)]   
         max-w-[200px]      
         px-6 py-4
         flex items-center justify-end flex-col
@@ -34,6 +34,7 @@ export function FloatingSaveBar({
         disabled={saving || finishing}
         loading={saving}
         onClick={onSaveDraft}
+        className="border-2"
       />
 
       {/* <ActionButton

@@ -30,6 +30,8 @@ export function mapVisitToAppointmentItem(visit: any): AppointmentItem {
   return {
     id: String(visit.id),
 
+    patient_id: visit.patient_id,
+
     // Name
     name: `${visit.patient?.first_name || ""} ${visit.patient?.last_name || ""}`.trim(),
 

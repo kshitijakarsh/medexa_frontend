@@ -9,7 +9,7 @@ export const VALIDATION_RULES: Record<keyof VisitPurposeData, RegExp> = {
   onset: /^[A-Za-z0-9 ]{0,50}$/,     // dropdown — no special chars
   duration: /^[A-Za-z0-9 ]{0,50}$/,  // dropdown — no special chars
   severity: /^[A-Za-z0-9 ]{0,50}$/,  // dropdown — no special chars
-  notes: /^[A-Za-z0-9 .,()\-\/\n]{0,800}$/,
+  additional_notes: /^[A-Za-z0-9 .,()\-\/\n]{0,800}$/,
 };
 
 // Main validator
