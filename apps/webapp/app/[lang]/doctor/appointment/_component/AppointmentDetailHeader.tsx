@@ -242,12 +242,11 @@
 
 "use client";
 
-import { StatusPill } from "@/components/common/pasient-card/status-pill";
-import { UserAvatar } from "@/components/common/pasient-card/user-avatar";
 import { AppointmentItem } from "./types/appointment";
 import { Users, FileText, Share2, Save } from "lucide-react";
 import { ActionButton } from "./button/ActionButton";
 import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
+import { VisitStatusSelector } from "./common/VisitStatusSelector";
 
 export function AppointmentDetailHeader({
   item,
@@ -255,6 +254,7 @@ export function AppointmentDetailHeader({
   onFinish,
   saving,
   finishing,
+  isLoading,
   starting,
   onStart,
 }: {
@@ -263,10 +263,19 @@ export function AppointmentDetailHeader({
   onFinish: () => void;
   saving: boolean;
   finishing: boolean;
+  isLoading?:boolean;
   starting?: boolean,
   onStart?: () => void,
 }) {
 
+  const isStarted = [
+    "in_consultation",
+    "in_progress",
+    "lab_test",
+    "radiology",
+  ].includes(item.status);
+
+  const isCompleted = item.status === "completed";
 
   return (
     <div className="
@@ -302,9 +311,19 @@ export function AppointmentDetailHeader({
             mrn={item.mrn}
             avatar={item.avatar}
             vip={item.status === "vip"}
-            status={item.status}
+            // status={item.status} // status hiding
             size={60}
           />
+          {/* STATUS SELECTOR */}
+          {!isCompleted && isStarted && (
+            <VisitStatusSelector
+              visitId={item.id}
+              status={item.status}
+              disabled={starting || finishing || isLoading}
+            />
+          )}
+
+
         </div>
 
         {/* Time + Info */}
@@ -336,23 +355,27 @@ export function AppointmentDetailHeader({
           onClick={onSaveDraft}
         /> */}
 
-        <ActionButton
-          label={starting ? "Starting..." : "Start Consultation"}
-          icon={<Users size={18} />}
-          variant="solid"
-          disabled={starting}
-          onClick={onStart}
-        />
-
+        {/* START CONSULTATION */}
+        {!isStarted && !isCompleted && (
+          <ActionButton
+            label={starting ? "Starting..." : "Start Consultation"}
+            icon={<Users size={18} />}
+            variant="solid"
+            disabled={starting || finishing || isLoading}
+            onClick={onStart}
+          />
+        )}
 
         {/* FINISH CONSULTATION */}
-        <ActionButton
-          label={finishing ? "Finishing..." : "Finish Consultation"}
-          icon={<Users size={18} />}
-          variant="solid"
-          disabled={finishing || saving}
-          onClick={onFinish}
-        />
+        {isStarted && !isCompleted && (
+          <ActionButton
+            label={finishing ? "Finishing..." : "Finish Consultation"}
+            icon={<Users size={18} />}
+            variant="solid"
+            disabled={finishing || saving || isLoading}
+            onClick={onFinish}
+          />
+        )}
 
         <ActionButton
           label="View Details"

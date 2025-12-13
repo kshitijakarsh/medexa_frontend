@@ -441,6 +441,7 @@ import { useDoctorVisitById } from "../_component/common/useDoctorVisitById";
 import { useVisitPurposeByVisitId, useSaveVisitPurpose } from "../_component/Tabs/_hooks/useVisitPurpose";
 
 import { VisitPurposeData } from "../_component/Tabs/visit-purpose/VisitPurpose";
+import { useUpdateVisitStatus } from "../_component/common/useUpdateVisitStatus";
 
 export default function ConsultationDetailPage() {
   const { id: visitId } = useParams() as { id: string };
@@ -468,19 +469,19 @@ export default function ConsultationDetailPage() {
   const [activeTab, setActiveTab] = useState("Visit purpose");
 
 
-    /* ---------------------- Hydrate the Form When API Returns ---------------------- */
-    useEffect(() => {
-      if (visitPurpose) {
-        setVisitPurposeData({
-          chiefComplaint: visitPurpose.chief_complaint ?? "",
-          history: visitPurpose.history_of_present_illness ?? "",
-          onset: visitPurpose.onset ?? "",
-          duration: visitPurpose.duration ?? "",
-          severity: visitPurpose.severity ?? "",
-          additional_notes: visitPurpose.additional_notes ?? "",
-        });
-      }
-    }, [visitPurpose]);
+  /* ---------------------- Hydrate the Form When API Returns ---------------------- */
+  useEffect(() => {
+    if (visitPurpose) {
+      setVisitPurposeData({
+        chiefComplaint: visitPurpose.chief_complaint ?? "",
+        history: visitPurpose.history_of_present_illness ?? "",
+        onset: visitPurpose.onset ?? "",
+        duration: visitPurpose.duration ?? "",
+        severity: visitPurpose.severity ?? "",
+        additional_notes: visitPurpose.additional_notes ?? "",
+      });
+    }
+  }, [visitPurpose]);
 
   /* ---------------------- Save (POST / PUT Automatically) ---------------------- */
   const savePurposeMutation = useSaveVisitPurpose(visitPurpose?.id);
@@ -503,13 +504,28 @@ export default function ConsultationDetailPage() {
     onSuccess: () => setVisitPurposeDirty(false),
   });
 
+  /* ---------------------- Visit Status Mutations ---------------------- */
+  const startMutation = useUpdateVisitStatus(visitId);
+  const updateStatusMutation = useUpdateVisitStatus(visitId);
+
+  /* ---------------------- Start Consultation ---------------------- */
+
+  const handleStartConsultation = async () => {
+    await startMutation.mutateAsync("in_consultation");
+  };
+
   /* ---------------------- Finish Consultation ---------------------- */
+
+
   const finishMutation = useMutation({
     mutationFn: async () => {
+      // Save draft first if needed
       if (isVisitPurposeDirty) {
         await saveDraftMutation.mutateAsync();
       }
-      // await finishConsultationAPI(visitId);
+
+      // Then finish consultation
+      await updateStatusMutation.mutateAsync("completed");
     },
   });
 
@@ -533,10 +549,11 @@ export default function ConsultationDetailPage() {
         item={selected}
         onSaveDraft={() => saveDraftMutation.mutate()}
         onFinish={() => finishMutation.mutate()}
-        saving={saveDraftMutation.isLoading}
-        finishing={finishMutation.isLoading}
-        starting={false}
-        onStart={() => console.log('adsf')}
+        saving={saveDraftMutation.isPending}
+        finishing={finishMutation.isPending}
+        starting={startMutation.isPending}
+        onStart={handleStartConsultation}
+        isLoading={isLoading}
       />
 
       {/* TABS */}
@@ -551,8 +568,8 @@ export default function ConsultationDetailPage() {
 
       {/* FLOATING SAVE BUTTON */}
       <FloatingSaveBar
-        saving={saveDraftMutation.isLoading}
-        finishing={finishMutation.isLoading}
+        saving={saveDraftMutation.isPending}
+        finishing={finishMutation.isPending}
         onSaveDraft={() => saveDraftMutation.mutate()}
         onFinish={() => finishMutation.mutate()}
       />

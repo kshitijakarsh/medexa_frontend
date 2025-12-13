@@ -68,6 +68,33 @@ class DoctorVisitsApiClient {
         }
     }
 
+
+    async updateVisitStatus(
+        id: string,
+        payload: {
+            status: string;
+        }
+    ): Promise<AxiosResponse<any>> {
+        try {
+            const config = await this.getJsonRequestConfig();
+
+            return axios.put(
+                `${this.baseUrl}/api/v1/visits/${id}`,
+                payload,
+                config
+            );
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(
+                    `Update visit status error: ${error.response?.data?.message || error.message
+                    }`
+                );
+            }
+            throw error;
+        }
+    }
+
+
 }
 
 export const createDoctorVisitsApiClient = (config: ApiConfig) =>
