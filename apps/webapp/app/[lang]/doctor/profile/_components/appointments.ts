@@ -1,0 +1,32 @@
+export const appointments = [
+  {
+    token: "T-105",
+    patient: "Arlene McCoy",
+    mrn: "MRN-45678",
+    date: "Nov 14, 2025",
+    diagnosis: "Hypertension",
+    type: "VIP",
+    status: "In Consultation",
+    avatar: "/doctor.jpg",
+  },
+  {
+    token: "T-105",
+    patient: "Annette Black",
+    mrn: "MRN-45678",
+    date: "Nov 14, 2025",
+    diagnosis: "Hypertension",
+    type: "New",
+    status: "Completed",
+    avatar: "/doctor.jpg",
+  },
+  {
+    token: "T-105",
+    patient: "Savannah Nguyen",
+    mrn: "MRN-45678",
+    date: "Nov 14, 2025",
+    diagnosis: "Hypertension",
+    type: "Follow Up",
+    status: "Completed",
+    avatar: "/doctor.jpg",
+  },
+];

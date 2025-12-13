@@ -66,7 +66,7 @@ export default function AppointmentCard({ item, onClick, selected }: Appointment
             </div>
 
             {/* ROW 2 */}
-            <div className="mt-3 mt-auto flex items-center justify-between text-sm">
+            <div className="mt-3 mt-auto flex items-center justify-between text-sm gap-1">
                 {/* <div className="flex items-center gap-2 text-xs text-gray-500">
                     <div className="flex items-center gap-1">
                         <Clock size={14} className="text-gray-400" />
@@ -78,7 +78,7 @@ export default function AppointmentCard({ item, onClick, selected }: Appointment
                 <TimeRoomInfo time={item.time} room={item.room} />
 
                 <div>
-                    <TypeBadge type={item.type} />
+                    <TypeBadge type={item.type} className="text-end"/>
                 </div>
             </div>
         </CardBlock>

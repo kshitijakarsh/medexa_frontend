@@ -501,6 +501,8 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
 import { usePathname, useRouter } from "next/navigation"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { Locale, locales } from "@/i18n/locales"
 
 const moduleIconMap: Record<string, any> = {
   analytics: BarChart3,
@@ -545,6 +547,7 @@ const moduleLandingPath: Record<string, string> = {
 export function SectionDropdown() {
   const router = useRouter()
   const pathname = usePathname()
+  const { withLocale } = useLocaleRoute()
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
   const user = useUserStore((s) => s.user)
@@ -610,26 +613,55 @@ export function SectionDropdown() {
 
   // console.log(user)
 
+  // React.useEffect(() => {
+  //   if (!pathname || moduleKeys.length === 0) return
+
+  //   // Get first segment from URL → "/administration/users" → "administration"
+  //   const firstSegment = pathname.split("/")[1] ?? ""
+
+  //   // Match with moduleKeys
+  //   const matched = moduleKeys.find(
+  //     (m) => m.toLowerCase() === firstSegment.toLowerCase()
+  //   )
+
+  //   if (matched) {
+  //     setSelected(
+  //       matched.replace(/_/g, " ").replace(/\b\w/g, (c: any) => c.toUpperCase())
+  //     )
+  //   } else {
+  //     // If nothing matches, fallback to first module
+  //     setSelected(sections[0]?.label ?? "Administration")
+  //   }
+  // }, [pathname, moduleKeys, sections])
+
   React.useEffect(() => {
     if (!pathname || moduleKeys.length === 0) return
 
-    // Get first segment from URL → "/administration/users" → "administration"
-    const firstSegment = pathname.split("/")[1] ?? ""
+    const segments = pathname.split("/").filter(Boolean)
+    if (segments.length === 0) return
 
-    // Match with moduleKeys
+    const firstSegment = segments[0]
+
+    const hasLocale = locales.includes(firstSegment as Locale)
+    const moduleSegment = hasLocale ? segments[1] : segments[0]
+
+    if (!moduleSegment) return
+
     const matched = moduleKeys.find(
-      (m) => m.toLowerCase() === firstSegment.toLowerCase()
+      (m) => m.toLowerCase() === moduleSegment.toLowerCase()
     )
 
     if (matched) {
       setSelected(
-        matched.replace(/_/g, " ").replace(/\b\w/g, (c: any) => c.toUpperCase())
+        matched
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c: string) => c.toUpperCase())
       )
     } else {
-      // If nothing matches, fallback to first module
       setSelected(sections[0]?.label ?? "Administration")
     }
   }, [pathname, moduleKeys, sections])
+
 
   // const [selected, setSelected] = React.useState(sections[0].label)
   const [selected, setSelected] = React.useState(
@@ -644,10 +676,10 @@ export function SectionDropdown() {
     const path = moduleLandingPath[section.moduleKey]
 
     if (path) {
-      router.push(path)
+      router.push(withLocale(path))
     } else {
       // fallback if no path defined
-      router.push(`/${section.moduleKey}`)
+      router.push(`${withLocale(`/${section.moduleKey}`)}`)
     }
   }
 

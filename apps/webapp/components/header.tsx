@@ -6,6 +6,7 @@ import { SectionDropdown } from "./header/section-dropdown"
 import { TopActionButtons } from "./header/top-action-menu-buttons"
 import { Button } from "@workspace/ui/components/button"
 import { useUserStore } from "@/store/useUserStore"
+import { format, formatRelative } from "@workspace/ui/hooks/use-date-fns"
 
 export const Header = () => {
   // const handleLogout = () => {
@@ -19,14 +20,16 @@ export const Header = () => {
     role: user?.role?.name ?? "HOSPITAL ADMIN",
     employeeId: "EMP-2024-1847", // Static – update if needed
     accountStatus: (user?.status ?? "Active") as "Active" | "Inactive",
-    lastLogin: "Today at 09:42 AM",
+    lastLogin: user?.updated_at
+      ? formatRelative(new Date(user.updated_at), new Date())
+      : "Today at 09:42 AM",
     avatar: "/images/user.svg",
     hospital: {
-      name: "Hamad Medical Center",
-      contact: "+974 4488 1122",
-      email: "info@hamad.qa",
-      address: "Doha, Qatar",
-      logo: "/images/user.svg",
+      name: user?.hospital?.name ?? "Hamad Medical Center",
+      contact: user?.phone ?? "+974 4488 1122",
+      email: user?.email ?? "info@hamad.qa",
+      address: user?.address ?? "Doha, Qatar",
+      logo: user?.logo ?? "/images/user.svg",
     },
   };
 

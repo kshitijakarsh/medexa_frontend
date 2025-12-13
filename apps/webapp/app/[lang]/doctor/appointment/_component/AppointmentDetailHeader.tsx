@@ -255,12 +255,16 @@ export function AppointmentDetailHeader({
   onFinish,
   saving,
   finishing,
+  starting,
+  onStart,
 }: {
   item: AppointmentItem;
   onSaveDraft: () => void;
   onFinish: () => void;
   saving: boolean;
   finishing: boolean;
+  starting?: boolean,
+  onStart?: () => void,
 }) {
 
 
@@ -278,7 +282,7 @@ export function AppointmentDetailHeader({
     ">
 
       {/* LEFT SECTION */}
-      <div className="flex items-start flex-col gap-4">
+      <div className="flex items-start flex-col gap-3">
         <div className="flex gap-3">
           {/* <UserAvatar src={item.avatar} size={60} />
 
@@ -331,6 +335,15 @@ export function AppointmentDetailHeader({
           disabled={saving || finishing}
           onClick={onSaveDraft}
         /> */}
+
+        <ActionButton
+          label={starting ? "Starting..." : "Start Consultation"}
+          icon={<Users size={18} />}
+          variant="solid"
+          disabled={starting}
+          onClick={onStart}
+        />
+
 
         {/* FINISH CONSULTATION */}
         <ActionButton

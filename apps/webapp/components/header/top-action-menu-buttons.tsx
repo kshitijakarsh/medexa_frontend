@@ -25,6 +25,9 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { logoutCognitoUser } from "@/app/utils/auth"
+import { usePathname, useRouter } from "next/navigation"
+import { getProfileRoute } from "@/app/utils/get-profile-route"
+import { getLocale } from "@/i18n/get-locale"
 
 interface UserProfile {
   name: string
@@ -51,6 +54,16 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
   const handleLogout = () => {
     logoutCognitoUser()
     window.location.href = "/login" // full page reload
+  }
+
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleClickViewProfile = () => {
+    const profileRoute = getProfileRoute(pathname)
+    if (!profileRoute) return
+    setOpen(false)
+    router.push(`${profileRoute}?tab=overview`)
   }
 
   return (
@@ -119,6 +132,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
             <Button
               variant="outline"
               className="flex-1 border-green-100 hover:bg-green-50"
+              onClick={handleClickViewProfile}
             >
               <User className="h-4 w-4 mr-2 text-green-600" />
               View Profile

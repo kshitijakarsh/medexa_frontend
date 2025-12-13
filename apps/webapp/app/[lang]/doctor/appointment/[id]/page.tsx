@@ -467,19 +467,20 @@ export default function ConsultationDetailPage() {
   const [isVisitPurposeDirty, setVisitPurposeDirty] = useState(false);
   const [activeTab, setActiveTab] = useState("Visit purpose");
 
-  /* ---------------------- Hydrate the Form When API Returns ---------------------- */
-  useEffect(() => {
-    if (visitPurpose) {
-      setVisitPurposeData({
-        chiefComplaint: visitPurpose.chief_complaint ?? "",
-        history: visitPurpose.history_of_present_illness ?? "",
-        onset: visitPurpose.onset ?? "",
-        duration: visitPurpose.duration ?? "",
-        severity: visitPurpose.severity ?? "",
-        additional_notes: visitPurpose.additional_notes ?? "",
-      });
-    }
-  }, [visitPurpose]);
+
+    /* ---------------------- Hydrate the Form When API Returns ---------------------- */
+    useEffect(() => {
+      if (visitPurpose) {
+        setVisitPurposeData({
+          chiefComplaint: visitPurpose.chief_complaint ?? "",
+          history: visitPurpose.history_of_present_illness ?? "",
+          onset: visitPurpose.onset ?? "",
+          duration: visitPurpose.duration ?? "",
+          severity: visitPurpose.severity ?? "",
+          additional_notes: visitPurpose.additional_notes ?? "",
+        });
+      }
+    }, [visitPurpose]);
 
   /* ---------------------- Save (POST / PUT Automatically) ---------------------- */
   const savePurposeMutation = useSaveVisitPurpose(visitPurpose?.id);
@@ -519,7 +520,7 @@ export default function ConsultationDetailPage() {
   const selected = mapVisitToAppointmentItem(visitData);
 
   const injectedProps = {
-    patientId : selected.patient_id,
+    patientId: selected.patient_id,
     visitPurposeData,
     setVisitPurposeData,
     setVisitPurposeDirty,
@@ -534,6 +535,8 @@ export default function ConsultationDetailPage() {
         onFinish={() => finishMutation.mutate()}
         saving={saveDraftMutation.isLoading}
         finishing={finishMutation.isLoading}
+        starting={false}
+        onStart={() => console.log('adsf')}
       />
 
       {/* TABS */}
