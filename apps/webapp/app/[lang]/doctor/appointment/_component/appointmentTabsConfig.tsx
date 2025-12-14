@@ -22,7 +22,17 @@ export const appointmentTabsConfig = (props: any) => [
             />
         ),
     },
-    { key: "SOAP Notes", label: "SOAP Notes", component: <SOAPNotes /> },
+    {
+        key: "SOAP Notes", label: "SOAP Notes",
+        component: (
+            <SOAPNotes
+                patientId={props.patientId}
+                data={props.soapNoteData}
+                setData={props.setSoapNoteData}
+                setDirty={props.setSoapNoteDirty}
+            />
+        ),
+    },
     { key: "Vitals", label: "Vitals", component: <Vitals /> },
     { key: "Prescription", label: "Prescription", component: <Prescription /> },
     { key: "Diagnostic Orders", label: "Diagnostic Orders", component: <DiagnosticOrders /> },

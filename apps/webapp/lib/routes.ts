@@ -23,6 +23,8 @@ export const ROUTES = {
   DOCTOR_VIEW_ALL: `${DOCTOR_BASE}/dashboard/view-all`,
   DOCTOR_APPOINTMENT_SCREENING: `${DOCTOR_BASE}/appointment/`,
   DOCTOR_SCREENING_VISIT_PURPOSE_HISTORY_VIEW: `/visit-purpose/history/`,
+  DOCTOR_SCREENING_SOAP_NOTE_HISTORY_VIEW: `/soap-note/history/`,
+
 
   DOCTOR_PROFILE: `${DOCTOR_BASE}/profile`,
   DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${DOCTOR_BASE}/profile/soap/create`,
