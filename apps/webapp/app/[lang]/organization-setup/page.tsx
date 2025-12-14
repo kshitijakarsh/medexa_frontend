@@ -436,6 +436,7 @@ interface MasterData {
 export default function MastersPage() {
   const user = useUserStore((s) => s.user);
 
+
   const [data, setData] = useState<MasterData[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -529,6 +530,13 @@ export default function MastersPage() {
         })
         .filter(Boolean) as MasterData[];
 
+      // debug: show masters mapped to submodule keys
+      if (typeof console !== "undefined") {
+        console.log(
+          "mastersWithKeys:",
+          mastersWithKeys.map((m) => ({ title: m.title, submoduleKeys: m.submoduleKeys }))
+        );
+      }
       // filter by allowed submodules
       // const visibleMasters = mastersWithKeys.filter((m) =>
       //   allowedSubmodules.includes(m.submoduleKey!)
@@ -537,6 +545,9 @@ export default function MastersPage() {
         m.submoduleKeys?.some((key) => allowedSubmodules.includes(key))
       );
 
+      if (typeof console !== "undefined") {
+        console.log("visibleMasters:", visibleMasters.map((m) => m.title));
+      }
       setData(visibleMasters);
       setLoading(false);
     };

@@ -314,6 +314,11 @@ export const mainModules: MainModule[] = [
         actions: ["view", "create", "edit", "delete"],
       },
       {
+        key: "patientCategory",
+        label: "Patients",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
         key: "tax",
         label: "Tax",
         actions: ["view", "create", "edit", "delete"],

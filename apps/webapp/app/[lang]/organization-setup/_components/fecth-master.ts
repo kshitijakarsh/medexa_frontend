@@ -42,8 +42,14 @@ export async function fetchMasters() {
     },
     {
       title: "Charges",
-      subtitle: "Adding charges tax units and categoryes",
+      subtitle: "Adding charges tax units and categories",
       active: 10,
+      category: "Organization Setup",
+    },
+    {
+      title: "Patients",
+      subtitle: "Eg. VIP, standard",
+      active: 120,
       category: "Organization Setup",
     },
     {
@@ -209,6 +215,11 @@ export const masterConfig: Record<
     route: ROUTES.ADMINISTRATION_CHARGES,
     addOptions: ["Service", "Category", "Tax", "Unit"],
     submoduleKeys: ["charges"]
+  },
+  "Patients": {
+    route: ROUTES.ADMINISTRATION_PATIENTS,
+    addOptions: ["Patient Category"],
+    submoduleKeys: ["patientCategory"]
   },
   "Tariff / Pricing / Service Charges": {
     route: "/masters/tariff",
