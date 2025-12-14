@@ -33,12 +33,21 @@ export const appointmentTabsConfig = (props: any) => [
             />
         ),
     },
-    { key: "Vitals", label: "Vitals", component: <Vitals /> },
+    {
+        key: "Vitals", label: "Vitals", component: <Vitals patientId={props.patientId} />
+    },
     { key: "Prescription", label: "Prescription", component: <Prescription /> },
     { key: "Diagnostic Orders", label: "Diagnostic Orders", component: <DiagnosticOrders /> },
     { key: "Attachments", label: "Attachments", component: <Attachments /> },
     { key: "Patient History", label: "Patient History", component: <p>Patient History tab...</p> },
-    { key: "Nurse Note", label: "Nurse Note", component: <NurseNotesSection /> },
+    {
+        key: "Nurse Note", label: "Nurse Note",
+        component: (
+            <NurseNotesSection
+                patientId={props.patientId}
+            />
+        ),
+    },
     { key: "Surgery", label: "Surgery", component: <SurgerySection /> },
     { key: "Visits / Encounters", label: "Visits / Encounters", component: <p>Visits and encounters</ p > },
     { key: "Clinical Forms", label: "Clinical Forms", component: <p>Clinical Forms </p> },

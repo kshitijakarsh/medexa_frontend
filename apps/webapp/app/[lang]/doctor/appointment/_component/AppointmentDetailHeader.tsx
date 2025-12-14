@@ -273,6 +273,7 @@ export function AppointmentDetailHeader({
     "in_progress",
     "lab_test",
     "radiology",
+    "active"
   ].includes(item.status);
 
   const isCompleted = item.status === "completed";
@@ -318,7 +319,7 @@ export function AppointmentDetailHeader({
           {!isCompleted && isStarted && (
             <VisitStatusSelector
               visitId={item.id}
-              status={item.status}
+              status={item.status.toLowerCase()}
               disabled={starting || finishing || isLoading}
             />
           )}

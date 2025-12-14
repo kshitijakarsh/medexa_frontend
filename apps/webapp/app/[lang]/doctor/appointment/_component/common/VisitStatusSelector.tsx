@@ -30,7 +30,6 @@ export function VisitStatusSelector({
     const label = normalizeStatus(status);
     const key = statusKey(label);
     const style = statusStyles[key] || fallbackStyle;
-
     return (
         <div className="min-w-[190px]">
             <Select
