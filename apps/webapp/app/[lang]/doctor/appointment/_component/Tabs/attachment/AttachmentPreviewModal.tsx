@@ -3,11 +3,17 @@
 import { AppDialog } from "@/components/common/app-dialog";
 import { Button } from "@workspace/ui/components/button";
 
+interface AttachmentPreviewModalProps {
+  open: boolean,
+  onClose: ()=> void,
+  attachment: any
+}
+
 export default function AttachmentPreviewModal({
   open,
   onClose,
   attachment,
-}) {
+} : AttachmentPreviewModalProps) {
   const downloadFile = () => {
     const a = document.createElement("a");
     a.href = attachment.fileUrl;
@@ -20,7 +26,7 @@ export default function AttachmentPreviewModal({
       open={open}
       onClose={onClose}
       title={attachment.title}
-      rightHeader={
+      headerRight={
         <Button className="bg-blue-600 text-white" onClick={downloadFile}>
           Download Document
         </Button>

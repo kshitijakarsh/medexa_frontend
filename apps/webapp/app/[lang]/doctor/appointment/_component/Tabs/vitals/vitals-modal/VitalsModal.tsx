@@ -494,23 +494,6 @@ import {
 } from "@workspace/ui/components/form";
 
 import { useSaveVitals } from "../../_hooks/useVitals";
-//   "patient_id": "10",
-// "visit_id": "15",
-//   "blood_pressure": "120/80",
-//   "pulse_rate": "72",
-//   "temperature": "98.6",
-//   "respiratory_rate": "16",
-//   "oxygen_saturation": "98",
-//   "height": "175",
-//   "weight": "70",
-//   "bmi": "22.9",
-//   "head_circumference": "55",
-//   "waist_circumference": "85",
-//   "hip_circumference": "95",
-//   "blood_glucose": "95",
-//   "cholesterol": "180",
-//   "pain_scale": "3",
-//   "notes": "Patient appears stable"
 
 /* ----------------------------------
    ZOD SCHEMA (matches backend)
@@ -518,13 +501,13 @@ import { useSaveVitals } from "../../_hooks/useVitals";
 const vitalsSchema = z.object({
     blood_pressure: z.string().optional(),
     pulse_rate: z.string().optional(),
-    respiratory_rate: z.string().optional(),
-    oxygen_saturation: z.string().optional(),
+    respiration_rate: z.string().optional(),
+    spo2: z.string().optional(),
 
-    systolic_l: z.string().optional(),
-    diastolic_l: z.string().optional(),
-    systolic_r: z.string().optional(),
-    diastolic_r: z.string().optional(),
+    systolic_left: z.string().optional(),
+    diastolic_left: z.string().optional(),
+    systolic_right: z.string().optional(),
+    diastolic_right: z.string().optional(),
 
     temperature: z.string().optional(),
     grbs: z.string().optional(),
@@ -535,7 +518,7 @@ const vitalsSchema = z.object({
     ibw: z.string().optional(),
     rbs: z.string().optional(),
 
-    notes: z.string().optional(),
+    additional_note: z.string().optional(),
 });
 
 type VitalsFormValues = z.infer<typeof vitalsSchema>;
@@ -559,13 +542,13 @@ export default function VitalsModal({
         defaultValues: {
             blood_pressure: initial?.blood_pressure ?? "",
             pulse_rate: initial?.pulse_rate ?? "",
-            respiratory_rate: initial?.respiratory_rate ?? "",
-            oxygen_saturation: initial?.oxygen_saturation ?? "",
+            respiration_rate: initial?.respiration_rate ?? "",
+            spo2: initial?.spo2 ?? "",
 
-            systolic_l: initial?.systolic_l ?? "",
-            diastolic_l: initial?.diastolic_l ?? "",
-            systolic_r: initial?.systolic_r ?? "",
-            diastolic_r: initial?.diastolic_r ?? "",
+            systolic_left: initial?.systolic_left ?? "",
+            diastolic_left: initial?.diastolic_left ?? "",
+            systolic_right: initial?.systolic_right ?? "",
+            diastolic_right: initial?.diastolic_right ?? "",
 
             temperature: initial?.temperature ?? "",
             grbs: initial?.grbs ?? "",
@@ -576,7 +559,7 @@ export default function VitalsModal({
             ibw: initial?.ibw ?? "",
             rbs: initial?.rbs ?? "",
 
-            notes: initial?.notes ?? "",
+            additional_note: initial?.additional_note ?? "",
         },
     });
 
@@ -614,14 +597,14 @@ export default function VitalsModal({
                             </FormItem>
                         )} />
 
-                        <FormField name="respiratory_rate" control={form.control} render={({ field }) => (
+                        <FormField name="respiration_rate" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Respiration Rate</FormLabel>
                                 <FormControl><Input placeholder="Enter RR" {...field} /></FormControl>
                             </FormItem>
                         )} />
 
-                        <FormField name="oxygen_saturation" control={form.control} render={({ field }) => (
+                        <FormField name="spo2" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>SpO₂ (%)</FormLabel>
                                 <FormControl><Input placeholder="Enter SpO₂" {...field} /></FormControl>
@@ -629,28 +612,28 @@ export default function VitalsModal({
                         )} />
 
                         {/* Row 2 */}
-                        <FormField name="systolic_l" control={form.control} render={({ field }) => (
+                        <FormField name="systolic_left" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Systolic (L)</FormLabel>
                                 <FormControl><Input placeholder="Enter Systolic(L)" {...field} /></FormControl>
                             </FormItem>
                         )} />
 
-                        <FormField name="diastolic_l" control={form.control} render={({ field }) => (
+                        <FormField name="diastolic_left" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Diastolic (L)</FormLabel>
                                 <FormControl><Input placeholder="Enter Diastolic(L)" {...field} /></FormControl>
                             </FormItem>
                         )} />
 
-                        <FormField name="systolic_r" control={form.control} render={({ field }) => (
+                        <FormField name="systolic_right" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Systolic (R)</FormLabel>
                                 <FormControl><Input placeholder="Enter Systolic(R)" {...field} /></FormControl>
                             </FormItem>
                         )} />
 
-                        <FormField name="diastolic_r" control={form.control} render={({ field }) => (
+                        <FormField name="diastolic_right" control={form.control} render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Diastolic (R)</FormLabel>
                                 <FormControl><Input placeholder="Enter Diastolic(R)" {...field} /></FormControl>
@@ -718,7 +701,7 @@ export default function VitalsModal({
                     </div>
 
                     {/* NOTES */}
-                    <FormField name="notes" control={form.control} render={({ field }) => (
+                    <FormField name="additional_note" control={form.control} render={({ field }) => (
                         <FormItem>
                             <FormLabel>Additional Note</FormLabel>
                             <FormControl>

@@ -444,6 +444,7 @@ import { VisitPurposeData } from "../_component/Tabs/visit-purpose/VisitPurpose"
 import { useUpdateVisitStatus } from "../_component/common/useUpdateVisitStatus";
 import { SoapNoteData } from "../_component/Tabs/soap/SOAPNote";
 import { useSaveSoapNote, useSoapNoteByVisitId } from "../_component/Tabs/_hooks/useSoapNotes";
+import { canWorkOnVisit } from "../_component/common/visitGuards";
 
 export default function ConsultationDetailPage() {
   const queryClient = useQueryClient();
@@ -646,24 +647,33 @@ export default function ConsultationDetailPage() {
         onStart={handleStartConsultation}
         isLoading={isLoading}
       />
+      {canWorkOnVisit(selected.status) ?
+        <div className="w-full flex flex-col gap-4">
+          {/* TABS */}
+          <AppointmentDetailTabs
+            active={activeTab}
+            onChange={setActiveTab}
+            visitStatus={selected.status}
+            injectedProps={injectedProps}
+            onStartConsultation={handleStartConsultation}
+          />
 
-      {/* TABS */}
-      <AppointmentDetailTabs
-        active={activeTab}
-        onChange={setActiveTab}
-        injectedProps={injectedProps}
-      />
+          {/* CONTENT */}
+          <AppointmentDetailContent activeTab={activeTab} injectedProps={injectedProps} />
 
-      {/* CONTENT */}
-      <AppointmentDetailContent activeTab={activeTab} injectedProps={injectedProps} />
-
-      {/* FLOATING SAVE BUTTON */}
-      <FloatingSaveBar
-        saving={saveDraftMutation.isPending}
-        finishing={finishMutation.isPending}
-        onSaveDraft={() => saveDraftMutation.mutate()}
-        onFinish={() => finishMutation.mutate()}
-      />
+          {/* FLOATING SAVE BUTTON */}
+          <FloatingSaveBar
+            saving={saveDraftMutation.isPending}
+            finishing={finishMutation.isPending}
+            onSaveDraft={() => saveDraftMutation.mutate()}
+            onFinish={() => finishMutation.mutate()}
+          />
+        </div>
+        :
+        <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-sm text-yellow-800">
+          Please start the consultation to access patient details.
+        </div>
+      }
     </div>
   );
 }

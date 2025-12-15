@@ -229,9 +229,9 @@ export function Vitals({ patientId }: patientId) {
         <VitalCardsGrid
           vitals={vitals}
           loading={isLoading}
-          onDelete={() => deleteVitals.mutate(vitals?.id)}
-          onEdit={() => {
-            setEditingVitals(vitals);
+          onDelete={(single_vital) => deleteVitals.mutate(single_vital)}
+          onEdit={(single_vital) => {
+            setEditingVitals(single_vital);
             setShowModal(true);
           }}
         />

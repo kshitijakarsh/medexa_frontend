@@ -41,7 +41,7 @@ export function useDeleteVitals() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (vitalsId: string) => {
+    mutationFn: async (vitalsId: number) => {
       return api.delete(vitalsId);
     },
     onSuccess: () => {

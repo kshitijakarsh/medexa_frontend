@@ -26,7 +26,7 @@ export function VitalCard({
   iconColor = "text-blue-600",
 }: {
   label: string;
-  value?: string;
+  value?: string | null;
   icon: React.ReactNode;
   iconBg?: string;
   iconColor?: string;

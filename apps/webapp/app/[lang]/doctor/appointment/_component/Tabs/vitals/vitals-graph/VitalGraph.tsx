@@ -38,7 +38,7 @@ const vitalMap = {
   oxygen: { label: "SpO₂", color: "#ec4899", unit: "%" },
 };
 
-export function VitalGraph() {
+export function VitalGraph({vitals} : any) {
   const [vitalKey, setVitalKey] = React.useState<keyof typeof vitalMap>("bp");
   const [range, setRange] = React.useState("24h");
 

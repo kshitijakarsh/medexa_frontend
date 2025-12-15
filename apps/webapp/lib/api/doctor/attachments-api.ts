@@ -10,49 +10,46 @@ interface ApiConfig {
 
 /* ---------------- TYPES ---------------- */
 
-export interface Vitals {
+export interface Attachment {
   id: string;
+  tenant_id: string;
   patient_id: string;
   visit_id: string;
 
-  blood_pressure?: string;
-  pulse_rate?: string;
-  temperature?: string;
-  respiratory_rate?: string;
-  oxygen_saturation?: string;
-  height?: string;
-  weight?: string;
-  bmi?: string;
-  head_circumference?: string;
-  waist_circumference?: string;
-  hip_circumference?: string;
-  blood_glucose?: string;
-  cholesterol?: string;
-  pain_scale?: string;
-  notes?: string;
+  title: string;
+  description?: string;
+  s3_url: string;
 
   created_at: string;
   updated_at: string;
   created_by: string;
   updated_by: string;
+
+  createdBy?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+  };
 }
 
 /* ----------- PAYLOADS ----------- */
 
-export type CreateVitalsPayload = Omit<
-  Vitals,
-  | "id"
-  | "created_at"
-  | "updated_at"
-  | "created_by"
-  | "updated_by"
+export type CreateAttachmentPayload = {
+  patient_id: string;
+  visit_id: string;
+  title: string;
+  description?: string;
+  s3_url: string;
+};
+
+export type UpdateAttachmentPayload = Partial<
+  Omit<CreateAttachmentPayload, "patient_id" | "visit_id">
 >;
 
-export type UpdateVitalsPayload = Partial<CreateVitalsPayload>;
+/* ---------------- CLIENT: ATTACHMENTS ---------------- */
 
-/* ---------------- CLIENT: VITALS ---------------- */
-
-class VitalsApiClient {
+class AttachmentsApiClient {
   private baseUrl: string;
 
   constructor(config: ApiConfig) {
@@ -73,7 +70,7 @@ class VitalsApiClient {
   }
 
   /* ---------------------------------------------------
-     GET: Vitals by Patient ID
+     GET: Attachments by Patient ID
   --------------------------------------------------- */
   async getByPatient(
     patientId: string,
@@ -82,28 +79,13 @@ class VitalsApiClient {
     const config = await this.getJsonRequestConfig();
 
     return axios.get(
-      `${this.baseUrl}/api/v1/patients/${patientId}/vitals`,
+      `${this.baseUrl}/api/v1/patients/${patientId}/attachments`,
       { ...config, params }
     );
   }
 
   /* ---------------------------------------------------
-     GET: Vitals by Doctor ID
-  --------------------------------------------------- */
-  async getByDoctor(
-    doctorId: string,
-    params?: { page?: number; limit?: number }
-  ): Promise<AxiosResponse<any>> {
-    const config = await this.getJsonRequestConfig();
-
-    return axios.get(
-      `${this.baseUrl}/api/v1/doctors/${doctorId}/vitals`,
-      { ...config, params }
-    );
-  }
-
-  /* ---------------------------------------------------
-     GET: Vitals by Visit ID
+     GET: Attachments by Visit ID
   --------------------------------------------------- */
   async getByVisit(
     visitId: string,
@@ -112,13 +94,28 @@ class VitalsApiClient {
     const config = await this.getJsonRequestConfig();
 
     return axios.get(
-      `${this.baseUrl}/api/v1/visits/${visitId}/vitals`,
+      `${this.baseUrl}/api/v1/visits/${visitId}/attachments`,
       { ...config, params }
     );
   }
 
   /* ---------------------------------------------------
-     GET: Vitals by Visit (Authenticated Doctor)
+     GET: Attachments by Uploader ID
+  --------------------------------------------------- */
+  async getByUploader(
+    uploaderId: string,
+    params?: { page?: number; limit?: number }
+  ): Promise<AxiosResponse<any>> {
+    const config = await this.getJsonRequestConfig();
+
+    return axios.get(
+      `${this.baseUrl}/api/v1/uploaders/${uploaderId}/attachments`,
+      { ...config, params }
+    );
+  }
+
+  /* ---------------------------------------------------
+     GET: Attachments by Visit (Authenticated Doctor)
   --------------------------------------------------- */
   async getByVisitForDoctor(
     visitId: string
@@ -126,7 +123,7 @@ class VitalsApiClient {
     const config = await this.getJsonRequestConfig();
 
     return axios.get(
-      `${this.baseUrl}/api/v1/doctor/vitals`,
+      `${this.baseUrl}/api/v1/doctor/attachments`,
       {
         ...config,
         params: { visitId },
@@ -135,56 +132,56 @@ class VitalsApiClient {
   }
 
   /* ---------------------------------------------------
-     GET: Single Vitals by ID
+     GET: Single Attachment by ID
   --------------------------------------------------- */
   async getById(id: string): Promise<AxiosResponse<any>> {
     const config = await this.getJsonRequestConfig();
 
     return axios.get(
-      `${this.baseUrl}/api/v1/vitals/${id}`,
+      `${this.baseUrl}/api/v1/attachments/${id}`,
       { ...config }
     );
   }
 
   /* ---------------------------------------------------
-     POST: Create Vitals
+     POST: Create Attachment
   --------------------------------------------------- */
   async create(
-    payload: CreateVitalsPayload
+    payload: CreateAttachmentPayload
   ): Promise<AxiosResponse<any>> {
     const config = await this.getJsonRequestConfig();
 
     return axios.post(
-      `${this.baseUrl}/api/v1/vitals`,
+      `${this.baseUrl}/api/v1/attachments`,
       payload,
       { ...config }
     );
   }
 
   /* ---------------------------------------------------
-     PUT: Update Vitals
+     PUT: Update Attachment
   --------------------------------------------------- */
   async update(
     id: string,
-    payload: UpdateVitalsPayload
+    payload: UpdateAttachmentPayload
   ): Promise<AxiosResponse<any>> {
     const config = await this.getJsonRequestConfig();
 
     return axios.put(
-      `${this.baseUrl}/api/v1/vitals/${id}`,
+      `${this.baseUrl}/api/v1/attachments/${id}`,
       payload,
       { ...config }
     );
   }
 
   /* ---------------------------------------------------
-     DELETE: Soft Delete Vitals
+     DELETE: Soft Delete Attachment
   --------------------------------------------------- */
-  async delete(id: number): Promise<AxiosResponse<any>> {
+  async delete(id: string): Promise<AxiosResponse<any>> {
     const config = await this.getJsonRequestConfig();
 
     return axios.delete(
-      `${this.baseUrl}/api/v1/vitals/${id}`,
+      `${this.baseUrl}/api/v1/attachments/${id}`,
       { ...config }
     );
   }
@@ -193,5 +190,6 @@ class VitalsApiClient {
 /* ---------------------------------------------------
    FACTORY EXPORT
 --------------------------------------------------- */
-export const createVitalsApiClient = (config: ApiConfig) =>
-  new VitalsApiClient(config);
+
+export const createAttachmentsApiClient = (config: ApiConfig) =>
+  new AttachmentsApiClient(config);

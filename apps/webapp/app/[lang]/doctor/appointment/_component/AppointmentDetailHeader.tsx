@@ -247,6 +247,7 @@ import { Users, FileText, Share2, Save } from "lucide-react";
 import { ActionButton } from "./button/ActionButton";
 import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
 import { VisitStatusSelector } from "./common/VisitStatusSelector";
+import { canWorkOnVisit } from "./common/visitGuards";
 
 export function AppointmentDetailHeader({
   item,
@@ -268,13 +269,13 @@ export function AppointmentDetailHeader({
   onStart?: () => void,
 }) {
 
-  const isStarted = [
-    "in_consultation",
-    "in_progress",
-    "lab_test",
-    "radiology",
-    "active"
-  ].includes(item.status);
+  // const isStarted = [
+  //   "in_consultation",
+  //   "in_progress",
+  //   "lab_test",
+  //   "radiology",
+  //   // "active"
+  // ].includes(item.status);
 
   const isCompleted = item.status === "completed";
 
@@ -316,7 +317,7 @@ export function AppointmentDetailHeader({
             size={60}
           />
           {/* STATUS SELECTOR */}
-          {!isCompleted && isStarted && (
+          {!isCompleted && canWorkOnVisit(item.status) && (
             <VisitStatusSelector
               visitId={item.id}
               status={item.status.toLowerCase()}
@@ -357,7 +358,7 @@ export function AppointmentDetailHeader({
         /> */}
 
         {/* START CONSULTATION */}
-        {!isStarted && !isCompleted && (
+        {!canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
             label={starting ? "Starting..." : "Start Consultation"}
             icon={<Users size={18} />}
@@ -368,7 +369,7 @@ export function AppointmentDetailHeader({
         )}
 
         {/* FINISH CONSULTATION */}
-        {isStarted && !isCompleted && (
+        {canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
             label={finishing ? "Finishing..." : "Finish Consultation"}
             icon={<Users size={18} />}

@@ -80,7 +80,7 @@ export function VitalsHistory({ patientId }: { patientId: string }) {
   return (
     <div className="mt-4">
       <h3 className="text-sm font-semibold mb-2">
-        Previous History of Nurse Notes
+        Previous History of Vitals
       </h3>
 
       {isLoading ? (
