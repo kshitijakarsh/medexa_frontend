@@ -324,7 +324,7 @@ const statusStyles: Record<
   },
 
   // Your previous statuses
-  Inconsultation: {
+  InConsultation: {
     bg: "bg-[#0B84FF]",
     text: "text-white",
   },
@@ -375,6 +375,7 @@ const fallbackStyle = {
 export function StatusPill({ status, className = "" }: StatusPillProps) {
   const label = normalizeStatus(status);   // e.g., "In Progress"
   const key = statusKey(label);            // e.g., "InProgress"
+  console.log(key)
   const style = statusStyles[key] || fallbackStyle;
 
   return (
