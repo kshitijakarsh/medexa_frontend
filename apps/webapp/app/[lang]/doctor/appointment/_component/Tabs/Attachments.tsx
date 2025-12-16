@@ -114,12 +114,13 @@ import AddAttachmentModal from "./attachment/AddAttachmentModal";
 import AttachmentPreviewModal from "./attachment/AttachmentPreviewModal";
 import { AttachmentGridSkeleton } from "./attachment/AttachmentGridSkeleton";
 import { FileStack } from "lucide-react";
+import { AttachmentsHistory } from "./attachment/AttachmentsHistory";
 
-export default function Attachments({patientId}: {patientId: string}) {
+export default function Attachments({ patientId }: { patientId: string }) {
   const { id: visitId } = useParams() as { id: string };
 
   const { data, isLoading } = useAttachmentsByVisitId(visitId);
-  const deleteAttachment = useDeleteAttachment();
+  const deleteAttachment = useDeleteAttachment(visitId);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [previewItem, setPreviewItem] = useState<any>(null);
@@ -127,58 +128,61 @@ export default function Attachments({patientId}: {patientId: string}) {
   const attachments = data ?? [];
 
   return (
-    <SectionWrapper
-      header={
-        <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Attachments</h2>
-          <NewButton
-            name="Add Attachments"
-            handleClick={() => setShowAddModal(true)}
-          />
-        </div>
-      }
-    >
-      <div className="min-h-[240px]">
-        {isLoading ? (
-          <AttachmentGridSkeleton />
-        ) : attachments.length === 0 ? (
-          <EmptyAttachments onAdd={() => setShowAddModal(true)} />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {attachments.map((a) => (
-              <AttachmentCard
-                key={a.id}
-                data={{
-                  title: a.title,
-                  preview: a.s3_url,
-                }}
-                onView={() => setPreviewItem(a)}
-                onDelete={() => deleteAttachment.mutate(a.id)}
-              />
-            ))}
+    <>  
+      <SectionWrapper
+        header={
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-semibold">Attachments</h2>
+            <NewButton
+              name="Add Attachments"
+              handleClick={() => setShowAddModal(true)}
+            />
           </div>
-        )}
-      </div>
+        }
+      >
+        <div className="min-h-[240px]">
+          {isLoading ? (
+            <AttachmentGridSkeleton />
+          ) : attachments.length === 0 ? (
+            <EmptyAttachments onAdd={() => setShowAddModal(true)} />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {attachments.map((a) => (
+                <AttachmentCard
+                  key={a.id}
+                  data={{
+                    title: a.title,
+                    preview: a.s3_url,
+                  }}
+                  onView={() => setPreviewItem(a)}
+                  onDelete={() => deleteAttachment.mutate(a.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
-      <AddAttachmentModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        visitId={visitId}
-        patientId={patientId}
-      />
-
-      {previewItem && (
-        <AttachmentPreviewModal
-          open={true}
-          onClose={() => setPreviewItem(null)}
-          attachment={{
-            title: previewItem.title,
-            fileUrl: previewItem.s3_url,
-            preview: previewItem.s3_url,
-          }}
+        <AddAttachmentModal
+          open={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          visitId={visitId}
+          patientId={patientId}
         />
-      )}
-    </SectionWrapper>
+
+        {previewItem && (
+          <AttachmentPreviewModal
+            open={true}
+            onClose={() => setPreviewItem(null)}
+            attachment={{
+              title: previewItem.title,
+              fileUrl: previewItem.s3_url,
+              preview: previewItem.s3_url,
+            }}
+          />
+        )}
+      </SectionWrapper>
+      <AttachmentsHistory patientId={patientId} />
+    </>
   );
 }
 

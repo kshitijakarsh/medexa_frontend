@@ -1,6 +1,6 @@
 import { AppDialog } from "@/components/common/app-dialog";
 
-export default function SurgeryDetailsModal({ open, onClose, surgery }) {
+export default function SurgeryDetailsModal({ open, onClose, surgery } : any) {
   return (
     <AppDialog
       open={open}

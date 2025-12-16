@@ -215,7 +215,7 @@ export function Vitals({ patientId }: patientId) {
   const { id: visitId } = useParams() as { id: string };
 
   const { data: vitals, isLoading } = useVitalsByVisitId(visitId);
-  const deleteVitals = useDeleteVitals();
+  const deleteVitals = useDeleteVitals(visitId);
 
   const [showModal, setShowModal] = useState(false);
   const [editingVitals, setEditingVitals] = useState<any>(null);

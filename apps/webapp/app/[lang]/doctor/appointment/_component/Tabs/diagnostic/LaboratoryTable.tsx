@@ -44,7 +44,19 @@ import {
   TableCell,
 } from "@workspace/ui/components/table";
 
-export default function LaboratoryTable({ data }) {
+export type LabOrder = {
+  id: number;
+  test: string;
+  urgency: string;
+  orderedDate: string;
+  status: string;
+};
+
+interface LaboratoryTableProps {
+  data: LabOrder[];
+}
+
+export default function LaboratoryTable({ data } : LaboratoryTableProps) {
   return (
     <div className="overflow-x-auto">
       <Table className="w-full text-sm">

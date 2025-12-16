@@ -32,7 +32,7 @@ interface AttachmentCardProps {
     preview: string;
   };
   onView: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 export default function AttachmentCard({
@@ -55,20 +55,21 @@ export default function AttachmentCard({
         />
       </div>
 
-      <div className="flex justify-between items-center mt-3">
+      <div className={`flex justify-${!onDelete ? "center" : "between"} items-center mt-3`}>
         <button
           onClick={onView}
-          className="text-blue-600 underline text-sm"
+          className="text-blue-600 border-blue-600 border-1 px-2 rounded-md hover:text-white hover:bg-blue-600 text-sm cursor-pointer"
         >
           View
         </button>
 
-        <button
+       {onDelete && <button
           onClick={onDelete}
-          className="text-red-500 text-sm hover:underline"
+          className="text-red-500 text-sm px-2 rounded-md border-red-500 border-1 hover:text-white hover:bg-red-500 cursor-pointer"
         >
           Delete
         </button>
+       }
       </div>
     </div>
   );

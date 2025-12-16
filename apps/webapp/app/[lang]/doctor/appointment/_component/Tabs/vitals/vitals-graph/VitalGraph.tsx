@@ -38,7 +38,7 @@ const vitalMap = {
   oxygen: { label: "SpO₂", color: "#ec4899", unit: "%" },
 };
 
-export function VitalGraph({vitals} : any) {
+export function VitalGraph({ vitals }: any) {
   const [vitalKey, setVitalKey] = React.useState<keyof typeof vitalMap>("bp");
   const [range, setRange] = React.useState("24h");
 
@@ -87,7 +87,7 @@ export function VitalGraph({vitals} : any) {
               tickMargin={10}
             />
 
-            <Tooltip
+            {/* <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
               content={({ active, payload, label }) => {
                 if (!active || !payload?.length) return null;
@@ -102,7 +102,29 @@ export function VitalGraph({vitals} : any) {
                   </div>
                 );
               }}
+            /> */}
+
+            <Tooltip
+              cursor={{ strokeDasharray: "3 3" }}
+              content={({ active, payload, label }) => {
+                if (!active) return null;
+
+                const item = payload?.[0];
+                if (!item || item.value == null) return null;
+
+                return (
+                  <div className="bg-white border rounded-lg px-3 py-2 shadow-sm text-sm">
+                    <div className="text-gray-500 mb-1">
+                      14 Nov at {label}
+                    </div>
+                    <div className="font-semibold">
+                      {item.value} {cfg.unit}
+                    </div>
+                  </div>
+                );
+              }}
             />
+
 
             <defs>
               <linearGradient id="vitalGradient" x1="0" y1="0" x2="0" y2="1">

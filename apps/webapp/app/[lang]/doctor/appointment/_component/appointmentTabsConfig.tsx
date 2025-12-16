@@ -36,9 +36,9 @@ export const appointmentTabsConfig = (props: any) => [
     {
         key: "Vitals", label: "Vitals", component: <Vitals patientId={props.patientId} />
     },
-    // { key: "Prescription", label: "Prescription", component: <Prescription /> },
-    // { key: "Diagnostic Orders", label: "Diagnostic Orders", component: <DiagnosticOrders /> },
-    // { key: "Attachments", label: "Attachments", component: <Attachments patientId={props.patientId}/> },
+    { key: "Prescription", label: "Prescription", component: <Prescription /> },
+    { key: "Diagnostic Orders", label: "Diagnostic Orders", component: <DiagnosticOrders /> },
+    { key: "Attachments", label: "Attachments", component: <Attachments patientId={props.patientId}/> },
     // { key: "Patient History", label: "Patient History", component: <p>Patient History tab...</p> },
     {
         key: "Nurse Note", label: "Nurse Note",

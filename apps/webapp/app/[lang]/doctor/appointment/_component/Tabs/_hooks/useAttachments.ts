@@ -73,10 +73,36 @@ export function useSaveAttachment(attachmentId?: string) {
 }
 
 /* ---------------- DELETE ---------------- */
-export function useDeleteAttachment() {
+export function useDeleteAttachment(visitId: string) {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (id: string) => {
       return api.delete(id);
     },
+    onSuccess: () => {
+      // Refetch vitals after delete
+      queryClient.invalidateQueries({ queryKey: ["attachments", visitId] });
+      queryClient.invalidateQueries({ queryKey: ["attachments-history"] });
+    },
   });
+
+}
+
+
+
+
+
+/*---------------- SINGLE VISIT Attachemts (DETAIL VIEW) ---------------- */
+export function useAttachmentHistoryOneVisitId(visitId: string) {
+    return useQuery({
+        queryKey: ["attachmetHistoryByVisitId", visitId],  // Unique key
+        enabled: !!visitId,
+        queryFn: async () => {
+            const res = await api.getByVisit(visitId);
+
+            // Backend returns array inside res.data.data → extract correctly
+            return res.data?.data ?? [];
+        },
+    });
 }

@@ -371,8 +371,9 @@ export default function AddAttachmentModal({
     //   // Important: prevent axios/AWS SDK from trying to sign the request
     //   withCredentials: false,
     // });
+    // console.log(presigned, presigned.key, presigned.uploadUrl)
 
-    await axios.put(presigned.uploadUrl, values.file, {
+    await axios.put(presigned.uploadUrl.split("?")[0] ?? '', values.file, {
       withCredentials: false,
       headers: {
         "Content-Type": values.file.type,
