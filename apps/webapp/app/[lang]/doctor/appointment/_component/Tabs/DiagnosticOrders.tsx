@@ -19,6 +19,25 @@ const tabs = [
     { key: "radiology", label: "Radiology & Imaging" },
 ];
 
+type LabOrder = {
+    id: number;
+    test: string;
+    urgency: string;
+    category: string;
+    orderedDate: string;
+    status: string;
+};
+
+type RadOrder = {
+    id: number;
+    procedure: string;
+    bodyPart: string;
+    urgency: string;
+    orderedDate: string;
+    status: string;
+};
+
+
 export function DiagnosticOrders() {
     const [activeTab, setActiveTab] = useState("laboratory");
 
@@ -52,13 +71,15 @@ export function DiagnosticOrders() {
         }
     ]);
 
+    const [labOrders, setLabOrders] = useState<LabOrder[]>([]);
+    const [radOrders, setRadOrders] = useState<RadOrder[]>([]);
 
 
     const [showLabModal, setShowLabModal] = useState(false);
     const [showRadModal, setShowRadModal] = useState(false);
 
-    const [labOrders, setLabOrders] = useState([]);
-    const [radOrders, setRadOrders] = useState([]);
+    // const [labOrders, setLabOrders] = useState([]);
+    // const [radOrders, setRadOrders] = useState([]);
 
     const addLabOrder = (order: any) => {
         setLabOrders((prev) => [...prev, { id: prev.length + 1, ...order }]);
