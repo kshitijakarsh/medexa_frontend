@@ -366,7 +366,10 @@ export default function AddAttachmentModal({
     await axios.put(presigned.uploadUrl, values.file, {
       headers: {
         "Content-Type": values.file.type,
+
       },
+      // Important: prevent axios/AWS SDK from trying to sign the request
+      withCredentials: false,
     });
 
     /* 3️⃣ Build final S3 URL */
