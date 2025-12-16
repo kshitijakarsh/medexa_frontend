@@ -363,14 +363,25 @@ export default function AddAttachmentModal({
     });
 
     /* 2️⃣ Upload file to S3 (THIS IS REQUIRED) */
+    // await axios.put(presigned.uploadUrl, values.file, {
+    //   // headers: {
+    //   //   "Content-Type": values.file.type,
+
+    //   // },
+    //   // Important: prevent axios/AWS SDK from trying to sign the request
+    //   withCredentials: false,
+    // });
+
     await axios.put(presigned.uploadUrl, values.file, {
+      withCredentials: false,
       headers: {
         "Content-Type": values.file.type,
-
       },
-      // Important: prevent axios/AWS SDK from trying to sign the request
-      withCredentials: false,
     });
+    // await fetch(presigned.uploadUrl, {
+    //   method: "PUT",
+    //   body: values.file, // File or Blob
+    // });
 
     /* 3️⃣ Build final S3 URL */
     const s3PublicUrl = `https://${presigned.bucket}.s3.ap-south-1.amazonaws.com/${presigned.key}`;

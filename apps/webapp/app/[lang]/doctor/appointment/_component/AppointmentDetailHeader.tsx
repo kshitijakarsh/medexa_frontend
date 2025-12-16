@@ -264,7 +264,7 @@ export function AppointmentDetailHeader({
   onFinish: () => void;
   saving: boolean;
   finishing: boolean;
-  isLoading?:boolean;
+  isLoading?: boolean;
   starting?: boolean,
   onStart?: () => void,
 }) {
@@ -383,12 +383,14 @@ export function AppointmentDetailHeader({
           label="View Details"
           icon={<FileText size={18} />}
           variant="outline"
+          disabled={true}
         />
 
         <ActionButton
           label="Refer Doctor"
           icon={<Share2 size={18} />}
           variant="outline"
+          disabled={true}
         />
       </div>
     </div>
