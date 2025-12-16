@@ -1,14 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { HistoryCard } from "../common/hisotry/HistoryCard";
 import { HistorySkeleton } from "../common/hisotry/HistorySkeleton";
 import { ROUTES } from "@/lib/routes";
 import { useSoapNotesHistoryByPatient } from "../_hooks/useSoapNotes";
 import { format } from "@workspace/ui/hooks/use-date-fns";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export function SoapNotesHistory({ patientId }: { patientId: string }) {
   const router = useRouter();
+  const { id: visitId } = useParams() as { id: string };
+  const { withLocale } = useLocaleRoute()
 
   // 🔥 SOAP notes history API
   const { data, isLoading } = useSoapNotesHistoryByPatient(patientId);
@@ -32,9 +35,8 @@ export function SoapNotesHistory({ patientId }: { patientId: string }) {
               ? new Date(item.created_at)
               : null;
 
-            const recorderName = `${item.createdBy?.name ?? ""} (${
-              item.createdBy?.role?.name ?? ""
-            })`.trim();
+            const recorderName = `${item.createdBy?.name ?? ""} (${item.createdBy?.role?.name ?? ""
+              })`.trim(); 
 
             return (
               <HistoryCard
@@ -44,16 +46,12 @@ export function SoapNotesHistory({ patientId }: { patientId: string }) {
                     ? format(createdAt, "MMMM dd, yyyy")
                     : "Unknown Date"
                 }
-                subtitle={`Recorded by ${
-                  recorderName || "Unknown"
-                } at ${
-                  createdAt ? format(createdAt, "hh:mm a") : "--"
-                }`}
+                subtitle={`Recorded by ${recorderName || "Unknown"
+                  } at ${createdAt ? format(createdAt, "hh:mm a") : "--"
+                  }`}
                 onClick={() =>
                   router.push(
-                    `${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_SOAP_NOTE_HISTORY_VIEW}${item.id}`
-                  )
-                }
+                    `${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_SOAP_NOTE_HISTORY_VIEW}${item.id}`)}`)}
               />
             );
           })}

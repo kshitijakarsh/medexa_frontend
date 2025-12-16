@@ -450,6 +450,7 @@ export default function ConsultationDetailPage() {
   const queryClient = useQueryClient();
 
   const { id: visitId } = useParams() as { id: string };
+  console.log(visitId)
 
   /* ---------------------- GET Visit Details ---------------------- */
   const { data: visitData, isLoading } = useDoctorVisitById(visitId);

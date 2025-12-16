@@ -271,7 +271,7 @@ export function Vitals({ patientId }: patientId) {
         }
       >
         {/* TAB CONTENT */}
-        <div className="mt-4">
+        <div className="">
           {activeTabConfig?.component}
         </div>
 

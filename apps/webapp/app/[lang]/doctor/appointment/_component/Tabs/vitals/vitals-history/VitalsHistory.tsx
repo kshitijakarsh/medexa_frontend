@@ -64,15 +64,18 @@
 
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { HistoryCard } from "../../common/hisotry/HistoryCard";
 import { HistorySkeleton } from "../../common/hisotry/HistorySkeleton";
 import { ROUTES } from "@/lib/routes";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useVitalsHistoryByPatient } from "../../_hooks/useVitals";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export function VitalsHistory({ patientId }: { patientId: string }) {
   const router = useRouter();
+  const { id: visitId } = useParams() as { id: string };
+  const { withLocale } = useLocaleRoute()
 
   const { data, isLoading } = useVitalsHistoryByPatient(patientId);
   const history = data || [];
@@ -106,14 +109,11 @@ export function VitalsHistory({ patientId }: { patientId: string }) {
                     ? format(createdAt, "MMMM dd, yyyy")
                     : "Unknown Date"
                 }
-                subtitle={`Recorded by ${recorderName} at ${
-                  createdAt ? format(createdAt, "hh:mm a") : "--"
-                }`}
+                subtitle={`Recorded by ${recorderName} at ${createdAt ? format(createdAt, "hh:mm a") : "--"
+                  }`}
                 onClick={() =>
                   router.push(
-                    `${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_VITALS_HISTORY_VIEW}${item.id}`
-                  )
-                }
+                    `${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${visitId}${ROUTES.DOCTOR_SCREENING_VITALS_HISTORY_VIEW}${item.visit_id}`)}`)}
               />
             );
           })}

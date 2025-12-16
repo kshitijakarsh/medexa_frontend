@@ -103,11 +103,12 @@ import { HistorySkeleton } from "../common/hisotry/HistorySkeleton";
 import { ROUTES } from "@/lib/routes";
 import { useVisitPurposeByVisitIdHistory } from "../_hooks/useVisitPurpose";
 import { format } from "@workspace/ui/hooks/use-date-fns";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export function VisitPurposeHistory({ patientId }: { patientId: string }) {
     const router = useRouter();
-    const { id } = useParams();
-    const visitId = typeof id === "string" ? id : "";
+    const { id: visitId } = useParams() as { id: string };
+    const { withLocale } = useLocaleRoute()
 
     // 🔥 Call your API hook
     const { data, isLoading } = useVisitPurposeByVisitIdHistory(patientId);
@@ -153,9 +154,7 @@ export function VisitPurposeHistory({ patientId }: { patientId: string }) {
                                     }`}
                                 onClick={() =>
                                     router.push(
-                                        `${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_VISIT_PURPOSE_HISTORY_VIEW}${item.id}`
-                                    )
-                                }
+                                        `${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${visitId}${ROUTES.DOCTOR_SCREENING_VISIT_PURPOSE_HISTORY_VIEW}${item.id}`)}`)}
                             />
                         );
                     })}

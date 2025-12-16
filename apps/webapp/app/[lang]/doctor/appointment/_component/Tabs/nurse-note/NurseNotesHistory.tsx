@@ -1,14 +1,18 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { HistoryCard } from "../common/hisotry/HistoryCard";
 import { HistorySkeleton } from "../common/hisotry/HistorySkeleton";
 import { ROUTES } from "@/lib/routes";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useNurseNotesHistoryByPatient } from "../_hooks/useNurseNotes";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export function NurseNotesHistory({ patientId }: { patientId: string }) {
   const router = useRouter();
+  const { id: visitId } = useParams() as { id: string };
+  const { withLocale } = useLocaleRoute()
+
 
   const { data, isLoading } = useNurseNotesHistoryByPatient(patientId);
   const history = data || [];
@@ -42,14 +46,11 @@ export function NurseNotesHistory({ patientId }: { patientId: string }) {
                     ? format(createdAt, "MMMM dd, yyyy")
                     : "Unknown Date"
                 }
-                subtitle={`Recorded by ${recorderName} at ${
-                  createdAt ? format(createdAt, "hh:mm a") : "--"
-                }`}
+                subtitle={`Recorded by ${recorderName} at ${createdAt ? format(createdAt, "hh:mm a") : "--"
+                  }`}
                 onClick={() =>
                   router.push(
-                    `${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_NURSE_NOTE_HISTORY_VIEW}${item.id}`
-                  )
-                }
+                    `${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.visit_id}${ROUTES.DOCTOR_SCREENING_NURSE_NOTE_HISTORY_VIEW}${item.id}`)}`)}
               />
             );
           })}

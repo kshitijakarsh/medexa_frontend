@@ -75,3 +75,21 @@ export function useVitalsHistoryOne(vitalsId: string) {
     },
   });
 }
+
+
+
+
+/*---------------- SINGLE VISIT VITALS (DETAIL VIEW) ---------------- */
+export function useVitalsHistoryOneVisitId(visitId: string) {
+    return useQuery({
+        queryKey: ["vitalsHistoryByVisitId", visitId],  // Unique key
+        enabled: !!visitId,
+        queryFn: async () => {
+            const res = await api.getByVisit(visitId);
+
+            // Backend returns array inside res.data.data → extract correctly
+            return res.data?.data ?? [];
+        },
+    });
+}
+

@@ -43,9 +43,10 @@ import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 export function AppointmentTableRow({ r, idx }: any) {
   const router = useRouter()
     const { withLocale } = useLocaleRoute()
+    console.log(r)
   
   return (
-    <TableRow className={`cursor-pointer ${idx % 2 === 0 ? "bg-[#F6FBFF]" : "bg-white"}`} onClick={() => router.push(`${withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)}${idx}`)}>
+    <TableRow className={`cursor-pointer ${idx % 2 === 0 ? "bg-[#F6FBFF]" : "bg-white"}`} onClick={() => router.push(`${withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)}${r.token}`)}>
       <TableCell className="py-4">{r.token}</TableCell>
 
       <TableCell>
