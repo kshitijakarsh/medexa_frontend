@@ -5,7 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 
 interface AttachmentPreviewModalProps {
   open: boolean,
-  onClose: ()=> void,
+  onClose: () => void,
   attachment: any
 }
 
@@ -13,7 +13,7 @@ export default function AttachmentPreviewModal({
   open,
   onClose,
   attachment,
-} : AttachmentPreviewModalProps) {
+}: AttachmentPreviewModalProps) {
   const downloadFile = () => {
     const a = document.createElement("a");
     a.href = attachment.fileUrl;
@@ -26,13 +26,18 @@ export default function AttachmentPreviewModal({
       open={open}
       onClose={onClose}
       title={attachment.title}
-      headerRight={
+      // headerRight={
+      //   <Button className="bg-blue-600 text-white" onClick={downloadFile}>
+      //     Download Document
+      //   </Button>
+      // }
+      maxWidth="max-w-3xl"
+    >
+      <div className="flex justify-end w-full">
         <Button className="bg-blue-600 text-white" onClick={downloadFile}>
           Download Document
         </Button>
-      }
-      maxWidth="max-w-3xl"
-    >
+      </div>
       <div className="p-4 max-h-[70vh] overflow-auto">
         <img
           src={attachment.preview}

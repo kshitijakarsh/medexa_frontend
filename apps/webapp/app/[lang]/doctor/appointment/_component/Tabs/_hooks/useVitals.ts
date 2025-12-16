@@ -37,7 +37,7 @@ export function useSaveVitals(vitalsId?: string) {
 }
 
 /* ---------------- DELETE VITALS ---------------- */
-export function useDeleteVitals() {
+export function useDeleteVitals(visitId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -46,7 +46,7 @@ export function useDeleteVitals() {
     },
     onSuccess: () => {
       // Refetch vitals after delete
-      queryClient.invalidateQueries({ queryKey: ["vitals"] });
+      queryClient.invalidateQueries({ queryKey: ["vitals", visitId] });
       queryClient.invalidateQueries({ queryKey: ["vitals-history"] });
     },
   });

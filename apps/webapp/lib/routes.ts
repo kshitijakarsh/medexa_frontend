@@ -26,6 +26,7 @@ export const ROUTES = {
   DOCTOR_SCREENING_SOAP_NOTE_HISTORY_VIEW: `/soap-note/history/`,
   DOCTOR_SCREENING_NURSE_NOTE_HISTORY_VIEW:`/nurse-notes/history/`,
   DOCTOR_SCREENING_VITALS_HISTORY_VIEW:`/vitals/history/`,
+  DOCTOR_SCREENING_ATTACHMENT_HISTORY_VIEW:`/attachment/history/`,
 
 
   DOCTOR_PROFILE: `${DOCTOR_BASE}/profile`,
