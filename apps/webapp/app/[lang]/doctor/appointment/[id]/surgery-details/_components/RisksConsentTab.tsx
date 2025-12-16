@@ -40,7 +40,7 @@ export default function RisksConsentTab() {
   );
 }
 
-function CheckboxCard({ label, description, checked, onChange }) {
+function CheckboxCard({ label, description, checked, onChange }: any) {
   return (
     <div className="flex items-start gap-3 p-4 bg-white border rounded-xl shadow-sm">
       <button onClick={onChange} className="mt-1">

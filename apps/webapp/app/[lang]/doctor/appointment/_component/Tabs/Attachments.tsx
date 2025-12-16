@@ -115,11 +115,11 @@ import AttachmentPreviewModal from "./attachment/AttachmentPreviewModal";
 import { AttachmentGridSkeleton } from "./attachment/AttachmentGridSkeleton";
 import { FileStack } from "lucide-react";
 
-export default function Attachments() {
+export default function Attachments({patientId}: {patientId: string}) {
   const { id: visitId } = useParams() as { id: string };
 
   const { data, isLoading } = useAttachmentsByVisitId(visitId);
-  const deleteAttachment = useDeleteAttachment(visitId);
+  const deleteAttachment = useDeleteAttachment();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [previewItem, setPreviewItem] = useState<any>(null);
@@ -164,6 +164,7 @@ export default function Attachments() {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         visitId={visitId}
+        patientId={patientId}
       />
 
       {previewItem && (

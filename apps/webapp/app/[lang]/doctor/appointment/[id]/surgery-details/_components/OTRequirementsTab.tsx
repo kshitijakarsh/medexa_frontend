@@ -21,7 +21,7 @@ export default function OTRequirementsTab() {
   );
 }
 
-function Detail({ label, value }) {
+function Detail({ label, value } : {label: string, value: string}) {
   return (
     <div className="bg-white border p-3 rounded-lg shadow-sm">
       <p className="text-gray-500 text-sm">{label}</p>
