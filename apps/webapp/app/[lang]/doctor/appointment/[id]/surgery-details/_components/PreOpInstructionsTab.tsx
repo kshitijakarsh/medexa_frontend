@@ -63,7 +63,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-function AccordionItem({ title, open, onToggle, children }) {
+function AccordionItem({ title, open, onToggle, children }: any) {
   return (
     <div className="border rounded-lg overflow-hidden">
       <button
