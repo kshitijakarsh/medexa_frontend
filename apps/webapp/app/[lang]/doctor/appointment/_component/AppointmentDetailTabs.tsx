@@ -1,71 +1,27 @@
-// // // "use client";
-
-// // // const tabs = [
-// // //   "Visit purpose",
-// // //   "SOAP Notes",
-// // //   "Vitals",
-// // //   "Prescription",
-// // //   "Diagnostic Orders",
-// // //   "Attachments",
-// // //   "Patient History",
-// // //   "Nurse Note",
-// // //   "Surgery",
-// // // ];
-
-// // // export function AppointmentDetailTabs({ active, onChange }) {
-// // //   return (
-// // //     <div className="flex gap-2 overflow-x-auto pb-2">
-// // //       {tabs.map((t) => (
-// // //         <button
-// // //           key={t}
-// // //           onClick={() => onChange(t)}
-// // //           className={`
-// // //             px-4 py-1 rounded-full text-sm 
-// // //             ${active === t ? "bg-blue-600 text-white" : "bg-[#F4F7FB] text-gray-600"}
-// // //           `}
-// // //         >
-// // //           {t}
-// // //         </button>
-// // //       ))}
-// // //     </div>
-// // //   );
-// // // }
-
-
 // // "use client";
 
-// // const tabs = [
-// //   "Visit purpose",
-// //   "SOAP Notes",
-// //   "Vitals",
-// //   "Prescription",
-// //   "Diagnostic Orders",
-// //   "Attachments",
-// //   "Patient History",
-// //   "Nurse Note",
-// //   "Surgery",
-// // ];
+// // import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+// // import { appointmentTabsConfig } from "./appointmentTabsConfig";
 
-// // export function AppointmentDetailTabs({ active, onChange } : {active: string, onChange: void}) {
+// // export function AppointmentDetailTabs({
+// //   active,
+// //   onChange,
+// //   injectedProps,
+// // }: {
+// //   active: string;
+// //   onChange: (tab: string) => void;
+// //   injectedProps: any;
+// // }) {
+
+// //   const tabs = appointmentTabsConfig(injectedProps);
+
 // //   return (
-// //     <div className="flex gap-2 overflow-x-auto mt-4 pb-2">
-// //       {tabs.map((t) => (
-// //         <button
-// //           key={t}
-// //           onClick={() => onChange(t)}
-// //           className={`
-// //             px-4 py-1 rounded-full whitespace-nowrap text-sm  
-// //             ${
-// //               active === t
-// //                 ? "bg-blue-600 text-white"
-// //                 : "bg-[#EFF4FF] text-gray-600"
-// //             }
-// //           `}
-// //         >
-// //           {t}
-// //         </button>
-// //       ))}
-// //     </div>
+// //     <DynamicTabs
+// //       tabs={tabs.map((t) => ({ key: t.key, label: t.label }))}
+// //       defaultTab={active}
+// //       onChange={onChange}
+// //       variant="scroll"
+// //     />
 // //   );
 // // }
 
@@ -73,80 +29,137 @@
 
 // "use client";
 
-// export const DETAIL_TABS = [
-//   "Visit purpose",
-//   "SOAP Notes",
-//   "Vitals",
-//   "Prescription",
-//   "Diagnostic Orders",
-//   "Attachments",
-//   "Patient History",
-//   "Nurse Note",
-//   "Surgery",
-// ] as const;
-
-// export type DetailTab = (typeof DETAIL_TABS)[number];
-
-// interface AppointmentDetailTabsProps {
-//   active: DetailTab;
-//   onChange: (tab: DetailTab) => void;
-// }
+// import { useRouter, useSearchParams, usePathname } from "next/navigation";
+// import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+// import { appointmentTabsConfig } from "./appointmentTabsConfig";
+// import { useEffect } from "react";
 
 // export function AppointmentDetailTabs({
 //   active,
 //   onChange,
-// }: AppointmentDetailTabsProps) {
+//   injectedProps,
+// }: {
+//   active: string;
+//   onChange: (tab: string) => void;
+//   injectedProps: any;
+// }) {
+//   const router = useRouter();
+//   const pathname = usePathname();
+//   const searchParams = useSearchParams();
+
+//   const tabs = appointmentTabsConfig(injectedProps);
+
+//   /* ----------------------------------
+//      Hydrate tab from query on load
+//   ---------------------------------- */
+//   useEffect(() => {
+//     const tabFromQuery = searchParams.get("tab");
+//     if (tabFromQuery && tabFromQuery !== active) {
+//       onChange(tabFromQuery);
+//     }
+//   }, [searchParams, active, onChange]);
+
+//   console.log(active)
+
+//   /* ----------------------------------
+//      Handle tab change → update query
+//   ---------------------------------- */
+//   const handleTabChange = (tabKey: string) => {
+//     onChange(tabKey);
+
+//     const params = new URLSearchParams(searchParams.toString());
+//     params.set("tab", tabKey);
+
+//     router.replace(`${pathname}?${params.toString()}`, {
+//       scroll: false,
+//     });
+//   };
+
 //   return (
-//     <div className="flex gap-2 overflow-x-auto mt-4 pb-2">
-//       {DETAIL_TABS.map((t) => (
-//         <button
-//           key={t}
-//           onClick={() => onChange(t)}
-//           className={`
-//             px-4 py-1 rounded-full whitespace-nowrap text-sm  
-//             ${
-//               active === t
-//                 ? "bg-blue-600 text-white"
-//                 : "bg-[#EFF4FF] text-gray-600"
-//             }
-//           `}
-//         >
-//           {t}
-//         </button>
-//       ))}
-//     </div>
+//     <DynamicTabs
+//       tabs={tabs.map((t) => ({ key: t.key, label: t.label }))}
+//       defaultTab={active}
+//       onChange={handleTabChange}
+//       variant="scroll"
+//     />
 //   );
 // }
 
 
+
 "use client";
 
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { appointmentTabsConfig } from "./appointmentTabsConfig";
+import { useEffect, useMemo, useState } from "react";
+import { canWorkOnVisit } from "./common/visitGuards";
 
 export function AppointmentDetailTabs({
   active,
   onChange,
+  injectedProps,
+  visitStatus,
+  onStartConsultation,
+
 }: {
   active: string;
   onChange: (tab: string) => void;
+  injectedProps: any;
+  visitStatus: string;
+  onStartConsultation?: () => void;
+
 }) {
-  const tabs = [
-    { key: "Visit purpose", label: "Visit purpose" },
-    { key: "SOAP Notes", label: "SOAP Notes" },
-    { key: "Vitals", label: "Vitals" },
-    { key: "Prescription", label: "Prescription" },
-    { key: "Diagnostic Orders", label: "Diagnostic Orders" },
-    { key: "Attachments", label: "Attachments" },
-    { key: "Patient History", label: "Patient History" },
-    { key: "Nurse Note", label: "Nurse Note" },
-    { key: "Surgery", label: "Surgery" },
-  ];
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const tabs = appointmentTabsConfig(injectedProps);
+
+  // ✅ Resolve initial tab ONCE
+  const resolvedInitialTab = useMemo(() => {
+    return searchParams.get("tab") ?? active;
+  }, []); // ← run only once on mount
+
+  // ✅ Hydrate parent state once
+  useEffect(() => {
+    if (resolvedInitialTab !== active) {
+      onChange(resolvedInitialTab);
+    }
+  }, [resolvedInitialTab]);
+
+  /* ----------------------------------
+     Handle tab change → update query
+  ---------------------------------- */
+  const handleTabChange = (tabKey: string) => {
+    // 🚫 BLOCK if consultation not started
+    // if (!canWorkOnVisit(visitStatus)) {
+    //   const confirmStart = window.confirm(
+    //     "Consultation has not started.\n\nDo you want to start consultation now?"
+    //   );
+
+    //   if (confirmStart) {
+    //     onStartConsultation?.();
+    //   }
+    //   return;
+    // }
+    onChange(tabKey);
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", tabKey);
+
+    router.replace(`${pathname}?${params.toString()}`, {
+      scroll: false,
+    });
+  };
 
   return (
     <DynamicTabs
-      tabs={tabs}
-      defaultTab={active}
-      onChange={onChange}
+      key={resolvedInitialTab}          // 🔥 FORCE remount
+      tabs={tabs.map((t) => ({ key: t.key, label: t.label }))}
+      defaultTab={resolvedInitialTab}   // ✅ correct initial tab
+      onChange={handleTabChange}
+      variant="scroll"
     />
   );
 }

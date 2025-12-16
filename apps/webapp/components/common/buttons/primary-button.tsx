@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
+import { ReactNode } from "react";
 
 export function PrimaryButton({
     label = "Save",
@@ -9,7 +10,8 @@ export function PrimaryButton({
     loading = false,
     disabled = false,
     className = "",
-    type = "button"
+    type = "button",
+    icon
 }: {
     label?: string;
     loadingName?: string;
@@ -18,6 +20,7 @@ export function PrimaryButton({
     disabled?: boolean;
     className?: string;
     type?: "button" | "submit" | "reset";
+    icon?: ReactNode;
 
 }) {
     return (
@@ -25,10 +28,10 @@ export function PrimaryButton({
             type={type}
             onClick={onClick}
             disabled={disabled || loading}
-            variant="default" 
+            variant="default"
             className={`bg-green-600 hover:bg-green-700 text-white shadow-sm cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
         >
-            {loading ? loadingName : label}
+            {icon} {loading ? loadingName : label}
         </Button>
     );
 }

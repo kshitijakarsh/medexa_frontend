@@ -27,8 +27,11 @@ export interface CurrentUser {
   email: string
   name: string
   tenant_id: number
-  phone: string
-  role: RoleData
+  phone: string,
+  address?: string,
+  hospital?: any,
+  role: RoleData,
+  logo?: string,
   status: string
   created_at: string
   updated_at: string

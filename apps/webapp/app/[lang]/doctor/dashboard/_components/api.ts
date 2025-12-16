@@ -99,3 +99,42 @@ export const getAppointments = async () => {
     { id: 10, token: "T-105", name: "Georgette Strobel", mrn: "MRN-2501", time: "10:30 pm", diagnosis: "Hypertension", type: "Follow Up", status: "Waiting", avatar: "/images/avatars/1.png" }
   ];
 };
+
+
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { createDoctorVisitsApiClient } from "@/lib/api/doctor/dashboard";
+import {
+  DoctorVisitsResponse,
+  UseDoctorVisitsQueryProps,
+} from "./types";
+
+export function useDoctorVisitsQuery(
+  props: UseDoctorVisitsQueryProps
+): UseQueryResult<DoctorVisitsResponse> {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    department_id,
+    patient_id,
+    enabled = true,
+    authToken ="",
+  } = props;
+
+  const doctorApi = createDoctorVisitsApiClient({});
+
+  return useQuery<DoctorVisitsResponse>({
+    queryKey: ["doctor-visits", page, status, department_id, patient_id],
+    enabled: enabled || !!authToken,
+    queryFn: async () => {
+      const res = await doctorApi.getVisits({
+        page,
+        limit,
+        status,
+        department_id,
+        patient_id,
+      });
+      return res.data;
+    },
+  });
+}

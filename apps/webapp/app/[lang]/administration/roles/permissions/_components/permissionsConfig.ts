@@ -467,6 +467,16 @@ export const mainModules: MainModule[] = [
     icon: BriefcaseMedical,
     subModules: [
       {
+        key: "visit",
+        label: "Visit",
+        actions: ["view", "viewOne"]
+      },
+      {
+        key: "visit_purpose",
+        label: "Visit Purpose",
+        actions: ["view", "create", "edit", "viewOne"]
+      },
+      {
         key: "reception",
         label: "Reception",
         actions: ["view", "create", "edit", "delete"],

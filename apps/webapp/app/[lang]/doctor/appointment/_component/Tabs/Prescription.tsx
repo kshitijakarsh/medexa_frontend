@@ -221,7 +221,8 @@ import { MedicationForm, PrescriptionItem } from "./prescription/types"
 import MedicationTable from "./prescription/MedicationTable"
 import AddMedicationModal from "./prescription/AddMedicationModal"
 import { FileUp, Printer } from "lucide-react"
-import { SectionWrapper } from "./SectionWrapper"
+import { SectionWrapper } from "./common/SectionWrapper"
+import { SectionTitle } from "./common/SectionTitle"
 
 export default function Prescription() {
   const [showModal, setShowModal] = useState(false)
@@ -250,12 +251,19 @@ export default function Prescription() {
     <SectionWrapper
       header={
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">
+          {/* <h3 className="text-lg font-medium">
             Prescription
             <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
               Auto-saved
             </span>
-          </h3>
+          </h3> */}
+          
+          <div className="flex items-center gap-3">
+            <SectionTitle title="Prescription" />
+            <span className="px-2 py-0.5 text-xs bg-green-100 text-green-600 rounded-full border border-green-200">
+              ✓ Auto-saved
+            </span>
+          </div>
 
           <div className="flex items-center gap-3">
             <NewButton

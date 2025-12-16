@@ -37,7 +37,7 @@ export function DynamicTabs({
             className={`
               px-4 py-2 rounded-full text-sm transition cursor-pointer
               ${isActive 
-                ? "bg-[#0B84FF] text-white hover:bg-[#0B84FF]" 
+                ? "bg-[#0086F8] text-white hover:bg-[#0086F8]" 
                 : "bg-[#F1F6FB] text-[#5D7287] hover:bg-[#e7eff7]"
               }
             `}
