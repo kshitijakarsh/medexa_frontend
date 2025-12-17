@@ -531,6 +531,7 @@ const DefaultIcon = Cog
 const moduleLandingPath: Record<string, string> = {
   administration: "/organization-setup",
   doctor: "/doctor/dashboard",
+  nurse: "/nurse/dashboard",
   frontoffice: "/frontoffice/dashboard",
   appointment: "/appointment/calendar",
   patient_mgmt: "/patient_mgmt",

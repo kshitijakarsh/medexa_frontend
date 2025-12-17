@@ -54,3 +54,4 @@ export function Providers({ children, dict }: ProvidersProps) {
     </QueryClientProvider>
   )
 }
+  
