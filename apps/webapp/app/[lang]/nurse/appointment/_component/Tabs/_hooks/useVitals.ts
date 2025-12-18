@@ -46,7 +46,7 @@ export function useDeleteVitals(visitId: string) {
     },
     onSuccess: () => {
       // Refetch vitals after delete
-      queryClient.invalidateQueries({ queryKey: ["vitals", visitId] });
+      queryClient.invalidateQueries({ queryKey: ["vitals-by-visitId-nurse", visitId] });
       queryClient.invalidateQueries({ queryKey: ["vitals-history"] });
     },
   });
