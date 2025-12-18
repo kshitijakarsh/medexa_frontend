@@ -17,7 +17,7 @@ export default function FrontOfficeDashboardPage() {
           {/* Navigation Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Appointment Book Card */}
-            <Link href={`/${lang}/appointment/book`}>
+            <Link href={`/${lang}/appointment`}>
               <div className="border border-[#CFE9FF] bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col items-center justify-center min-h-[200px]">
                 <Calendar className="w-12 h-12 text-[#2CB470] mb-4" />
                 <h3 className="text-xl font-semibold text-gray-800">

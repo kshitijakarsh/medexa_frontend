@@ -15,6 +15,9 @@ export function TeleconsultationForm({
   selectedSlot,
   onSlotSelect,
 }: TeleconsultationFormProps) {
+  // Get today's date in YYYY-MM-DD format for min date restriction
+  const today = new Date().toISOString().split("T")[0]
+
   const [formData, setFormData] = useState({
     department: "General Medicine",
     doctor: "",
@@ -78,6 +81,7 @@ export function TeleconsultationForm({
           value={formData.date}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
           placeholder="Select Date"
+          min={today}
         />
       </div>
 
