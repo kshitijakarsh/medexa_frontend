@@ -106,3 +106,15 @@ export function useAttachmentHistoryOneVisitId(visitId: string) {
         },
     });
 }
+
+
+export function getAttachmentsByVisitIdNurse(visitId: string) {
+  return useQuery({
+    queryKey: ["attachments-by-visitId-nurse", visitId],
+    enabled: !!visitId,
+    queryFn: async () => {
+      const res = await api.getByVisit(visitId);
+      return res.data?.data as Attachment[];
+    },
+  });
+}

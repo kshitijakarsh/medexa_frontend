@@ -497,6 +497,9 @@ import {
   Briefcase,
   BriefcaseMedical,
   IdCard,
+  Syringe,
+  Building,
+  Stethoscope,
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
@@ -513,7 +516,7 @@ const moduleIconMap: Record<string, any> = {
   hr: IdCard,
   lab: FlaskConical,
   pharmacy: Pill,
-  doctor: BriefcaseMedical,
+  doctor: Stethoscope,
 
   hospital: Building2,
   diagnostics: Activity,
@@ -522,7 +525,8 @@ const moduleIconMap: Record<string, any> = {
   reports: BarChart3,
   administration: Cog,
   settings: Settings,
-  frontoffice: BriefcaseMedical,
+  frontoffice: Building,
+  nurse: Syringe,
 }
 
 const DefaultIcon = Cog
@@ -675,7 +679,7 @@ export function SectionDropdown() {
     setSelected(section.label)
 
     const path = moduleLandingPath[section.moduleKey]
-
+    console.log(path)
     if (path) {
       router.push(withLocale(path))
     } else {

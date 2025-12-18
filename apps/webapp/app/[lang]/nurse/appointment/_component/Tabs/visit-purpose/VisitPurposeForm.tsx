@@ -271,104 +271,183 @@ import {
 } from "./VisitPurpose";
 
 import { validateField } from "./visitPurposeValidation";
+import { useVisitPurposeByVisitIdNurse } from "../_hooks/useVisitPurpose";
+import { useParams } from "next/navigation";
+import { VisitPurposeFormDetailsSkeleton } from "./VisitPurposeFormDetailsSkeleton";
+import { RecordedMeta } from "../../common/recorded-meta";
 
-export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormProps) {
-  const [errors, setErrors] = useState<VisitPurposeErrors>({});
+// export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormProps) {
+// const [errors, setErrors] = useState<VisitPurposeErrors>({});
 
-  // SAFETY fallback – prevents undefined errors
-  const safeData: VisitPurposeData = {
-    chiefComplaint: data?.chiefComplaint ?? "",
-    history: data?.history ?? "",
-    onset: data?.onset ?? "",
-    duration: data?.duration ?? "",
-    severity: data?.severity ?? "",
-    additional_notes: data?.additional_notes ?? "",
-  };
+// // SAFETY fallback – prevents undefined errors
+// const safeData: VisitPurposeData = {
+//   chiefComplaint: data?.chiefComplaint ?? "",
+//   history: data?.history ?? "",
+//   onset: data?.onset ?? "",
+//   duration: data?.duration ?? "",
+//   severity: data?.severity ?? "",
+//   additional_notes: data?.additional_notes ?? "",
+// };
 
-  const handleChange = (field: keyof VisitPurposeData, value: string) => {
-    const errorMsg = validateField(field, value);
+// const handleChange = (field: keyof VisitPurposeData, value: string) => {
+//   const errorMsg = validateField(field, value);
 
-    setErrors((prev) => ({
-      ...prev,
-      [field]: errorMsg || undefined,
-    }));
+//   setErrors((prev) => ({
+//     ...prev,
+//     [field]: errorMsg || undefined,
+//   }));
 
-    setData((prev) => ({
-      ...safeData,     // prevents merging with undefined
-      ...prev,
-      [field]: value,
-    }));
+//   setData((prev) => ({
+//     ...safeData,     // prevents merging with undefined
+//     ...prev,
+//     [field]: value,
+//   }));
 
-    setDirty(true);
-  };
+//   setDirty(true);
+// };
 
-  const options = ["Minutes", "Hours", "Days", "Weeks", "Months", "Sudden", "Gradual"];
+// const options = ["Minutes", "Hours", "Days", "Weeks", "Months", "Sudden", "Gradual"];
+export function VisitPurposeForm() {
+  const { id: visitId } = useParams() as { id: string };
+
+  // Reusable components
+  function InfoRow({ label, value }: { label: string; value: string }) {
+    return (
+      <div className="bg-white p-4 rounded-lg border">
+        <p className="text-xs text-gray-500">{label}</p>
+        <p className="font-medium">{value}</p>
+      </div>
+    );
+  }
+
+  function InfoBox({ label, value }: { label: string; value: string }) {
+    return (
+      <div className="bg-white p-4 rounded-lg border">
+        <p className="text-xs text-gray-500 mb-1">{label}</p>
+        <p className="text-sm leading-relaxed">{value}</p>
+      </div>
+    );
+  }
+
+  // return (
+  //   <div className="flex flex-col gap-6">
+
+  //     {/* Chief Complaint */}
+  //     <div className="flex flex-col gap-2">
+  //       <label className="font-medium text-sm">Chief Complaint</label>
+  //       <Input
+  //         value={safeData.chiefComplaint}
+  //         onChange={(e) => handleChange("chiefComplaint", e.target.value)}
+  //         placeholder="Enter Chief Complaint"
+  //       />
+  //       {errors.chiefComplaint && (
+  //         <span className="text-red-500 text-xs">{errors.chiefComplaint}</span>
+  //       )}
+  //     </div>
+
+  //     {/* History */}
+  //     <div className="flex flex-col gap-2">
+  //       <label className="font-medium text-sm">History of Present Illness</label>
+  //       <Textarea
+  //         value={safeData.history}
+  //         onChange={(e) => handleChange("history", e.target.value)}
+  //         className="min-h-[120px]"
+  //         placeholder="Enter History of Present Illness"
+  //       />
+  //       {errors.history && (
+  //         <span className="text-red-500 text-xs">{errors.history}</span>
+  //       )}
+  //     </div>
+
+  //     {/* Select fields */}
+  //     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  //       {(["onset", "duration", "severity"] as (keyof VisitPurposeData)[]).map((key) => (
+  //         <div key={key} className="flex flex-col gap-2">
+  //           <label className="font-medium text-sm">
+  //             {key.charAt(0).toUpperCase() + key.slice(1)}
+  //           </label>
+
+  //           <Select
+  //             value={safeData[key]}
+  //             onValueChange={(v) => handleChange(key, v)}
+  //           >
+  //             <SelectTrigger className="w-full"><SelectValue placeholder={`Select ${key}`} /></SelectTrigger>
+  //             <SelectContent>
+  //               {options.map((opt) => (
+  //                 <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+  //               ))}
+  //             </SelectContent>
+  //           </Select>
+  //         </div>
+  //       ))}
+  //     </div>
+
+  //     {/* Notes */}
+  //     <div className="flex flex-col gap-2">
+  //       <label className="font-medium text-sm">Additional Notes</label>
+  //       <Textarea
+  //         value={safeData.additional_notes}
+  //         onChange={(e) => handleChange("additional_notes", e.target.value)}
+  //         placeholder="Enter Additional Notes"
+  //       />
+  //       {errors.additional_notes && (
+  //         <span className="text-red-500 text-xs">{errors.additional_notes}</span>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
+  const {
+    data: visitPurpose,
+    isLoading: purposeLoading,
+  } = useVisitPurposeByVisitIdNurse(visitId);
+
+  if (purposeLoading) return <VisitPurposeFormDetailsSkeleton />;
+
+  // console.log(visitPurpose)
 
   return (
-    <div className="flex flex-col gap-6">
+    <>
+      {visitPurpose?.chief_complaint || visitPurpose?.onset || visitPurpose?.duration || visitPurpose?.severity || visitPurpose?.history_of_present_illness || visitPurpose?.additional_notes ? (
 
-      {/* Chief Complaint */}
-      <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">Chief Complaint</label>
-        <Input
-          value={safeData.chiefComplaint}
-          onChange={(e) => handleChange("chiefComplaint", e.target.value)}
-          placeholder="Enter Chief Complaint"
-        />
-        {errors.chiefComplaint && (
-          <span className="text-red-500 text-xs">{errors.chiefComplaint}</span>
-        )}
-      </div>
 
-      {/* History */}
-      <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">History of Present Illness</label>
-        <Textarea
-          value={safeData.history}
-          onChange={(e) => handleChange("history", e.target.value)}
-          className="min-h-[120px]"
-          placeholder="Enter History of Present Illness"
-        />
-        {errors.history && (
-          <span className="text-red-500 text-xs">{errors.history}</span>
-        )}
-      </div>
+        <div className="">
+          {visitPurpose?.createdBy?.name &&
+            < div className="flex justify-end">
+              <RecordedMeta
+                createdByName={visitPurpose?.createdBy?.name || ""}
+                createdAt={visitPurpose?.created_at || ""}
+              />
+            </div>
+          }
 
-      {/* Select fields */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {(["onset", "duration", "severity"] as (keyof VisitPurposeData)[]).map((key) => (
-          <div key={key} className="flex flex-col gap-2">
-            <label className="font-medium text-sm">
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </label>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InfoRow label="Chief Complaint" value={visitPurpose?.chief_complaint || ""} />
 
-            <Select
-              value={safeData[key]}
-              onValueChange={(v) => handleChange(key, v)}
-            >
-              <SelectTrigger className="w-full"><SelectValue placeholder={`Select ${key}`} /></SelectTrigger>
-              <SelectContent>
-                {options.map((opt) => (
-                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <InfoRow label="Onset" value={visitPurpose?.onset || ""} />
+            <InfoRow label="Duration" value={visitPurpose?.duration || ""} />
+            <InfoRow label="Severity" value={visitPurpose?.severity || ""} />
+
+            <div className="col-span-2">
+              <InfoRow
+                label="History of Present Illness"
+                value={visitPurpose?.history_of_present_illness || ""}
+              />
+            </div>
+
+            <div className="col-span-2">
+              <InfoBox
+                label="Additional Notes"
+                value={visitPurpose?.additional_notes || "No notes added"}
+              />
+            </div>
           </div>
-        ))}
-      </div>
+        </div >
 
-      {/* Notes */}
-      <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">Additional Notes</label>
-        <Textarea
-          value={safeData.additional_notes}
-          onChange={(e) => handleChange("additional_notes", e.target.value)}
-          placeholder="Enter Additional Notes"
-        />
-        {errors.additional_notes && (
-          <span className="text-red-500 text-xs">{errors.additional_notes}</span>
-        )}
-      </div>
-    </div>
-  );
+      ) : (
+        <p className="text-gray-600 italic text-center">
+          Visit purpose not added.
+        </p>
+      )}
+    </>
+  )
 }

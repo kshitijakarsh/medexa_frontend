@@ -260,7 +260,7 @@ export default function ConsultationLayout({ children }: { children: React.React
       )}
 
       <div className="flex gap-6 w-full py-3">
-        {/* {showSidebar && (
+        {showSidebar && (
           <div className="w-[300px] shrink-0 sticky top-4 self-start">
             <AppointmentSidebar
               emergency={emergency}
@@ -272,7 +272,7 @@ export default function ConsultationLayout({ children }: { children: React.React
               }
             />
           </div>
-        )} */}
+        )}
 
         <div className="flex-1 min-w-0 pr-4">{children}</div>
       </div>

@@ -228,6 +228,7 @@ import {
 } from "lucide-react";
 import { VitalCardsGridSkeleton } from "./VitalCardsGridSkeleton";
 import { Vital } from "./vitals";
+import { RecordedMeta } from "../../../common/recorded-meta";
 
 export function VitalCardsGrid({
     vitals,
@@ -243,21 +244,21 @@ export function VitalCardsGrid({
     if (loading) return <VitalCardsGridSkeleton />;
 
     if (!Array.isArray(vitals) || vitals.length === 0) {
-        return <p className="italic text-gray-500">No vitals recorded</p>;
+        return <p className="italic text-gray-500 text-center">No vitals recorded</p>;
     }
 
     return (
         <>
             <div>
                 {/* HEADER */}
-                <div className="text-sm font-semibold text-gray-800">
+                <div className="text-md font-semibold text-gray-800">
                     Last Vital Signs
                 </div>
                 {vitals.map((vitals) => (
                     <div key={vitals.id} className="border-b pb-4">
                         <div className="flex items-center justify-end my-4">
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-gray-600 bg-white">
+                                {/* <div className="flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-gray-600 bg-white">
                                     <span>
                                         Recorded by{" "}
                                         <span className="font-medium">
@@ -276,23 +277,27 @@ export function VitalCardsGrid({
                                     </span>
 
                                     <Info className="h-3.5 w-3.5 text-blue-500" />
-                                </div>
+                                </div> */}
+                                <RecordedMeta
+                                    createdByName={vitals?.createdBy?.name}
+                                    createdAt={vitals?.created_at}
+                                />
 
-                                <button
+                                {/* <button
                                     onClick={() => onEdit(vitals)}
                                     className="rounded-full p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition"
                                     title="Edit Vitals"
                                 >
                                     <Pencil className="h-4 w-4" />
-                                </button>
-
+                                </button> */}
+                                {/* 
                                 <button
                                     onClick={() => onDelete(vitals.id)}
                                     className="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
                                     title="Delete Vitals"
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                </button>
+                                </button> */}
                             </div>
                         </div>
 

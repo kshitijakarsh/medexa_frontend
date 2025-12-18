@@ -313,17 +313,17 @@ export function AppointmentDetailHeader({
             mrn={item.mrn}
             avatar={item.avatar}
             vip={item.status === "vip"}
-            // status={item.status} // status hiding
+            status={item.status} // status hiding
             size={60}
           />
           {/* STATUS SELECTOR */}
-          {!isCompleted && canWorkOnVisit(item.status) && (
+          {/* {!isCompleted && canWorkOnVisit(item.status) && (
             <VisitStatusSelector
               visitId={item.id}
               status={item.status.toLowerCase()}
               disabled={starting || finishing || isLoading}
             />
-          )}
+          )} */}
 
 
         </div>
@@ -358,7 +358,7 @@ export function AppointmentDetailHeader({
         /> */}
 
         {/* START CONSULTATION */}
-        {!canWorkOnVisit(item.status) && !isCompleted && (
+        {/* {!canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
             label={starting ? "Starting..." : "Start Consultation"}
             icon={<Users size={18} />}
@@ -366,10 +366,10 @@ export function AppointmentDetailHeader({
             disabled={starting || finishing || isLoading}
             onClick={onStart}
           />
-        )}
+        )} */}
 
         {/* FINISH CONSULTATION */}
-        {canWorkOnVisit(item.status) && !isCompleted && (
+        {/* {canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
             label={finishing ? "Finishing..." : "Finish Consultation"}
             icon={<Users size={18} />}
@@ -377,7 +377,7 @@ export function AppointmentDetailHeader({
             disabled={finishing || saving || isLoading}
             onClick={onFinish}
           />
-        )}
+        )} */}
 
         <ActionButton
           label="View Details"
@@ -386,12 +386,12 @@ export function AppointmentDetailHeader({
           disabled={true}
         />
 
-        <ActionButton
+        {/* <ActionButton
           label="Refer Doctor"
           icon={<Share2 size={18} />}
           variant="outline"
           disabled={true}
-        />
+        /> */}
       </div>
     </div>
   );

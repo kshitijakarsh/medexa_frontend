@@ -438,19 +438,19 @@ import { FloatingSaveBar } from "../_component/FloatingSaveBar";
 
 import { mapVisitToAppointmentItem } from "../_component/common/mapper";
 import { useDoctorVisitById } from "../_component/common/useDoctorVisitById";
-import { useVisitPurposeByVisitId, useSaveVisitPurpose } from "../_component/Tabs/_hooks/useVisitPurpose";
+import { useVisitPurposeByVisitId, useSaveVisitPurpose, useVisitPurposeByVisitIdNurse } from "../_component/Tabs/_hooks/useVisitPurpose";
 
 import { VisitPurposeData } from "../_component/Tabs/visit-purpose/VisitPurpose";
 import { useUpdateVisitStatus } from "../_component/common/useUpdateVisitStatus";
 import { SoapNoteData } from "../_component/Tabs/soap/SOAPNote";
-import { useSaveSoapNote, useSoapNoteByVisitId } from "../_component/Tabs/_hooks/useSoapNotes";
+import { useSaveSoapNote, useSoapNoteByVisitId, useSoapNoteByVisitIdForNurse } from "../_component/Tabs/_hooks/useSoapNotes";
 import { canWorkOnVisit } from "../_component/common/visitGuards";
 
 export default function ConsultationDetailPage() {
   const queryClient = useQueryClient();
 
   const { id: visitId } = useParams() as { id: string };
-  console.log(visitId)
+  // console.log(visitId)
 
   /* ---------------------- GET Visit Details ---------------------- */
   const { data: visitData, isLoading } = useDoctorVisitById(visitId);
@@ -467,10 +467,10 @@ export default function ConsultationDetailPage() {
 
 
   /* ---------------------- GET Visit Purpose ---------------------- */
-  const {
-    data: visitPurpose,
-    isLoading: purposeLoading,
-  } = useVisitPurposeByVisitId(visitId);
+  // const {
+  //   data: visitPurpose,
+  //   isLoading: purposeLoading,
+  // } = useVisitPurposeByVisitIdNurse(visitId);
 
   /* ---------------------- Local Form State ---------------------- */
   const [visitPurposeData, setVisitPurposeData] = useState<VisitPurposeData>({
@@ -487,23 +487,23 @@ export default function ConsultationDetailPage() {
 
 
   /* ---------------------- Hydrate the Form When API Returns ---------------------- */
-  useEffect(() => {
-    if (visitPurpose) {
-      setVisitPurposeData({
-        chiefComplaint: visitPurpose.chief_complaint ?? "",
-        history: visitPurpose.history_of_present_illness ?? "",
-        onset: visitPurpose.onset ?? "",
-        duration: visitPurpose.duration ?? "",
-        severity: visitPurpose.severity ?? "",
-        additional_notes: visitPurpose.additional_notes ?? "",
-      });
-    }
-  }, [visitPurpose]);
+  // useEffect(() => {
+  //   if (visitPurpose) {
+  //     setVisitPurposeData({
+  //       chiefComplaint: visitPurpose.chief_complaint ?? "",
+  //       history: visitPurpose.history_of_present_illness ?? "",
+  //       onset: visitPurpose.onset ?? "",
+  //       duration: visitPurpose.duration ?? "",
+  //       severity: visitPurpose.severity ?? "",
+  //       additional_notes: visitPurpose.additional_notes ?? "",
+  //     });
+  //   }
+  // }, [visitPurpose]);
 
 
   /* ---------------- SOAP NOTE ---------------- */
 
-  const { data: soapNote } = useSoapNoteByVisitId(visitId);
+  // const { data: soapNote } = useSoapNoteByVisitIdForNurse(visitId);
 
   const [soapNoteData, setSoapNoteData] = useState<SoapNoteData>({
     subjective: "",
@@ -514,27 +514,27 @@ export default function ConsultationDetailPage() {
 
   const [isSoapNoteDirty, setSoapNoteDirty] = useState(false);
 
-  /* Hydrate */
-  useEffect(() => {
-    if (soapNote) {
-      setSoapNoteData({
-        subjective: soapNote?.subjective ?? "",
-        objective: soapNote?.objective ?? "",
-        assessment: soapNote?.assessment ?? "",
-        plan: soapNote?.plan ?? "",
-      });
-    }
-  }, [soapNote]);
+  // /* Hydrate */
+  // useEffect(() => {
+  //   if (soapNote) {
+  //     setSoapNoteData({
+  //       subjective: soapNote?.subjective ?? "",
+  //       objective: soapNote?.objective ?? "",
+  //       assessment: soapNote?.assessment ?? "",
+  //       plan: soapNote?.plan ?? "",
+  //     });
+  //   }
+  // }, [soapNote]);
 
   /* Save */
-  const saveSoapMutation = useSaveSoapNote(soapNote?.id);
+  // const saveSoapMutation = useSaveSoapNote(soapNote?.id);
 
 
 
 
 
   /* ---------------------- Save (POST / PUT Automatically) ---------------------- */
-  const savePurposeMutation = useSaveVisitPurpose(visitPurpose?.id);
+  // const savePurposeMutation = useSaveVisitPurpose(visitPurpose?.id);
 
   const saveDraftMutation = useMutation({
     mutationFn: async () => {
@@ -551,28 +551,28 @@ export default function ConsultationDetailPage() {
       //     additional_notes: visitPurposeData.additional_notes,
       //   });
       // },
-      if (isVisitPurposeDirty) {
-        await savePurposeMutation.mutateAsync({
-          visit_id: visitId,
-          patient_id: visitData?.patient_id,
-          chief_complaint: visitPurposeData.chiefComplaint,
-          history_of_present_illness: visitPurposeData.history,
-          onset: visitPurposeData.onset,
-          duration: visitPurposeData.duration,
-          severity: visitPurposeData.severity,
-          additional_notes: visitPurposeData.additional_notes,
-        });
-        setVisitPurposeDirty(false);
-      }
+      // if (isVisitPurposeDirty) {
+      //   await savePurposeMutation.mutateAsync({
+      //     visit_id: visitId,
+      //     patient_id: visitData?.patient_id,
+      //     chief_complaint: visitPurposeData.chiefComplaint,
+      //     history_of_present_illness: visitPurposeData.history,
+      //     onset: visitPurposeData.onset,
+      //     duration: visitPurposeData.duration,
+      //     severity: visitPurposeData.severity,
+      //     additional_notes: visitPurposeData.additional_notes,
+      //   });
+      //   setVisitPurposeDirty(false);
+      // }
 
-      if (isSoapNoteDirty) {
-        await saveSoapMutation.mutateAsync({
-          patient_id: visitData?.patient_id,
-          visit_id: visitId,
-          soap_data: soapNoteData,
-        });
-        setSoapNoteDirty(false);
-      }
+      // if (isSoapNoteDirty) {
+      //   await saveSoapMutation.mutateAsync({
+      //     patient_id: visitData?.patient_id,
+      //     visit_id: visitId,
+      //     soap_data: soapNoteData,
+      //   });
+      //   setSoapNoteDirty(false);
+      // }
     },
 
     onSuccess: async () => {
@@ -615,7 +615,7 @@ export default function ConsultationDetailPage() {
     },
   });
 
-  if (isLoading || purposeLoading || !visitData) {
+  if (isLoading  || !visitData) {
     return <AppointmentDetailSkeleton />;
   }
 
@@ -663,12 +663,12 @@ export default function ConsultationDetailPage() {
           <AppointmentDetailContent activeTab={activeTab} injectedProps={injectedProps} />
 
           {/* FLOATING SAVE BUTTON */}
-          <FloatingSaveBar
+          {/* <FloatingSaveBar
             saving={saveDraftMutation.isPending}
             finishing={finishMutation.isPending}
             onSaveDraft={() => saveDraftMutation.mutate()}
             onFinish={() => finishMutation.mutate()}
-          />
+          /> */}
         </div>
         :
         <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-sm text-yellow-800">

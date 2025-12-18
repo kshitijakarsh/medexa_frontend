@@ -197,7 +197,7 @@
 import { useParams } from "next/navigation";
 import NewButton from "@/components/common/new-button";
 
-import { useVitalsByVisitId, useDeleteVitals } from "./_hooks/useVitals";
+import { useVitalsByVisitId, useDeleteVitals, getVitalsbyVisitIdNurse } from "./_hooks/useVitals";
 
 import { useState } from "react";
 import { SectionWrapper } from "./common/SectionWrapper";
@@ -214,7 +214,7 @@ interface patientId {
 export function Vitals({ patientId }: patientId) {
   const { id: visitId } = useParams() as { id: string };
 
-  const { data: vitals, isLoading } = useVitalsByVisitId(visitId);
+  const { data: vitals, isLoading } = getVitalsbyVisitIdNurse(visitId);
   const deleteVitals = useDeleteVitals(visitId);
 
   const [showModal, setShowModal] = useState(false);
@@ -258,14 +258,14 @@ export function Vitals({ patientId }: patientId) {
               onChange={setActiveTab}
               variant="wrap"
             />
-            {activeTab === "Vitals" && <NewButton
+            {/* {activeTab === "Vitals" && <NewButton
               name="Add Vitals"
               handleClick={() => {
                 setEditingVitals(null);
                 setShowModal(true);
               }}
             />
-            }
+            } */}
 
           </div>
         }

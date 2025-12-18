@@ -75,3 +75,18 @@ export function useSoapNoteHistoryOne(soapNoteId: string) {
     },
   });
 }
+
+
+
+/* ---------------- GET SOAP NOTE BY VISIT (Doctor) ---------------- */
+
+export function useSoapNoteByVisitIdForNurse(visitId: string) {
+    return useQuery({
+        queryKey: ["soap-note-by-visitId", visitId],
+        queryFn: async () => {
+            const res = await api.getByVisit(visitId);
+            return res.data?.data[0] ?? null;
+        },
+        enabled: !!visitId,
+    });
+}

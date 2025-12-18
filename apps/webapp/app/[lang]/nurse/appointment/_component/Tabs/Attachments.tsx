@@ -104,6 +104,7 @@ import NewButton from "@/components/common/new-button";
 import { SectionWrapper } from "./common/SectionWrapper";
 
 import {
+  getAttachmentsByVisitIdNurse,
   useAttachmentsByVisitId,
   useDeleteAttachment,
 } from "./_hooks/useAttachments";
@@ -115,28 +116,30 @@ import AttachmentPreviewModal from "./attachment/AttachmentPreviewModal";
 import { AttachmentGridSkeleton } from "./attachment/AttachmentGridSkeleton";
 import { FileStack } from "lucide-react";
 import { AttachmentsHistory } from "./attachment/AttachmentsHistory";
+import { RecordedMeta } from "../common/recorded-meta";
 
 export default function Attachments({ patientId }: { patientId: string }) {
   const { id: visitId } = useParams() as { id: string };
 
-  const { data, isLoading } = useAttachmentsByVisitId(visitId);
+  const { data, isLoading } = getAttachmentsByVisitIdNurse(visitId);
   const deleteAttachment = useDeleteAttachment(visitId);
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [previewItem, setPreviewItem] = useState<any>(null);
 
   const attachments = data ?? [];
+  console.log(attachments, 'sdfsdf')
 
   return (
-    <>  
+    <>
       <SectionWrapper
         header={
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-semibold">Attachments</h2>
-            <NewButton
+            {/* <NewButton
               name="Add Attachments"
               handleClick={() => setShowAddModal(true)}
-            />
+            /> */}
           </div>
         }
       >
@@ -146,19 +149,31 @@ export default function Attachments({ patientId }: { patientId: string }) {
           ) : attachments.length === 0 ? (
             <EmptyAttachments onAdd={() => setShowAddModal(true)} />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {attachments.map((a) => (
-                <AttachmentCard
-                  key={a.id}
-                  data={{
-                    title: a.title,
-                    preview: a.s3_url,
-                  }}
-                  onView={() => setPreviewItem(a)}
-                  onDelete={() => deleteAttachment.mutate(a.id)}
-                />
-              ))}
-            </div>
+            <>
+              {attachments[0] &&
+                attachments[0].createdBy?.name &&
+                < div className="flex justify-end">
+                  <RecordedMeta
+                    createdByName={attachments[0].createdBy?.name || ""}
+                    createdAt={attachments[0].created_at || ""}
+                  />
+                </div>
+
+              }
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {attachments.map((a) => (
+                  <AttachmentCard
+                    key={a.id}
+                    data={{
+                      title: a.title,
+                      preview: a.s3_url,
+                    }}
+                    onView={() => setPreviewItem(a)}
+                  // onDelete={() => deleteAttachment.mutate(a.id)}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -191,12 +206,12 @@ function EmptyAttachments({ onAdd }: { onAdd: () => void }) {
     <div className="flex flex-col justify-center items-center h-72 text-gray-500">
       <FileStack size={50} />
       <p>There are no files attached.</p>
-      <button
+      {/* <button
         onClick={onAdd}
         className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
       >
         Add Attachments
-      </button>
+      </button> */}
     </div>
   );
 }

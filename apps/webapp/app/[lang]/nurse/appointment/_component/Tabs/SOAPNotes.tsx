@@ -223,6 +223,10 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SoapNoteData } from "./soap/SOAPNote";
 import { SoapNotesHistory } from "./soap/SoapNotesHistory";
+import { useSoapNoteByVisitIdForNurse } from "./_hooks/useSoapNotes";
+import { useParams } from "next/navigation";
+import { RecordedMeta } from "../common/recorded-meta";
+import { SoapNoteDetailsSkeletonLoader } from "./soap/SoapNoteDetailsSkeletonLoader";
 
 interface SOAPNotesProps {
   patientId: string,
@@ -231,9 +235,22 @@ interface SOAPNotesProps {
   setDirty: (dirty: boolean) => void;
 }
 
+function InfoBox({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="bg-white p-4 rounded-lg border">
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
+      <p className="text-sm leading-relaxed">{value || "-"}</p>
+    </div>
+  );
+}
+
 export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps) {
   const [selectedCard, setSelectedCard] = useState("");
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+
+  const { id: visitId } = useParams() as { id: string };
+
+  const { data: soapNote, isLoading } = useSoapNoteByVisitIdForNurse(visitId);
 
   const applyTemplate = (template: any) => {
     setData({
@@ -250,6 +267,8 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
     setDirty(true);
   };
 
+  console.log(soapNote)
+
 
 
   return (
@@ -259,60 +278,94 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <SectionTitle title="SOAP Notes" />
-              <span className="px-2 py-0.5 text-xs bg-green-100 text-green-600 rounded-full border">
+              {/* <span className="px-2 py-0.5 text-xs bg-green-100 text-green-600 rounded-full border">
                 ✓ Auto-saved
-              </span>
+              </span> */}
             </div>
 
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               onClick={() => setShowTemplateModal(true)}
             >
               Load Template <ChevronDown className="w-4 h-4 ml-1" />
-            </Button>
+            </Button> */}
           </div>
         }
       >
-        {data.subjective || data.objective || data.assessment || data.plan ? (
-          <div className="grid grid-cols-2 gap-4">
-            <SOAPCard
-              title="Subjective (Patient's Story)"
-              text={data.subjective}
-              selected={selectedCard === "subjective"}
-              onClick={() => setSelectedCard("subjective")}
-              onChange={(v) => handleChange("subjective", v)}
-            />
+        {isLoading ?
+          <SoapNoteDetailsSkeletonLoader />
+          :
+          soapNote?.subjective || soapNote?.objective || soapNote?.assessment || soapNote?.plan ? (
+            // <div className="grid grid-cols-2 gap-4">
+            //   <SOAPCard
+            //     title="Subjective (Patient's Story)"
+            //     text={data.subjective}
+            //     selected={selectedCard === "subjective"}
+            //     onClick={() => setSelectedCard("subjective")}
+            //     onChange={(v) => handleChange("subjective", v)}
+            //   />
 
-            <SOAPCard
-              title="Objective (Clinical Findings)"
-              text={data.objective}
-              selected={selectedCard === "objective"}
-              onClick={() => setSelectedCard("objective")}
-              onChange={(v) => handleChange("objective", v)}
-            />
+            //   <SOAPCard
+            //     title="Objective (Clinical Findings)"
+            //     text={data.objective}
+            //     selected={selectedCard === "objective"}
+            //     onClick={() => setSelectedCard("objective")}
+            //     onChange={(v) => handleChange("objective", v)}
+            //   />
 
-            <SOAPCard
-              title="Assessment (Diagnosis)"
-              text={data.assessment}
-              selected={selectedCard === "assessment"}
-              onClick={() => setSelectedCard("assessment")}
-              onChange={(v) => handleChange("assessment", v)}
-            />
+            //   <SOAPCard
+            //     title="Assessment (Diagnosis)"
+            //     text={data.assessment}
+            //     selected={selectedCard === "assessment"}
+            //     onClick={() => setSelectedCard("assessment")}
+            //     onChange={(v) => handleChange("assessment", v)}
+            //   />
 
-            <SOAPCard
-              title="Plan (Treatment & Follow-up)"
-              text={data.plan}
-              selected={selectedCard === "plan"}
-              onClick={() => setSelectedCard("plan")}
-              onChange={(v) => handleChange("plan", v)}
-            />
-          </div>
-        ) : (
-          <p className="text-gray-600 italic">
-            Please select a template to start SOAP notes.
-          </p>
-        )}
+            //   <SOAPCard
+            //     title="Plan (Treatment & Follow-up)"
+            //     text={data.plan}
+            //     selected={selectedCard === "plan"}
+            //     onClick={() => setSelectedCard("plan")}
+            //     onChange={(v) => handleChange("plan", v)}
+            //   />
+            // </div>
+            <>
+              {soapNote?.createdBy?.name &&
+                < div className="flex justify-end">
+                  <RecordedMeta
+                    createdByName={soapNote?.createdBy?.name || ""}
+                    createdAt={soapNote?.created_at || ""}
+                  />
+                </div>
+              }
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <InfoBox
+                  label="Subjective (Patient’s Story)"
+                  value={soapNote?.subjective}
+                />
+
+                <InfoBox
+                  label="Objective (Clinical Findings)"
+                  value={soapNote?.objective}
+                />
+
+                <InfoBox
+                  label="Assessment (Diagnosis)"
+                  value={soapNote?.assessment}
+                />
+
+                <InfoBox
+                  label="Plan (Treatment & Follow-up)"
+                  value={soapNote?.plan}
+                />
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-600 italic text-center">
+              SOAP notes not added.
+            </p>
+          )}
       </SectionWrapper>
       <SoapNotesHistory patientId={patientId} />
       <SelectSoapTemplateModal

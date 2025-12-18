@@ -93,3 +93,17 @@ export function useVitalsHistoryOneVisitId(visitId: string) {
     });
 }
 
+
+
+
+/* ---------------- GET VITALS BY VISIT (Doctor) ---------------- */
+export function getVitalsbyVisitIdNurse(visitId: string) {
+  return useQuery({
+    queryKey: ["vitals-by-visitId-nurse", visitId],
+    enabled: !!visitId,
+    queryFn: async () => {
+      const res = await api.getByVisit(visitId);
+      return res.data?.data ?? null;
+    },
+  });
+}

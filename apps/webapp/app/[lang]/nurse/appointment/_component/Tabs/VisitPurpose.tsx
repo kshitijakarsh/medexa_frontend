@@ -76,12 +76,14 @@ import { VisitPurposeData } from "./visit-purpose/VisitPurpose";
 
 interface VisitPurposeProps {
     patientId: string,
-    data: VisitPurposeData;
-    setData: (data: VisitPurposeData | ((prev: VisitPurposeData) => VisitPurposeData)) => void;
-    setDirty: (dirty: boolean) => void;
+    // data: VisitPurposeData;
+    // setData: (data: VisitPurposeData | ((prev: VisitPurposeData) => VisitPurposeData)) => void;
+    // setDirty: (dirty: boolean) => void;
 }
 
-export function VisitPurpose({ patientId, data, setData, setDirty }: VisitPurposeProps) {
+export function VisitPurpose({ patientId,
+    //  data, setData, setDirty
+     }: VisitPurposeProps) {
     return (
         <>
             <SectionWrapper
@@ -89,17 +91,17 @@ export function VisitPurpose({ patientId, data, setData, setDirty }: VisitPurpos
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <SectionTitle title="Visit Purpose" />
-                            <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
+                            {/* <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
                                 ✓ Auto-saved
-                            </span>
+                            </span> */}
                         </div>
                     </div>
                 }
             >
                 <VisitPurposeForm
-                    data={data}
-                    setData={setData}
-                    setDirty={setDirty}
+                    // data={data}
+                    // setData={setData}
+                    // setDirty={setDirty}
                 />
             </SectionWrapper>
 

@@ -64,3 +64,21 @@ export function useVisitPurposeByVisitIdHistoryOne(visitId: string) {
         },
     });
 }
+
+
+
+
+/* ----------------------------------------------
+   GET Visit Purpose for a Visit (Doctor specific)
+---------------------------------------------- */
+export function useVisitPurposeByVisitIdNurse(visitId: string) {
+    return useQuery({
+        queryKey: ["visit-purpose-by-visitId", visitId],
+        enabled: !!visitId,
+        queryFn: async () => {
+            const res = await api.getByVisit(visitId);
+
+            return res.data?.data[0] ?? null;  // backend returns SINGLE object
+        },
+    });
+}
