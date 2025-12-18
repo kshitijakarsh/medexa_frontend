@@ -99,9 +99,14 @@ export function AppSidebar({ }) {
     ...(modulesAvailable.frontoffice
       ? [
         {
-          title: "Frontoffice",
-          url: [ROUTES.FRONTOFFICE_DASHBOARD],
-          icon: BriefcaseMedical,
+          title: "Dashboard",
+          url: [withLocale(ROUTES.FRONTOFFICE_DASHBOARD)],
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Schedule",
+          url: [withLocale(ROUTES.FRONTOFFICE_SCHEDULE)],
+          icon: Calendar,
         },
       ]
       : []),

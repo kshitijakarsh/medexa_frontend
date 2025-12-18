@@ -82,7 +82,7 @@ const DATE_FILTER_OPTIONS = [
   { label: "Custom Date", value: "custom" },
 ];
 
-export default function DoctorSchedulePage() {
+export default function FrontofficeSchedulePage() {
   const [loading, setLoading] = useState(false);
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -290,7 +290,7 @@ export default function DoctorSchedulePage() {
   const { withLocale } = useLocaleRoute();
 
   const handleAddSchedule = () => {
-    router.push(withLocale(ROUTES.DOCTOR_TIME_SLOTS));
+    router.push(withLocale(ROUTES.FRONTOFFICE_TIME_SLOTS));
   };
 
   // Handle row actions

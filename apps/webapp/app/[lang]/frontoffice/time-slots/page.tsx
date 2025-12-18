@@ -43,7 +43,7 @@ interface Filters {
 // Dummy data
 
 
-export default function TimeSlotPage() {
+export default function FrontofficeTimeSlotPage() {
     const router = useRouter();
     const [filters, setFilters] = useState<Filters>({
         department: "all-departments",
@@ -264,3 +264,4 @@ export default function TimeSlotPage() {
         </div>
     );
 }
+
