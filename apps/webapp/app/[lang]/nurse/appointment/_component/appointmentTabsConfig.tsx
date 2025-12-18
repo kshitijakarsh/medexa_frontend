@@ -10,6 +10,7 @@ import { VisitPurpose } from "./Tabs/VisitPurpose";
 import { Vitals } from "./Tabs/Vitals";
 import Consumables from "./Tabs/Consumables";
 import Equipment from "./Tabs/Equipment";
+import NurseOrders from "./Tabs/NurseOrders";
 
 export const appointmentTabsConfig = (props: any) => [
     {
@@ -49,6 +50,11 @@ export const appointmentTabsConfig = (props: any) => [
                 patientId={props.patientId}
             />
         ),
+    },
+    {
+        key: "Nurse Orders",
+        label: "Nurse Orders",
+        component: <NurseOrders patientId={props.patientId} />
     },
     { 
         key: "Consumables", 
