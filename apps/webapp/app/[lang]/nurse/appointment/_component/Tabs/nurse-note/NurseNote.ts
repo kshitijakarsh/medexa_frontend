@@ -1,5 +1,5 @@
 export interface NurseNote {
-  id: number;
+  id: string;
   note: string;
   created_at: string;
 

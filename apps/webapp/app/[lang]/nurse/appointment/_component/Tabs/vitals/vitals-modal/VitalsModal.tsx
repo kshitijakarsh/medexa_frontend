@@ -563,7 +563,7 @@ export default function VitalsModal({
         },
     });
 
-    console.log(patientId)
+    // console.log(patientId)
     async function onSubmit(values: VitalsFormValues) {
         await saveVitals.mutateAsync({
             visit_id: visitId,
