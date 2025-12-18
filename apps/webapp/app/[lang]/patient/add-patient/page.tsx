@@ -14,6 +14,7 @@ import { CheckCircle2, Calendar, Printer } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
 import { useCreatePatient } from "../_hooks/usePatient"
 import { useCountries } from "../_hooks/useCountries"
+import { usePatientCategories } from "../_hooks/usePatientCategories"
 
 export default function AddPatientPage() {
   const router = useRouter()
@@ -175,12 +176,10 @@ export default function AddPatientPage() {
 
   // Options for dropdowns
   const { data: countries } = useCountries()
+  const { data: categories } = usePatientCategories()
 
-  const patientCategories = [
-    { value: "inpatient", label: "Inpatient" },
-    { value: "outpatient", label: "Outpatient" },
-    { value: "emergency", label: "Emergency" },
-  ]
+  const patientCategories =
+    categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? []
 
   const genders = [
     { value: "male", label: "Male" },

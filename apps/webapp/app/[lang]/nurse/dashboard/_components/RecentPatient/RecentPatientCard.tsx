@@ -1,10 +1,25 @@
 import Link from "next/link";
+import { MoreVertical } from "lucide-react";
+import { useState } from "react";
+import { NurseReassignModal } from "../NurseReassignModal";
 
 interface RecentPatientCardProps {
   patient: any;
+  showNurseMenu?: boolean;
 }
 
-export function RecentPatientCard({ patient }: RecentPatientCardProps) {
+export function RecentPatientCard({ patient, showNurseMenu = false }: RecentPatientCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsModalOpen(true);
+  };
+
+  const nurseName = patient?.nurse
+    ? patient.nurse.name || `${patient.nurse.first_name || ""} ${patient.nurse.last_name || ""}`.trim()
+    : null;
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "critical":
@@ -38,9 +53,10 @@ export function RecentPatientCard({ patient }: RecentPatientCardProps) {
   const patientInitial = patientName.charAt(0).toUpperCase();
 
   return (
+    <>
     <Link
       href={`/nurse/appointment/${patient.id}`}
-      className="bg-white border border-[#E6E6E6] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white border border-[#E6E6E6] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer block"
     >
       <div className="flex items-center gap-3">
         {/* Avatar */}
@@ -72,6 +88,16 @@ export function RecentPatientCard({ patient }: RecentPatientCardProps) {
             {(patient.status || "stable").replace("_", " ").toUpperCase()}
           </span>
         </div>
+
+        {/* Three-dot Menu */}
+        {showNurseMenu && (
+          <button
+            onClick={handleMenuClick}
+            className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+          >
+            <MoreVertical className="w-4 h-4 text-gray-600" />
+          </button>
+        )}
       </div>
 
       {/* Additional Info */}
@@ -107,7 +133,42 @@ export function RecentPatientCard({ patient }: RecentPatientCardProps) {
             Last updated: {formatDateTime(patient.updated_at)}
           </div>
         )}
+
+        {/* Nurse Name */}
+        {showNurseMenu && (
+          <div className="mt-2 pt-2 border-t border-gray-200">
+            <div className="flex items-center gap-1 text-xs text-gray-600">
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+              <span className="text-gray-500">Nurse:</span>
+              <span className="font-medium text-gray-700">
+                {nurseName || "Not assigned"}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </Link>
+
+    {/* Nurse Reassign Modal */}
+    {showNurseMenu && (
+      <NurseReassignModal
+        visit={patient}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    )}
+    </>
   );
 }
