@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Header } from "@/components/header"
 import { PageHeader } from "@/components/common/page-header"
 import { FormInput } from "@/components/ui/form-input"
@@ -10,20 +10,19 @@ import { StatusSwitch } from "@/components/common/switch-green"
 import { UploadCard } from "@/components/common/upload-card"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
-import { CheckCircle2, Calendar, Printer } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
-import { useCreatePatient } from "../_hooks/usePatient"
-import { useCountries } from "../_hooks/useCountries"
+import { usePatientById, useUpdatePatient } from "../../_hooks/usePatient"
+import { useCountries } from "../../_hooks/useCountries"
 
-export default function AddPatientPage() {
+export default function EditPatientPage() {
   const router = useRouter()
-  const params = useParams<{ lang?: string }>()
+  const params = useParams<{ lang?: string; id: string }>()
   const lang = params?.lang || "en"
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [createdPatientId, setCreatedPatientId] = useState<string>("")
-  const [mrn, setMrn] = useState<string>("")
-  
-  const createMutation = useCreatePatient()
+  const patientId = params?.id
+
+  const { data: patient, isLoading: loadingPatient } = usePatientById(patientId)
+  const updateMutation = useUpdatePatient()
 
   // Form state
   const [formData, setFormData] = useState({
@@ -52,6 +51,38 @@ export default function AddPatientPage() {
     patientPhoto: null as File | null,
     insuranceCard: null as File | null,
   })
+
+  // Load patient data into form
+  useEffect(() => {
+    if (patient) {
+      setFormData({
+        category: patient.category_id ? String(patient.category_id) : "",
+        firstName: patient.first_name || "",
+        lastName: patient.last_name || "",
+        dateOfBirth: patient.dob || "",
+        gender: patient.gender || "",
+        nationality: patient.country_id ? String(patient.country_id) : "",
+        bloodGroup: patient.blood_group || "",
+        civilId: patient.civil_id || "",
+        passportNumber: patient.passport_number || "",
+        issuingCountry: patient.issuing_country_id ? String(patient.issuing_country_id) : "",
+        mobile: patient.mobile_number || "",
+        alternativePhone: patient.alternate_number || "",
+        email: patient.email || "",
+        emergencyContact: patient.emergency_contact || "",
+        city: patient.city || "",
+        postalCode: patient.postal_code || "",
+        permanentAddress: patient.permanent_address || "",
+        hasInsurance: !!patient.insurance_provider_id,
+        insuranceProvider: patient.insurance_provider_id ? String(patient.insurance_provider_id) : "",
+        planType: patient.plan_type || "",
+        policyNumber: patient.policy_number || "",
+        policyValidity: patient.policy_validity || "",
+        patientPhoto: null,
+        insuranceCard: null,
+      })
+    }
+  }, [patient])
 
   // Calculate age from date of birth
   const age = useMemo(() => {
@@ -104,78 +135,22 @@ export default function AddPatientPage() {
         plan_type: formData.hasInsurance ? formData.planType : undefined,
         policy_number: formData.hasInsurance ? formData.policyNumber : undefined,
         policy_validity: formData.hasInsurance ? formData.policyValidity : undefined,
-        photo_url: formData.patientPhoto ? URL.createObjectURL(formData.patientPhoto) : undefined,
-        insurance_card_url: formData.insuranceCard ? URL.createObjectURL(formData.insuranceCard) : undefined,
-        status: "active",
+        photo_url: formData.patientPhoto ? URL.createObjectURL(formData.patientPhoto) : patient?.photo_url,
+        insurance_card_url: formData.insuranceCard ? URL.createObjectURL(formData.insuranceCard) : patient?.insurance_card_url,
       }
 
-      const response = await createMutation.mutateAsync(payload)
-      
-      if (response.success && response.data) {
-        setCreatedPatientId(response.data.id)
-        setMrn(response.data.civil_id || response.data.id)
-        setIsSuccess(true)
-      }
+      await updateMutation.mutateAsync({ id: patientId, payload })
+      router.push(`/${lang}/patient/${patientId}`)
     } catch (error: any) {
-      alert(error?.response?.data?.message || "Failed to create patient. Please try again.")
-      console.error("Create patient error:", error)
+      console.error("Update patient error:", error)
     }
-  }
-
-  const resetForm = () => {
-    setIsSuccess(false)
-    setMrn("")
-    setFormData({
-      category: "",
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      gender: "",
-      nationality: "",
-      bloodGroup: "",
-      civilId: "",
-      passportNumber: "",
-      issuingCountry: "",
-      mobile: "",
-      alternativePhone: "",
-      email: "",
-      emergencyContact: "",
-      city: "",
-      postalCode: "",
-      permanentAddress: "",
-      hasInsurance: true,
-      insuranceProvider: "",
-      planType: "",
-      policyNumber: "",
-      policyValidity: "",
-      patientPhoto: null,
-      insuranceCard: null,
-    })
-    // Scroll to top of form
-    window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
   const handleCancel = () => {
-    if (isSuccess) {
-      resetForm()
-    } else {
-      router.back()
-    }
-  }
-
-  const handlePrintIdCard = () => {
-    // TODO: Implement print ID card functionality
-    console.log("Print ID Card for MRN:", mrn)
-  }
-
-  const handleBookAppointment = () => {
-    // Navigate to book appointment page
-    router.push(`/${lang}/appointment/book`)
+    router.back()
   }
 
   // Options for dropdowns
-  const { data: countries } = useCountries()
-
   const patientCategories = [
     { value: "inpatient", label: "Inpatient" },
     { value: "outpatient", label: "Outpatient" },
@@ -187,6 +162,8 @@ export default function AddPatientPage() {
     { value: "female", label: "Female" },
     { value: "other", label: "Other" },
   ]
+
+  const { data: countries } = useCountries()
 
   const nationalities =
     countries?.map((c) => ({ value: String(c.id), label: c.name_en })) ?? [
@@ -227,58 +204,32 @@ export default function AddPatientPage() {
     { value: "al-khor", label: "Al Khor" },
   ]
 
-  if (isSuccess) {
+  if (loadingPatient) {
     return (
       <main className="min-h-svh w-full">
         <Header />
         <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
-          <PageHeader title="Register New Patient" />
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="bg-white p-8 rounded-md shadow-sm max-w-md w-full text-center space-y-6">
-              {/* Success Icon */}
-              <div className="flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-green-500" />
-                </div>
-              </div>
-
-              {/* Success Message */}
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  Registration Successful!
-                </h2>
-                <p className="text-gray-600">
-                  Patient has been registered successfully
-                </p>
-              </div>
-
-              {/* MRN Display */}
-              <div className="bg-[#ECF3FF] rounded-lg p-6 border border-blue-200">
-                <p className="text-sm text-gray-600 mb-2">
-                  Medical Record Number
-                </p>
-                <p className="text-3xl font-bold text-gray-800">{mrn}</p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  variant="outline"
-                  onClick={handlePrintIdCard}
-                  className="flex items-center gap-2 text-blue-600 border-blue-500 hover:bg-blue-50"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print ID Card
-                </Button>
-                <Button
-                  onClick={handleBookAppointment}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Calendar className="w-4 h-4" />
-                  Book Appointment
-                </Button>
-              </div>
+          <PageHeader title="Edit Patient" />
+          <div className="bg-white p-5 rounded-md shadow-sm">
+            <div className="animate-pulse space-y-4">
+              <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
             </div>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (!patient) {
+    return (
+      <main className="min-h-svh w-full">
+        <Header />
+        <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
+          <PageHeader title="Edit Patient" />
+          <div className="bg-white p-5 rounded-md shadow-sm">
+            <p className="text-center text-gray-500">Patient not found</p>
           </div>
         </div>
       </main>
@@ -289,9 +240,21 @@ export default function AddPatientPage() {
     <main className="min-h-svh w-full">
       <Header />
       <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
-        <PageHeader title="Register New Patient" />
+        <PageHeader title="Edit Patient" />
 
         <div className="bg-white p-5 rounded-md shadow-sm">
+          {/* Back Button */}
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </Button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-8">
             {/* Basic Patient Information */}
             <div className="space-y-4">
@@ -552,8 +515,8 @@ export default function AddPatientPage() {
             {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
               <CancelButton onClick={handleCancel} />
-              <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? "Creating Patient..." : "GENERATE MRN"}
+              <Button type="submit" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Updating..." : "UPDATE PATIENT"}
               </Button>
             </div>
           </form>

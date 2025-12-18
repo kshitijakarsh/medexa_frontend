@@ -124,8 +124,10 @@ import EmergencyPatients from "./_components/EmergencyPatients";
 import VipPatientsCard from "./_components/VipPatientsCard";
 import FollowUpPatientsCard from "./_components/FollowUpPatientsCard";
 import AppointmentTable from "./_components/AppointmentTable";
+import RecentPatients from "./_components/RecentPatients";
+import PriorityTasks from "./_components/PriorityTasks";
 
-export default function DoctorDashboardPage() {
+export default function NurseDashboardPage() {
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#F3F9FF] to-[#E3F6FE] p-6 flex justify-center">
       {/* Main Grid Container */}
@@ -141,15 +143,20 @@ export default function DoctorDashboardPage() {
             <WorkloadStatsCard />
           </div>
 
-          {/* Emergency Patients Section */}
+          {/* Recent Patients Section */}
           <div className="w-full">
-            <EmergencyPatients />
+            <RecentPatients />
+          </div>
+
+          {/* Priority Tasks Section */}
+          <div className="w-full">
+            <PriorityTasks />
           </div>
 
           {/* Appointments Table Section */}
-          <div className="w-full">
+          {/* <div className="w-full">
             <AppointmentTable />
-          </div>
+          </div> */}
         </div>
 
         {/* --- RIGHT COLUMN (Sidebar) - Spans 3 cols --- */}
