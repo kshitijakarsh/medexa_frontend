@@ -19,6 +19,7 @@ interface AppSelectProps {
   contentClassName?: string;
   itemClassName?: string;
   disabled?: boolean;
+  icon?: React.ReactNode;
 }
 
 export function AppSelect({
@@ -31,30 +32,39 @@ export function AppSelect({
   contentClassName = "",
   itemClassName = "",
   disabled = false,
+  icon,
 }: AppSelectProps) {
   const hasError = !!error;
 
+  // Get the selected option label
+  const selectedOption = options.find((opt) => opt.value === value);
+  const displayText = selectedOption?.label || placeholder;
+
   return (
-        <Select onValueChange={onChange} defaultValue={value} disabled={disabled}>
-          <SelectTrigger
-            className={`w-full text-sm rounded-md ${
-              hasError ? "border-red-500 focus:ring-red-500" : ""
-            } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${triggerClassName}`}
+    <Select onValueChange={onChange} value={value} disabled={disabled}>
+      <SelectTrigger
+        className={`w-full text-sm rounded-md ${hasError ? "border-red-500 focus:ring-red-500" : ""
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${triggerClassName}`}
+      >
+        <div className="flex items-center gap-2 flex-1">
+          {icon && <span className="flex-shrink-0">{icon}</span>}
+          <span className={`flex-1 text-left ${!selectedOption ? 'text-muted-foreground' : ''}`}>
+            {displayText}
+          </span>
+        </div>
+      </SelectTrigger>
+      <SelectContent className={contentClassName}>
+        {options.map((opt) => (
+          <SelectItem
+            key={opt.value}
+            value={opt.value}
+            className={itemClassName}
           >
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent className={contentClassName}>
-            {options.map((opt) => (
-              <SelectItem
-                key={opt.value}
-                value={opt.value}
-                className={itemClassName}
-              >
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-    
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+
   );
 }

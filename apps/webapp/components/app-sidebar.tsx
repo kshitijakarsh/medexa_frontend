@@ -11,6 +11,7 @@ import {
   Settings,
   IdCard,
   BriefcaseMedical,
+  Calendar,
 } from "lucide-react"
 
 import {
@@ -84,9 +85,14 @@ export function AppSidebar({ }) {
     ...(modulesAvailable.doctor
       ? [
         {
-          title: "Doctor",
+          title: "Dashboard",
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
-          icon: BriefcaseMedical,
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Schedule",
+          url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
+          icon: Calendar,
         },
       ]
       : []),
@@ -161,8 +167,7 @@ export function AppSidebar({ }) {
 
   const groups = [
     items.slice(0, 1), // first group
-    items.slice(1, 3), // second group
-    items.slice(3, 5), // second group
+    items.slice(1), // remaining items
   ]
 
   return (

@@ -28,6 +28,7 @@ export const ROUTES = {
   DOCTOR_SCREENING_VITALS_HISTORY_VIEW:`/vitals/history/`,
   DOCTOR_SCREENING_ATTACHMENT_HISTORY_VIEW:`/attachment/history/`,
 
+  DOCTOR_SCHEDULE: `${DOCTOR_BASE}/schedule`,
 
   DOCTOR_PROFILE: `${DOCTOR_BASE}/profile`,
   DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${DOCTOR_BASE}/profile/soap/create`,
