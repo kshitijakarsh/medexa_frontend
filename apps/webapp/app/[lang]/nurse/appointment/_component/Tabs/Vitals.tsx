@@ -258,14 +258,14 @@ export function Vitals({ patientId }: patientId) {
               onChange={setActiveTab}
               variant="wrap"
             />
-            {/* {activeTab === "Vitals" && <NewButton
+            {activeTab === "Vitals" && <NewButton
               name="Add Vitals"
               handleClick={() => {
                 setEditingVitals(null);
                 setShowModal(true);
               }}
             />
-            } */}
+            }
 
           </div>
         }

@@ -283,21 +283,21 @@ export function VitalCardsGrid({
                                     createdAt={vitals?.created_at}
                                 />
 
-                                {/* <button
+                                <button
                                     onClick={() => onEdit(vitals)}
                                     className="rounded-full p-2 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition"
                                     title="Edit Vitals"
                                 >
                                     <Pencil className="h-4 w-4" />
-                                </button> */}
-                                {/* 
+                                </button>
+                                
                                 <button
                                     onClick={() => onDelete(vitals.id)}
                                     className="rounded-full p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 transition"
                                     title="Delete Vitals"
                                 >
                                     <Trash2 className="h-4 w-4" />
-                                </button> */}
+                                </button>
                             </div>
                         </div>
 
