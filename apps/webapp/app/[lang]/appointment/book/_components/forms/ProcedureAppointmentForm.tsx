@@ -16,6 +16,9 @@ export function ProcedureAppointmentForm({
   selectedSlot,
   onSlotSelect,
 }: ProcedureAppointmentFormProps) {
+  // Get today's date in YYYY-MM-DD format for min date restriction
+  const today = new Date().toISOString().split("T")[0]
+
   const [formData, setFormData] = useState({
     procedureCategory: "General Medicine",
     procedureType: "",
@@ -101,6 +104,7 @@ export function ProcedureAppointmentForm({
               setFormData({ ...formData, date: e.target.value })
             }
             placeholder="Select Date"
+            min={today}
           />
           <FormSelect
             label="Nurse"

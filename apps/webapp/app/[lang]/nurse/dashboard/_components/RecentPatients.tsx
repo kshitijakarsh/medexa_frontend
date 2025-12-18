@@ -67,7 +67,7 @@ export default function RecentPatients() {
         {isLoading
           ? [...Array(4)].map((_, i) => <RecentPatientSkeleton key={i} />)
           : (activeTab === "visits" ? visits : allVisits).map((patient: any) => (
-              <RecentPatientCard key={patient.id} patient={patient} />
+              <RecentPatientCard key={patient.id} patient={patient} showNurseMenu={true} />
             ))}
       </div>
     </div>

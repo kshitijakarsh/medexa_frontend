@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { useState } from "react";
+import { Edit3, Eye } from "lucide-react";
+import { StatusUpdateModal } from "../StatusUpdateModal";
+import { NurseOrderDetailsModal } from "../NurseOrderDetailsModal";
 
 interface PriorityTaskCardProps {
   task: any;
@@ -15,6 +19,21 @@ const ORDER_TYPE_LABELS: Record<string, string> = {
 };
 
 export function PriorityTaskCard({ task }: PriorityTaskCardProps) {
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const handleStatusClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsStatusModalOpen(true);
+  };
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDetailsModalOpen(true);
+  };
+
   const getUrgencyStyles = (urgency: string) => {
     switch (urgency?.toLowerCase()) {
       case "stat":
@@ -105,6 +124,7 @@ export function PriorityTaskCard({ task }: PriorityTaskCardProps) {
   const statusStyles = getStatusStyles(task.status || "pending");
 
   return (
+    <>
     <Link
       href={`/nurse/appointment/${task.visit_id}`}
       className={`${urgencyStyles.bg} hover:opacity-90 rounded-lg p-4 transition-all cursor-pointer block`}
@@ -117,8 +137,23 @@ export function PriorityTaskCard({ task }: PriorityTaskCardProps) {
           </h3>
         </div>
 
-        {/* Status Badge */}
-        <span className={`${statusStyles.badge} px-2 py-0.5 rounded-full text-xs font-medium ml-3 border`}> {statusStyles.label} </span>
+        {/* Status Badge (Clickable) */}
+        <button
+          onClick={handleStatusClick}
+          className={`${statusStyles.badge} px-2 py-0.5 rounded-full text-xs font-medium ml-3 border flex items-center gap-1 hover:opacity-80 transition-opacity`}
+        >
+          {statusStyles.label}
+          <Edit3 className="w-3 h-3" />
+        </button>
+
+        {/* View Details Icon */}
+        <button
+          onClick={handleDetailsClick}
+          className="ml-2 p-1.5 rounded-full hover:bg-gray-200 transition-colors"
+          title="View Details"
+        >
+          <Eye className="w-4 h-4 text-gray-600" />
+        </button>
 
         {/* Urgency Badge */}
         <span
@@ -190,11 +225,26 @@ export function PriorityTaskCard({ task }: PriorityTaskCardProps) {
       </div>
 
       {/* Details Link */}
-      <div className="mt-3 text-right">
+      {/* <div className="mt-3 text-right">
         <span className="text-xs text-[#FF6B35] font-medium hover:underline">
           Details
         </span>
-      </div>
+      </div> */}
     </Link>
+
+    {/* Status Update Modal */}
+    <StatusUpdateModal
+      task={task}
+      isOpen={isStatusModalOpen}
+      onClose={() => setIsStatusModalOpen(false)}
+    />
+
+    {/* Nurse Order Details Modal */}
+    <NurseOrderDetailsModal
+      task={task}
+      isOpen={isDetailsModalOpen}
+      onClose={() => setIsDetailsModalOpen(false)}
+    />
+    </>
   );
 }

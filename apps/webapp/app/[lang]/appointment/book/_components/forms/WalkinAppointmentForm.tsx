@@ -1,31 +1,189 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FormSelect } from "@/components/ui/form-select"
 import { FormDate } from "@/components/ui/form-date"
 import { FormInput } from "@/components/ui/form-input"
+import { AvailableSlotGrid } from "../AvailableSlotGrid"
+import { SearchableSelect } from "../SearchableSelect"
+import { getAuthToken } from "@/app/utils/onboarding"
+import { createDepartmentApiClient } from "@/lib/api/administration/department"
+import axios from "axios"
 
-export function WalkinAppointmentForm() {
+interface WalkinAppointmentFormProps {
+  initialPatientVisitType?: "appointment" | "walk_in"
+  onPatientVisitTypeChange?: (type: "appointment" | "walk_in") => void
+  selectedSlot: string | null
+  onSlotSelect: (slot: string) => void
+}
+
+export function WalkinAppointmentForm({
+  initialPatientVisitType = "walk_in",
+  onPatientVisitTypeChange,
+  selectedSlot,
+  onSlotSelect,
+}: WalkinAppointmentFormProps) {
+  // Get today's date in YYYY-MM-DD format for min date restriction
+  const today = new Date().toISOString().split("T")[0]
+
   const [formData, setFormData] = useState({
+    patientVisitType: initialPatientVisitType,
+    visitPurpose: "doctor_consultation",
     department: "",
     doctor: "",
+    nurse: "",
     date: "",
     priority: "",
     startTime: "",
     endTime: "",
+    visitingPurpose: "",
   })
 
-  const departments = [
-    { value: "general-medicine", label: "General Medicine" },
-    { value: "cardiology", label: "Cardiology" },
-    { value: "dermatology", label: "Dermatology" },
-    { value: "pediatrics", label: "Pediatrics" },
+  const [departments, setDepartments] = useState<
+    { value: string; label: string }[]
+  >([])
+  const [loadingDepartments, setLoadingDepartments] = useState(false)
+  const [doctors, setDoctors] = useState<{ value: string; label: string }[]>(
+    []
+  )
+  const [loadingDoctors, setLoadingDoctors] = useState(false)
+  const [nurses, setNurses] = useState<{ value: string; label: string }[]>([])
+  const [loadingNurses, setLoadingNurses] = useState(false)
+
+  // Update patient visit type when prop changes
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      patientVisitType: initialPatientVisitType,
+    }))
+  }, [initialPatientVisitType])
+
+  // Fetch departments from API
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      setLoadingDepartments(true)
+      try {
+        const token = await getAuthToken()
+        const client = createDepartmentApiClient({ authToken: token })
+        const response = await client.getDepartments({
+          status: "active",
+          limit: 100,
+          offset: 0,
+        })
+
+        const departmentOptions = response.data.data.map((dept) => ({
+          value: dept.id,
+          label: dept.department_name,
+        }))
+        setDepartments(departmentOptions)
+      } catch (error) {
+        console.error("Failed to fetch departments:", error)
+        setDepartments([])
+      } finally {
+        setLoadingDepartments(false)
+      }
+    }
+
+    fetchDepartments()
+  }, [])
+
+  // Fetch doctors from API
+  const fetchDoctors = async (search: string = "") => {
+    setLoadingDoctors(true)
+    try {
+      const token = await getAuthToken()
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URI ?? ""
+      const params: any = {
+        page: 1,
+        limit: 100,
+      }
+      if (search.trim()) {
+        params.search = search.trim()
+      }
+
+      const response = await axios.get(
+        `${baseUrl}/api/v1/doctor/users/soap-notes-creators`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          params,
+        }
+      )
+
+      const doctorOptions = response.data.data.map((doctor: any) => ({
+        value: String(doctor.id),
+        label: doctor.name,
+      }))
+      setDoctors(doctorOptions)
+    } catch (error) {
+      console.error("Failed to fetch doctors:", error)
+      setDoctors([])
+    } finally {
+      setLoadingDoctors(false)
+    }
+  }
+
+  // Fetch nurses from API
+  const fetchNurses = async (search: string = "") => {
+    setLoadingNurses(true)
+    try {
+      const token = await getAuthToken()
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URI ?? ""
+      const params: any = {
+        page: 1,
+        limit: 100,
+      }
+      if (search.trim()) {
+        params.search = search.trim()
+      }
+
+      const response = await axios.get(
+        `${baseUrl}/api/v1/nurse/users/consumables-creators`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          params,
+        }
+      )
+
+      const nurseOptions = response.data.data.map((nurse: any) => ({
+        value: String(nurse.id),
+        label: nurse.name,
+      }))
+      setNurses(nurseOptions)
+    } catch (error) {
+      console.error("Failed to fetch nurses:", error)
+      setNurses([])
+    } finally {
+      setLoadingNurses(false)
+    }
+  }
+
+  // Initial fetch for doctors and nurses
+  useEffect(() => {
+    fetchDoctors()
+    fetchNurses()
+  }, [])
+
+  const patientVisitTypes = [
+    { value: "appointment", label: "Appointment" },
+    { value: "walk_in", label: "Walk-In" },
   ]
 
-  const doctors = [
-    { value: "doctor-1", label: "Dr. Rohan Mehta" },
-    { value: "doctor-2", label: "Dr. Sarah Johnson" },
-    { value: "doctor-3", label: "Dr. Maria Garcia" },
+  const visitPurposeOptions = [
+    { value: "doctor_consultation", label: "Doctor Consultation" },
+    { value: "follow_up", label: "Follow-Up Visit" },
+    { value: "procedure_appointment", label: "Procedure Appointment" },
+    { value: "teleconsultation", label: "Teleconsultation" },
+    { value: "home_visit", label: "Home Visit" },
+    { value: "multi_doctor_appointment", label: "Multi Doctor Appointment" },
+    { value: "multi_procedure", label: "Multi Procedure Appointment" },
   ]
 
   const priorities = [
@@ -53,30 +211,69 @@ export function WalkinAppointmentForm() {
 
   return (
     <div className="space-y-6">
+      {/* Top row: Patient Visit Type & Visit Purpose / Service Type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormSelect
+          label="Patient Visit Type"
+          required
+          value={formData.patientVisitType}
+          onValueChange={(value) => {
+            const newType = value as "appointment" | "walk_in"
+            setFormData({ ...formData, patientVisitType: newType })
+            onPatientVisitTypeChange?.(newType)
+          }}
+          placeholder="Select Patient Visit Type"
+          options={patientVisitTypes}
+        />
+        <FormSelect
+          label="Visit Purpose / Service Type"
+          required
+          value={formData.visitPurpose}
+          onValueChange={(value) =>
+            setFormData({ ...formData, visitPurpose: value })
+          }
+          placeholder="Select Visit Purpose"
+          options={visitPurposeOptions}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* <FormSelect
           label="Department"
           value={formData.department}
           onValueChange={(value) =>
             setFormData({ ...formData, department: value })
           }
-          placeholder="Select Department"
+          placeholder={
+            loadingDepartments ? "Loading departments..." : "Select Department"
+          }
           options={departments}
-        />
-        <FormSelect
+          disabled={loadingDepartments}
+        /> */}
+        <SearchableSelect
           label="Doctor"
           value={formData.doctor}
-          onValueChange={(value) =>
-            setFormData({ ...formData, doctor: value })
-          }
+          onChange={(value) => setFormData({ ...formData, doctor: value })}
           placeholder="Select Doctor"
           options={doctors}
+          loading={loadingDoctors}
+          onSearch={fetchDoctors}
+        />
+        <SearchableSelect
+          label="Nurse"
+          value={formData.nurse}
+          onChange={(value) => setFormData({ ...formData, nurse: value })}
+          placeholder="Select Nurse"
+          options={nurses}
+          loading={loadingNurses}
+          onSearch={fetchNurses}
         />
         <FormDate
           label="Date"
           value={formData.date}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
           placeholder="Select Date"
+          min={today}
         />
         <FormSelect
           label="Priority"
@@ -120,6 +317,23 @@ export function WalkinAppointmentForm() {
           )}
         </div>
       </div>
+
+      {/* Available Slots */}
+      <AvailableSlotGrid
+        slots={[]}
+        selectedSlot={selectedSlot}
+        onSlotSelect={onSlotSelect}
+      />
+
+      {/* Visiting Purpose */}
+      <FormInput
+        label="Visiting Purpose"
+        value={formData.visitingPurpose}
+        onChange={(e) =>
+          setFormData({ ...formData, visitingPurpose: e.target.value })
+        }
+        placeholder="Enter visiting purpose"
+      />
     </div>
   )
 }

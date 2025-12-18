@@ -64,7 +64,7 @@ function RecentPatientsPageContent() {
                 <RecentPatientSkeleton key={i} />
               ))
             : (activeTab === "visits" ? visits : allVisits).map((visit: any) => (
-                <RecentPatientCard key={visit.id} patient={visit} />
+                <RecentPatientCard key={visit.id} patient={visit} showNurseMenu={true} />
               ))}
         </div>
         {!isLoading && (activeTab === "visits" ? visits : allVisits).length === 0 && (
