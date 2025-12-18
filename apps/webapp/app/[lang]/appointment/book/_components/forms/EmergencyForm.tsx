@@ -1,13 +1,21 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FormSelect } from "@/components/ui/form-select"
 import { FormInput } from "@/components/ui/form-input"
 import { Button } from "@workspace/ui/components/button"
 import { cn } from "@workspace/ui/lib/utils"
 import { Textarea } from "@workspace/ui/components/textarea"
 
-export function EmergencyForm() {
+interface EmergencyFormProps {
+  initialPatientVisitType?: "emergency"
+  onPatientVisitTypeChange?: (type: "emergency") => void
+}
+
+export function EmergencyForm({
+  initialPatientVisitType = "emergency",
+  onPatientVisitTypeChange,
+}: EmergencyFormProps) {
   const [patientType, setPatientType] = useState<"adult" | "child">("adult")
   const [formData, setFormData] = useState({
     fullName: "",

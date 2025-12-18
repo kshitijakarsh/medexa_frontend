@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Header } from "@/components/header"
 import { PageHeader } from "@/components/common/page-header"
 import { FormInput } from "@/components/ui/form-input"
@@ -11,15 +11,17 @@ import { UploadCard } from "@/components/common/upload-card"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
 import { CheckCircle2, Calendar, Printer } from "lucide-react"
-import { useRouter, useParams } from "next/navigation"
 import { useCreatePatient } from "../_hooks/usePatient"
 import { useCountries } from "../_hooks/useCountries"
 import { usePatientCategories } from "../_hooks/usePatientCategories"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 
 export default function AddPatientPage() {
   const router = useRouter()
   const params = useParams<{ lang?: string }>()
+  const searchParams = useSearchParams()
   const lang = params?.lang || "en"
+  const visitType = searchParams.get("visitType") || ""
   const [isSuccess, setIsSuccess] = useState(false)
   const [createdPatientId, setCreatedPatientId] = useState<string>("")
   const [mrn, setMrn] = useState<string>("")
@@ -169,9 +171,38 @@ export default function AddPatientPage() {
     console.log("Print ID Card for MRN:", mrn)
   }
 
+  // Set default values based on visitType from query params
+  useEffect(() => {
+    if (visitType) {
+      switch (visitType) {
+        case "emergency":
+          setFormData((prev) => ({
+            ...prev,
+            category: "emergency",
+          }))
+          break
+        case "walkin":
+          setFormData((prev) => ({
+            ...prev,
+            category: "outpatient",
+          }))
+          break
+        case "appointment":
+          setFormData((prev) => ({
+            ...prev,
+            category: "outpatient",
+          }))
+          break
+        default:
+          break
+      }
+    }
+  }, [visitType])
+
   const handleBookAppointment = () => {
-    // Navigate to book appointment page
-    router.push(`/${lang}/appointment/book`)
+    // Navigate to book appointment page with visitType if available
+    const visitTypeParam = visitType ? `?visitType=${visitType}` : ""
+    router.push(`/${lang}/appointment/book${visitTypeParam}`)
   }
 
   // Options for dropdowns
