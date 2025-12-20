@@ -2,7 +2,8 @@
 
 import { FormSelect } from "@/components/ui/form-select"
 import { Calendar, Wifi, AlertTriangle, Clock, User } from "lucide-react"
-import { VisitType } from "../page"
+
+type VisitType = string;
 
 interface VisitTypeSelectorProps {
   value: VisitType
@@ -72,4 +73,3 @@ export function VisitTypeSelector({
     </div>
   )
 }
-

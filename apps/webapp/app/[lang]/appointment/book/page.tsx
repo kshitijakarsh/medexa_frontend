@@ -6,7 +6,13 @@ import { PageHeader } from "@/components/common/page-header"
 import { PatientSearchPanel } from "./_components/PatientSearchPanel"
 import { EmergencyForm } from "./_components/forms/EmergencyForm"
 import { StandardAppointmentForm } from "./_components/forms/StandardAppointmentForm"
-import { WalkinAppointmentForm } from "./_components/forms/WalkinAppointmentForm"
+import { EmergencyAppointmentForm } from "./_components/forms/EmergencyAppointmentForm"
+import { WalkinAppointmentForm } from "./_components/forms/WalkinAppointmentForm" // Keep even if unused to avoid breaking import list order heavily? Actually walkin form was removed from usage but file exists. I'll just add Emergency above it.
+
+// ... existing imports ...
+
+
+
 import { PricingSummary } from "./_components/PricingSummary"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
@@ -67,6 +73,7 @@ export default function BookAppointmentPage() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<any>(null)
+  const [emergencyPatientType, setEmergencyPatientType] = useState<"existing" | "unknown">("existing")
 
   // Update patient visit type if query param changes
   useEffect(() => {
@@ -158,20 +165,21 @@ export default function BookAppointmentPage() {
     switch (patientVisitType) {
       case "emergency":
         return (
-          <EmergencyForm
+          <EmergencyAppointmentForm
             initialPatientVisitType={patientVisitType}
             onPatientVisitTypeChange={setPatientVisitType}
+            patientType={emergencyPatientType}
+            onFormDataChange={setFormData}
+            selectedPatient={selectedPatient}
+            onEmergencyTypeChange={(type) => {
+              setEmergencyPatientType(type)
+              if (type === "unknown") {
+                setSelectedPatient(null)
+              }
+            }}
           />
         )
       case "walk_in":
-        return (
-          <WalkinAppointmentForm
-            initialPatientVisitType={patientVisitType}
-            onPatientVisitTypeChange={setPatientVisitType}
-            selectedSlot={selectedSlot}
-            onSlotSelect={setSelectedSlot}
-          />
-        )
       case "appointment":
       default:
         return (
@@ -188,8 +196,18 @@ export default function BookAppointmentPage() {
 
   // Pricing configuration for different visit types
   // This can be extended for all visit types
+  const procedureTypeLabels: Record<string, string> = {
+    mri: "MRI Scan",
+    xray: "X-Ray",
+    blood_test: "Blood Test",
+    physio: "Physiotherapy Session",
+  }
+
+  // Pricing configuration for different visit types
+  // This can be extended for all visit types
   const getPricingConfig = (
-    visitType: string
+    visitType: string,
+    currentFormData: any
   ): { label: string; amount: number }[] => {
     const defaultPricing: { label: string; amount: number }[] = [
       { label: "Consultation Fee", amount: 100 },
@@ -210,8 +228,20 @@ export default function BookAppointmentPage() {
       ],
       // Add more visit types here as needed
       procedure_appointment: [
-        { label: "Procedure Fee", amount: 200 },
-        { label: "IF new + File Registration Charge", amount: 120 },
+        {
+          label: currentFormData?.procedureType
+            ? procedureTypeLabels[currentFormData.procedureType] ||
+            "Procedure Fee"
+            : "Procedure Fee",
+          amount: 120,
+        },
+        {
+          label:
+            currentFormData?.patientVisitType === "walk_in"
+              ? "Contrast Charge"
+              : "IF new + File Registration Charge",
+          amount: 120,
+        },
       ],
       teleconsultation: [
         { label: "Teleconsultation Fee", amount: 100 },
@@ -245,7 +275,7 @@ export default function BookAppointmentPage() {
           : "doctor_consultation")
 
     // Get pricing items for this visit type
-    const pricingItems = getPricingConfig(visitType)
+    const pricingItems = getPricingConfig(visitType, formData)
 
     // Calculate total
     const total = pricingItems.reduce((sum, item) => sum + item.amount, 0)
@@ -268,17 +298,29 @@ export default function BookAppointmentPage() {
       <div className="p-2 py-6 space-y-6 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
         <PageHeader title="Book New Appointment" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Patient Search */}
-          <div className="lg:col-span-1 space-y-4">
-            <PatientSearchPanel
-              selectedPatient={selectedPatient}
-              onPatientSelect={setSelectedPatient}
-            />
-          </div>
+
+
+        <div className={`grid gap-6 ${patientVisitType === "emergency" && emergencyPatientType === "unknown" ? "grid-cols-1 max-w-4xl mr-auto" : "grid-cols-1 lg:grid-cols-2"}`}>
+          {/* Left Panel - Patient Search - Hide if Unknown */}
+          {!(patientVisitType === "emergency" && emergencyPatientType === "unknown") && (
+            <div className="space-y-4">
+              <PatientSearchPanel
+                selectedPatient={selectedPatient}
+                onPatientSelect={setSelectedPatient}
+                patientVisitType={patientVisitType}
+                emergencyType={emergencyPatientType}
+                onEmergencyTypeChange={(type) => {
+                  setEmergencyPatientType(type)
+                  if (type === "unknown") {
+                    setSelectedPatient(null)
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* Right Panel - Appointment Form */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm space-y-6">
               {/* Dynamic Form Based on Patient Visit Type */}
               {renderForm()}
@@ -287,13 +329,24 @@ export default function BookAppointmentPage() {
               <PricingSummary data={getPricingData()} />
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+              <div className="flex justify-end gap-3 pt-4">
                 <CancelButton onClick={handleCancel} label="CANCEL" />
                 <Button
                   onClick={handleBookAppointment}
                   disabled={isSubmitting || !selectedPatient}
+                  className={
+                    patientVisitType === "walk_in" || patientVisitType === "emergency"
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : ""
+                  }
                 >
-                  {isSubmitting ? "BOOKING..." : "BOOK APPOINTMENT"}
+                  {isSubmitting
+                    ? "Submitting..."
+                    : patientVisitType === "walk_in"
+                      ? "ADD VISIT"
+                      : patientVisitType === "emergency"
+                        ? "GENERATE ER"
+                        : "BOOK APPOINTMENT"}
                 </Button>
               </div>
             </div>

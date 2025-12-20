@@ -6,11 +6,10 @@ import { Button } from "@workspace/ui/components/button"
 import { UserPlus, List } from "lucide-react"
 import { PatientDetailsCard } from "./PatientDetailsCard"
 import { useRouter, useParams } from "next/navigation"
-import { getAuthToken } from "@/app/utils/onboarding"
 import {
-  BackendPatient,
+  PatientItem,
   createPatientsApiClient,
-} from "@/lib/api/patients"
+} from "@/lib/api/patients-api"
 
 interface Patient {
   id: string
@@ -31,29 +30,35 @@ interface Patient {
 interface PatientSearchPanelProps {
   selectedPatient: Patient | null
   onPatientSelect: (patient: Patient | null) => void
+  patientVisitType?: string
+  emergencyType?: "existing" | "unknown"
+  onEmergencyTypeChange?: (type: "existing" | "unknown") => void
 }
 
-function mapBackendPatient(p: BackendPatient): Patient {
+function mapBackendPatient(p: PatientItem): Patient {
   return {
     id: String(p.id),
-    name: `${p.first_name} ${p.last_name}`.trim(),
+    name: `${p.first_name || ""} ${p.last_name || ""}`.trim(),
     patientId: `PAT-${p.id}`,
-    cprNid: p.civil_id,
-    dateOfBirth: p.dob ?? "",
-    gender: p.gender ?? "",
-    bloodGroup: p.blood_group ?? "",
-    maritalStatus: "", // not present in response
-    nationality: p.country?.name_en ?? "",
-    phone: p.mobile_number ?? "",
-    email: p.email ?? "",
-    address: p.permanent_address ?? "",
-    avatar: p.photo_url ?? undefined,
+    cprNid: p.civil_id || "",
+    dateOfBirth: p.dob || "",
+    gender: p.gender || "",
+    bloodGroup: p.blood_group || "",
+    maritalStatus: p.marital_status || "",
+    nationality: p.country?.name_en || "",
+    phone: p.mobile_number || "",
+    email: p.email || "",
+    address: p.permanent_address || "",
+    avatar: p.photo_url || undefined,
   }
 }
 
 export function PatientSearchPanel({
   selectedPatient,
   onPatientSelect,
+  patientVisitType,
+  emergencyType,
+  onEmergencyTypeChange,
 }: PatientSearchPanelProps) {
   const router = useRouter()
   const params = useParams<{ lang?: string }>()
@@ -61,7 +66,6 @@ export function PatientSearchPanel({
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Patient[]>([])
   const [loading, setLoading] = useState(false)
-  const [authToken, setAuthToken] = useState<string>("")
 
   // Fetch patients whenever searchQuery changes (with debounce)
   useEffect(() => {
@@ -69,26 +73,22 @@ export function PatientSearchPanel({
 
     if (term.length < 2) {
       setSearchResults([])
+      // onPatientSelect(null) - DO NOT clear selected patient when typing! allows refining search without losing selection if needed, or keeping it. 
+      // Actually standard behavior: clearing search clears selection? 
+      // Let's keep existing logic:
       onPatientSelect(null)
       return
     }
 
-    let cancelled = false
+    let cancelled = false;
 
     const timeoutId = setTimeout(async () => {
       setLoading(true)
       try {
-        let token = authToken
-        if (!token) {
-          token = await getAuthToken()
-          setAuthToken(token)
-        }
-
-        const client = createPatientsApiClient({ authToken: token })
+        const client = createPatientsApiClient()
         const response = await client.getPatients({
           page: 1,
           limit: 20,
-          status: "active",
           search: term,
         })
 
@@ -97,9 +97,16 @@ export function PatientSearchPanel({
         const mapped = response.data.data.map(mapBackendPatient)
         setSearchResults(mapped)
 
+        // Only auto-select if exact match 1 result AND user just typed? 
+        // Or keep logic: if 1 result found, select it? 
+        // Existing logic: if (mapped.length === 1) onPatientSelect(mapped[0]). 
+        // This might be annoying if user is typing and 1 result appears transiently.
+        // But I will keep original behavior for now as I'm just replacing API.
         if (mapped.length === 1) {
           onPatientSelect(mapped[0] ?? null)
         } else {
+          // If multiple or 0, existing logic clears selection? 
+          // Line 103: onPatientSelect(null).
           onPatientSelect(null)
         }
       } catch (error) {
@@ -119,7 +126,7 @@ export function PatientSearchPanel({
       cancelled = true
       clearTimeout(timeoutId)
     }
-  }, [searchQuery, authToken, onPatientSelect])
+  }, [searchQuery, onPatientSelect])
 
   const handleAddPatient = () => {
     router.push(`/${lang}/patient/add-patient`)
@@ -130,13 +137,42 @@ export function PatientSearchPanel({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Search Section */}
-      <div className="bg-white p-5 rounded-xl shadow-sm space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Search Patient
-          </h2>
+    <div className="bg-white p-6 rounded-xl shadow-sm space-y-6 h-full">
+      <div>
+        {/* Emergency Toggle */}
+        {patientVisitType === "emergency" && (
+          <div className="flex gap-6 mb-4">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="emergencyTypePanel"
+                value="existing"
+                checked={emergencyType === "existing"}
+                onChange={() => onEmergencyTypeChange?.("existing")}
+                className="w-4 h-4 text-green-600 focus:ring-green-500 border-gray-300"
+              />
+              <span className="text-sm font-medium">Existing Patient</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="emergencyTypePanel"
+                value="unknown"
+                checked={emergencyType === "unknown"}
+                onChange={() => onEmergencyTypeChange?.("unknown")}
+                className="w-4 h-4 text-green-600 focus:ring-green-500 border-gray-300"
+              />
+              <span className="text-sm font-medium">Unknown Patient</span>
+            </label>
+          </div>
+        )}
+
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          Search Patient
+        </h2>
+
+        {/* Search Bar - Hide if Emergency Unknown */}
+        {(!patientVisitType || patientVisitType !== "emergency" || emergencyType === "existing") && (
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <SearchInput
@@ -159,7 +195,7 @@ export function PatientSearchPanel({
               <List className="h-5 w-5 text-white" />
             </Button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Patient Details Card */}
