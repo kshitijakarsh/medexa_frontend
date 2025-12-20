@@ -6,6 +6,11 @@ import { Button } from "@workspace/ui/components/button"
 import { UserPlus, List } from "lucide-react"
 import { PatientDetailsCard } from "./PatientDetailsCard"
 import { useRouter, useParams } from "next/navigation"
+import { getAuthToken } from "@/app/utils/onboarding"
+import {
+  BackendPatient,
+  createPatientsApiClient,
+} from "@/lib/api/patients"
 
 interface Patient {
   id: string
@@ -28,37 +33,23 @@ interface PatientSearchPanelProps {
   onPatientSelect: (patient: Patient | null) => void
 }
 
-// Mock patient data
-const mockPatients: Patient[] = [
-  {
-    id: "1",
-    name: "Aarav Nair",
-    patientId: "PAT-65",
-    cprNid: "9988776655",
-    dateOfBirth: "1995-08-12",
-    gender: "Male",
-    bloodGroup: "B+",
-    maritalStatus: "Married",
-    nationality: "Indian",
-    phone: "(239) 555-0108",
-    email: "tim.jennings@example.com",
-    address: "Villa No. 8, Aluva, Kochi, Kerala, India",
-  },
-  {
-    id: "2",
-    name: "Ganguli Rathod",
-    patientId: "PAT-66",
-    cprNid: "8877665544",
-    dateOfBirth: "1982-06-15",
-    gender: "Male",
-    bloodGroup: "A+",
-    maritalStatus: "Single",
-    nationality: "Indian",
-    phone: "(319) 555-0115",
-    email: "ganguli.rathod@example.com",
-    address: "123 Main Street, Doha, Qatar",
-  },
-]
+function mapBackendPatient(p: BackendPatient): Patient {
+  return {
+    id: String(p.id),
+    name: `${p.first_name} ${p.last_name}`.trim(),
+    patientId: `PAT-${p.id}`,
+    cprNid: p.civil_id,
+    dateOfBirth: p.dob ?? "",
+    gender: p.gender ?? "",
+    bloodGroup: p.blood_group ?? "",
+    maritalStatus: "", // not present in response
+    nationality: p.country?.name_en ?? "",
+    phone: p.mobile_number ?? "",
+    email: p.email ?? "",
+    address: p.permanent_address ?? "",
+    avatar: p.photo_url ?? undefined,
+  }
+}
 
 export function PatientSearchPanel({
   selectedPatient,
@@ -69,26 +60,66 @@ export function PatientSearchPanel({
   const lang = params?.lang || "en"
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Patient[]>([])
+  const [loading, setLoading] = useState(false)
+  const [authToken, setAuthToken] = useState<string>("")
 
+  // Fetch patients whenever searchQuery changes (with debounce)
   useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const filtered = mockPatients.filter(
-        (patient) =>
-          patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          patient.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          patient.cprNid.includes(searchQuery)
-      )
-      setSearchResults(filtered)
-      if (filtered.length === 1) {
-        onPatientSelect(filtered[0] ?? null)
-      } else {
-        onPatientSelect(null)
-      }
-    } else {
+    const term = searchQuery.trim()
+
+    if (term.length < 2) {
       setSearchResults([])
       onPatientSelect(null)
+      return
     }
-  }, [searchQuery, onPatientSelect])
+
+    let cancelled = false
+
+    const timeoutId = setTimeout(async () => {
+      setLoading(true)
+      try {
+        let token = authToken
+        if (!token) {
+          token = await getAuthToken()
+          setAuthToken(token)
+        }
+
+        const client = createPatientsApiClient({ authToken: token })
+        const response = await client.getPatients({
+          page: 1,
+          limit: 20,
+          status: "active",
+          search: term,
+        })
+
+        if (cancelled) return
+
+        const mapped = response.data.data.map(mapBackendPatient)
+        setSearchResults(mapped)
+
+        if (mapped.length === 1) {
+          onPatientSelect(mapped[0] ?? null)
+        } else {
+          onPatientSelect(null)
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Failed to search patients:", error)
+          setSearchResults([])
+          onPatientSelect(null)
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }, 300)
+
+    return () => {
+      cancelled = true
+      clearTimeout(timeoutId)
+    }
+  }, [searchQuery, authToken, onPatientSelect])
 
   const handleAddPatient = () => {
     router.push(`/${lang}/patient/add-patient`)
