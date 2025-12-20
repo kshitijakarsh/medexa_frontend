@@ -477,6 +477,11 @@ export const mainModules: MainModule[] = [
         actions: ["view", "viewOne"]
       },
       {
+        key: "visit_purpose",
+        label: "Visit Purpose",
+        actions: ["view", "create", "edit", "viewOne"]
+      },
+      {
         key: "reception",
         label: "Reception",
         actions: ["view", "create", "edit", "delete"],

@@ -4,6 +4,8 @@
 import AppointmentCard from "@/components/common/pasient-card/appointment-card";
 import AppointmentCardSkeleton from "./AppointmentCardSkeleton";
 import { useRouter } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 
 
@@ -15,8 +17,10 @@ export default function AppointmentGrid({
   loading: boolean;
 }) {
   const router = useRouter()
-  const handleCardClick = (id : number) => {
-    router.push(`/doctor/appointment/${id}`)
+  const { withLocale } = useLocaleRoute()
+
+  const handleCardClick = (id: number) => {
+    router.push(`${withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)}${id}`)
 
   }
   if (loading) {

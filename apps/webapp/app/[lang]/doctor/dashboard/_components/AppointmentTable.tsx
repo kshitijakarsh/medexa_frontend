@@ -448,9 +448,11 @@ import { AppointmentTableSkeleton } from "./Appointment/AppointmentTableSkeleton
 import { useDoctorVisitsQuery } from "./api";
 
 import { useState } from "react";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export default function AppointmentTable() {
     const [activeTab, setActiveTab] = useState(DOCTOR_DEFAULT_TAB);
+    const { withLocale } = useLocaleRoute()
 
     // Map active tab to status
     const status =
@@ -477,7 +479,7 @@ export default function AppointmentTable() {
 
                 {/* Disable View All if empty */}
                 <ViewAllLink
-                    href={buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: activeTab })}
+                    href={withLocale(buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: activeTab }))}
                     disabled={!hasItems}
                 />
             </div>

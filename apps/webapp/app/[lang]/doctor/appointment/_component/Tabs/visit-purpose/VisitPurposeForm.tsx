@@ -282,7 +282,7 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
     onset: data?.onset ?? "",
     duration: data?.duration ?? "",
     severity: data?.severity ?? "",
-    notes: data?.notes ?? "",
+    additional_notes: data?.additional_notes ?? "",
   };
 
   const handleChange = (field: keyof VisitPurposeData, value: string) => {
@@ -361,12 +361,12 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
       <div className="flex flex-col gap-2">
         <label className="font-medium text-sm">Additional Notes</label>
         <Textarea
-          value={safeData.notes}
-          onChange={(e) => handleChange("notes", e.target.value)}
+          value={safeData.additional_notes}
+          onChange={(e) => handleChange("additional_notes", e.target.value)}
           placeholder="Enter Additional Notes"
         />
-        {errors.notes && (
-          <span className="text-red-500 text-xs">{errors.notes}</span>
+        {errors.additional_notes && (
+          <span className="text-red-500 text-xs">{errors.additional_notes}</span>
         )}
       </div>
     </div>

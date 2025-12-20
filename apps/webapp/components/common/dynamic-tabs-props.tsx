@@ -158,7 +158,7 @@ export function DynamicTabs({
             className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer
             ${
               activeTab === tab.key
-                ? "bg-blue-600 text-white hover:bg-blue-600"
+                ? "bg-[#0086F8] text-white hover:bg-[#0086F8]"
                 : "bg-white text-gray-600 hover:bg-blue-100"
             }`}
           >

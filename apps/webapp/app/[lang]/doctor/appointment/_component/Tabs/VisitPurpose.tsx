@@ -75,12 +75,13 @@ import { VisitPurposeHistory } from "./visit-purpose/VisitPurposeHistory";
 import { VisitPurposeData } from "./visit-purpose/VisitPurpose";
 
 interface VisitPurposeProps {
+    patientId: string,
     data: VisitPurposeData;
     setData: (data: VisitPurposeData | ((prev: VisitPurposeData) => VisitPurposeData)) => void;
     setDirty: (dirty: boolean) => void;
 }
 
-export function VisitPurpose({ data, setData, setDirty }: VisitPurposeProps) {
+export function VisitPurpose({ patientId, data, setData, setDirty }: VisitPurposeProps) {
     return (
         <>
             <SectionWrapper
@@ -102,7 +103,7 @@ export function VisitPurpose({ data, setData, setDirty }: VisitPurposeProps) {
                 />
             </SectionWrapper>
 
-            <VisitPurposeHistory />
+            <VisitPurposeHistory patientId={patientId}/>
         </>
     );
 }

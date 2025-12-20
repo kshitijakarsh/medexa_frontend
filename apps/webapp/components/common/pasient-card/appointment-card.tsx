@@ -1,27 +1,40 @@
 // app/doctor-dashboard/components/appointments/AppointmentCard.tsx
 "use client";
 
-import { Clock } from "lucide-react";
+import { Clock, MoreVertical } from "lucide-react";
 import { UserAvatar } from "./user-avatar";
 import { StatusPill } from "./status-pill";
 import { TypeBadge } from "./type-badge";
 import { VipCrownBadge } from "./vip-crown-badge";
 import { CardBlock } from "./card-block";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
-import { MouseEventHandler } from "react";
+import { MouseEventHandler, useState } from "react";
 import { AppointmentPatientCell } from "./appointment-patient-cell";
+import { NurseReassignModal } from "@/app/[lang]/nurse/dashboard/_components/NurseReassignModal";
 
 interface AppointmentCardProps {
     item: any,
     // onClick?: MouseEventHandler<HTMLDivElement>,
     onClick?: () => void;
     selected?: boolean
+    showNurseMenu?: boolean;
 }
 
-export default function AppointmentCard({ item, onClick, selected }: AppointmentCardProps) {
+export default function AppointmentCard({ item, onClick, selected, showNurseMenu = false }: AppointmentCardProps) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    
+    const handleMenuClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsModalOpen(true);
+    };
+
+    const nurseName = item?.nurse
+        ? item.nurse.name || `${item.nurse.first_name || ""} ${item.nurse.last_name || ""}`.trim()
+        : null;
+
     console.log(item)
     return (
-        // <div className="bg-white rounded-2xl border border-[#E6F3FF] p-4 shadow-sm">
+        <>
         <CardBlock
             onClick={onClick}
             className={`
@@ -34,28 +47,6 @@ export default function AppointmentCard({ item, onClick, selected }: Appointment
         >
             {/* ROW 1 */}
             <div className="flex items-start gap-3">
-                {/* <div className="relative">
-                    <UserAvatar
-                        src={item.avatar}
-                        size={44}
-                    // borderColor="#CDEED3"
-                    />
-                    {item.vip && (
-                        <VipCrownBadge
-                            size={14}
-                            className="absolute -top-1 -left-1"
-                        />
-                    )}
-                </div>
-
-                <div className="flex-1">
-                    <div className="font-semibold text-[15px]">{item.name}</div>
-                    <div className="text-xs text-gray-500">{item.mrn}</div>
-                </div>
-
-                <div>
-                    <StatusPill status={item.status} />
-                </div> */}
                 <AppointmentPatientCell
                     name={item.name}
                     mrn={item.mrn}
@@ -63,24 +54,60 @@ export default function AppointmentCard({ item, onClick, selected }: Appointment
                     vip={item.status === "vip"}
                     status={item.status}
                 />
+                {showNurseMenu && (
+                    <button
+                        onClick={handleMenuClick}
+                        className="ml-auto p-1 rounded-full hover:bg-gray-200 transition-colors"
+                    >
+                        <MoreVertical className="w-4 h-4 text-gray-600" />
+                    </button>
+                )}
             </div>
 
             {/* ROW 2 */}
-            <div className="mt-3 mt-auto flex items-center justify-between text-sm">
-                {/* <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                        <Clock size={14} className="text-gray-400" />
-                        <span>{item.time}</span>
-                    </div>
-                    <span className="text-[#17B26D] font-medium">{item.room}</span>
-                </div> */}
+            <div className="mt-3 mt-auto flex items-center justify-between text-sm gap-1">
                 {/* Time + Room */}
                 <TimeRoomInfo time={item.time} room={item.room} />
 
                 <div>
-                    <TypeBadge type={item.type} />
+                    <TypeBadge type={item.type} className="text-end"/>
                 </div>
             </div>
+
+            {/* Nurse Name */}
+            {showNurseMenu && (
+                <div className="mt-2 pt-2 border-t border-gray-200">
+                    <div className="flex items-center gap-1 text-xs text-gray-600">
+                        <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                        </svg>
+                        <span className="text-gray-500">Nurse:</span>
+                        <span className="font-medium text-gray-700">
+                            {nurseName || "Not assigned"}
+                        </span>
+                    </div>
+                </div>
+            )}
         </CardBlock>
+
+        {/* Nurse Reassign Modal */}
+        {showNurseMenu && (
+            <NurseReassignModal
+                visit={item}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
+        )}
+        </>
     );
 }

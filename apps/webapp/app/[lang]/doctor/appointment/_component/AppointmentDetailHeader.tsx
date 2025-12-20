@@ -242,12 +242,12 @@
 
 "use client";
 
-import { StatusPill } from "@/components/common/pasient-card/status-pill";
-import { UserAvatar } from "@/components/common/pasient-card/user-avatar";
 import { AppointmentItem } from "./types/appointment";
 import { Users, FileText, Share2, Save } from "lucide-react";
 import { ActionButton } from "./button/ActionButton";
 import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
+import { VisitStatusSelector } from "./common/VisitStatusSelector";
+import { canWorkOnVisit } from "./common/visitGuards";
 
 export function AppointmentDetailHeader({
   item,
@@ -255,14 +255,29 @@ export function AppointmentDetailHeader({
   onFinish,
   saving,
   finishing,
+  isLoading,
+  starting,
+  onStart,
 }: {
   item: AppointmentItem;
   onSaveDraft: () => void;
   onFinish: () => void;
   saving: boolean;
   finishing: boolean;
+  isLoading?: boolean;
+  starting?: boolean,
+  onStart?: () => void,
 }) {
 
+  // const isStarted = [
+  //   "in_consultation",
+  //   "in_progress",
+  //   "lab_test",
+  //   "radiology",
+  //   // "active"
+  // ].includes(item.status);
+
+  const isCompleted = item.status === "completed";
 
   return (
     <div className="
@@ -278,7 +293,7 @@ export function AppointmentDetailHeader({
     ">
 
       {/* LEFT SECTION */}
-      <div className="flex items-start flex-col gap-4">
+      <div className="flex items-start flex-col gap-3">
         <div className="flex gap-3">
           {/* <UserAvatar src={item.avatar} size={60} />
 
@@ -298,9 +313,19 @@ export function AppointmentDetailHeader({
             mrn={item.mrn}
             avatar={item.avatar}
             vip={item.status === "vip"}
-            status={item.status}
+            // status={item.status} // status hiding
             size={60}
           />
+          {/* STATUS SELECTOR */}
+          {!isCompleted && canWorkOnVisit(item.status) && (
+            <VisitStatusSelector
+              visitId={item.id}
+              status={item.status.toLowerCase()}
+              disabled={starting || finishing || isLoading}
+            />
+          )}
+
+
         </div>
 
         {/* Time + Info */}
@@ -317,40 +342,55 @@ export function AppointmentDetailHeader({
           </div>
           <div className="text-gray-700 text-sm mt-1">{item.permanent_address}</div>
         </div>
-        <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>
+        {item.insuranceName && <div className="text-green-600 text-sm mt-1">{item.insuranceName}</div>}
       </div>
 
       {/* RIGHT SECTION ACTIONS */}
       <div className="flex flex-col gap-3 w-[210px]">
 
         {/* SAVE BUTTON (DRAFT) */}
-        <ActionButton
+        {/* <ActionButton
           label={saving ? "Saving..." : "Save Draft"}
           icon={<Save size={18} />}
           variant="outline"
           disabled={saving || finishing}
           onClick={onSaveDraft}
-        />
+        /> */}
+
+        {/* START CONSULTATION */}
+        {!canWorkOnVisit(item.status) && !isCompleted && (
+          <ActionButton
+            label={starting ? "Starting..." : "Start Consultation"}
+            icon={<Users size={18} />}
+            variant="solid"
+            disabled={starting || finishing || isLoading}
+            onClick={onStart}
+          />
+        )}
 
         {/* FINISH CONSULTATION */}
-        <ActionButton
-          label={finishing ? "Finishing..." : "Finish Consultation"}
-          icon={<Users size={18} />}
-          variant="solid"
-          disabled={finishing || saving}
-          onClick={onFinish}
-        />
+        {canWorkOnVisit(item.status) && !isCompleted && (
+          <ActionButton
+            label={finishing ? "Finishing..." : "Finish Consultation"}
+            icon={<Users size={18} />}
+            variant="solid"
+            disabled={finishing || saving || isLoading}
+            onClick={onFinish}
+          />
+        )}
 
         <ActionButton
           label="View Details"
           icon={<FileText size={18} />}
           variant="outline"
+          disabled={true}
         />
 
         <ActionButton
           label="Refer Doctor"
           icon={<Share2 size={18} />}
           variant="outline"
+          disabled={true}
         />
       </div>
     </div>
