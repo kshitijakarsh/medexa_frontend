@@ -513,6 +513,19 @@ export function StandardAppointmentForm({
               iconClassName={getThemeColorClass(formData.visitPurpose)}
             />
           </div>
+
+          {/* Row 4: Nurse */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SearchableSelect
+              label="Nurse"
+              value={formData.nurse}
+              onChange={(value) => setFormData({ ...formData, nurse: value })}
+              placeholder="Select Nurse"
+              options={nurses}
+              loading={loadingNurses}
+              onSearch={fetchNurses}
+            />
+          </div>
         </>
       ) : (
         // Standard Consultation / Follow-up Layout
@@ -564,6 +577,19 @@ export function StandardAppointmentForm({
               }
               placeholder="Select Shift"
               options={shifts}
+            />
+          </div>
+
+          {/* Row 4: Nurse */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SearchableSelect
+              label="Nurse"
+              value={formData.nurse}
+              onChange={(value) => setFormData({ ...formData, nurse: value })}
+              placeholder="Select Nurse"
+              options={nurses}
+              loading={loadingNurses}
+              onSearch={fetchNurses}
             />
           </div>
         </>

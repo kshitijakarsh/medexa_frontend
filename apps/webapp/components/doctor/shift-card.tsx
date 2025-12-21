@@ -225,6 +225,8 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
                 return;
             }
 
+            console.log(`🎯 Generated ${slots.length} slots:`, slots);
+
             // Convert day names (Sun, Mon, etc.)
             const applyFor = localShift.days;
 
@@ -236,6 +238,18 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
                 slots: slots,
                 applyFor: applyFor
             };
+
+            console.log('📦 Payload being sent to API:', JSON.stringify(payload, null, 2));
+            console.log('📋 Payload details:', {
+                doctorId: payload.doctorId,
+                startDate: payload.startDate,
+                endDate: payload.endDate,
+                slotVisitType: payload.slotVisitType,
+                numberOfSlots: payload.slots.length,
+                applyForDays: payload.applyFor,
+                firstSlot: payload.slots[0],
+                lastSlot: payload.slots[payload.slots.length - 1]
+            });
 
             const response = await apiClient.createSlots(payload);
 

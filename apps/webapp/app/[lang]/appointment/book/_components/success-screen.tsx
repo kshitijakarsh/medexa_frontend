@@ -38,12 +38,13 @@ export function SuccessScreen({ data, visitType, patientDetails, onClose }: Succ
 
     const location = "OPD Block A, Room 101"
 
-    // Date/Time
+    // Date/Time - Use UTC to show exact booked time
     const dateObj = new Date(data?.time_slot_start || new Date())
-    const dateStr = dateObj.toLocaleDateString('en-GB')
+    const dateStr = dateObj.toLocaleDateString('en-GB', { timeZone: 'UTC' })
+
     const timeStr = data?.time_slot_start && data?.time_slot_end
-        ? `${new Date(data.time_slot_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}-${new Date(data.time_slot_end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-        : "10:00-10:15"
+        ? `${new Date(data.time_slot_start).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })} - ${new Date(data.time_slot_end).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}`
+        : "10:00 - 10:15"
 
     return (
         <div className="flex flex-col items-center justify-center py-10 px-4 max-w-2xl mx-auto w-full">
