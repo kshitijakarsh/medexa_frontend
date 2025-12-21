@@ -30,6 +30,7 @@ import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 import { ROUTES } from "@/lib/routes";
 import { AppointmentEntry, FilterState } from "./types";
 import { AppointmentGridView } from "./_components/appointment-grid-view";
+import { AppointmentCalendarView } from "./_components/appointment-calendar-view";
 import { ContactPopover } from "./_components/contact-popover";
 import { Badge } from "@workspace/ui/components/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
@@ -47,6 +48,7 @@ const STATUS_OPTIONS = [
 
 export default function AppointmentPage() {
   const [loading, setLoading] = useState(false);
+  const [isCalendarView, setIsCalendarView] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [appointments, setAppointments] = useState<AppointmentEntry[]>([]);
   const [filters, setFilters] = useState<FilterState>({
@@ -61,6 +63,8 @@ export default function AppointmentPage() {
 
   const { doctors: doctorOptions } = useDoctors(doctorSearchQuery);
   const { departments: departmentOptions } = useDepartments(departmentSearchQuery);
+
+  const selectedDoctor = doctorOptions.find(d => d.value === filters.doctor);
 
   const router = useRouter();
   const { withLocale } = useLocaleRoute();
@@ -328,8 +332,8 @@ export default function AppointmentPage() {
               <CalendarDays className="w-5 h-5 text-blue-500" />
               <span className="text-sm font-semibold text-gray-800">Calendar View</span>
               <Switch
-                checked={viewMode === "grid"}
-                onCheckedChange={(checked) => setViewMode(checked ? "grid" : "list")}
+                checked={isCalendarView}
+                onCheckedChange={setIsCalendarView}
                 className="data-[state=checked]:bg-blue-500"
               />
             </div>
@@ -421,7 +425,14 @@ export default function AppointmentPage() {
         </div>
 
         {/* Content Area */}
-        {viewMode === "list" ? (
+        {isCalendarView ? (
+          <div className="mt-4">
+            <AppointmentCalendarView
+              data={appointments}
+              doctor={selectedDoctor ? { name: selectedDoctor.label, specialty: "Specialist" } : undefined}
+            />
+          </div>
+        ) : viewMode === "list" ? (
           <div className="rounded-t-xl overflow-hidden mt-4 [&_thead_th]:font-normal">
             {!loading && appointments.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 bg-white rounded-b-xl border border-gray-100 shadow-sm text-center">

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Phone, MoreVertical, Calendar, Stethoscope, Clock, FileText } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Badge } from "@workspace/ui/components/badge";
+import { ContactPopover } from "./contact-popover";
 
 interface AppointmentGridViewProps {
     data: AppointmentEntry[];
@@ -104,6 +105,8 @@ function AppointmentCard({ appointment }: { appointment: AppointmentEntry }) {
                     <span>{appointment.isNewConsultation ? "New Consultation" : "Follow-up"}</span>
                 </div>
 
+
+
                 {/* Doctor - with Call Button aligned right */}
                 <div className="flex items-start justify-between mt-4">
                     <div className="flex items-start">
@@ -113,9 +116,7 @@ function AppointmentCard({ appointment }: { appointment: AppointmentEntry }) {
                             <p className="text-gray-500 text-xs">{appointment.specialty}</p>
                         </div>
                     </div>
-                    <Button size="icon" className="h-10 w-10 bg-[#2CB470] hover:bg-[#259b60] rounded-xl shadow-sm shrink-0">
-                        <Phone className="h-5 w-5 text-white" />
-                    </Button>
+                    <ContactPopover phoneNumber={appointment.contactNumber} />
                 </div>
             </div>
 
