@@ -2,7 +2,7 @@
 
 import { FormSelect } from "@/components/ui/form-select"
 import { Calendar, Wifi, AlertTriangle, Clock, User } from "lucide-react"
-import { VisitType } from "../page"
+import { PatientVisitType as VisitType } from "../page";
 
 interface VisitTypeSelectorProps {
   value: VisitType
