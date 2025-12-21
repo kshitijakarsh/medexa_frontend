@@ -1,26 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { PageHeader } from "@/components/common/page-header"
 import { PatientSearchPanel } from "./_components/PatientSearchPanel"
-import { VisitTypeSelector } from "./_components/VisitTypeSelector"
-import { ProcedureAppointmentForm } from "./_components/forms/ProcedureAppointmentForm"
-import { TeleconsultationForm } from "./_components/forms/TeleconsultationForm"
 import { EmergencyForm } from "./_components/forms/EmergencyForm"
 import { StandardAppointmentForm } from "./_components/forms/StandardAppointmentForm"
 import { WalkinAppointmentForm } from "./_components/forms/WalkinAppointmentForm"
 import { PricingSummary } from "./_components/PricingSummary"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
+import { getAuthToken } from "@/app/utils/onboarding"
+import { createVisitsApiClient } from "@/lib/api/visits"
 
-export type VisitType =
-  | "procedure"
-  | "teleconsultation"
-  | "emergency"
-  | "standard"
-  | "walkin"
+export type PatientVisitType = "appointment" | "walk_in" | "emergency"
 
 interface Patient {
   id: string
@@ -48,21 +42,112 @@ interface LastVisit {
 export default function BookAppointmentPage() {
   const router = useRouter()
   const params = useParams<{ lang?: string }>()
+  const searchParams = useSearchParams()
   const lang = params?.lang || "en"
+  const visitTypeParam = searchParams.get("visitType") || ""
 
-  const [selectedVisitType, setSelectedVisitType] =
-    useState<VisitType>("procedure")
+  // Map query param visitType to PatientVisitType
+  const getInitialPatientVisitType = (param: string): PatientVisitType => {
+    switch (param) {
+      case "emergency":
+        return "emergency"
+      case "walkin":
+        return "walk_in"
+      case "appointment":
+        return "appointment"
+      default:
+        return "appointment"
+    }
+  }
+
+  const [patientVisitType, setPatientVisitType] = useState<PatientVisitType>(
+    getInitialPatientVisitType(visitTypeParam)
+  )
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [formData, setFormData] = useState<any>(null)
+
+  // Update patient visit type if query param changes
+  useEffect(() => {
+    if (visitTypeParam) {
+      setPatientVisitType(getInitialPatientVisitType(visitTypeParam))
+    }
+  }, [visitTypeParam])
 
   const handleBookAppointment = async () => {
+    if (!selectedPatient || !formData || !selectedSlot) {
+      // Show error message
+      alert("Please fill in all required fields")
+      return
+    }
+
     setIsSubmitting(true)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsSubmitting(false)
-    // TODO: Handle success/error
-    router.push(`/${lang}/appointment`)
+    try {
+      const token = await getAuthToken()
+      const client = createVisitsApiClient({ authToken: token })
+
+      // Parse the selected slot (format: "HH:MM-HH:MM")
+      const slotParts = selectedSlot.split("-")
+      if (slotParts.length !== 2 || !slotParts[0] || !slotParts[1]) {
+        throw new Error("Invalid slot format")
+      }
+
+      const startTime = slotParts[0]
+      const endTime = slotParts[1]
+      const startTimeParts = startTime.split(":")
+      const endTimeParts = endTime.split(":")
+
+      if (
+        startTimeParts.length !== 2 ||
+        endTimeParts.length !== 2 ||
+        !startTimeParts[0] ||
+        !startTimeParts[1] ||
+        !endTimeParts[0] ||
+        !endTimeParts[1]
+      ) {
+        throw new Error("Invalid time format")
+      }
+
+      const [startHour, startMinute] = startTimeParts
+      const [endHour, endMinute] = endTimeParts
+
+      // Create ISO timestamps by combining date with time
+      const selectedDate = formData.date // Format: YYYY-MM-DD
+      const timeSlotStart = new Date(
+        `${selectedDate}T${startHour}:${startMinute}:00Z`
+      ).toISOString()
+      const timeSlotEnd = new Date(
+        `${selectedDate}T${endHour}:${endMinute}:00Z`
+      ).toISOString()
+
+      // Map form data to API request format
+      const visitPayload = {
+        patient_id: selectedPatient.id,
+        procedure_type_id: "1", // Default value
+        procedure_category_id: "1", // Default value
+        machine_room_id: "1", // Default value
+        nurse_id: formData.nurse || "1", // Use selected nurse or default
+        communication_mode_id: "1", // Default value
+        doctor_ids: formData.doctor ? [formData.doctor] : [],
+        time_slot_start: timeSlotStart,
+        time_slot_end: timeSlotEnd,
+        shift: formData.shift || "morning",
+        visit_type: formData.visitPurpose || "doctor_consultation",
+        patient_visit_type: formData.patientVisitType || "appointment",
+        status: "active",
+      }
+
+      await client.createVisit(visitPayload)
+
+      // Success - redirect to appointments page
+      router.push(`/${lang}/appointment`)
+    } catch (error: any) {
+      console.error("Failed to book appointment:", error)
+      alert(error.message || "Failed to book appointment. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleCancel = () => {
@@ -70,81 +155,110 @@ export default function BookAppointmentPage() {
   }
 
   const renderForm = () => {
-    switch (selectedVisitType) {
-      case "procedure":
-        return (
-          <ProcedureAppointmentForm
-            selectedSlot={selectedSlot}
-            onSlotSelect={setSelectedSlot}
-          />
-        )
-      case "teleconsultation":
-        return (
-          <TeleconsultationForm
-            selectedSlot={selectedSlot}
-            onSlotSelect={setSelectedSlot}
-          />
-        )
+    switch (patientVisitType) {
       case "emergency":
-        return <EmergencyForm />
-      case "standard":
+        return (
+          <EmergencyForm
+            initialPatientVisitType={patientVisitType}
+            onPatientVisitTypeChange={setPatientVisitType}
+          />
+        )
+      case "walk_in":
+        return (
+          <WalkinAppointmentForm
+            initialPatientVisitType={patientVisitType}
+            onPatientVisitTypeChange={setPatientVisitType}
+            selectedSlot={selectedSlot}
+            onSlotSelect={setSelectedSlot}
+          />
+        )
+      case "appointment":
+      default:
         return (
           <StandardAppointmentForm
+            initialPatientVisitType={patientVisitType}
+            onPatientVisitTypeChange={setPatientVisitType}
             selectedSlot={selectedSlot}
             onSlotSelect={setSelectedSlot}
+            onFormDataChange={setFormData}
           />
         )
-      case "walkin":
-        return <WalkinAppointmentForm />
-      default:
-        return null
     }
   }
 
+  // Pricing configuration for different visit types
+  // This can be extended for all visit types
+  const getPricingConfig = (
+    visitType: string
+  ): { label: string; amount: number }[] => {
+    const defaultPricing: { label: string; amount: number }[] = [
+      { label: "Consultation Fee", amount: 100 },
+      { label: "IF new + File Registration Charge", amount: 120 },
+    ]
+
+    const pricingMap: Record<
+      string,
+      { label: string; amount: number }[]
+    > = {
+      doctor_consultation: [
+        { label: "Doctor Charge", amount: 120 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      follow_up: [
+        { label: "Follow-Up Consultation Charge", amount: 120 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      // Add more visit types here as needed
+      procedure_appointment: [
+        { label: "Procedure Fee", amount: 200 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      teleconsultation: [
+        { label: "Teleconsultation Fee", amount: 100 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      home_visit: [
+        { label: "Home Visit Fee", amount: 150 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      multi_doctor_appointment: [
+        { label: "Multi Doctor Consultation Fee", amount: 200 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+      multi_procedure: [
+        { label: "Multi Procedure Fee", amount: 300 },
+        { label: "IF new + File Registration Charge", amount: 120 },
+      ],
+    }
+
+    return pricingMap[visitType] || defaultPricing
+  }
+
   const getPricingData = () => {
-    switch (selectedVisitType) {
-      case "procedure":
-        return {
-          items: [
-            { label: "MRI Brain", amount: "120 AED" },
-            { label: "Contrast Charge", amount: "120 AED" },
-          ],
-          total: "240 AED",
-        }
-      case "teleconsultation":
-        return {
-          items: [
-            { label: "Teleconsultation Fee", amount: "120 AED" },
-            { label: "Registration Charge", amount: "120 AED" },
-          ],
-          total: "240 AED",
-        }
-      case "emergency":
-        return {
-          items: [
-            { label: "Emergency Fee", amount: "150 AED" },
-            { label: "Registration Charge", amount: "120 AED" },
-          ],
-          total: "270 AED",
-        }
-      case "standard":
-        return {
-          items: [
-            { label: "Consultation Fee", amount: "100 AED" },
-            { label: "Registration Charge", amount: "120 AED" },
-          ],
-          total: "220 AED",
-        }
-      case "walkin":
-        return {
-          items: [
-            { label: "Walk-in Fee", amount: "80 AED" },
-            { label: "Registration Charge", amount: "120 AED" },
-          ],
-          total: "200 AED",
-        }
-      default:
-        return { items: [], total: "0 AED" }
+    // Get visit type from form data, fallback to patient visit type
+    const visitType =
+      formData?.visitPurpose ||
+      (patientVisitType === "emergency"
+        ? "emergency"
+        : patientVisitType === "walk_in"
+          ? "walk_in"
+          : "doctor_consultation")
+
+    // Get pricing items for this visit type
+    const pricingItems = getPricingConfig(visitType)
+
+    // Calculate total
+    const total = pricingItems.reduce((sum, item) => sum + item.amount, 0)
+
+    // Format items with AED currency
+    const formattedItems = pricingItems.map((item) => ({
+      label: item.label,
+      amount: `${item.amount} AED`,
+    }))
+
+    return {
+      items: formattedItems,
+      total: `${total} AED`,
     }
   }
 
@@ -166,13 +280,7 @@ export default function BookAppointmentPage() {
           {/* Right Panel - Appointment Form */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm space-y-6">
-              {/* Visit Type Selector */}
-              <VisitTypeSelector
-                value={selectedVisitType}
-                onChange={setSelectedVisitType}
-              />
-
-              {/* Dynamic Form Based on Visit Type */}
+              {/* Dynamic Form Based on Patient Visit Type */}
               {renderForm()}
 
               {/* Pricing Summary */}

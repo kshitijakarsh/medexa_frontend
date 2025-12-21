@@ -8,6 +8,7 @@ import { SOAPNotes } from "./Tabs/SOAPNotes";
 import SurgerySection from "./Tabs/SurgerySection";
 import { VisitPurpose } from "./Tabs/VisitPurpose";
 import { Vitals } from "./Tabs/Vitals";
+import NurseOrders from "./Tabs/NurseOrders";
 
 export const appointmentTabsConfig = (props: any) => [
     {
@@ -44,6 +45,14 @@ export const appointmentTabsConfig = (props: any) => [
         key: "Nurse Note", label: "Nurse Note",
         component: (
             <NurseNotesSection
+                patientId={props.patientId}
+            />
+        ),
+    },
+    {
+        key: "Nurse Orders", label: "Nurse Orders",
+        component: (
+            <NurseOrders
                 patientId={props.patientId}
             />
         ),

@@ -3,6 +3,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog";
@@ -13,22 +14,26 @@ interface AppDialogProps {
   open: boolean;
   onClose: () => void;
   title: string;
+  description?: string;
   children: React.ReactNode;
-  headerRight?: React.ReactNode;  // 👈 new
+  headerRight?: React.ReactNode;
   icon?: React.ReactNode;
   appliedCount?: number
   maxWidth?: string;
+  headerColor?: string;
 }
 
 export function AppDialog({
   open,
   onClose,
   title,
+  description,
   children,
   icon,
   headerRight,
   appliedCount,
   maxWidth = "md:max-w-2xl lg:max-w-screen-xl",
+  headerColor
 }: AppDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -53,15 +58,21 @@ export function AppDialog({
             <X className="w-5 h-5" />
           </Button>
         </div> */}
-        <div className="relative flex items-center justify-between bg-[#012E63] px-6 py-3">
+        <div className={`relative flex items-center justify-between ${headerColor ? `bg-${headerColor}` : `bg-[#012E63]`} px-6 py-3`}>
 
           {/* LEFT SIDE — ICON + TITLE */}
           <div className="flex items-center gap-2">
-            {icon && <span className="text-white">{icon}</span>}
-
-            <DialogTitle className="text-white text-lg font-semibold">
-              {title}
-            </DialogTitle>
+            {icon && <span className={`${headerColor ? "!text-gray-800" : "text-white"}`}>{icon}</span>}
+            <div className="flex items-start flex-col">
+              <DialogTitle className={`${headerColor ? "text-gray-800" : "text-white"} text-lg font-semibold`}>
+                {title}
+              </DialogTitle>
+              {description &&
+                <DialogDescription className={`${headerColor ? "text-gray-600" : "text-gray-200"}`}>
+                  {description}
+                </DialogDescription>
+              }
+            </div>
             {/* RIGHT SIDE — BADGE OR ANY CUSTOM ELEMENT */}
             {appliedCount && (
               <div className="flex items-center">
@@ -78,7 +89,7 @@ export function AppDialog({
           <Button
             variant="ghost"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-red-400 hover:bg-transparent cursor-pointer"
+            className={`absolute right-4 top-1/2 -translate-y-1/2 ${headerColor ? "text-gray-800" : "text-white"} hover:text-red-400 hover:bg-transparent cursor-pointer`}
             onClick={onClose}
           >
             <X className="w-5 h-5" />

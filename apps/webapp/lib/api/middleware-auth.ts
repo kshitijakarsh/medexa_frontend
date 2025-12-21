@@ -132,7 +132,8 @@ export async function getTenantIdFromSlug(
       try {
         const response = await tenantClient.getTenantById(tenantSlug)
         return String(response.data.data.id)
-      } catch {
+      } catch (error:any){
+        console.log("Tenant api failed ",error.message)
         // If not found by ID, continue to try by key
       }
     }

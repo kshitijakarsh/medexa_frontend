@@ -23,6 +23,12 @@ export const PERMISSIONS = {
         DELETE: "administration:wardType:delete",
         VIEW: "administration:wardType:view",
     },
+    PATIENTS:{
+        CREATE: "administration:patientCategory:create",
+        EDIT: "administration:patientCategory:edit",
+        DELETE: "administration:patientCategory:delete",
+        VIEW: "administration:patientCategory:view",
+    },
     FLOOR: {
         CREATE: "administration:floor:create",
         EDIT: "administration:floor:edit",
