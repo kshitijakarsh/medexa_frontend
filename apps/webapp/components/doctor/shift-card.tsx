@@ -158,10 +158,10 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
         try {
             const apiClient = createSlotApiClient();
 
-            // Convert time to ISO format
-            const formatTimeToISO = (timeStr: string, baseDate: string) => {
+            // Helper to parse time string to minutes
+            const parseTimeToMinutes = (timeStr: string) => {
                 const match = timeStr.match(/(\d{1,2}):(\d{2})(AM|PM)/i);
-                if (!match) return "";
+                if (!match) return null;
 
                 let hours = parseInt(match[1]!);
                 const minutes = parseInt(match[2]!);
@@ -170,12 +170,10 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
                 if (period === "PM" && hours !== 12) hours += 12;
                 if (period === "AM" && hours === 12) hours = 0;
 
-                const date = new Date(baseDate);
-                date.setHours(hours, minutes, 0, 0);
-                return date.toISOString();
+                return hours * 60 + minutes;
             };
 
-            // Parse duration to get end time
+            // Parse duration
             const parseDuration = (dur: string) => {
                 const match = dur.match(/(\d+)(min|hr)/);
                 if (!match) return 30;
@@ -184,17 +182,48 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
                 return unit === "hr" ? value * 60 : value;
             };
 
+            const startMinutes = parseTimeToMinutes(localShift.fromTime);
+            const endMinutes = parseTimeToMinutes(localShift.toTime);
             const durationMinutes = parseDuration(localShift.duration);
 
-            // Create slot time range
-            const startTime = formatTimeToISO(localShift.fromTime, dateRange.start);
-            const startDate = new Date(startTime);
-            const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
+            if (startMinutes === null || endMinutes === null) {
+                alert("Invalid time format");
+                return;
+            }
 
-            const slots: SlotTimeRange[] = [{
-                startTime: startDate.toISOString(),
-                endTime: endDate.toISOString()
-            }];
+            // Adjust endMinutes for overnight shifts if needed
+            const actualEndMinutes = endMinutes < startMinutes ? endMinutes + 24 * 60 : endMinutes;
+
+            const slots: SlotTimeRange[] = [];
+            let currentMinutes = startMinutes;
+
+            // Calculate base date (midnight of start date)
+            const baseDateObj = new Date(dateRange.start);
+            baseDateObj.setHours(0, 0, 0, 0);
+
+            // Loop to generate all slots
+            while (currentMinutes + durationMinutes <= actualEndMinutes) {
+                const slotStartMinutes = currentMinutes;
+                const slotEndMinutes = currentMinutes + durationMinutes;
+
+                // Create Date objects by adding minutes to midnight
+                const sTime = new Date(baseDateObj.getTime() + slotStartMinutes * 60000);
+                const eTime = new Date(baseDateObj.getTime() + slotEndMinutes * 60000);
+
+                slots.push({
+                    startTime: sTime.toISOString(),
+                    endTime: eTime.toISOString()
+                });
+
+                currentMinutes += durationMinutes;
+
+                if (slots.length > 200) break; // Safety limit
+            }
+
+            if (slots.length === 0) {
+                alert("No valid slots could be generated from the given time range.");
+                return;
+            }
 
             // Convert day names (Sun, Mon, etc.)
             const applyFor = localShift.days;
@@ -203,7 +232,7 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
                 doctorId: doctorId,
                 startDate: dateRange.start,
                 endDate: dateRange.end,
-                slotVisitType: "doctor_consultation",
+                slotVisitType: "doctor_consultation", // Or use localShift.slotFor mappings if needed
                 slots: slots,
                 applyFor: applyFor
             };
@@ -211,7 +240,7 @@ export function ShiftCard({ shift, onRemove, onUpdate, doctorId, dateRange, onSl
             const response = await apiClient.createSlots(payload);
 
             console.log("Slots created successfully:", response.data);
-            alert(`Success! ${response.data.data.count} slots created`);
+            alert(`Success! ${response.data.data.count} slots generated and saved.`);
 
             if (onSlotCreated) {
                 onSlotCreated();

@@ -13,6 +13,7 @@ import { WalkinAppointmentForm } from "./_components/forms/WalkinAppointmentForm
 
 
 
+import { SuccessScreen } from "./_components/success-screen"
 import { PricingSummary } from "./_components/PricingSummary"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
@@ -45,6 +46,8 @@ interface LastVisit {
   lastPrescription: string
 }
 
+// ... imports
+
 export default function BookAppointmentPage() {
   const router = useRouter()
   const params = useParams<{ lang?: string }>()
@@ -74,6 +77,9 @@ export default function BookAppointmentPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState<any>(null)
   const [emergencyPatientType, setEmergencyPatientType] = useState<"existing" | "unknown">("existing")
+
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [bookingData, setBookingData] = useState<any>(null)
 
   // Update patient visit type if query param changes
   useEffect(() => {
@@ -145,10 +151,14 @@ export default function BookAppointmentPage() {
         status: "active",
       }
 
-      await client.createVisit(visitPayload)
+      const response = await client.createVisit(visitPayload)
 
-      // Success - redirect to appointments page
-      router.push(`/${lang}/appointment`)
+      if (response.data.success) {
+        setBookingData(response.data.data)
+        setShowSuccess(true)
+      } else {
+        throw new Error("Failed to create visit")
+      }
     } catch (error: any) {
       console.error("Failed to book appointment:", error)
       alert(error.message || "Failed to book appointment. Please try again.")
@@ -292,11 +302,29 @@ export default function BookAppointmentPage() {
     }
   }
 
+  if (showSuccess) {
+    return (
+      <main className="min-h-svh w-full bg-white">
+        <Header />
+        <div className="p-2 py-6 min-h-screen bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
+          <PageHeader title={patientVisitType === 'walk_in' ? 'Walk-In Registered' : 'Appointment Booked'} onBackButton={true} />
+          <SuccessScreen
+            data={bookingData}
+            visitType={patientVisitType}
+            patientDetails={selectedPatient}
+            onClose={() => router.push(`/${lang}/appointment`)}
+          />
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-svh w-full">
       <Header />
       <div className="p-2 py-6 space-y-6 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
         <PageHeader title="Book New Appointment" />
+
 
 
 
