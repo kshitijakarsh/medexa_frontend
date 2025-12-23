@@ -13,9 +13,9 @@ import type { Locale } from "@/i18n/locales";
 export default async function LocalizedCreateHospitalPage({
   params,
 }: {
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }) {
-  const dict = await getDictionary(params.lang);
+  const dict = await getDictionary((await params).lang);
 
   return <CreateHospitalForm dict={dict} />;
 }

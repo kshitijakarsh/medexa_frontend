@@ -16,16 +16,16 @@ import type { Locale } from "@/i18n/locales"
 
 interface OnboardingLayoutProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     lang: Locale
-  }
+  }>
 }
 
 export default async function OnboardingLayout({
   children,
   params,
 }: OnboardingLayoutProps) {
-  const dict = await getDictionary(params.lang)
+  const dict = await getDictionary((await params).lang)
 
   return (
     <OnboardingShell dict={dict}>
