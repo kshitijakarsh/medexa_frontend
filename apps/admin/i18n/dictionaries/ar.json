@@ -1,0 +1,392 @@
+{
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "search": "بحث",
+    "loading": "جارٍ التحميل...",
+    "back": "رجوع",
+    "skip": "تخطي",
+    "error": "خطأ",
+    "yes": "نعم",
+    "no": "لا",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "updating": "جارٍ التحديث...",
+    "adding": "جارٍ الإضافة...",
+    "update": "تحديث",
+    "add": "إضافة",
+    "pending": "قيد الانتظار",
+    "suspended": "معلق"
+  },
+  "nav": {
+    "overview": "نظرة عامة",
+    "hospitals": "المستشفيات",
+    "support": "الدعم",
+    "activityLog": "سجل النشاط",
+    "application": "لوحة التحكم",
+    "management": "الإدارة",
+    "monitor": "المراقبة",
+    "monitoring": "المراقبة"
+  },
+  "pages": {
+    "overview": {
+      "title": "نظرة عامة"
+    },
+    "hospitals": {
+      "title": "إدارة المستشفيات",
+      "name": "الاسم",
+      "location": "الموقع",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "create": {
+        "title": "إنشاء مستأجر / مستشفى",
+        "submit": "حفظ والمتابعة",
+        "submitting": "جارٍ الحفظ..."
+      },
+      "table": {
+        "activeHospitals": "المستشفيات النشطة",
+        "onboardNew": "إضافة مستشفى جديد",
+        "searchPlaceholder": "البحث باسم المستشفى",
+        "id": "المعرف",
+        "hospitalName": "اسم المستشفى",
+        "adminName": "اسم المسؤول",
+        "email": "بريد المستشفى",
+        "phone": "هاتف المستشفى",
+        "domainUrl": "رابط النطاق",
+        "modules": "الوحدات",
+        "subscriptionPlan": "خطة الاشتراك",
+        "billingStatus": "حالة الفوترة",
+        "lastLogin": "آخر تسجيل دخول",
+        "action": "إجراء",
+        "status": "الحالة",
+        "statusValues": {
+          "pending": "قيد الانتظار",
+          "active": "نشط",
+          "inactive": "غير نشط",
+          "suspended": "معلق"
+        },
+        "rowActions": {
+          "getOnboarded": "بدء الإعداد",
+          "editHospital": "تعديل المستشفى",
+          "editOnboarding": "تعديل الإعداد"
+        },
+        "pagination": {
+          "showing": "عرض {{count}} من {{total}} مستشفى",
+          "previous": "السابق",
+          "next": "التالي",
+          "page": "صفحة",
+          "of": "من"
+        }
+      },
+      "information": {
+        "title": "معلومات المستشفى",
+        "overview": "نظرة عامة",
+        "logo": "الشعار",
+        "businessDetails": "تفاصيل العمل",
+        "adminDetails": "تفاصيل المسؤول",
+        "modulesAssigned": "الوحدات المخصصة",
+        "credentials": "بيانات الدخول / الصلاحيات"
+      }
+    },
+    "onboarding": {
+      "hospitalInfo": {
+        "sectionTitle": "معلومات المستشفى / المستأجر",
+        "tenantKey": {
+          "label": "مفتاح المستأجر *",
+          "placeholder": "مثال: hospital-abc"
+        },
+        "externalId": {
+          "label": "المعرف الخارجي *",
+          "placeholder": "معرف خارجي"
+        },
+        "hospitalNameEn": {
+          "label": "اسم المستشفى (بالإنجليزية) *",
+          "placeholder": "أدخل اسم المستشفى بالإنجليزية"
+        },
+        "hospitalNameLocal": {
+          "label": "اسم المستشفى (باللغة المحلية) *",
+          "placeholder": "أدخل اسم المستشفى باللغة المحلية"
+        },
+        "country": {
+          "label": "الدولة *",
+          "placeholder": "اختر الدولة",
+          "loading": "جارٍ التحميل..."
+        },
+        "authority": {
+          "label": "الجهة التنظيمية *",
+          "placeholder": "اختر الجهة",
+          "loading": "جارٍ التحميل..."
+        },
+        "licenseNumber": {
+          "label": "رقم الترخيص *",
+          "placeholder": "أدخل رقم الترخيص"
+        },
+        "licenseExpiry": {
+          "label": "تاريخ انتهاء الترخيص *"
+        },
+        "licenseType": {
+          "label": "نوع الترخيص *",
+          "placeholder": "مثال: مركز طبي"
+        },
+        "commercialReg": {
+          "label": "رقم السجل التجاري *",
+          "placeholder": "أدخل رقم السجل التجاري"
+        },
+        "currency": {
+          "label": "العملة *",
+          "placeholder": "اختر العملة"
+        },
+        "vatNumber": {
+          "label": "رقم ضريبة القيمة المضافة *",
+          "placeholder": "أدخل رقم ضريبة القيمة المضافة"
+        },
+        "logoHelp": "المقاس الموصى به: 300×300 بكسل، PNG/JPG. الحد الأقصى 2 ميجابايت."
+      },
+      "modulesAssignment": {
+        "sectionTitle": "تعيين الوحدات",
+        "selectPlaceholder": "اختر الوحدات",
+        "selectedCount": "تم اختيار {{count}}",
+        "searchPlaceholder": "البحث عن الوحدات...",
+        "emptyState": "لم يتم العثور على وحدات.",
+        "fallbackModule": "الوحدة {{id}}"
+      },
+      "onboardingTitle": "إعداد المستشفى",
+      "editOnboardingTitle": "تعديل إعداد المستشفى",
+      "stepLabel": "الخطوة {{current}} من {{total}}: {{step}}",
+      "steps": {
+        "modulesAssignment": "تعيين الوحدات",
+        "paymentDetails": "تفاصيل الدفع",
+        "licenceHistory": "سجل التراخيص",
+        "regulatoryDocuments": "المستندات التنظيمية"
+      },
+      "payment": {
+        "title": "تفاصيل الدفع",
+        "subtitle": "إعداد بوابات الدفع والتفاصيل البنكية",
+        "addPaymentConfig": "إضافة إعداد دفع",
+        "emptyState": "لم تتم إضافة أي إعدادات دفع بعد. انقر على \"إضافة إعداد دفع\" للبدء.",
+        "gateway": {
+          "label": "بوابة الدفع *",
+          "placeholder": "اختر بوابة الدفع"
+        },
+        "merchantId": {
+          "label": "معرف التاجر",
+          "placeholder": "أدخل معرف التاجر"
+        },
+        "terminalKey": {
+          "label": "مفتاح الطرفية",
+          "placeholder": "أدخل مفتاح الطرفية"
+        },
+        "vaultPath": {
+          "label": "مسار الخزنة",
+          "placeholder": "أدخل مسار الخزنة"
+        },
+        "bankName": {
+          "label": "اسم البنك",
+          "placeholder": "أدخل اسم البنك"
+        },
+        "bankAccount": {
+          "label": "رقم الحساب البنكي",
+          "placeholder": "أدخل رقم الحساب"
+        },
+        "vatRegistered": "مسجل في ضريبة القيمة المضافة",
+        "vatNumber": {
+          "label": "رقم ضريبة القيمة المضافة",
+          "placeholder": "أدخل رقم ضريبة القيمة المضافة"
+        },
+        "currency": {
+          "label": "العملة *",
+          "placeholder": "اختر العملة"
+        },
+        "status": "حالة التفعيل",
+        "addDialogTitle": "إضافة إعداد دفع",
+        "editDialogTitle": "تعديل إعداد الدفع",
+        "dialogDescription": "إعداد بوابة الدفع والتفاصيل البنكية",
+        "deleteConfirm": "هل أنت متأكد من حذف إعداد الدفع هذا؟"
+      },
+      "paymentDetails": {
+        "sectionTitle": "تفاصيل الدفع",
+        "fields": {
+          "gatewayId": {
+            "label": "معرف بوابة الدفع",
+            "placeholder": "أدخل معرف بوابة الدفع"
+          },
+          "merchantId": {
+            "label": "معرف التاجر",
+            "placeholder": "أدخل معرف التاجر"
+          },
+          "terminalKey": {
+            "label": "مفتاح الطرفية",
+            "placeholder": "أدخل مفتاح الطرفية"
+          },
+          "vaultPath": {
+            "label": "مسار الخزنة",
+            "placeholder": "أدخل مسار الخزنة"
+          },
+          "bankName": {
+            "label": "اسم البنك",
+            "placeholder": "أدخل اسم البنك"
+          },
+          "bankAccountNumber": {
+            "label": "رقم الحساب البنكي",
+            "placeholder": "أدخل رقم الحساب"
+          },
+          "vatRegistered": {
+            "label": "مسجل في ضريبة القيمة المضافة",
+            "yes": "نعم",
+            "no": "لا"
+          },
+          "vatNumber": {
+            "label": "رقم ضريبة القيمة المضافة",
+            "placeholder": "أدخل رقم ضريبة القيمة المضافة"
+          },
+          "currencyCode": {
+            "label": "رمز العملة",
+            "placeholder": "USD"
+          }
+        }
+      },
+      "licenceHistory": {
+  "title": "سجل التراخيص",
+  "subtitle": "إدارة سجل التراخيص وتفاصيل الاشتراك",
+
+  "add": "إضافة سجل ترخيص",
+  "emptyState": "لم تتم إضافة أي سجلات تراخيص بعد. اضغط على \"إضافة سجل ترخيص\" للبدء.",
+  "deleteConfirm": "هل أنت متأكد من حذف سجل الترخيص هذا؟",
+
+  "addDialogTitle": "إضافة سجل ترخيص",
+  "editDialogTitle": "تعديل سجل الترخيص",
+  "dialogDescription": "إعداد خطة الترخيص وتفاصيل الاشتراك",
+
+  "list": {
+    "seats": "عدد المقاعد",
+    "startDate": "تاريخ البدء",
+    "status": "الحالة"
+  },
+
+  "form": {
+    "planKey": {
+      "label": "مفتاح الخطة *",
+      "placeholder": "أدخل مفتاح الخطة"
+    },
+    "seats": {
+      "label": "عدد المقاعد *",
+      "placeholder": "عدد المقاعد"
+    },
+    "storageQuota": {
+      "label": "سعة التخزين (ميجابايت) *",
+      "placeholder": "سعة التخزين بالميجابايت"
+    },
+    "startDate": {
+      "label": "تاريخ البدء *"
+    },
+    "endDate": {
+      "label": "تاريخ الانتهاء *"
+    },
+    "autoRenew": {
+      "label": "التجديد التلقائي",
+      "enabled": "مفعل",
+      "disabled": "غير مفعل"
+    },
+    "status": {
+      "label": "الحالة",
+      "placeholder": "اختر الحالة",
+      "values": {
+        "pending": "قيد الانتظار",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "suspended": "موقوف"
+      }
+    }
+  }
+},
+"regulatoryDocs": {
+  "title": "المستندات التنظيمية",
+  "subtitle": "رفع وإدارة مستندات الامتثال والتنظيم",
+
+  "addDocument": "إضافة مستند تنظيمي",
+  "emptyState": "لم تتم إضافة أي مستندات تنظيمية بعد. اضغط على \"إضافة مستند تنظيمي\" للبدء.",
+
+  "completeOnboarding": "إكمال الإعداد",
+
+  "addDialogTitle": "إضافة مستند تنظيمي",
+  "editDialogTitle": "تعديل مستند تنظيمي",
+  "dialogDescription": "رفع مستندات الامتثال والتنظيم",
+
+  "deleteConfirm": "هل أنت متأكد من حذف هذا المستند التنظيمي؟",
+  "activationError": "فشل في تفعيل الجهة",
+
+  "fields": {
+    "authority": "الجهة",
+    "documentNumber": "رقم المستند",
+    "issueDate": "تاريخ الإصدار",
+    "expiryDate": "تاريخ الانتهاء",
+    "status": "الحالة",
+    "file": "الملف"
+  },
+
+  "form": {
+    "docType": {
+      "label": "نوع المستند *",
+      "placeholder": "مثال: ترخيص، شهادة، تصريح"
+    },
+    "authority": {
+      "label": "الجهة *",
+      "placeholder": "اختر الجهة"
+    },
+    "documentNumber": {
+      "label": "رقم المستند *",
+      "placeholder": "رقم المستند"
+    },
+    "issueDate": "تاريخ الإصدار *",
+    "expiryDate": "تاريخ الانتهاء *",
+    "file": "ملف المستند *",
+    "status": {
+      "label": "الحالة",
+      "placeholder": "اختر الحالة"
+    },
+    "notes": {
+      "label": "ملاحظات",
+      "placeholder": "ملاحظات أو تعليقات إضافية"
+    }
+  }
+},
+      "adminAccount": {
+        "sectionTitle": "حساب المسؤول الرئيسي",
+        "fullName": {
+          "label": "الاسم الكامل *",
+          "placeholder": "الاسم الكامل للمسؤول الرئيسي"
+        },
+        "email": {
+          "label": "البريد الإلكتروني *",
+          "placeholder": "admin@example.com"
+        },
+        "password": {
+          "label": "كلمة مرور المسؤول الرئيسي",
+          "placeholder": "أدخل كلمة المرور"
+        },
+        "idNumber": {
+          "label": "رقم الهوية *",
+          "placeholder": "رقم هوية المسؤول"
+        }
+      }
+    },
+    "support": {
+      "title": "الدعم"
+    },
+    "activityLog": {
+      "title": "سجل النشاط"
+    },
+    "monitoring": {
+      "title": "المراقبة"
+    },
+    "login": {
+      "title": "تسجيل الدخول"
+    }
+  },
+  "metadata": {
+    "title": "MedExe - الإدارة",
+    "description": "بوابة الإدارة"
+  }
+}

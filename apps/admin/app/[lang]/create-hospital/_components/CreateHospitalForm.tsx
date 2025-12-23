@@ -1,20 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { useForm } from "@workspace/ui/hooks/use-form"
-import { zodResolver } from "@workspace/ui/lib/zod"
-import { Form } from "@workspace/ui/components/form"
-import { Header } from "@/components/header"
-import { FormHeader } from "@/app/[lang]/onboarding/_components/ui/FormHeader"
-import { StepHospitalBase } from "@/app/[lang]/onboarding/_components/sections/StepHospitalBase"
-import { FormActionsSection } from "@/app/[lang]/onboarding/_components/sections/FormActionsSection"
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useForm } from "@workspace/ui/hooks/use-form";
+import { zodResolver } from "@workspace/ui/lib/zod";
+import { Form } from "@workspace/ui/components/form";
+
+import { Header } from "@/components/header";
+import { FormHeader } from "@/app/[lang]/onboarding/_components/ui/FormHeader";
+import { StepHospitalBase } from "@/app/[lang]/onboarding/_components/sections/StepHospitalBase";
+import { FormActionsSection } from "@/app/[lang]/onboarding/_components/sections/FormActionsSection";
+
 import {
   step1Schema,
   type Step1Values,
-} from "@/app/[lang]/onboarding/_components/schemas"
-import { createTenantApiClient } from "@/lib/api/tenant"
+} from "@/app/[lang]/onboarding/_components/schemas";
 
+import { createTenantApiClient } from "@/lib/api/tenant";
+import type { Dictionary } from "@/i18n/get-dictionary";
+
+/* ------------------------------------------
+   DEFAULT FORM VALUES
+------------------------------------------- */
 const defaultValues: Step1Values = {
   tenant_key: "",
   external_id: "",
@@ -33,73 +40,88 @@ const defaultValues: Step1Values = {
   currency_code: "",
   vat_registered: false,
   vat_number: "",
-  // user_full_name: "",
-  // user_password: "",
-}
+};
 
-export function CreateHospitalForm() {
-  const router = useRouter()
-  const params = useParams<{ lang: string }>()
-  const lang = params?.lang ?? "en"
+type Props = {
+  dict: Dictionary;
+};
 
-  const [logoFile, setLogoFile] = useState<File | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+export function CreateHospitalForm({ dict }: Props) {
+  const router = useRouter();
+  const params = useParams<{ lang: string }>();
+  const lang = params?.lang ?? "en";
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useForm<Step1Values>({
     resolver: zodResolver(step1Schema),
     defaultValues,
-  })
+  });
 
+  /* ------------------------------------------
+     LOGO HANDLING
+  ------------------------------------------- */
   const onLogoSelected = (file?: File | null) => {
-    setLogoFile(file ?? null)
+    setLogoFile(file ?? null);
 
     if (!file) {
-      setLogoPreview(null)
-      return
+      setLogoPreview(null);
+      return;
     }
 
-    const reader = new FileReader()
+    const reader = new FileReader();
     reader.onload = (event) =>
-      setLogoPreview(event.target?.result ? String(event.target.result) : null)
-    reader.readAsDataURL(file)
-  }
+      setLogoPreview(
+        event.target?.result ? String(event.target.result) : null
+      );
+    reader.readAsDataURL(file);
+  };
 
+  /* ------------------------------------------
+     SUBMIT
+  ------------------------------------------- */
   const onSubmit = async (values: Step1Values) => {
-    setLoading(true)
-    setServerError(null)
+    setLoading(true);
+    setServerError(null);
 
     try {
-      // Transform data to meet API requirements
       const transformedValues = {
         ...values,
-        // Convert datetime-local format to ISO 8601 with timezone
         license_expiry: values.license_expiry.includes("T")
           ? `${values.license_expiry}:00Z`
           : `${values.license_expiry}T00:00:00Z`,
-        // Ensure currency_code is uppercase
         currency_code: values.currency_code.toUpperCase(),
-      }
+      };
 
-      const tenantApiClient = createTenantApiClient({ authToken: "" })
-      await tenantApiClient.createTenant(transformedValues)
-      // Redirect to hospitals list after successful creation
-      router.push(`/${lang}/hospitals`)
+      const tenantApiClient = createTenantApiClient({ authToken: "" });
+      await tenantApiClient.createTenant(transformedValues);
+
+      router.push(`/${lang}/hospitals`);
     } catch (error) {
-      const message =
+      setServerError(
         error instanceof Error ? error.message : "Failed to create tenant"
-      setServerError(message)
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
+  /* ------------------------------------------
+     RENDER
+  ------------------------------------------- */
   return (
     <main className="min-h-svh w-full">
       <Header />
+
       <div className="flex flex-col items-start justify-between mb-6">
-        <FormHeader title="Create Tenant / Hospital" backHref="/hospitals" />
+        <FormHeader
+          title={dict.pages.hospitals.create.title}
+          backHref={`/${lang}/hospitals`}
+        />
+
         <div className="p-4 w-full py-3">
           <Form {...form}>
             <form
@@ -114,19 +136,22 @@ export function CreateHospitalForm() {
                 logoFile={logoFile}
                 setLogoFile={setLogoFile}
                 onLogoSelected={onLogoSelected}
+                dict={dict}
               />
 
               <FormActionsSection
                 serverError={serverError}
                 loading={loading}
                 showReset={false}
-                submitLabel="Save & Continue"
-                submitLoadingLabel="Saving..."
+                submitLabel={dict.pages.hospitals.create.submit}
+                submitLoadingLabel={
+                  dict.pages.hospitals.create.submitting
+                }
               />
             </form>
           </Form>
         </div>
       </div>
     </main>
-  )
+  );
 }
