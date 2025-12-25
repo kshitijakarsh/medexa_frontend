@@ -40,6 +40,8 @@ export const ROUTES = {
   FRONTOFFICE_DASHBOARD: `${FRONTOFFICE_BASE}/dashboard`,
   FRONTOFFICE_SCHEDULE: `${FRONTOFFICE_BASE}/schedule`,
   FRONTOFFICE_TIME_SLOTS: `${FRONTOFFICE_BASE}/time-slots`,
+  FRONTOFFICE_PATIENT_REGISTRATION: `${FRONTOFFICE_BASE}/patient-registration`,
+
 
   // HR
   HR: `${HR}/employee-configuration`,

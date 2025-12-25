@@ -123,6 +123,11 @@ export function AppSidebar({ }) {
           icon: LayoutDashboard,
         },
         {
+          title: "Patient Record",
+          url: [withLocale(ROUTES.FRONTOFFICE_PATIENT_REGISTRATION)],
+          icon: User2,
+        },
+        {
           title: "Appointment",
           icon: Calendar,
           url: [],
@@ -346,17 +351,22 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
     }
   }, [isGroupActive])
 
+  // Check if this item should have green styling
+  const isGreenItem = item.title === "Appointment" || item.title === "Patient Record"
+
   if (item.items) {
     return (
       <SidebarMenuItem
-        className={`rounded mb-1 ${item.title === "Appointment" ? "" : "bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)]"} ${sidebarState === "collapsed" && "ms-2"}`}
+        className={`rounded mb-1 ${!isGreenItem ? "bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)]" : ""} ${sidebarState === "collapsed" && "ms-2"}`}
       >
         <SidebarMenuButton
           onClick={() => setIsOpen(!isOpen)}
           isActive={isGroupActive}
-          className={`text-sm p-3 w-full justify-between ${item.title === "Appointment"
+          className={`text-sm p-3 w-full justify-between ${isGreenItem && isGroupActive
             ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
-            : ""
+            : isGreenItem
+              ? "bg-transparent hover:bg-[#34D399]/20 text-white"
+              : ""
             }`}
         >
           <div className="flex items-center gap-2">
@@ -394,12 +404,17 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
 
   return (
     <SidebarMenuItem
-      className={`bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)] rounded mb-1 ${sidebarState === "collapsed" && "ms-2"}`}
+      className={`rounded mb-1 ${!isGreenItem ? "bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)]" : ""} ${sidebarState === "collapsed" && "ms-2"}`}
     >
       <SidebarMenuButton
         asChild
         isActive={isActive(item.url)}
-        className="text-sm p-3"
+        className={`text-sm p-3 ${isGreenItem && isActive(item.url)
+          ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
+          : isGreenItem
+            ? "bg-transparent hover:bg-[#34D399]/20 text-white"
+            : ""
+          }`}
       >
         <LocaleLink href={item.url[0] || ""}>
           {item.icon && (
