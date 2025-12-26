@@ -1,18 +1,24 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
 } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import Button from "@/components/ui/button"
-import { X, Search, Send } from "lucide-react"
+import { Search, Send } from "lucide-react"
 import { createPatientsApiClient } from "@/lib/api/patients-api"
 import type { PatientItem } from "@/lib/api/patients-api"
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@workspace/ui/components/select"
 
 interface LinkFamilyModalProps {
     open: boolean
@@ -75,12 +81,23 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
         onClose()
     }
 
+    // Get initials for avatar
+    const getInitials = (patient: PatientItem) => {
+        const first = patient.first_name?.[0] || ""
+        const last = patient.last_name?.[0] || ""
+        return `${first}${last}`.toUpperCase()
+    }
+
     return (
         <Dialog open={open} onOpenChange={handleCancel}>
-            <DialogContent className="max-w-7xl min-h-[700px] p-0 gap-0">
+            <DialogContent
+                className="p-0 gap-0"
+                style={{ maxWidth: '1400px', width: '45vw', minHeight: '600px' }}
+                showCloseButton={false}
+            >
                 {/* Header */}
-                <DialogHeader className="p-6 space-y-6">
-                    <div>
+                <div className="p-6 pb-4">
+                    <div className="mb-4">
                         <DialogTitle className="text-2xl font-bold text-gray-900 mb-1">
                             Link Family
                         </DialogTitle>
@@ -88,53 +105,56 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                     </div>
 
                     {/* Search Input */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Search Patient
-                        </label>
-                        <div className="relative">
-                            <Input
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search Patient"
-                                className="pl-4 pr-12 h-14 text-base rounded-lg border-gray-300" />
-                            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+                    <div className="relative">
+                        <Input
+                            value={searchQuery}
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value)
+                                setShowPatientDetails(false)
+                            }}
+                            placeholder="Search Patient"
+                            className="pl-4 pr-12 h-12 text-base rounded-lg border-gray-300 bg-white placeholder:text-gray-400"
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <Search className="w-5 h-5 text-blue-500" />
                         </div>
                     </div>
-                </DialogHeader>
+                </div>
 
                 {/* Content - Results */}
-                <div className="px-6">
-
-                    {/* Results */}
-                    {searchQuery && (
-                        <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                            {isSearching ? (
+                <div className="px-6 pb-6">
+                    {/* Results Container - Hidden when showing details */}
+                    {!showPatientDetails && (
+                        <div className="w-full rounded-lg bg-white max-h-[400px] overflow-y-auto min-h-[200px]">
+                            {!searchQuery ? null : isSearching ? (
                                 <div className="text-center py-8 text-gray-500">Searching...</div>
                             ) : patients.length > 0 ? (
                                 patients.map((patient) => (
                                     <div
                                         key={patient.id}
                                         onClick={() => setSelectedPatient(patient)}
-                                        className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-colors ${selectedPatient?.id === patient.id
-                                            ? "bg-blue-100 border-2 border-blue-500"
-                                            : "bg-blue-50 hover:bg-blue-100"
+                                        className={`flex items-center gap-4 px-4 py-3 cursor-pointer transition-colors ${selectedPatient?.id === patient.id
+                                            ? "bg-blue-50"
+                                            : "bg-white hover:bg-gray-50"
                                             }`}
                                     >
                                         {/* Avatar */}
-                                        <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold text-lg">
-                                            {patient.first_name?.[0]}{patient.last_name?.[0]}
-                                        </div>
+                                        <Avatar className="h-12 w-12 flex-shrink-0">
+                                            <AvatarImage src={patient.photo_url ?? undefined} alt={`${patient.first_name} ${patient.last_name}`} />
+                                            <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-400 text-white font-semibold text-sm">
+                                                {getInitials(patient)}
+                                            </AvatarFallback>
+                                        </Avatar>
 
-                                        {/* Patient Info */}
-                                        <div className="flex-1 flex items-center justify-between gap-6">
-                                            <div className="font-medium text-gray-900 flex-1 min-w-0">
+                                        {/* Patient Info - All in single horizontal row with proper alignment */}
+                                        <div className="flex-1 flex items-center gap-8 flex-nowrap">
+                                            <div className="font-medium text-gray-900 text-base whitespace-nowrap min-w-[200px]">
                                                 {patient.first_name} {patient.last_name}
                                             </div>
-                                            <div className="text-gray-700 w-32 flex-shrink-0">
+                                            <div className="text-gray-700 text-sm whitespace-nowrap min-w-[120px]">
                                                 MRN-{patient.id}
                                             </div>
-                                            <div className="text-gray-700 w-40 flex-shrink-0 text-right">
+                                            <div className="text-gray-700 text-sm whitespace-nowrap">
                                                 {patient.mobile_number || "N/A"}
                                             </div>
                                         </div>
@@ -149,84 +169,87 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
 
                 {/* Patient Details View */}
                 {showPatientDetails && selectedPatient && (
-                    <div className="px-6 py-4 space-y-6">
-                        {/* Patient Header */}
-                        <div className="flex items-center gap-4 pb-4 border-b">
-                            <div className="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold text-2xl">
-                                {selectedPatient.first_name?.[0]}{selectedPatient.last_name?.[0]}
+                    <div className="px-6 space-y-6">
+                        {/* Patient Details Card */}
+                        <div className="border border-gray-200 rounded-2xl p-6 bg-white">
+                            {/* Patient Header */}
+                            <div className="flex items-center gap-4 mb-6">
+                                <Avatar className="h-16 w-16">
+                                    <AvatarImage src={selectedPatient.photo_url ?? undefined} alt={`${selectedPatient.first_name} ${selectedPatient.last_name}`} />
+                                    <AvatarFallback className="bg-gradient-to-br from-green-400 to-green-600 text-white font-bold text-xl">
+                                        {getInitials(selectedPatient)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <h3 className="text-xl font-bold text-black">
+                                        {selectedPatient.first_name} {selectedPatient.last_name}
+                                    </h3>
+                                    <p className="text-gray-500">PAT-{selectedPatient.id}</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 className="text-xl font-bold text-gray-900">
-                                    {selectedPatient.first_name} {selectedPatient.last_name}
-                                </h3>
-                                <p className="text-gray-600">PAT-{selectedPatient.id}</p>
+
+                            {/* Details Grid */}
+                            <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">CPR/NID</p>
+                                    <p className="text-base font-bold text-black">{selectedPatient.civil_id || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Date Of Birth</p>
+                                    <p className="text-base font-bold text-black">{selectedPatient.dob || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Gender</p>
+                                    <p className="text-base font-bold text-black capitalize">{selectedPatient.gender || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Blood Group</p>
+                                    <p className="text-base font-bold text-black">{selectedPatient.blood_group || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Marital Status</p>
+                                    <p className="text-base font-bold text-black capitalize">{selectedPatient.marital_status || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Nationality</p>
+                                    <p className="text-base font-bold text-black capitalize">{selectedPatient.nationality || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Phone</p>
+                                    <p className="text-base font-bold text-black">{selectedPatient.mobile_number || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-gray-500 mb-1">Email</p>
+                                    <p className="text-base font-bold text-black break-all">{selectedPatient.email || "N/A"}</p>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-sm text-gray-500 mb-1">Address</p>
+                                    <p className="text-base font-bold text-black">{selectedPatient.permanent_address || selectedPatient.city || "N/A"}</p>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Patient Details Grid */}
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">CPR/NID</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.civil_id || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Date Of Birth</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.dob || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Gender</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.gender || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Blood Group</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.blood_group || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Marital Status</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.marital_status || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Nationality</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.nationality || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Phone</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.mobile_number || "N/A"}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-600 mb-1">Email</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.email || "N/A"}</p>
-                            </div>
-                            <div className="col-span-2">
-                                <p className="text-sm text-gray-600 mb-1">Address</p>
-                                <p className="text-base font-semibold text-gray-900">{selectedPatient.permanent_address || selectedPatient.city || "N/A"}</p>
-                            </div>
-                        </div>
-
-                        {/* Relationship Type */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Relationship Type
-                            </label>
-                            <select
-                                value={relationshipType}
-                                onChange={(e) => setRelationshipType(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                                <option value="">Select Relationship Type</option>
-                                <option value="father">Father</option>
-                                <option value="mother">Mother</option>
-                                <option value="spouse">Spouse</option>
-                                <option value="child">Child</option>
-                                <option value="sibling">Sibling</option>
-                                <option value="other">Other</option>
-                            </select>
+                        {/* Relationship Type - Outside the card */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium text-gray-700">Relationship Type</label>
+                            <Select value={relationshipType} onValueChange={setRelationshipType}>
+                                <SelectTrigger className="w-[300px] h-12 border-gray-200">
+                                    <SelectValue placeholder="Select Relationship Type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="father">Father</SelectItem>
+                                    <SelectItem value="mother">Mother</SelectItem>
+                                    <SelectItem value="spouse">Spouse</SelectItem>
+                                    <SelectItem value="child">Child</SelectItem>
+                                    <SelectItem value="sibling">Sibling</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 )}
-
                 {/* Footer */}
-                <div className="absolute bottom-0 right-0 p-6 flex gap-3">
+                <div className="p-6 flex justify-end gap-3">
                     {!showPatientDetails ? (
                         <>
                             <Button
