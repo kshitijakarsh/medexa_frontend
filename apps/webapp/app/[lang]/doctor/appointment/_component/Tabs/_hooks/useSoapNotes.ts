@@ -24,9 +24,9 @@ export function useSaveSoapNote(soapNoteId?: string) {
     return useMutation({
         mutationFn: async (payload: any) => {
             if (soapNoteId) {
-                return api.update(soapNoteId, payload.soap_data);
+                return api.update(soapNoteId, payload);
             }
-            return api.create(payload.soap_data);
+            return api.create(payload);
         },
     });
 }

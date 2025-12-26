@@ -96,6 +96,8 @@ import SurgeryTable from "./surgery-section/SurgeryTable";
 import { SectionWrapper } from "./common/SectionWrapper";
 import { EmptySurgeryState } from "./surgery-section/EmptyState";
 import { useParams, useRouter } from "next/navigation";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { ROUTES } from "@/lib/routes";
 
 type SurgeryOrder = {
   id: number;
@@ -115,6 +117,7 @@ type AddSurgeryInput = {
 export default function SurgerySection() {
   const router = useRouter();
   const { id } = useParams() as { id: string };
+  const { withLocale } = useLocaleRoute();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewItem, setViewItem] = useState<SurgeryOrder | null>(null);
@@ -168,7 +171,7 @@ export default function SurgerySection() {
           data={surgeries}
           onView={(item) =>
             router.push(
-              `/doctor/appointment/${id}/surgery-details/${item.id}`
+              `${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${id}/surgery-details/${item.id}`)}`
             )
           }
         />
