@@ -375,20 +375,37 @@ const fallbackStyle = {
 export function StatusPill({ status, className = "" }: StatusPillProps) {
   const label = normalizeStatus(status);   // e.g., "In Progress"
   const key = statusKey(label);            // e.g., "InProgress"
-  console.log(key)
+  // console.log(key)
   const style = statusStyles[key] || fallbackStyle;
 
+  // return (
+  //   <div
+  //     className={`
+  //       px-3 py-1 text-xs rounded-full font-medium text-center w-auto
+  //       max-w-[120px]
+  //       ${style.bg}
+  //       ${style.text}
+  //       ${style.border || ""}
+  //       ${className}
+  //     `} 
+  //     // whitespace-nowrap
+  //   >
+  //     <span>{label}</span>
+  //   </div>
+  // );
   return (
-    <span
+    <div
       className={`
-        px-3 py-1 text-xs rounded-full font-medium whitespace-nowrap
+        inline-flex items-center justify-center
+        px-3 py-1 text-xs rounded-full font-medium
         ${style.bg}
         ${style.text}
         ${style.border || ""}
         ${className}
-      `}
+      `}        //whitespace-nowrap 
+
     >
       {label}
-    </span>
+    </div>
   );
 }

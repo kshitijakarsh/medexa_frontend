@@ -564,12 +564,12 @@ export default function ConsultationDetailPage() {
         });
         setVisitPurposeDirty(false);
       }
-
+      // console.log("Saving draft...", visitData?.patient_id);
       if (isSoapNoteDirty) {
         await saveSoapMutation.mutateAsync({
           patient_id: visitData?.patient_id,
           visit_id: visitId,
-          soap_data: soapNoteData,
+          ...soapNoteData,
         });
         setSoapNoteDirty(false);
       }
