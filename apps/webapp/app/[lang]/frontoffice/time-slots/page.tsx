@@ -10,8 +10,9 @@ import { useDoctors } from "@/hooks/use-doctors";
 import { useDepartments } from "@/hooks/use-departments";
 import { Calendar } from "@workspace/ui/components/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
-import { format } from "date-fns";
+import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useRouter } from "next/navigation";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 type DateRange = {
     from: Date | undefined;
@@ -45,6 +46,8 @@ interface Filters {
 
 export default function FrontofficeTimeSlotPage() {
     const router = useRouter();
+    const dict = useDictionary();
+    const t = dict.pages.frontoffice.timeSlots;
     const [filters, setFilters] = useState<Filters>({
         department: "all-departments",
         doctor: "all-doctors",
@@ -67,13 +70,13 @@ export default function FrontofficeTimeSlotPage() {
 
     // Helper to format date for display
     const formatDateRange = () => {
-        if (!dateRange.start || !dateRange.end) return "Select Date Range";
+        if (!dateRange.start || !dateRange.end) return t.selectDateRange;
         try {
             const start = format(new Date(dateRange.start), "dd-MM-yyyy");
             const end = format(new Date(dateRange.end), "dd-MM-yyyy");
             return `${start} - ${end}`;
         } catch {
-            return "Select Date Range";
+            return t.selectDateRange;
         }
     };
 
@@ -140,7 +143,7 @@ export default function FrontofficeTimeSlotPage() {
                         </svg>
                     </button>
                     <h1 className="text-xl font-semibold text-gray-900">
-                        Doctor Appointment Slots
+                        {t.title}
                     </h1>
                 </div>
             </div>
@@ -153,15 +156,15 @@ export default function FrontofficeTimeSlotPage() {
                         {/* Department */}
                         <div className="flex-1 min-w-[200px]">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Department *
+                                {t.department} *
                             </label>
                             <AppSelect
-                                placeholder="All Departments"
+                                placeholder={dict.pages.frontoffice.schedule.allDepartments}
                                 value={filters.department}
                                 onChange={(value) => handleFilterChange("department", value)}
                                 options={departmentOptions}
                                 searchable={true}
-                                searchPlaceholder="Search Department"
+                                searchPlaceholder={t.searchDepartment}
                                 onSearchChange={setDepartmentSearchQuery}
                                 triggerClassName="w-full h-10 border-gray-300 bg-white rounded-lg"
                             />
@@ -170,15 +173,15 @@ export default function FrontofficeTimeSlotPage() {
                         {/* Doctor */}
                         <div className="flex-1 min-w-[200px]">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Doctor *
+                                {t.doctor} *
                             </label>
                             <AppSelect
-                                placeholder="Select Doctor"
+                                placeholder={t.selectDoctor}
                                 value={filters.doctor}
                                 onChange={(value) => handleFilterChange("doctor", value)}
                                 options={doctorOptions}
                                 searchable={true}
-                                searchPlaceholder="Search Doctor"
+                                searchPlaceholder={t.searchDoctor}
                                 onSearchChange={setDoctorSearchQuery}
                                 triggerClassName="w-full h-10 border-gray-300 bg-white rounded-lg"
                                 icon={
@@ -196,7 +199,7 @@ export default function FrontofficeTimeSlotPage() {
                         {/* Select Date Range */}
                         <div className="flex-1 min-w-[200px]">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Select Date Range *
+                                {t.selectDateRangeLabel}
                             </label>
                             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                                 <PopoverTrigger asChild>
@@ -227,7 +230,7 @@ export default function FrontofficeTimeSlotPage() {
                                 className="bg-[#0095FF] hover:bg-[#0080DD] text-white h-10 px-6 rounded-lg font-medium text-sm shadow-sm flex items-center gap-2"
                             >
                                 <Plus className="w-4 h-4" />
-                                New
+                                {t.new}
                             </Button>
                         </div>
                     </div>
@@ -256,7 +259,7 @@ export default function FrontofficeTimeSlotPage() {
                     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
                         <CalendarIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500 text-sm">
-                            No shifts added yet. Click "New" to add a shift.
+                            {t.noShiftsAdded}
                         </p>
                     </div>
                 )}

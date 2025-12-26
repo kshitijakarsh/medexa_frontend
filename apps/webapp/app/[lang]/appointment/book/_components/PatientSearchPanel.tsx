@@ -1,15 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import SearchInput from "@/components/common/search-input"
 import { Button } from "@workspace/ui/components/button"
-import { UserPlus, List } from "lucide-react"
+import { UserPlus, List, Search, X } from "lucide-react"
 import { PatientDetailsCard } from "./PatientDetailsCard"
 import { useRouter, useParams } from "next/navigation"
 import {
   PatientItem,
   createPatientsApiClient,
 } from "@/lib/api/patients-api"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover"
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 
 interface Patient {
   id: string
@@ -66,6 +72,8 @@ export function PatientSearchPanel({
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState<Patient[]>([])
   const [loading, setLoading] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   // Fetch patients whenever searchQuery changes (with debounce)
   useEffect(() => {
@@ -73,10 +81,7 @@ export function PatientSearchPanel({
 
     if (term.length < 2) {
       setSearchResults([])
-      // onPatientSelect(null) - DO NOT clear selected patient when typing! allows refining search without losing selection if needed, or keeping it. 
-      // Actually standard behavior: clearing search clears selection? 
-      // Let's keep existing logic:
-      onPatientSelect(null)
+      setIsDropdownOpen(false)
       return
     }
 
@@ -96,24 +101,12 @@ export function PatientSearchPanel({
 
         const mapped = response.data.data.map(mapBackendPatient)
         setSearchResults(mapped)
-
-        // Only auto-select if exact match 1 result AND user just typed? 
-        // Or keep logic: if 1 result found, select it? 
-        // Existing logic: if (mapped.length === 1) onPatientSelect(mapped[0]). 
-        // This might be annoying if user is typing and 1 result appears transiently.
-        // But I will keep original behavior for now as I'm just replacing API.
-        if (mapped.length === 1) {
-          onPatientSelect(mapped[0] ?? null)
-        } else {
-          // If multiple or 0, existing logic clears selection? 
-          // Line 103: onPatientSelect(null).
-          onPatientSelect(null)
-        }
+        setIsDropdownOpen(mapped.length > 0)
       } catch (error) {
         if (!cancelled) {
           console.error("Failed to search patients:", error)
           setSearchResults([])
-          onPatientSelect(null)
+          setIsDropdownOpen(false)
         }
       } finally {
         if (!cancelled) {
@@ -126,7 +119,19 @@ export function PatientSearchPanel({
       cancelled = true
       clearTimeout(timeoutId)
     }
-  }, [searchQuery, onPatientSelect])
+  }, [searchQuery])
+
+  const handlePatientSelect = (patient: Patient) => {
+    onPatientSelect(patient)
+    setIsDropdownOpen(false)
+    setSearchQuery(patient.name) // Show selected patient name in search field
+  }
+
+  const handleClearSelection = () => {
+    onPatientSelect(null)
+    setSearchQuery("")
+    setIsDropdownOpen(false)
+  }
 
   const handleAddPatient = () => {
     router.push(`/${lang}/patient/add-patient`)
@@ -171,16 +176,105 @@ export function PatientSearchPanel({
           Search Patient
         </h2>
 
-        {/* Search Bar - Hide if Emergency Unknown */}
+        {/* Search Bar with Dropdown - Hide if Emergency Unknown */}
         {(!patientVisitType || patientVisitType !== "emergency" || emergencyType === "existing") && (
           <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <SearchInput
-                value={searchQuery}
-                onChange={setSearchQuery}
-                placeholder="Search Patient"
-                width="100%"
-              />
+            <div className="flex-1 relative">
+              <Popover open={isDropdownOpen && searchResults.length > 0} onOpenChange={setIsDropdownOpen}>
+                <PopoverTrigger asChild>
+                  <div className="relative">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                      <input
+                        ref={searchInputRef}
+                        type="text"
+                        value={selectedPatient ? selectedPatient.name : searchQuery}
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value)
+                          if (e.target.value.trim().length >= 2) {
+                            setIsDropdownOpen(true)
+                          } else {
+                            setIsDropdownOpen(false)
+                          }
+                          // Clear selection if user starts typing a different name
+                          if (selectedPatient && e.target.value !== selectedPatient.name) {
+                            onPatientSelect(null)
+                          }
+                        }}
+                        onFocus={() => {
+                          if (searchResults.length > 0 && searchQuery.trim().length >= 2) {
+                            setIsDropdownOpen(true)
+                          }
+                        }}
+                        placeholder="Search Patient"
+                        className="w-full pl-10 pr-10 h-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      {(searchQuery || selectedPatient) && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSearchQuery("")
+                            setIsDropdownOpen(false)
+                            onPatientSelect(null)
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-[var(--radix-popover-trigger-width)] p-0 mt-1" 
+                  align="start"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <div className="max-h-[400px] overflow-y-auto">
+                    {loading ? (
+                      <div className="p-4 text-center text-sm text-gray-500">
+                        Searching...
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="py-1">
+                        {searchResults.map((patient) => (
+                          <button
+                            key={patient.id}
+                            onClick={() => handlePatientSelect(patient)}
+                            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-100 last:border-b-0"
+                          >
+                            <Avatar className="h-12 w-12 flex-shrink-0">
+                              <AvatarImage src={patient.avatar} alt={patient.name} />
+                              <AvatarFallback className="bg-blue-100 text-blue-600">
+                                {patient.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
+                              <div className="font-medium text-gray-900 text-base">
+                                {patient.name}
+                              </div>
+                              {patient.cprNid && (
+                                <div className="text-sm text-gray-600">
+                                  {patient.cprNid}
+                                </div>
+                              )}
+                              {patient.phone && (
+                                <div className="text-sm text-gray-500">
+                                  {patient.phone}
+                                </div>
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    ) : searchQuery.trim().length >= 2 ? (
+                      <div className="p-4 text-center text-sm text-gray-500">
+                        No patients found
+                      </div>
+                    ) : null}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
             <Button
               onClick={handleAddPatient}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { DataTable } from "@/components/common/data-table";
 import { RowActionMenu } from "@/components/common/row-action-menu";
@@ -15,6 +15,7 @@ import type { SlotItem } from "@/lib/api/doctor/slots-api";
 import { useRouter } from "next/navigation";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 import { ROUTES } from "@/lib/routes";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 // Types
 interface ScheduleEntry {
@@ -40,49 +41,9 @@ interface Filters {
   customDateRange?: { start: string; end: string };
 }
 
-// Dummy options for filters
-// Note: Radix SelectItem cannot have an empty-string value,
-// so we use explicit "all-*" values for the "no filter" options.
-const DEPARTMENT_OPTIONS = [
-  { label: "All Departments", value: "all-departments" },
-  { label: "Cardiology", value: "dept1" },
-  { label: "Neurology", value: "dept2" },
-  { label: "Orthopedics", value: "dept3" },
-  { label: "Pediatrics", value: "dept4" },
-];
-
-
-const YEAR_OPTIONS = [
-  { label: "Year", value: "all-years" },
-  { label: "2024", value: "2024" },
-  { label: "2025", value: "2025" },
-  { label: "2026", value: "2026" },
-];
-
-const MONTH_OPTIONS = [
-  { label: "Month", value: "all-months" },
-  { label: "January", value: "1" },
-  { label: "February", value: "2" },
-  { label: "March", value: "3" },
-  { label: "April", value: "4" },
-  { label: "May", value: "5" },
-  { label: "June", value: "6" },
-  { label: "July", value: "7" },
-  { label: "August", value: "8" },
-  { label: "September", value: "9" },
-  { label: "October", value: "10" },
-  { label: "November", value: "11" },
-  { label: "December", value: "12" },
-];
-
-const DATE_FILTER_OPTIONS = [
-  { label: "All", value: "all" },
-  { label: "Today Appointments", value: "today" },
-  { label: "Tomorrow", value: "tomorrow" },
-  { label: "Custom Date", value: "custom" },
-];
-
 export default function FrontofficeSchedulePage() {
+  const dict = useDictionary();
+  const t = dict.pages.frontoffice.schedule;
   const [loading, setLoading] = useState(false);
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>([]);
   const [filters, setFilters] = useState<Filters>({
@@ -99,6 +60,37 @@ export default function FrontofficeSchedulePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const ITEMS_PER_PAGE = 10;
+
+  // Memoized options based on dictionary
+  const YEAR_OPTIONS = useMemo(() => [
+    { label: t.year, value: "all-years" },
+    { label: "2024", value: "2024" },
+    { label: "2025", value: "2025" },
+    { label: "2026", value: "2026" },
+  ], [t.year]);
+
+  const MONTH_OPTIONS = useMemo(() => [
+    { label: t.month, value: "all-months" },
+    { label: t.january, value: "1" },
+    { label: t.february, value: "2" },
+    { label: t.march, value: "3" },
+    { label: t.april, value: "4" },
+    { label: t.may, value: "5" },
+    { label: t.june, value: "6" },
+    { label: t.july, value: "7" },
+    { label: t.august, value: "8" },
+    { label: t.september, value: "9" },
+    { label: t.october, value: "10" },
+    { label: t.november, value: "11" },
+    { label: t.december, value: "12" },
+  ], [t]);
+
+  const DATE_FILTER_OPTIONS = useMemo(() => [
+    { label: t.all, value: "all" },
+    { label: t.todayAppointments, value: "today" },
+    { label: t.tomorrow, value: "tomorrow" },
+    { label: t.customDate, value: "custom" },
+  ], [t]);
 
   // Calculate pagination
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
@@ -250,7 +242,11 @@ export default function FrontofficeSchedulePage() {
   const formatDate = (date: string, dayOfWeek: string) => {
     const dateObj = new Date(date);
     const day = dateObj.getDate();
-    const month = dateObj.toLocaleString("en-US", { month: "long" });
+    // Get month name from dictionary
+    const monthIndex = dateObj.getMonth();
+    const monthNames = [t.january, t.february, t.march, t.april, t.may, t.june, 
+      t.july, t.august, t.september, t.october, t.november, t.december];
+    const month = monthNames[monthIndex] || dateObj.toLocaleString("en-US", { month: "long" });
     return `${day} ${month} (${dayOfWeek})`;
   };
 
@@ -313,7 +309,7 @@ export default function FrontofficeSchedulePage() {
   const columns = [
     {
       key: "date",
-      label: "Date & Day",
+      label: t.dateAndDay,
       render: (row: ScheduleEntry) => (
         <div className="text-sm text-gray-900">
           {formatDate(row.date, row.dayOfWeek)}
@@ -322,30 +318,30 @@ export default function FrontofficeSchedulePage() {
     },
     {
       key: "session",
-      label: "Session",
+      label: t.session,
       render: (row: ScheduleEntry) => (
         <div className="text-sm text-gray-900">
-          {`${row.sessionStart} To ${row.sessionEnd}`} {/* ${row.sessionType} */}
+          {`${row.sessionStart} ${t.to} ${row.sessionEnd}`} {/* ${row.sessionType} */}
         </div>
       ),
     },
     {
       key: "step",
-      label: "Step",
+      label: t.step,
       render: (row: ScheduleEntry) => (
         <div className="text-sm text-gray-900">{row.step}</div>
       ),
     },
     {
       key: "createdOn",
-      label: "Created On",
+      label: t.createdOn,
       render: (row: ScheduleEntry) => (
         <div className="text-sm text-gray-900">{row.createdOn}</div>
       ),
     },
     {
       key: "addedBy",
-      label: "Added By",
+      label: t.addedBy,
       render: (row: ScheduleEntry) => (
         <div className="text-sm text-gray-900">
           {row.addedBy}
@@ -354,22 +350,22 @@ export default function FrontofficeSchedulePage() {
     },
     {
       key: "action",
-      label: "Action",
+      label: t.action,
       render: (row: ScheduleEntry) => (
         <RowActionMenu
           actions={[
             {
-              label: "View",
+              label: t.view,
               onClick: () => handleView(row),
               variant: "info",
             },
             {
-              label: "Edit",
+              label: t.edit,
               onClick: () => handleEdit(row),
               variant: "success",
             },
             {
-              label: "Delete",
+              label: t.delete,
               onClick: () => handleDelete(row),
               variant: "danger",
             },
@@ -399,13 +395,13 @@ export default function FrontofficeSchedulePage() {
           {/* Department Dropdown with Icon Inside */}
           <div className="flex-shrink-0">
             <AppSelect
-              placeholder="All Departments"
+              placeholder={t.allDepartments}
               value={filters.department}
               onChange={(value) => handleFilterChange("department", value)}
               options={departmentOptions}
               icon={<CalendarDays className="w-[18px] h-[18px] text-gray-500" />}
               searchable={true}
-              searchPlaceholder="Search Department"
+              searchPlaceholder={t.searchDepartment}
               onSearchChange={setDepartmentSearchQuery}
               triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full"
             />
@@ -414,12 +410,12 @@ export default function FrontofficeSchedulePage() {
           {/* Doctor Dropdown with Icon Inside */}
           <div className="flex-shrink-0">
             <AppSelect
-              placeholder="All Doctors"
+              placeholder={t.allDoctors}
               value={filters.doctor}
               onChange={(value) => handleFilterChange("doctor", value)}
               options={doctorOptions}
               searchable={true}
-              searchPlaceholder="Search Doctor"
+              searchPlaceholder={t.searchDoctor}
               onSearchChange={setDoctorSearchQuery}
               triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full"
               icon={
@@ -437,7 +433,7 @@ export default function FrontofficeSchedulePage() {
           {/* Year Dropdown with Icon Inside */}
           <div className="flex-shrink-0">
             <AppSelect
-              placeholder="Year"
+              placeholder={t.year}
               value={filters.year}
               onChange={(value) => handleFilterChange("year", value)}
               options={YEAR_OPTIONS}
@@ -449,7 +445,7 @@ export default function FrontofficeSchedulePage() {
           {/* Month Dropdown with Icon Inside */}
           <div className="flex-shrink-0">
             <AppSelect
-              placeholder="Month"
+              placeholder={t.month}
               value={filters.month}
               onChange={(value) => handleFilterChange("month", value)}
               options={MONTH_OPTIONS}
@@ -466,7 +462,7 @@ export default function FrontofficeSchedulePage() {
             onClick={handleAddSchedule}
             className="bg-[#0095FF] hover:bg-[#0080DD] text-white h-10 px-6 rounded-full font-medium text-sm shadow-sm"
           >
-            Add
+            {t.add}
           </Button>
         </div>
 
