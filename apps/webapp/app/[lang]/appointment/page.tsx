@@ -27,6 +27,8 @@ import { useDepartments } from "@/hooks/use-departments";
 import { createVisitsApiClient, VisitItem } from "@/lib/api/visits-api";
 import { useRouter } from "next/navigation";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { getIdToken } from "@/app/utils/auth";
+import axios from "axios";
 import { ROUTES } from "@/lib/routes";
 import { AppointmentEntry, FilterState } from "./types";
 import { AppointmentGridView } from "./_components/appointment-grid-view";
@@ -90,9 +92,66 @@ export default function AppointmentPage() {
         const response = await apiClient.getVisits(params);
 
         if (response.data.success) {
+          // Fetch all doctors to create a lookup map
+          let doctorMap = new Map<string, string>();
+          try {
+            const token = await getIdToken();
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URI || "";
+            
+            const doctorsResponse = await axios.get(
+              `${baseUrl}/api/v1/doctor/users/soap-notes-creators`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                  Authorization: token ? `Bearer ${token}` : "",
+                },
+                params: { limit: 1000 }, // Get all doctors
+              }
+            );
+            
+            if (doctorsResponse.data.success) {
+              doctorsResponse.data.data.forEach((doctor: any) => {
+                doctorMap.set(doctor.id.toString(), doctor.name);
+              });
+            }
+          } catch (err) {
+            console.warn("Failed to fetch doctors for lookup:", err);
+          }
+
           const mapped: AppointmentEntry[] = response.data.data.map((visit) => {
             // Map visit to AppointmentEntry
             // NOTE: Adjust fields based on actual API data availability vs UI requirements
+            
+            // Format patient_visit_type for display (convert snake_case to Title Case)
+            const formatVisitType = (type: string | null | undefined): string => {
+              if (!type) return "Walk-in"; // Default fallback
+              // Handle special cases
+              if (type === "emergency") return "ER";
+              // Convert snake_case to Title Case (e.g., "walk_in" -> "Walk-in", "appointment" -> "Appointment")
+              return type
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join('-');
+            };
+
+            // Get doctor name - try multiple approaches
+            let doctorName = "Unknown Doctor";
+            if (visit.doctor_ids && visit.doctor_ids.length > 0) {
+              const firstDoctor = visit.doctor_ids[0];
+              // Try to get name directly from the doctor object
+              if (firstDoctor?.name) {
+                doctorName = firstDoctor.name;
+              } else if (firstDoctor?.id) {
+                // Look up doctor name from the map using the ID
+                const doctorId = String(firstDoctor.id);
+                const lookedUpName = doctorMap.get(doctorId);
+                if (lookedUpName) {
+                  doctorName = lookedUpName;
+                }
+              }
+            }
+            
             return {
               id: visit.id,
               appId: `APP-${String(visit.id).padStart(6, '0')}`, // Synthesized ID for display
@@ -100,12 +159,12 @@ export default function AppointmentPage() {
               patientName: visit.full_name || `${visit.patient?.first_name} ${visit.patient?.last_name}`,
               patientImg: undefined, // API doesn't seem to return image yet, fallback to avatar
               isVip: false, // API doesn't return VIP status yet, defaulting to false or randomize for demo? Keeping false for safety or mock some if needed.
-              consultantDoctor: visit.doctor_ids?.[0]?.name || "Unknown Doctor",
+              consultantDoctor: doctorName,
               specialty: "General", // API missing specialty in top level, might need to infer or fetch
               appointmentDate: visit.time_slot_start.split('T')[0] || "",
               bookedSlot: new Date(visit.time_slot_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
               serviceType: visit.visit_type === 'doctor_consultation' ? "Doctor Consultation" : visit.visit_type,
-              visitType: visit.mode_of_arrival === 'Ambulance' ? "ER" : "Walk-in", // heuristic mapping
+              visitType: formatVisitType(visit.patient_visit_type), // Use patient_visit_type from backend
               paymentStatus: (visit.charges?.[0]?.status === 'pending' ? 'Pending' : 'Paid') as any,
               status: (visit.status.charAt(0).toUpperCase() + visit.status.slice(1)) as any,
               contactNumber: visit.phone_no,
@@ -210,7 +269,7 @@ export default function AppointmentPage() {
       key: "visit",
       label: "Visit Type",
       render: (row: AppointmentEntry) => (
-        <div className={`text-sm ${row.visitType === 'ER' ? 'text-red-500' : 'text-orange-500'}`}>
+        <div className={`text-sm ${row.visitType === 'ER' ? 'text-red-500' : row.visitType === 'Appointment' ? 'text-green-500' : 'text-orange-500'}`}>
           {row.visitType}
         </div>
       )
