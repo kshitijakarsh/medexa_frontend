@@ -44,7 +44,7 @@ export function DataTable<T>({
   onRowClick,
 }: DataTableProps<T>) {
   return (
-    <div className="space-y-4 border rounded-xl p-0 bg-white overflow-hidden">
+    <div className="space-y-4 border-0 rounded-xl p-0 bg-transparent overflow-hidden">
       {/* Header */}
       {(title || searchComponent || headerActions) && (
         <div className="flex items-center justify-between">
@@ -64,15 +64,13 @@ export function DataTable<T>({
       )}
 
       {/* Table */}
-      <Table className="rounded">
-        {/* <TableHeader className="bg-background [&_tr]:border-none ">
-          <TableRow className="bg-sidebar hover:bg-sidebar"> */}
-        <TableHeader className="bg-[#001A4D] [&_tr]:border-none ">
-          <TableRow className="bg-[#001A4D] hover:bg-[#001A4D]">
+      <Table className="rounded border-separate border-spacing-y-2">
+        <TableHeader className="bg-[#001A4D] [&_tr]:border-none">
+          <TableRow className="bg-[#001A4D] hover:bg-[#001A4D] rounded-lg">
             {columns.map((col) => (
               <TableHead
                 key={col.key.toString()}
-                className={`text-white py-4 ${col.className || ""}`}
+                className={`text-white py-4 first:rounded-l-lg last:rounded-r-lg ${col.className || ""}`}
               >
                 {col.label}
               </TableHead>
@@ -80,22 +78,8 @@ export function DataTable<T>({
           </TableRow>
         </TableHeader>
 
-        {/* Add spacing row */}
-        <tbody aria-hidden="true" className="table-row h-2"></tbody>
-
-        <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
+        <TableBody>
           {loading ? (
-            // <>
-            //   {[...Array(5)].map((_, i) => (
-            //     <TableRow key={i} className="animate-pulse">
-            //       {columns.map((_, j) => (
-            //         <TableCell key={j} className="py-4">
-            //           <div className="h-4 w-full bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded-md"></div>
-            //         </TableCell>
-            //       ))}
-            //     </TableRow>
-            //   ))}
-            // </>
             <>
               {[...Array(5)].map((_, i) => (
                 <TableRow key={i} className="animate-pulse">
@@ -121,15 +105,13 @@ export function DataTable<T>({
               <TableRow
                 key={index}
                 onClick={() => onRowClick?.(row)}
-                className={`${striped ? "odd:bg-[#F4FAFF] odd:hover:bg-muted/50" : ""
-                  } border-none hover:bg-transparent cursor-default`}
+                className="bg-white hover:bg-gray-50 cursor-default rounded-lg"
               >
-                {columns.map((col) => (
-                  <TableCell key={col.key.toString()}
-                    // className="py-2.5"
-                    className={`py-2.5 ${col.className || ""}`}
+                {columns.map((col, colIndex) => (
+                  <TableCell
+                    key={col.key.toString()}
+                    className={`py-4 ${colIndex === 0 ? 'rounded-l-lg' : ''} ${colIndex === columns.length - 1 ? 'rounded-r-lg' : ''} ${col.className || ""}`}
                   >
-                    {/* {col.render ? col.render(row) : (row[col.key as keyof T] as any)} */}
                     {col.render ? col.render(row, index) : (row[col.key as keyof T] as any)}
                   </TableCell>
                 ))}

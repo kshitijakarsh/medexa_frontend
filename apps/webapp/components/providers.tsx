@@ -131,6 +131,7 @@ import type { Dictionary } from "@/i18n/get-dictionary"
 import { UserLoader } from "./user-loader"
 import { useUserStore } from "@/store/useUserStore"
 import { TenantStatusGuard } from "@/app/[lang]/components/tenant-status-guard"
+import { DictionaryProvider } from "@/i18n/dictionary-context"
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -169,11 +170,23 @@ export function Providers({ children, dict }: ProvidersProps) {
         disableTransitionOnChange
         enableColorScheme
       >
-        <Toaster position="top-right" richColors closeButton expand />
-        <UserLoader />
-        <TenantStatusGuard>
-          <SidebarWrapper>{children}</SidebarWrapper>
-        </TenantStatusGuard>
+        {dict ? (
+          <DictionaryProvider dictionary={dict}>
+            <Toaster position="top-right" richColors closeButton expand />
+            <UserLoader />
+            <TenantStatusGuard>
+              <SidebarWrapper>{children}</SidebarWrapper>
+            </TenantStatusGuard>
+          </DictionaryProvider>
+        ) : (
+          <>
+            <Toaster position="top-right" richColors closeButton expand />
+            <UserLoader />
+            <TenantStatusGuard>
+              <SidebarWrapper>{children}</SidebarWrapper>
+            </TenantStatusGuard>
+          </>
+        )}
       </NextThemesProvider>
     </QueryClientProvider>
   )
