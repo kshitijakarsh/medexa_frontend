@@ -81,6 +81,8 @@ export default function BookAppointmentPage() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [bookingData, setBookingData] = useState<any>(null)
 
+  const isMultiDoctor = formData?.visitPurpose === "multi_doctor_appointment"
+
   // Update patient visit type if query param changes
   useEffect(() => {
     if (visitTypeParam) {
@@ -185,7 +187,7 @@ export default function BookAppointmentPage() {
       // In production, these should be mapped to actual IDs from the backend
       let machineRoomId = "1"
       let nurseId = "1"
-      
+
       if (patientVisitType === "emergency") {
         // For ER, use default values or try to parse if numeric string
         // If erRoom/erTeam are actual IDs (numeric strings), use them; otherwise use default
@@ -199,13 +201,16 @@ export default function BookAppointmentPage() {
       // Ensure doctor_ids has at least one value (as strings)
       // For ER, if no doctor is selected, we might need a default or require selection
       let doctorIds: string[] = []
-      if (formData.doctor) {
+
+      if (formData.doctors && Array.isArray(formData.doctors) && formData.doctors.length > 0) {
+        doctorIds = formData.doctors
+      } else if (formData.doctor) {
         const doctorId = toStringId(formData.doctor, "")
         if (doctorId && doctorId !== "") {
           doctorIds = [doctorId]
         }
       }
-      
+
       // If no doctor selected, we need at least one for the API
       // So we'll add a default doctor ID for ER if none selected
       if (doctorIds.length === 0) {
@@ -423,9 +428,13 @@ export default function BookAppointmentPage() {
 
 
 
-        <div className={`grid gap-6 ${patientVisitType === "emergency" && emergencyPatientType === "unknown" ? "grid-cols-1 max-w-4xl mr-auto" : "grid-cols-1 lg:grid-cols-2"}`}>
-          {/* Left Panel - Patient Search - Hide if Unknown */}
-          {!(patientVisitType === "emergency" && emergencyPatientType === "unknown") && (
+        {/* Main Content Grid */}
+        <div className={`grid gap-6 ${(patientVisitType === "emergency" && emergencyPatientType === "unknown") || isMultiDoctor
+          ? "grid-cols-1"
+          : "grid-cols-1 lg:grid-cols-2"
+          }`}>
+          {/* Left Panel - Patient Search - Hide if Unknown OR Multi-Doctor */}
+          {!(patientVisitType === "emergency" && emergencyPatientType === "unknown") && !isMultiDoctor && (
             <div className="space-y-4">
               <PatientSearchPanel
                 selectedPatient={selectedPatient}
@@ -457,8 +466,8 @@ export default function BookAppointmentPage() {
                 <Button
                   onClick={handleBookAppointment}
                   disabled={
-                    isSubmitting || 
-                    (patientVisitType === "emergency" 
+                    isSubmitting ||
+                    (patientVisitType === "emergency"
                       ? (emergencyPatientType === "existing" && !selectedPatient) || !formData
                       : !selectedPatient || !formData || !selectedSlot)
                   }

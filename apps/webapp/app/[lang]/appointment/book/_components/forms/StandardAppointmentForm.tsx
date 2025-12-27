@@ -10,6 +10,7 @@ import { getAuthToken } from "@/app/utils/onboarding"
 import { createDepartmentApiClient } from "@/lib/api/administration/department"
 import { createSlotsApiClient } from "@/lib/api/slots"
 import axios from "axios"
+import { MultiDoctorAppointmentView } from "./MultiDoctorAppointmentView"
 
 interface StandardAppointmentFormProps {
   initialPatientVisitType?: "appointment" | "walk_in"
@@ -336,6 +337,7 @@ export function StandardAppointmentForm({
     formData.visitPurpose === "multi_procedure"
 
   const isTeleconsultation = formData.visitPurpose === "teleconsultation"
+  const isMultiDoctor = formData.visitPurpose === "multi_doctor_appointment"
 
   const communicationModes = [
     { value: "video", label: "Video Call" },
@@ -388,7 +390,13 @@ export function StandardAppointmentForm({
         />
       </div>
 
-      {isProcedure ? (
+      {isMultiDoctor ? (
+        <MultiDoctorAppointmentView
+          formData={formData}
+          onFormDataChange={(newData) => setFormData((prev) => ({ ...prev, ...newData }))}
+          onSlotSelect={onSlotSelect}
+        />
+      ) : isProcedure ? (
         // Procedure Form Layout
         <>
           {/* Row 2: Category & Type */}
@@ -595,9 +603,8 @@ export function StandardAppointmentForm({
         </>
       )}
 
-      {/* Available Slots - Only show when relevant fields are selected */}
-      {/* For procedure, maybe check date + machine? For now keep date + doctor check for standard, simple check for procedure */}
-      {(formData.date && (isProcedure ? true : formData.doctor)) && (
+      {/* Available Slots - Only show when relevant fields are selected and NOT multi-doctor (multi-doctor has its own grid embedded) */}
+      {(formData.date && (isProcedure ? true : isMultiDoctor ? false : formData.doctor)) && (
         <div className="bg-blue-50 p-4 rounded-lg">
           <AvailableSlotGrid
             slots={slots}
