@@ -8,7 +8,9 @@ import {
 } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import Button from "@/components/ui/button"
-import { Search, Send } from "lucide-react"
+import { Search, Send, Calendar, Phone, User, QrCode } from "lucide-react"
+
+
 import { createPatientsApiClient } from "@/lib/api/patients-api"
 import type { PatientItem } from "@/lib/api/patients-api"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
@@ -132,8 +134,8 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
             <DialogContent
                 className="p-0 gap-0 transition-all duration-300 ease-in-out"
                 style={{
-                    maxWidth: showIdCard ? '800px' : '1400px',
-                    width: showIdCard ? 'auto' : '95vw',
+                    maxWidth: showIdCard ? '850px' : '700px',
+                    width: showIdCard ? '850px' : '65vw',
                     minHeight: showIdCard ? 'auto' : '600px',
                     height: showIdCard ? 'auto' : 'auto'
                 }}
@@ -349,18 +351,18 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                     <div className="flex justify-between items-start mb-4">
                                         <img src="/images/hospitallogo.svg" alt="Hamad General Hospital" className="h-12 object-contain" />
                                         <div className="text-right">
-                                            <h2 className="text-blue-500 font-bold text-lg uppercase">HAMAD GENERAL HOSPITAL</h2>
+                                            <h2 className="text-[#007AFF] font-bold text-xl uppercase">HAMAD GENERAL HOSPITAL</h2>
                                         </div>
                                     </div>
 
                                     {/* Subheader */}
                                     <div className="flex justify-between items-center mb-6">
                                         <div className="flex items-center gap-2">
-                                            <img src="/images/docimg.svg" alt="Doctor Icon" className="w-6 h-6" />
-                                            <h3 className="font-bold text-gray-800 uppercase tracking-wide">PATEITN REGISTRATION CARD</h3>
+                                            <img src="/images/docimg.svg" alt="Doctor Icon" className="w-8 h-8" />
+                                            <h3 className="font-bold text-[#1C1C1E] text-lg uppercase tracking-wide">PATEITN REGISTRATION CARD</h3>
                                         </div>
-                                        <div className="flex items-center gap-2 text-gray-700 font-semibold">
-                                            <span className="text-xl">📅</span>
+                                        <div className="flex items-center gap-2 text-[#1C1C1E] font-bold text-lg">
+                                            <span className="text-2xl">📅</span>
                                             <span>{new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}</span>
                                         </div>
                                     </div>
@@ -368,59 +370,74 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                     {/* Main Content */}
                                     <div className="flex gap-6 mb-6">
                                         {/* Photo */}
-                                        <div className="w-32 h-32 rounded-lg bg-gray-200 flex-shrink-0 overflow-hidden shadow-inner">
+                                        <div className="w-32 h-32 bg-gray-100 flex-shrink-0 overflow-hidden shadow-sm border border-gray-200">
                                             {selectedPatient.photo_url ? (
                                                 <img src={selectedPatient.photo_url} alt="Patient" className="w-full h-full object-cover" />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-500 text-3xl font-bold">
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-4xl font-bold">
                                                     {getInitials(selectedPatient)}
                                                 </div>
                                             )}
                                         </div>
 
                                         {/* Details */}
-                                        <div className="flex-1 space-y-2">
-                                            <h2 className="text-2xl font-bold text-black">Name: {selectedPatient.first_name} {selectedPatient.last_name}</h2>
-                                            <p className="text-lg font-medium text-black">MRN: {selectedPatient.id}</p>
-                                            <div className="flex gap-8">
-                                                <p className="text-lg font-medium text-black">QID: {selectedPatient.civil_id || "28945120314"}</p>
-                                                <p className="text-lg font-medium text-black">Blood Group: {selectedPatient.blood_group || "O+"}</p>
+                                        <div className="flex-1 space-y-1 pt-1">
+                                            <h2 className="text-3xl text-[#1C1C1E] mb-2">
+                                                <span className="font-normal">Name:</span> <span className="font-bold">{selectedPatient.first_name} {selectedPatient.last_name}</span>
+                                            </h2>
+                                            <p className="text-xl text-[#1C1C1E]">
+                                                <span className="font-normal">MRN:</span> <span className="font-medium">{selectedPatient.id}</span>
+                                            </p>
+                                            <div className="flex gap-12 items-center text-[#1C1C1E]">
+                                                <p className="text-xl">
+                                                    <span className="font-normal">QID:</span> <span className="font-medium">{selectedPatient.civil_id || "28945120314"}</span>
+                                                </p>
+                                                <p className="text-xl">
+                                                    <span className="font-normal">Blood Group:</span> <span className="font-medium">{selectedPatient.blood_group || "O+"}</span>
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Footer Details */}
-                                    <div className="grid grid-cols-2 gap-4 text-black font-medium">
-                                        <div className="flex items-center gap-2">
-                                            <span>{selectedPatient.gender === 'male' ? '♂' : '♀'}</span>
-                                            <span className="capitalize">{selectedPatient.gender || "Male"}</span>
+                                    {/* Footer Details Grid */}
+                                    <div className="mt-auto pb-4">
+                                        <div className="flex items-center gap-4 text-[#1C1C1E] font-medium text-lg mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <User className="w-5 h-5 text-[#1C1C1E]" />
+                                                <span className="capitalize">{selectedPatient.gender || "Male"}</span>
+                                            </div>
+                                            {/* Blue separator */}
+                                            <div className="h-5 w-[2px] border-l-2 border-dotted border-[#007AFF]"></div>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="w-5 h-5 text-[#1C1C1E] " />
+                                                <span>{calculateAge(selectedPatient.dob ?? undefined)}</span>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <span>📅</span>
-                                            <span>{calculateAge(selectedPatient.dob ?? undefined)}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span>📞</span>
-                                            <span>{selectedPatient.mobile_number || "0792689298"}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <span>📞</span>
-                                            <span>{selectedPatient.mobile_number || "0792689298"}</span>
+                                        <div className="flex items-center gap-4 text-[#1C1C1E] font-medium text-lg">
+                                            <div className="flex items-center gap-2">
+                                                <Phone className="w-5 h-5 text-[#1C1C1E]" />
+                                                <span>{selectedPatient.mobile_number || "0792689298"}</span>
+                                            </div>
+                                            {/* Blue separator */}
+                                            <div className="h-5 w-[2px] border-l-2 border-dotted border-[#007AFF]"></div>
+                                            <div className="flex items-center gap-2">
+                                                <Phone className="w-5 h-5 text-[#1C1C1E]" />
+                                                <span>{selectedPatient.mobile_number || "0792689298"}</span>
+                                            </div>
                                         </div>
                                     </div>
 
                                     {/* Bottom Row */}
-                                    <div className="flex justify-between items-end mt-4">
-                                        <div className="flex gap-2 text-gray-700">
-                                            <span>Relation Name</span>
-                                            <span className="font-semibold text-black">{selectedPatient.first_name} Ahmed ({relationshipType || "Father"})</span>
+                                    <div className="flex justify-between items-end mt-auto pb-2">
+                                        <div className="flex gap-4 text-[#1C1C1E] text-lg items-center">
+                                            <span className="font-normal">Relation Name</span>
+                                            <span className="font-semibold">{selectedPatient.first_name} Ahmed ({relationshipType || "Father"})</span>
                                         </div>
                                         {/* QR Code Placeholder */}
-                                        <div className="w-20 h-20 bg-black">
-                                            <div className="w-full h-full bg-white p-1 grid grid-cols-4 gap-0.5">
-                                                {[...Array(16)].map((_, i) => (
-                                                    <div key={i} className={`bg-black ${i % 2 === 0 ? 'opacity-100' : 'opacity-30'}`}></div>
-                                                ))}
+                                        <div className="w-24 h-24 bg-black">
+                                            {/* Simple QR Pattern */}
+                                            <div className="w-full h-full bg-white p-1 flex items-center justify-center border-4 border-white">
+                                                <div className="w-full h-full bg-black" style={{ backgroundImage: 'radial-gradient(white 30%, transparent 31%), radial-gradient(white 30%, transparent 31%)', backgroundSize: '4px 4px', backgroundPosition: '0 0, 2px 2px', opacity: 0.8 }}></div>
                                             </div>
                                         </div>
                                     </div>
@@ -428,7 +445,7 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
 
                                 {/* Back Side */}
                                 <div
-                                    className="absolute w-full h-full backface-hidden bg-white rounded-3xl border border-gray-200 shadow-sm p-6 flex flex-col justify-between overflow-hidden text-left"
+                                    className="absolute w-full h-full backface-hidden bg-white rounded-3xl border border-gray-200 shadow-sm p-4 flex flex-col justify-between overflow-hidden text-left"
                                     style={{
                                         backfaceVisibility: 'hidden',
                                         WebkitBackfaceVisibility: 'hidden',
@@ -439,61 +456,43 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                     <div className="flex justify-between items-start mb-4">
                                         <img src="/images/hospitallogo.svg" alt="Hamad General Hospital" className="h-12 object-contain" />
                                         <div className="text-right">
-                                            <h2 className="text-blue-500 font-bold text-lg uppercase">HAMAD GENERAL HOSPITAL</h2>
+                                            <h2 className="text-[#007AFF] font-bold text-xl uppercase">HAMAD GENERAL HOSPITAL</h2>
                                         </div>
                                     </div>
 
                                     {/* Subheader */}
-                                    <div className="flex justify-between items-center mb-6">
+                                    <div className="flex justify-between items-center mb-2">
                                         <div className="flex items-center gap-2">
-                                            <img src="/images/docimg.svg" alt="Doctor Icon" className="w-6 h-6" />
-                                            <h3 className="font-bold text-gray-800 uppercase tracking-wide">PATEITN REGISTRATION CARD</h3>
+                                            {/* User Icon for Back - using generic user icon or docimg again if preferred, user ref has user icon */}
+                                            <img src="/images/docimg.svg" alt="User Icon" className="w-6 h-6" />
+                                            <h3 className="font-bold text-[#1C1C1E] text-base uppercase tracking-wide">PATEITN REGISTRATION CARD</h3>
                                         </div>
-                                        <div className="flex items-center gap-2 text-gray-700 font-semibold">
+                                        <div className="flex items-center gap-2 text-[#1C1C1E] font-bold text-base">
                                             <span className="text-xl">📅</span>
                                             <span>{new Date().toLocaleDateString('en-GB').replace(/\//g, '-')}</span>
                                         </div>
                                     </div>
 
                                     {/* Main Content */}
-                                    <div className="flex gap-6 mb-6">
-                                        {/* Small Photo */}
-                                        <div className="w-24 h-24 rounded-lg bg-gray-200 flex-shrink-0 overflow-hidden shadow-inner">
-                                            {selectedPatient.photo_url ? (
-                                                <img src={selectedPatient.photo_url} alt="Patient" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center bg-gray-300 text-gray-500 text-2xl font-bold">
-                                                    {getInitials(selectedPatient)}
-                                                </div>
-                                            )}
-                                        </div>
+                                    <div className="space-y-2 pl-2 mb-2">
+                                        <h2 className="text-2xl font-bold text-black mb-2">Name: {selectedPatient.first_name} {selectedPatient.last_name}</h2>
 
-                                        {/* Details */}
-                                        <div className="flex-1 space-y-2">
-                                            <h2 className="text-2xl font-bold text-black">Name: {selectedPatient.first_name} {selectedPatient.last_name}</h2>
-                                            <p className="text-gray-900 font-medium">Emergency Contact: 5550 1122</p>
-                                            <p className="text-gray-900 font-medium">Mobile: {selectedPatient.mobile_number || "5588 9933"}</p>
-                                            <p className="text-gray-900 font-medium">Patient Category: Corporate</p>
+                                        <div className="space-y-1 text-lg text-[#1C1C1E]">
+                                            <p><span className="font-normal">Emergency Contact:</span> <span className="font-medium">5550 1122</span></p>
+                                            <p><span className="font-normal">Mobile:</span> <span className="font-medium">{selectedPatient.mobile_number || "5588 9933"}</span></p>
+                                            <p><span className="font-normal">Patient Category:</span> <span className="font-medium">Corporate</span></p>
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 mb-8">
-                                        <p className="text-lg text-black">"This card is the property of the hospital and must be presented during each visit."</p>
-                                        <p className="text-lg text-black mt-2">Hamad General Hospital, Doha - Qatar</p>
+                                    <div className="mt-auto mb-2 pl-2">
+                                        <p className="text-base text-[#1C1C1E] leading-relaxed">"This card is the property of the hospital and must be presented during each visit."</p>
+                                        <p className="text-base text-[#1C1C1E] mt-1">Hamad General Hospital, Doha - Qatar</p>
                                     </div>
 
-                                    {/* Footer - Barcode & Call Center */}
-                                    <div className="flex justify-between items-end">
-                                        {/* Barcode Mockup */}
-                                        <div className="h-12 w-48 bg-black flex gap-[2px]">
-                                            {[...Array(40)].map((_, i) => (
-                                                <div key={i} className={`h-full bg-white`} style={{ width: Math.random() > 0.5 ? '2px' : '4px' }}></div>
-                                            ))}
-                                        </div>
+                                    {/* Footer - Call Center ONLY */}
+                                    <div className="flex justify-end items-end pb-1">
                                         <div className="text-right text-lg font-medium text-black">
                                             Call Center: 16060
-                                            <br />
-                                            <span className="text-sm text-gray-500">www.hamad.qa</span>
                                         </div>
                                     </div>
                                 </div>

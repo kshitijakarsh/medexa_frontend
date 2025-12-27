@@ -235,6 +235,11 @@ export default function PatientRegistrationPage() {
         setMrnSearch("");
     };
 
+    // Handle patient card click
+    const handlePatientClick = (patient: PatientEntry) => {
+        router.push(withLocale(`/frontoffice/patient-details/${patient.id}`));
+    };
+
     // Get count for each status tab
     const getTabCount = (status: string) => {
         return DUMMY_PATIENTS.filter(p => p.registrationStatus === status).length;
@@ -246,7 +251,10 @@ export default function PatientRegistrationPage() {
             key: "patient",
             label: "Patient",
             render: (row: PatientEntry) => (
-                <div className="flex items-center gap-3 relative">
+                <div
+                    className="flex items-center gap-3 relative cursor-pointer hover:bg-gray-50 rounded p-1 -m-1 transition-colors"
+                    onClick={() => handlePatientClick(row)}
+                >
                     {/* VIP Crown Icon */}
                     {row.isVip && (
                         <div className="absolute -top-1.5 -left-1.5 z-10 w-4 h-4 rounded-full flex items-center justify-center bg-transparent">
@@ -472,7 +480,7 @@ export default function PatientRegistrationPage() {
                     </div>
                 ) : (
                     <div className="mt-4">
-                        <PatientGridView data={patients} />
+                        <PatientGridView data={patients} onPatientClick={handlePatientClick} />
                     </div>
                 )}
 

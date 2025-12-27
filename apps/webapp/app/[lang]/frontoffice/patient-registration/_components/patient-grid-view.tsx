@@ -10,9 +10,10 @@ import { ContactPopover } from "@/app/[lang]/appointment/_components/contact-pop
 
 interface PatientGridViewProps {
     data: PatientEntry[];
+    onPatientClick?: (patient: PatientEntry) => void;
 }
 
-export function PatientGridView({ data }: PatientGridViewProps) {
+export function PatientGridView({ data, onPatientClick }: PatientGridViewProps) {
     if (!data || data.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center p-10 bg-white rounded-xl border border-gray-100 min-h-[400px]">
@@ -24,13 +25,13 @@ export function PatientGridView({ data }: PatientGridViewProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {data.map((patient) => (
-                <PatientCard key={patient.id} patient={patient} />
+                <PatientCard key={patient.id} patient={patient} onClick={onPatientClick} />
             ))}
         </div>
     );
 }
 
-function PatientCard({ patient }: { patient: PatientEntry }) {
+function PatientCard({ patient, onClick }: { patient: PatientEntry; onClick?: (patient: PatientEntry) => void }) {
     // Status Color Logic
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -60,7 +61,10 @@ function PatientCard({ patient }: { patient: PatientEntry }) {
     };
 
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow relative">
+        <div
+            className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow relative cursor-pointer"
+            onClick={() => onClick?.(patient)}
+        >
             {/* Top Row: MRN & Status */}
             <div className="flex justify-between items-start mb-3">
                 <span className="text-sm font-medium text-gray-600">{patient.mrn}</span>
