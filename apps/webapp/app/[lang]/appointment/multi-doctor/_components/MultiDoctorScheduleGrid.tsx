@@ -94,7 +94,11 @@ export function MultiDoctorScheduleGrid({
       const slotTime = new Date(slot.startTime)
       const slotHour = slotTime.getHours()
       const slotMinute = slotTime.getMinutes()
-      const [hour, minute, period] = time.split(/[: ]/)
+      const [hour, minute, period] = time.split(/[: ]/) as [
+        string,
+        string,
+        "AM" | "PM"
+      ]
       let expectedHour = parseInt(hour)
       if (period === "PM" && expectedHour !== 12) {
         expectedHour += 12
@@ -209,7 +213,7 @@ export function MultiDoctorScheduleGrid({
                       time={timeSlot}
                       isBooked={false}
                       onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
-                      onCancel={() => {}}
+                      onCancel={() => { }}
                     />
                   )
                 }

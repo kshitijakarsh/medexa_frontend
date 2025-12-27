@@ -83,6 +83,9 @@ export default function AddPatientPage() {
       setFormData((prev) => ({ ...prev, [field]: file }))
     }
 
+  const createMutation = useCreatePatient()
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -115,7 +118,7 @@ export default function AddPatientPage() {
       }
 
       const response = await createMutation.mutateAsync(payload)
-      
+
       if (response.success && response.data) {
         setCreatedPatientId(response.data.id)
         setMrn(response.data.civil_id || response.data.id)
