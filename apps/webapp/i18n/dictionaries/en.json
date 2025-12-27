@@ -49,6 +49,62 @@
     },
     "settings": {
       "title": "Settings"
+    },
+    "frontoffice": {
+      "dashboard": {
+        "appointmentBook": "Appointment Book",
+        "bookNewAppointments": "Book new appointments",
+        "patient": "Patient",
+        "managePatients": "Manage patients"
+      },
+      "schedule": {
+        "title": "Schedule",
+        "allDepartments": "All Departments",
+        "allDoctors": "All Doctors",
+        "year": "Year",
+        "month": "Month",
+        "all": "All",
+        "todayAppointments": "Today Appointments",
+        "tomorrow": "Tomorrow",
+        "customDate": "Custom Date",
+        "add": "Add",
+        "dateAndDay": "Date & Day",
+        "session": "Session",
+        "step": "Step",
+        "createdOn": "Created On",
+        "addedBy": "Added By",
+        "action": "Action",
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "searchDepartment": "Search Department",
+        "searchDoctor": "Search Doctor",
+        "to": "To",
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "timeSlots": {
+        "title": "Doctor Appointment Slots",
+        "department": "Department",
+        "doctor": "Doctor",
+        "selectDoctor": "Select Doctor",
+        "selectDateRange": "Select Date Range",
+        "selectDateRangeLabel": "Select Date Range *",
+        "new": "New",
+        "noShiftsAdded": "No shifts added yet. Click \"New\" to add a shift.",
+        "searchDepartment": "Search Department",
+        "searchDoctor": "Search Doctor"
+      }
     }
   },
   "metadata": {
