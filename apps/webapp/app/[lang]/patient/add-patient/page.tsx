@@ -12,6 +12,9 @@ import { UploadCard } from "@/components/common/upload-card"
 import { CancelButton } from "@/components/common/cancel-button"
 import Button from "@/components/ui/button"
 import { CheckCircle2, Calendar, Printer } from "lucide-react"
+import { useCreatePatient } from "../_hooks/usePatient"
+import { useCountries } from "../_hooks/useCountries"
+import { usePatientCategories } from "../_hooks/usePatientCategories"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { LinkFamilyModal } from "./_components/link-family-modal"
 
@@ -23,7 +26,7 @@ export default function AddPatientPage() {
   const lang = params?.lang || "en"
   const visitType = searchParams.get("visitType") || ""
   const [isSuccess, setIsSuccess] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [createdPatientId, setCreatedPatientId] = useState<string>("")
   const [mrn, setMrn] = useState<string>("")
   const [showLinkFamilyModal, setShowLinkFamilyModal] = useState(false)
 
@@ -80,18 +83,51 @@ export default function AddPatientPage() {
       setFormData((prev) => ({ ...prev, [field]: file }))
     }
 
+  const createMutation = useCreatePatient()
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const payload = {
+        category_id: formData.category,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        dob: formData.dateOfBirth,
+        gender: formData.gender,
+        country_id: formData.nationality,
+        blood_group: formData.bloodGroup,
+        civil_id: formData.civilId,
+        passport_number: formData.passportNumber,
+        issuing_country_id: formData.issuingCountry,
+        mobile_number: formData.mobile,
+        alternate_number: formData.alternativePhone,
+        email: formData.email,
+        emergency_contact: formData.emergencyContact,
+        city: formData.city,
+        postal_code: formData.postalCode,
+        permanent_address: formData.permanentAddress,
+        insurance_provider_id: formData.hasInsurance ? formData.insuranceProvider : undefined,
+        plan_type: formData.hasInsurance ? formData.planType : undefined,
+        policy_number: formData.hasInsurance ? formData.policyNumber : undefined,
+        policy_validity: formData.hasInsurance ? formData.policyValidity : undefined,
+        photo_url: formData.patientPhoto ? URL.createObjectURL(formData.patientPhoto) : undefined,
+        insurance_card_url: formData.insuranceCard ? URL.createObjectURL(formData.insuranceCard) : undefined,
+        status: "active",
+      }
 
-    // Generate mock MRN
-    const generatedMrn = `MRN-${Math.floor(Math.random() * 9000) + 1000}`
-    setMrn(generatedMrn)
-    setIsSuccess(true)
-    setIsSubmitting(false)
+      const response = await createMutation.mutateAsync(payload)
+
+      if (response.success && response.data) {
+        setCreatedPatientId(response.data.id)
+        setMrn(response.data.civil_id || response.data.id)
+        setIsSuccess(true)
+      }
+    } catch (error: any) {
+      alert(error?.response?.data?.message || "Failed to create patient. Please try again.")
+      console.error("Create patient error:", error)
+    }
   }
 
   const resetForm = () => {
@@ -175,11 +211,11 @@ export default function AddPatientPage() {
   }
 
   // Options for dropdowns
-  const patientCategories = [
-    { value: "inpatient", label: "Inpatient" },
-    { value: "outpatient", label: "Outpatient" },
-    { value: "emergency", label: "Emergency" },
-  ]
+  const { data: countries } = useCountries()
+  const { data: categories } = usePatientCategories()
+
+  const patientCategories =
+    categories?.map((c) => ({ value: String(c.id), label: c.name })) ?? []
 
   const genders = [
     { value: "male", label: "Male" },
@@ -187,13 +223,14 @@ export default function AddPatientPage() {
     { value: "other", label: "Other" },
   ]
 
-  const nationalities = [
-    { value: "qa", label: "Qatar" },
-    { value: "sa", label: "Saudi Arabia" },
-    { value: "ae", label: "UAE" },
-    { value: "us", label: "United States" },
-    { value: "uk", label: "United Kingdom" },
-  ]
+  const nationalities =
+    countries?.map((c) => ({ value: String(c.id), label: c.name_en })) ?? [
+      { value: "qa", label: "Qatar" },
+      { value: "sa", label: "Saudi Arabia" },
+      { value: "ae", label: "UAE" },
+      { value: "us", label: "United States" },
+      { value: "uk", label: "United Kingdom" },
+    ]
 
   const bloodGroups = [
     { value: "A+", label: "A+" },
@@ -580,8 +617,8 @@ export default function AddPatientPage() {
             {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-6 border-t border-gray-200">
               <CancelButton onClick={handleCancel} />
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Generating MRN..." : "GENERATE MRN"}
+              <Button type="submit" disabled={createMutation.isPending}>
+                {createMutation.isPending ? "Creating Patient..." : "GENERATE MRN"}
               </Button>
             </div>
           </form>

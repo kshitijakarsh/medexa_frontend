@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { Header } from "@/components/header"
 import { PageHeader } from "@/components/common/page-header"
-
 import { DataTable } from "@/components/common/data-table"
 import SearchInput from "@/components/common/search-input"
 import NewButton from "@/components/common/new-button"
@@ -22,19 +21,8 @@ import {
 } from "@workspace/ui/components/dropdown-menu"
 import { SlidersHorizontal, ChevronsUpDown, MoreVertical } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
-
-interface Patient {
-  id: string
-  name: string
-  patientId: string
-  dateOfBirth: string
-  age: string
-  phone: string
-  email: string
-  gender: "Male" | "Female"
-  category: "VIP" | "Normal"
-  status: "Active" | "Inactive"
-}
+import { usePatients, useDeletePatient } from "./_hooks/usePatient"
+import { Patient } from "@/lib/api/patient-api"
 
 export default function ManagePatientsPage() {
   const router = useRouter()
@@ -42,109 +30,51 @@ export default function ManagePatientsPage() {
   const lang = params?.lang || "en"
   const [search, setSearch] = useState("")
   const [activeTab, setActiveTab] = useState("registered")
-  const [patients, setPatients] = useState<Patient[]>([])
-  const [loading, setLoading] = useState(true)
 
-  // Mock patient data
-  const mockPatients: Patient[] = [
-    {
-      id: "1",
-      name: "Ganguli Rathod",
-      patientId: "PAT-65",
-      dateOfBirth: "1982-06-15",
-      age: "41 Year, 6 Month, 12 Day",
-      phone: "(239) 555-0108",
-      email: "tim.jennings@example.com",
-      gender: "Male",
-      category: "VIP",
-      status: "Active",
-    },
-    {
-      id: "2",
-      name: "Nevaeh Simmons",
-      patientId: "PAT-66",
-      dateOfBirth: "1985-03-22",
-      age: "38 Year, 9 Month, 5 Day",
-      phone: "(319) 555-0115",
-      email: "nevaeh.simmons@example.com",
-      gender: "Female",
-      category: "Normal",
-      status: "Active",
-    },
-    {
-      id: "3",
-      name: "John Doe",
-      patientId: "PAT-67",
-      dateOfBirth: "1990-11-08",
-      age: "33 Year, 1 Month, 19 Day",
-      phone: "(555) 123-4567",
-      email: "john.doe@example.com",
-      gender: "Male",
-      category: "Normal",
-      status: "Active",
-    },
-    {
-      id: "4",
-      name: "Jane Smith",
-      patientId: "PAT-68",
-      dateOfBirth: "1988-07-14",
-      age: "35 Year, 5 Month, 13 Day",
-      phone: "(555) 987-6543",
-      email: "jane.smith@example.com",
-      gender: "Female",
-      category: "VIP",
-      status: "Active",
-    },
-    {
-      id: "5",
-      name: "Robert Johnson",
-      patientId: "PAT-69",
-      dateOfBirth: "1975-12-30",
-      age: "48 Year, 0 Month, 7 Day",
-      phone: "(555) 456-7890",
-      email: "robert.johnson@example.com",
-      gender: "Male",
-      category: "Normal",
-      status: "Active",
-    },
-  ]
+  // Fetch patients from API
+  const { data: patientsData, isLoading: loading } = usePatients({
+    page: 1,
+    limit: 100,
+    search: search || undefined,
+    status: activeTab === "incomplete" ? "incomplete" : undefined,
+  })
 
-  // Simulate API call
-  useEffect(() => {
-    setLoading(true)
-    const timer = setTimeout(() => {
-      setPatients(mockPatients)
-      setLoading(false)
-    }, 1200)
+  const deleteMutation = useDeletePatient()
 
-    return () => clearTimeout(timer)
-  }, [])
+  const patients = patientsData?.data ?? []
 
-  // Filter patients based on search and tab
+  const handleDelete = async (patientId: string) => {
+    if (confirm("Are you sure you want to delete this patient?")) {
+      try {
+        await deleteMutation.mutateAsync(patientId)
+        alert("Patient deleted successfully")
+      } catch (error) {
+        alert("Failed to delete patient")
+        console.error(error)
+      }
+    }
+  }
+
+  // Calculate age from date of birth
+  const calculateAge = (dob?: string) => {
+    if (!dob) return "N/A"
+    const birthDate = new Date(dob)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < birthDate.getDate())
+    ) {
+      age--
+    }
+    return `${age} Years`
+  }
+
+  // Transform API data to match UI expectations
   const filteredPatients = useMemo(() => {
-    let filtered = patients
-
-    // Filter by tab
-    if (activeTab === "incomplete") {
-      // For incomplete, you might filter by missing required fields
-      // For now, returning empty array as mock
-      filtered = []
-    }
-
-    // Filter by search
-    if (search) {
-      const searchLower = search.toLowerCase()
-      filtered = filtered.filter(
-        (patient) =>
-          patient.name.toLowerCase().includes(searchLower) ||
-          patient.patientId.toLowerCase().includes(searchLower) ||
-          patient.email.toLowerCase().includes(searchLower) ||
-          patient.phone.includes(search)
-      )
-    }
-
-    return filtered
-  }, [patients, search, activeTab])
+    return patients
+  }, [patients])
 
   // Get initials for avatar fallback
   const getInitials = (name: string) => {
@@ -175,63 +105,71 @@ export default function ManagePatientsPage() {
     {
       key: "patient",
       label: "Patient",
-      render: (row: Patient) => (
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={undefined} alt={row.name} />
-            <AvatarFallback className="bg-blue-100 text-blue-700 text-sm font-medium">
-              {getInitials(row.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <span className="font-medium text-gray-800">{row.name}</span>
-            <span className="text-sm text-gray-500">{row.patientId}</span>
+      render: (row: Patient) => {
+        const name = row.full_name || `${row.first_name} ${row.last_name || ""}`.trim()
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={row.photo_url} alt={name} />
+              <AvatarFallback className="bg-blue-100 text-blue-700 text-sm font-medium">
+                {getInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="font-medium text-gray-800">{name}</span>
+              <span className="text-sm text-gray-500">{row.civil_id}</span>
+            </div>
           </div>
-        </div>
-      ),
+        )
+      },
       className: "min-w-[200px]",
     },
     {
       key: "dob",
-      label: "Dob",
+      label: "Age",
       render: (row: Patient) => (
-        <span className="text-gray-700">{row.age}</span>
+        <span className="text-gray-700">{calculateAge(row.dob)}</span>
       ),
     },
     {
       key: "phone",
       label: "Phone",
       render: (row: Patient) => (
-        <span className="text-gray-700">{row.phone}</span>
+        <span className="text-gray-700">{row.mobile_number || "N/A"}</span>
       ),
     },
     {
       key: "email",
       label: "Email",
       render: (row: Patient) => (
-        <span className="text-gray-700">{row.email}</span>
+        <span className="text-gray-700">{row.email || "N/A"}</span>
       ),
     },
     {
       key: "gender",
       label: "Gender",
       render: (row: Patient) => (
-        <span className="text-gray-700">{row.gender}</span>
+        <span className="text-gray-700 capitalize">{row.gender || "N/A"}</span>
       ),
     },
     {
       key: "category",
       label: "Category",
-      render: (row: Patient) => (
-        <span className="text-gray-700">{row.category}</span>
-      ),
+      render: (row: Patient) => {
+        const category = typeof row.category === 'object' ? (row.category as any)?.name || 'General' : row.category || 'General';
+        return <span className="text-gray-700 capitalize">{category}</span>;
+      },
     },
     {
       key: "action",
       label: "Action",
-      render: (row: Patient) => (
+      render: (row: Patient) => {
+        const status = typeof row.status === 'object' ? (row.status as any)?.name || 'Active' : row.status || 'Active';
+        return (
         <div className="flex items-center gap-2">
-          <span className="text-green-600 font-medium">{row.status}</span>
+          <span className="text-green-600 font-medium capitalize">
+            {status}
+          </span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -243,19 +181,23 @@ export default function ManagePatientsPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => console.log("View", row.id)}>
+              <DropdownMenuItem onClick={() => router.push(`/${lang}/patient/${row.id}`)}>
                 View
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log("Edit", row.id)}>
+              <DropdownMenuItem onClick={() => router.push(`/${lang}/patient/edit/${row.id}`)}>
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log("Delete", row.id)}>
+              <DropdownMenuItem 
+                onClick={() => handleDelete(row.id)}
+                className="text-red-600"
+              >
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      ),
+        );
+      },
       className: "text-center w-[120px]",
     },
   ]

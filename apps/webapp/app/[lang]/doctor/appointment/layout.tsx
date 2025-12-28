@@ -178,6 +178,8 @@ import { PageHeader } from "@/components/common/page-header";
 import { AppointmentSidebar } from "./_component/sidebar/AppointmentSidebar";
 import { AppointmentSidebarSkeleton } from "./_component/sidebar/AppointmentSidebarSkeleton";
 import { useDoctorVisitsQuery } from "../dashboard/_components/api";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { ROUTES } from "@/lib/routes";
 
 function mapVisitToSidebarItem(visit: any) {
   const fullName =
@@ -200,9 +202,10 @@ export default function ConsultationLayout({ children }: { children: React.React
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const { withLocale } = useLocaleRoute();
 
   const currentId = params.appointmentId as string | undefined;
-  const showSidebar = pathname.split("/").length <= 4;
+  const showSidebar = pathname.split("/").length <= 5;
 
   // 3 small queries
   const emergencyQuery = useDoctorVisitsQuery({
@@ -236,7 +239,7 @@ export default function ConsultationLayout({ children }: { children: React.React
   // 🔥 MOVE REDIRECT INTO EFFECT — fixes the error
   useEffect(() => {
     if (!loading && !currentId && firstAvailable) {
-      router.replace(`/doctor/appointment/${firstAvailable.id}`);
+      router.replace(`${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${firstAvailable.id}`)}`);
     }
   }, []);
 
@@ -268,7 +271,7 @@ export default function ConsultationLayout({ children }: { children: React.React
               general={general}
               activeId={currentId ?? undefined}
               onSelect={(item) =>
-                router.push(`/doctor/appointment/${item.id}`)
+                router.push(`${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${item.id}`)}`)
               }
             />
           </div>

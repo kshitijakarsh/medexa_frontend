@@ -124,7 +124,7 @@ export function useDoctorVisitsQuery(
   const doctorApi = createDoctorVisitsApiClient({});
 
   return useQuery<DoctorVisitsResponse>({
-    queryKey: ["doctor-visits", page, status, department_id, patient_id],
+    queryKey: ["doctor-visits", page, limit, status, department_id, patient_id],
     enabled: enabled || !!authToken,
     queryFn: async () => {
       const res = await doctorApi.getVisits({
