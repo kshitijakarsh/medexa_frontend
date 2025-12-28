@@ -12,6 +12,7 @@ import {
   IdCard,
   BriefcaseMedical,
   Calendar,
+  BedDouble,
 } from "lucide-react"
 
 import {
@@ -144,6 +145,48 @@ export function AppSidebar({ }) {
               title: "Appointment Schedule",
               url: [withLocale(ROUTES.FRONTOFFICE_SCHEDULE)],
             }
+          ]
+        },
+        {
+          title: "OPD",
+          url: [],
+          icon: Activity, // Using Activity as a placeholder for OPD since it relates to ongoing patient activity
+          items: [
+            {
+              title: "Patients Que",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=queue`)],
+            },
+            {
+              title: "Completed",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=completed`)],
+            },
+            {
+              title: "Doctor Instructions",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=instructions`)],
+            },
+          ]
+        },
+        {
+          title: "IPD",
+          url: [],
+          icon: BedDouble,
+          items: [
+            {
+              title: "Admitted Patients",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=admitted`)],
+            },
+            {
+              title: "Bed & Ward Management",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`)],
+            },
+            {
+              title: "Discharged Patients",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=discharged`)],
+            },
+            {
+              title: "Doctor Instructions",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=instructions`)],
+            },
           ]
         },
       ]
@@ -352,7 +395,7 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
   }, [isGroupActive])
 
   // Check if this item should have green styling
-  const isGreenItem = item.title === "Appointment" || item.title === "Patient Record"
+  const isGreenItem = item.title === "Appointment" || item.title === "Patient Record" || item.title === "OPD" || item.title === "IPD"
 
   if (item.items) {
     return (
