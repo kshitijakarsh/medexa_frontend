@@ -597,6 +597,7 @@ function RolesPageContent() {
               filters={filters}
               onClick={() => setIsFilterDialogOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <SearchInput

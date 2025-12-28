@@ -376,7 +376,9 @@ export default function OperationManagementPage() {
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filter</span>
               </Button> */}
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
               <SearchInput
                 value={search}
                 onChange={setSearch}

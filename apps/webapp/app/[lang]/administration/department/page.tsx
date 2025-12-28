@@ -555,6 +555,7 @@ function DepartmentsContent() {
               filters={filters}
               onClick={() => setIsFilterOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <SearchInput

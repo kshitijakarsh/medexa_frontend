@@ -320,7 +320,7 @@ import { UploadCloud, FileText, X } from "lucide-react";
 import axios from "axios";
 
 import { useCreateAttachment } from "../_hooks/useAttachments";
-import { useGeneratePresignedUrl } from "../_hooks/useStorage";
+import { useGeneratePresignedUrl } from "../../../../../../hooks/useStorage";
 
 /* ---------- SCHEMA ---------- */
 const schema = z.object({

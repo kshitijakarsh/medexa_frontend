@@ -2456,6 +2456,7 @@ function UnitsWardsBedsPageContent() {
                 filters={filters}
                 onClick={() => setIsFilterDialogOpen(true)}
                 onClear={clearAllFilters}
+                inverted={true}
               />
 
               <SearchInput

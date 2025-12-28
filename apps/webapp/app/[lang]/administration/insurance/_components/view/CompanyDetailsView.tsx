@@ -19,7 +19,6 @@ interface CompanyDetailsViewProps {
 export function CompanyDetailsView({ company, onBack }: CompanyDetailsViewProps) {
     return (
         <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
-            <Header />
             {/* Page Header */}
             <div className="p-5 space-y-6">
                 <div className="bg-white p-6 rounded-lg shadow-sm">

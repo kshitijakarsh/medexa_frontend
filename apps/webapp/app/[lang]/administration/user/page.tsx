@@ -214,7 +214,9 @@ function EmployeeConfigurationPageContent() {
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           <div className="flex justify-end">
             <div className="flex flex-wrap items-center justify-end gap-3 w-full lg:w-auto">
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
 
               <div className="min-w-[200px] md:min-w-[200px]">
                 <SearchInput

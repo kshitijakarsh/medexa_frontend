@@ -479,6 +479,7 @@ export default function ChargesPage() {
                 filters={filters}
                 onClick={() => setIsFilterOpen(true)}
                 onClear={() => setFilters({})}
+                inverted={true}
               />
 
               <div className="min-w-[220px]">
