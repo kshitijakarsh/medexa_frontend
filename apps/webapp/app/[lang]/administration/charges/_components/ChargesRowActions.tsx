@@ -30,9 +30,9 @@ export function ChargesRowActions({ onEdit, onView, onDelete, onPermission, user
 
   const permissionGroup = PERMISSION_MAP[mode];
 
-  if (!permissionGroup) {
-    console.warn("Unknown mode:", mode);
-  }
+  // if (!permissionGroup) {
+  //   console.warn("Unknown mode:", mode);
+  // }
 
 
   if (hasPermission(userPermissions, permissionGroup.EDIT)) {
