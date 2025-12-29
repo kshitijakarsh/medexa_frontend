@@ -16,7 +16,8 @@ import { DocumentsTab } from "../../patient-registration/_components/patient-det
 import { QuickActionsSidebar } from "../../patient-registration/_components/patient-details/quick-actions-sidebar"
 import { createPatientsApiClient, type PatientItem } from "@/lib/api/patients-api"
 import { createPatientMedicationsApiClient, type MedicationItem as ApiMedicationItem } from "@/lib/api/patient-medications-api"
-import type { PatientDetails, Prescription } from "../../patient-registration/_components/patient-details/types"
+import { createVisitPurposeApiClient, type VisitPurposeItem } from "@/lib/api/doctor/visit-purpose-api"
+import type { PatientDetails, Prescription, Visit } from "../../patient-registration/_components/patient-details/types"
 import { format } from "@workspace/ui/hooks/use-date-fns"
 
 // Map API patient to PatientDetails format
@@ -110,7 +111,9 @@ export default function PatientDetailsPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [medicationsLoading, setMedicationsLoading] = useState(false)
+    const [visitsLoading, setVisitsLoading] = useState(false)
     const medicationsFetchedRef = useRef(false)
+    const visitsFetchedRef = useRef(false)
 
     const patientId = params.id as string
 
@@ -132,6 +135,7 @@ export default function PatientDetailsPage() {
                     const patientDetails = mapPatientToDetails(response.data.data)
                     setPatient(patientDetails)
                     medicationsFetchedRef.current = false // Reset when patient changes
+                    visitsFetchedRef.current = false // Reset when patient changes
                 } else {
                     setError("Patient not found")
                 }
@@ -186,6 +190,83 @@ export default function PatientDetailsPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [patientId, activeTab]) // Only depend on patientId and activeTab - patient is checked inside but not in deps to prevent loop
 
+    // Map visit purposes to Visit format
+    const mapVisitPurposesToVisits = (visitPurposes: VisitPurposeItem[]): Visit[] => {
+        return visitPurposes
+            .filter(vp => !vp.is_deleted)
+            .map((vp) => {
+                const visitDate = vp.created_at ? format(new Date(vp.created_at), "MMM dd, yyyy") : "N/A"
+                const visitTime = vp.created_at ? format(new Date(vp.created_at), "hh:mm a") : "N/A"
+                const doctorName = vp.createdBy?.name || "Unknown Doctor"
+
+                return {
+                    id: vp.visit_id,
+                    date: visitDate,
+                    time: visitTime,
+                    type: "Visit", // Default type, could be enhanced with visit type from API
+                    status: "Completed" as const, // Visit purposes are typically for completed visits
+                    doctor: {
+                        name: doctorName,
+                    },
+                    purpose: vp.chief_complaint || vp.history_of_present_illness || "N/A",
+                    diagnosis: vp.history_of_present_illness || vp.chief_complaint || "N/A",
+                }
+            })
+    }
+
+    // Fetch visit purposes when visits tab is active
+    useEffect(() => {
+        const fetchVisitPurposes = async () => {
+            if (!patientId || !patient || activeTab !== "visits") return
+
+            // Only fetch if visits haven't been fetched yet for this patient
+            if (!visitsFetchedRef.current && patient.visits.length === 0) {
+                visitsFetchedRef.current = true
+                setVisitsLoading(true)
+                try {
+                    const visitPurposeClient = createVisitPurposeApiClient({})
+                    const response = await visitPurposeClient.getByPatient(patientId, {
+                        page: 1,
+                        limit: 100,
+                    })
+
+                    if (response.data.success) {
+                        const visits = mapVisitPurposesToVisits(response.data.data)
+                        setPatient((prev) => {
+                            if (!prev) return prev
+                            const firstVisit = visits.length > 0 ? visits[0] : null
+                            return {
+                                ...prev,
+                                visits,
+                                // Set lastVisit to the most recent visit if available
+                                lastVisit: firstVisit ? {
+                                    id: firstVisit.id,
+                                    date: firstVisit.date,
+                                    time: firstVisit.time,
+                                    type: firstVisit.type,
+                                    token: undefined,
+                                    status: firstVisit.status,
+                                    doctor: firstVisit.doctor,
+                                    department: undefined,
+                                    ward: undefined,
+                                    purpose: firstVisit.purpose,
+                                } : undefined,
+                            }
+                        })
+                    }
+                } catch (err: any) {
+                    console.error("Error fetching visit purposes:", err)
+                    visitsFetchedRef.current = false // Reset on error so we can retry
+                } finally {
+                    setVisitsLoading(false)
+                }
+            }
+        }
+
+        fetchVisitPurposes()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [patientId, activeTab]) // Only depend on patientId and activeTab - patient is checked inside but not in deps to prevent loop
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-[#EFF6FB]">
@@ -216,7 +297,7 @@ export default function PatientDetailsPage() {
             case "overview":
                 return <OverviewTab patient={patient} />
             case "visits":
-                return <VisitsTab visits={patient.visits} />
+                return <VisitsTab visits={patient.visits} loading={visitsLoading} />
             case "billing":
                 return <BillingTab invoices={patient.invoices} />
             case "lab-results":
