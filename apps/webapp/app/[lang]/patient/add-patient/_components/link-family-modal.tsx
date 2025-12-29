@@ -13,6 +13,7 @@ import { Search, Send, Calendar, Phone, User, QrCode } from "lucide-react"
 
 import { createPatientsApiClient } from "@/lib/api/patients-api"
 import type { PatientItem } from "@/lib/api/patients-api"
+import { createPatientRelationsApiClient, type PatientRelation } from "@/lib/api/patient-relations-api"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import {
     Select,
@@ -25,10 +26,11 @@ import {
 interface LinkFamilyModalProps {
     open: boolean
     onClose: () => void
+    currentPatientId: string
     currentPatientMrn: string
 }
 
-export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamilyModalProps) {
+export function LinkFamilyModal({ open, onClose, currentPatientId, currentPatientMrn }: LinkFamilyModalProps) {
     const [searchQuery, setSearchQuery] = useState("")
     const [patients, setPatients] = useState<PatientItem[]>([])
     const [selectedPatient, setSelectedPatient] = useState<PatientItem | null>(null)
@@ -37,6 +39,8 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
     const [relationshipType, setRelationshipType] = useState("")
     const [showIdCard, setShowIdCard] = useState(false)
     const [isFlipped, setIsFlipped] = useState(false)
+    const [relationData, setRelationData] = useState<PatientRelation | null>(null)
+    const [isLinking, setIsLinking] = useState(false)
 
     // Reset state when modal opens/closes
     useEffect(() => {
@@ -48,6 +52,8 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
             setRelationshipType("")
             setShowIdCard(false)
             setIsFlipped(false)
+            setRelationData(null)
+            setIsLinking(false)
         }
     }, [open])
 
@@ -75,11 +81,43 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
         return () => clearTimeout(timer)
     }, [searchQuery])
 
-    const handleConfirmLink = () => {
-        if (selectedPatient && relationshipType) {
-            console.log("Linking family member:", selectedPatient, "Relationship:", relationshipType)
-            // TODO: Implement actual linking API call
-            setShowIdCard(true)
+    // Map relationship type from form value to API value
+    const mapRelationType = (type: string): string => {
+        const mapping: Record<string, string> = {
+            father: "Parent",
+            mother: "Parent",
+            spouse: "Spouse",
+            child: "Child",
+            sibling: "Sibling",
+            other: "Other"
+        }
+        return mapping[type] || type.charAt(0).toUpperCase() + type.slice(1)
+    }
+
+    const handleConfirmLink = async () => {
+        if (selectedPatient && relationshipType && currentPatientId) {
+            setIsLinking(true)
+            try {
+                const apiClient = createPatientRelationsApiClient()
+                const payload = {
+                    patient_id: currentPatientId,
+                    related_patient_id: String(selectedPatient.id),
+                    relation_type: mapRelationType(relationshipType)
+                }
+                
+                const response = await apiClient.createRelation(payload)
+                
+                if (response.data.success && response.data.data) {
+                    // Use relation1 data (the relation from current patient to selected patient)
+                    setRelationData(response.data.data.relation1)
+                    setShowIdCard(true)
+                }
+            } catch (error: any) {
+                console.error("Error linking family member:", error)
+                alert(error?.message || "Failed to link family member. Please try again.")
+            } finally {
+                setIsLinking(false)
+            }
         }
     }
 
@@ -383,17 +421,28 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                         {/* Details */}
                                         <div className="flex-1 space-y-1 pt-1">
                                             <h2 className="text-3xl text-[#1C1C1E] mb-2">
-                                                <span className="font-normal">Name:</span> <span className="font-bold">{selectedPatient.first_name} {selectedPatient.last_name}</span>
+                                                <span className="font-normal">Name:</span> <span className="font-bold">
+                                                    {relationData?.relatedPatient 
+                                                        ? `${relationData.relatedPatient.first_name} ${relationData.relatedPatient.last_name}`
+                                                        : `${selectedPatient.first_name} ${selectedPatient.last_name}`
+                                                    }
+                                                </span>
                                             </h2>
                                             <p className="text-xl text-[#1C1C1E]">
-                                                <span className="font-normal">MRN:</span> <span className="font-medium">{selectedPatient.id}</span>
+                                                <span className="font-normal">MRN:</span> <span className="font-medium">
+                                                    {relationData?.relatedPatient?.id || selectedPatient.id}
+                                                </span>
                                             </p>
                                             <div className="flex gap-12 items-center text-[#1C1C1E]">
                                                 <p className="text-xl">
-                                                    <span className="font-normal">QID:</span> <span className="font-medium">{selectedPatient.civil_id || "28945120314"}</span>
+                                                    <span className="font-normal">QID:</span> <span className="font-medium">
+                                                        {relationData?.relatedPatient?.civil_id || selectedPatient.civil_id || "N/A"}
+                                                    </span>
                                                 </p>
                                                 <p className="text-xl">
-                                                    <span className="font-normal">Blood Group:</span> <span className="font-medium">{selectedPatient.blood_group || "O+"}</span>
+                                                    <span className="font-normal">Blood Group:</span> <span className="font-medium">
+                                                        {selectedPatient.blood_group || "N/A"}
+                                                    </span>
                                                 </p>
                                             </div>
                                         </div>
@@ -404,25 +453,33 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                         <div className="flex items-center gap-4 text-[#1C1C1E] font-medium text-lg mb-2">
                                             <div className="flex items-center gap-2">
                                                 <User className="w-5 h-5 text-[#1C1C1E]" />
-                                                <span className="capitalize">{selectedPatient.gender || "Male"}</span>
+                                                <span className="capitalize">
+                                                    {relationData?.relatedPatient?.gender || selectedPatient.gender || "N/A"}
+                                                </span>
                                             </div>
                                             {/* Blue separator */}
                                             <div className="h-5 w-[2px] border-l-2 border-dotted border-[#007AFF]"></div>
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="w-5 h-5 text-[#1C1C1E] " />
-                                                <span>{calculateAge(selectedPatient.dob ?? undefined)}</span>
+                                                <span>
+                                                    {calculateAge((relationData?.relatedPatient?.dob || selectedPatient.dob) ?? undefined)}
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-4 text-[#1C1C1E] font-medium text-lg">
                                             <div className="flex items-center gap-2">
                                                 <Phone className="w-5 h-5 text-[#1C1C1E]" />
-                                                <span>{selectedPatient.mobile_number || "0792689298"}</span>
+                                                <span>
+                                                    {relationData?.relatedPatient?.mobile_number || selectedPatient.mobile_number || "N/A"}
+                                                </span>
                                             </div>
                                             {/* Blue separator */}
                                             <div className="h-5 w-[2px] border-l-2 border-dotted border-[#007AFF]"></div>
                                             <div className="flex items-center gap-2">
                                                 <Phone className="w-5 h-5 text-[#1C1C1E]" />
-                                                <span>{selectedPatient.mobile_number || "0792689298"}</span>
+                                                <span>
+                                                    {relationData?.relatedPatient?.email || selectedPatient.email || "N/A"}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -431,7 +488,12 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                                     <div className="flex justify-between items-end mt-auto pb-2">
                                         <div className="flex gap-4 text-[#1C1C1E] text-lg items-center">
                                             <span className="font-normal">Relation Name</span>
-                                            <span className="font-semibold">{selectedPatient.first_name} Ahmed ({relationshipType || "Father"})</span>
+                                            <span className="font-semibold">
+                                                {relationData?.relatedPatient 
+                                                    ? `${relationData.relatedPatient.first_name} ${relationData.relatedPatient.last_name} (${relationData.relation_type})`
+                                                    : `${selectedPatient.first_name} ${selectedPatient.last_name} (${relationshipType || "Father"})`
+                                                }
+                                            </span>
                                         </div>
                                         {/* QR Code Placeholder */}
                                         <div className="w-24 h-24 bg-black">
@@ -475,12 +537,17 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
 
                                     {/* Main Content */}
                                     <div className="space-y-2 pl-2 mb-2">
-                                        <h2 className="text-2xl font-bold text-black mb-2">Name: {selectedPatient.first_name} {selectedPatient.last_name}</h2>
+                                        <h2 className="text-2xl font-bold text-black mb-2">
+                                            Name: {relationData?.relatedPatient 
+                                                ? `${relationData.relatedPatient.first_name} ${relationData.relatedPatient.last_name}`
+                                                : `${selectedPatient.first_name} ${selectedPatient.last_name}`
+                                            }
+                                        </h2>
 
                                         <div className="space-y-1 text-lg text-[#1C1C1E]">
-                                            <p><span className="font-normal">Emergency Contact:</span> <span className="font-medium">5550 1122</span></p>
-                                            <p><span className="font-normal">Mobile:</span> <span className="font-medium">{selectedPatient.mobile_number || "5588 9933"}</span></p>
-                                            <p><span className="font-normal">Patient Category:</span> <span className="font-medium">Corporate</span></p>
+                                            <p><span className="font-normal">Emergency Contact:</span> <span className="font-medium">{relationData?.relatedPatient?.mobile_number || selectedPatient.mobile_number || "N/A"}</span></p>
+                                            <p><span className="font-normal">Mobile:</span> <span className="font-medium">{relationData?.relatedPatient?.mobile_number || selectedPatient.mobile_number || "N/A"}</span></p>
+                                            <p><span className="font-normal">Relation Type:</span> <span className="font-medium">{relationData?.relation_type || relationshipType || "N/A"}</span></p>
                                         </div>
                                     </div>
 
@@ -539,11 +606,11 @@ export function LinkFamilyModal({ open, onClose, currentPatientMrn }: LinkFamily
                             </Button>
                             <Button
                                 onClick={handleConfirmLink}
-                                disabled={!relationshipType}
+                                disabled={!relationshipType || isLinking}
                                 className="px-8 py-3 rounded-lg bg-[#44B678] text-white font-medium hover:bg-[#3a9d66] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                             >
                                 <Send className="w-5 h-5" />
-                                LINK FAMILY MEMBER
+                                {isLinking ? "LINKING..." : "LINK FAMILY MEMBER"}
                             </Button>
                         </>
                     )}

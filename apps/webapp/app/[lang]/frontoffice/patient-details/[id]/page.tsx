@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import { PatientHeader } from "../../patient-registration/_components/patient-details/patient-header"
@@ -14,20 +14,192 @@ import { MedicationsTab } from "../../patient-registration/_components/patient-d
 import { AllergiesTab } from "../../patient-registration/_components/patient-details/allergies-tab"
 import { DocumentsTab } from "../../patient-registration/_components/patient-details/documents-tab"
 import { QuickActionsSidebar } from "../../patient-registration/_components/patient-details/quick-actions-sidebar"
-import { mockPatientDetails } from "../../patient-registration/mock-data"
+import { createPatientsApiClient, type PatientItem } from "@/lib/api/patients-api"
+import { createPatientMedicationsApiClient, type MedicationItem as ApiMedicationItem } from "@/lib/api/patient-medications-api"
+import type { PatientDetails, Prescription } from "../../patient-registration/_components/patient-details/types"
+import { format } from "@workspace/ui/hooks/use-date-fns"
+
+// Map API patient to PatientDetails format
+const mapPatientToDetails = (patient: PatientItem): PatientDetails => {
+    return {
+        id: String(patient.id),
+        mrn: patient.civil_id ? `MRN-${patient.civil_id}` : `MRN-${patient.id}`,
+        cprNid: patient.civil_id || "",
+        firstName: patient.first_name || "",
+        lastName: patient.last_name || "",
+        photoUrl: patient.photo_url || undefined,
+        dob: patient.dob || "",
+        gender: (patient.gender?.toLowerCase() as 'male' | 'female' | 'other') || 'other',
+        bloodGroup: patient.blood_group || "N/A",
+        maritalStatus: patient.marital_status || "N/A",
+        nationality: patient.country?.name_en || patient.nationality || "N/A",
+        phone: patient.mobile_number || "N/A",
+        email: patient.email || "N/A",
+        address: patient.permanent_address || patient.city || "N/A",
+        // Default empty arrays for data that might come from other APIs
+        lastVisit: undefined,
+        upcomingAppointments: [],
+        diagnoses: [],
+        activeOrders: [],
+        activeProblems: [],
+        allergies: [],
+        documents: [],
+        medications: [],
+        visits: [],
+        invoices: [],
+        labResults: [],
+        radiologyReports: [],
+        prescriptions: [],
+    }
+}
+
+// Map API medications to Prescription format (grouped by visit/doctor)
+const mapMedicationsToPrescriptions = (medications: ApiMedicationItem[]): Prescription[] => {
+    // Group medications by visit_id and created_by (doctor)
+    const grouped = new Map<string, ApiMedicationItem[]>()
+    
+    medications.forEach((med) => {
+        if (!med.is_deleted) {
+            const key = `${med.visit_id}-${med.created_by}`
+            if (!grouped.has(key)) {
+                grouped.set(key, [])
+            }
+            grouped.get(key)!.push(med)
+        }
+    })
+
+    // Convert grouped medications to Prescription format
+    return Array.from(grouped.entries())
+        .filter(([key, meds]) => meds.length > 0)
+        .map(([key, meds]) => {
+            const firstMed = meds[0]
+            if (!firstMed) return null
+
+            const doctorName = firstMed.createdBy 
+                ? `${firstMed.createdBy.first_name} ${firstMed.createdBy.last_name}`.trim()
+                : "Unknown Doctor"
+            
+            const visitDate = firstMed.visit?.visit_date 
+                ? format(new Date(firstMed.visit.visit_date), "MMM dd, yyyy")
+                : format(new Date(firstMed.created_at), "MMM dd, yyyy")
+
+            return {
+                id: firstMed.visit_id,
+                doctorName,
+                date: visitDate,
+                visitId: firstMed.visit_id,
+                visitType: firstMed.visit?.visit_type || "Unknown",
+                items: meds.map((med) => ({
+                    id: med.id,
+                    name: med.medicine,
+                    dosage: med.dosage,
+                    frequency: med.frequency,
+                    duration: med.duration,
+                    notes: med.medication_instructions || "",
+                })),
+            }
+        })
+        .filter((prescription): prescription is Prescription => prescription !== null)
+}
 
 export default function PatientDetailsPage() {
     const params = useParams()
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<PatientTab>("overview")
+    const [patient, setPatient] = useState<PatientDetails | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [medicationsLoading, setMedicationsLoading] = useState(false)
+    const medicationsFetchedRef = useRef(false)
 
     const patientId = params.id as string
-    const patient = mockPatientDetails[patientId]
 
-    if (!patient) {
+    useEffect(() => {
+        const fetchPatient = async () => {
+            if (!patientId) {
+                setError("Patient ID is required")
+                setLoading(false)
+                return
+            }
+
+            setLoading(true)
+            setError(null)
+            try {
+                const apiClient = createPatientsApiClient()
+                const response = await apiClient.getPatient(patientId)
+                
+                if (response.data.success && response.data.data) {
+                    const patientDetails = mapPatientToDetails(response.data.data)
+                    setPatient(patientDetails)
+                    medicationsFetchedRef.current = false // Reset when patient changes
+                } else {
+                    setError("Patient not found")
+                }
+            } catch (err: any) {
+                console.error("Error fetching patient:", err)
+                setError(err.message || "Failed to load patient details")
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchPatient()
+        medicationsFetchedRef.current = false // Reset medications fetch flag when patient changes
+    }, [patientId])
+
+    // Fetch medications when medications tab is active
+    useEffect(() => {
+        const fetchMedications = async () => {
+            if (!patientId || !patient || activeTab !== "medications") return
+
+            // Only fetch if medications haven't been fetched yet for this patient
+            if (!medicationsFetchedRef.current && patient.prescriptions.length === 0) {
+                medicationsFetchedRef.current = true
+                setMedicationsLoading(true)
+                try {
+                    const medicationsClient = createPatientMedicationsApiClient()
+                    const response = await medicationsClient.getMedicationsByPatientId(patientId, {
+                        page: 1,
+                        limit: 100,
+                    })
+
+                    if (response.data.success) {
+                        const prescriptions = mapMedicationsToPrescriptions(response.data.data)
+                        setPatient((prev) => {
+                            if (!prev) return prev
+                            return {
+                                ...prev,
+                                prescriptions,
+                            }
+                        })
+                    }
+                } catch (err: any) {
+                    console.error("Error fetching medications:", err)
+                    medicationsFetchedRef.current = false // Reset on error so we can retry
+                } finally {
+                    setMedicationsLoading(false)
+                }
+            }
+        }
+
+        fetchMedications()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [patientId, activeTab]) // Only depend on patientId and activeTab - patient is checked inside but not in deps to prevent loop
+
+    if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-[#EFF6FB]">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Patient Not Found</h1>
+                <div className="text-lg text-gray-600">Loading patient details...</div>
+            </div>
+        )
+    }
+
+    if (error || !patient) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#EFF6FB]">
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                    {error || "Patient Not Found"}
+                </h1>
                 <button
                     onClick={() => router.back()}
                     className="flex items-center gap-2 px-4 py-2 bg-[#007AFF] text-white rounded-lg hover:bg-[#0066CC]"
@@ -52,7 +224,12 @@ export default function PatientDetailsPage() {
             case "radiology":
                 return <RadiologyTab reports={patient.radiologyReports} />
             case "medications":
-                return <MedicationsTab prescriptions={patient.prescriptions} />
+                return (
+                    <MedicationsTab 
+                        prescriptions={patient.prescriptions} 
+                        loading={medicationsLoading}
+                    />
+                )
             case "allergies":
                 return <AllergiesTab allergies={patient.allergies} />
             case "documents":

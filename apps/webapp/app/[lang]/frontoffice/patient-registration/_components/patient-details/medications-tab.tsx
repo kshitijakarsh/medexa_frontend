@@ -3,9 +3,18 @@ import { Calendar } from "lucide-react"
 
 interface MedicationsTabProps {
     prescriptions: Prescription[]
+    loading?: boolean
 }
 
-export function MedicationsTab({ prescriptions }: MedicationsTabProps) {
+export function MedicationsTab({ prescriptions, loading = false }: MedicationsTabProps) {
+    if (loading) {
+        return (
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">
+                Loading medications...
+            </div>
+        )
+    }
+
     if (prescriptions.length === 0) {
         return (
             <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">

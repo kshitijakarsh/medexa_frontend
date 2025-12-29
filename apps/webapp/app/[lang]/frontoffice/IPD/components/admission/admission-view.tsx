@@ -6,7 +6,7 @@ import { PatientSearchPanel, Patient } from "./patient-search-panel"
 import { AdmissionForm } from "./admission-form"
 import { AdmissionSuccessScreen } from "./admission-success-screen"
 import { useRouter } from "next/navigation"
-import { format } from "date-fns"
+import { format } from "@workspace/ui/hooks/use-date-fns"
 
 interface AdmissionViewProps {
     onBack: () => void

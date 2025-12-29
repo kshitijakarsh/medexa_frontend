@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from "@workspace/ui/components/select"
 import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
+import { format } from "@workspace/ui/hooks/use-date-fns"
 import { cn } from "@workspace/ui/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { Calendar } from "@workspace/ui/components/calendar"
