@@ -2,17 +2,18 @@
 "use client";
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { IPDQueueView } from "./components/ipd-queue-view";
 import { DoctorInstructionsView } from "../OPD/components/doctor-instructions-view"; // Reuse from OPD
 import {
-    ADMITTED_PATIENTS_DATA,
     DISCHARGED_PATIENTS_DATA,
     NURSE_TASKS_DATA,
     LAB_ORDERS_DATA
 } from "./mock-data";
-import { IPDFilterState } from "./types";
+import { IPDFilterState, IPDEntry } from "./types";
 import { buildUrl } from "@/lib/routes";
+import { createIPDApiClient } from "@/lib/api/ipd-api";
+import { mapIPDToEntry } from "@/lib/api/ipd-mapper";
 
 import { AdmissionView } from "./components/admission/admission-view";
 import { BedManagementView } from "./components/bed-management/bed-management-view";
@@ -33,6 +34,11 @@ export default function IPDPage() {
         category: "All"
     });
 
+    // State for API data
+    const [admittedData, setAdmittedData] = useState<IPDEntry[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const updateFilter = (key: keyof IPDFilterState, value: string) => {
         setFilters((prev) => ({ ...prev, [key]: value }));
     };
@@ -48,11 +54,60 @@ export default function IPDPage() {
         });
     };
 
+    // Fetch IPD data from API
+    useEffect(() => {
+        const fetchIPDs = async () => {
+            // Only fetch for admitted view
+            if (view !== "admitted") {
+                return;
+            }
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                const apiClient = createIPDApiClient();
+                const params: any = {
+                    page: 1,
+                    limit: 100, // Adjust as needed
+                };
+
+                // Map filters to API params
+                if (filters.search) {
+                    params.search = filters.search;
+                }
+                if (filters.ward) {
+                    params.ward_id = filters.ward;
+                }
+                if (filters.status && filters.status !== "All") {
+                    // Map status filter to admission_type if needed
+                    // You may need to adjust this mapping based on your business logic
+                }
+
+                const response = await apiClient.getIPDs(params);
+                
+                if (response.data.success) {
+                    const mappedData = response.data.data.map(mapIPDToEntry);
+                    setAdmittedData(mappedData);
+                } else {
+                    setError("Failed to fetch IPD data");
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "An error occurred while fetching IPD data");
+                console.error("Error fetching IPDs:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchIPDs();
+    }, [view, filters.search, filters.ward, filters.status]);
+
     // Derived Data based on View
     const getViewData = () => {
         if (view === "discharged") return DISCHARGED_PATIENTS_DATA;
         // if (view === "bed-management") return ...; // Placeholder
-        return ADMITTED_PATIENTS_DATA;
+        return admittedData;
     };
 
     const displayData = getViewData();
@@ -96,7 +151,7 @@ export default function IPDPage() {
             <div className="space-y-4">
                 <IPDQueueView
                     data={displayData}
-                    loading={false}
+                    loading={loading}
                     viewMode={filters.viewMode}
                     setViewMode={(mode) => updateFilter("viewMode", mode)}
                     filters={filters}
@@ -105,6 +160,11 @@ export default function IPDPage() {
                     isDischargedView={view === "discharged"}
                     onBookAdmission={() => router.push(`${pathname}?view=admission`)}
                 />
+                {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-800">
+                        {error}
+                    </div>
+                )}
             </div>
         );
     };

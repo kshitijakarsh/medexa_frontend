@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@workspace/ui/components/button"
 import { Label } from "@workspace/ui/components/label"
 import { Input } from "@workspace/ui/components/input"
@@ -18,11 +18,25 @@ import { cn } from "@workspace/ui/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { Calendar } from "@workspace/ui/components/calendar"
 import { Patient } from "./patient-search-panel"
+import { createDoctorsApiClient } from "@/lib/api/doctors-api"
+import { createNursesApiClient } from "@/lib/api/nurses-api"
+import { createDepartmentApiClient } from "@/lib/api/administration/department"
+import { createInsuranceApiClient } from "@/lib/api/insurance-api"
+import { createWardTypeApiClient } from "@/lib/api/administration/wardTypes"
+import { createFrontofficeBedsApiClient } from "@/lib/api/frontoffice-beds-api"
+import { createIPDApiClient } from "@/lib/api/ipd-api"
+import { getAuthToken } from "@/app/utils/onboarding"
+import { SearchableSelect } from "@/app/[lang]/appointment/book/_components/SearchableSelect"
 
 interface AdmissionFormProps {
     selectedPatient: Patient | null
     onSubmit: (data: any) => void
     onCancel: () => void
+}
+
+interface Option {
+    value: string
+    label: string
 }
 
 export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: AdmissionFormProps) {
@@ -36,12 +50,222 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
         department: "",
         doctor: "",
         ward: "",
-        room: "",
         bed: "",
         nurse: "",
         expectedDuration: "",
         reason: "",
     })
+
+    // State for dropdown options
+    const [departments, setDepartments] = useState<Option[]>([])
+    const [doctors, setDoctors] = useState<Option[]>([])
+    const [nurses, setNurses] = useState<Option[]>([])
+    const [insurances, setInsurances] = useState<Option[]>([])
+    const [wards, setWards] = useState<Option[]>([])
+    const [beds, setBeds] = useState<Option[]>([])
+    const [loadingDepartments, setLoadingDepartments] = useState(false)
+    const [loadingDoctors, setLoadingDoctors] = useState(false)
+    const [loadingNurses, setLoadingNurses] = useState(false)
+    const [loadingInsurances, setLoadingInsurances] = useState(false)
+    const [loadingWards, setLoadingWards] = useState(false)
+    const [loadingBeds, setLoadingBeds] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
+    const [submitError, setSubmitError] = useState<string | null>(null)
+    const [doctorSearchQuery, setDoctorSearchQuery] = useState("")
+    const [nurseSearchQuery, setNurseSearchQuery] = useState("")
+
+    // Fetch departments
+    useEffect(() => {
+        const fetchDepartments = async () => {
+            setLoadingDepartments(true)
+            try {
+                const token = await getAuthToken()
+                const client = createDepartmentApiClient({ authToken: token })
+                const response = await client.getDepartments({
+                    status: "active",
+                    limit: 100,
+                    offset: 0,
+                })
+
+                const departmentOptions = response.data.data.map((dept) => ({
+                    value: dept.id,
+                    label: dept.department_name,
+                }))
+                setDepartments(departmentOptions)
+            } catch (error) {
+                console.error("Failed to fetch departments:", error)
+                setDepartments([])
+            } finally {
+                setLoadingDepartments(false)
+            }
+        }
+
+        fetchDepartments()
+    }, [])
+
+    // Fetch insurance providers (TPA)
+    useEffect(() => {
+        const fetchInsurances = async () => {
+            setLoadingInsurances(true)
+            try {
+                const insuranceClient = createInsuranceApiClient()
+                const response = await insuranceClient.getInsurances({
+                    page: 1,
+                    limit: 100,
+                    status: "active",
+                })
+
+                const insuranceOptions = response.data.data.map((insurance) => ({
+                    value: insurance.id,
+                    label: insurance.provider_name,
+                }))
+                setInsurances(insuranceOptions)
+            } catch (error) {
+                console.error("Failed to fetch insurance providers:", error)
+                setInsurances([])
+            } finally {
+                setLoadingInsurances(false)
+            }
+        }
+
+        fetchInsurances()
+    }, [])
+
+    // Fetch ward types - if empty, show default ward_id
+    useEffect(() => {
+        const fetchWards = async () => {
+            setLoadingWards(true)
+            try {
+                const wardTypeClient = createWardTypeApiClient()
+                const response = await wardTypeClient.getWardTypes({
+                    page: 1,
+                    limit: 100,
+                    status: "active",
+                })
+
+                if (response.data.data && response.data.data.length > 0) {
+                    const wardOptions = response.data.data.map((ward) => ({
+                        value: ward.id,
+                        label: ward.name,
+                    }))
+                    setWards(wardOptions)
+                } else {
+                    // If no wards from API, show default option with ward_id
+                    setWards([{ value: "1", label: "Default Ward" }])
+                }
+            } catch (error) {
+                console.error("Failed to fetch ward types:", error)
+                // On error, show default option with ward_id
+                setWards([{ value: "1", label: "Default Ward" }])
+            } finally {
+                setLoadingWards(false)
+            }
+        }
+
+        fetchWards()
+    }, [])
+
+    // Fetch beds - if empty, show default bed_id=15
+    useEffect(() => {
+        const fetchBeds = async () => {
+            setLoadingBeds(true)
+            try {
+                const bedsClient = createFrontofficeBedsApiClient()
+                const response = await bedsClient.getBeds({
+                    page: 1,
+                    limit: 100,
+                    status: "active",
+                })
+
+                if (response.data.success && response.data.data.length > 0) {
+                    const bedOptions = response.data.data.map((bed) => ({
+                        value: bed.id,
+                        label: `${bed.bed_number} (Available)`,
+                    }))
+                    setBeds(bedOptions)
+                } else {
+                    // If no beds from API, show default option with bed_id=15
+                    setBeds([{ value: "15", label: "Default Bed" }])
+                }
+            } catch (error) {
+                console.error("Failed to fetch beds:", error)
+                // On error, show default option with bed_id=15
+                setBeds([{ value: "15", label: "Default Bed" }])
+            } finally {
+                setLoadingBeds(false)
+            }
+        }
+
+        fetchBeds()
+    }, [])
+
+    // Fetch doctors with search
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            setLoadingDoctors(true)
+            try {
+                const doctorsClient = createDoctorsApiClient()
+                const params: any = {
+                    page: 1,
+                    limit: 100,
+                }
+                if (doctorSearchQuery.trim()) {
+                    params.search = doctorSearchQuery.trim()
+                }
+
+                const response = await doctorsClient.getDoctors(params)
+                const doctorOptions = response.data.data.map((doctor) => ({
+                    value: String(doctor.id),
+                    label: doctor.name,
+                }))
+                setDoctors(doctorOptions)
+            } catch (error) {
+                console.error("Failed to fetch doctors:", error)
+                setDoctors([])
+            } finally {
+                setLoadingDoctors(false)
+            }
+        }
+
+        // Debounce search, but fetch immediately on mount
+        const timeoutId = setTimeout(fetchDoctors, doctorSearchQuery ? 300 : 0)
+
+        return () => clearTimeout(timeoutId)
+    }, [doctorSearchQuery])
+
+    // Fetch nurses with search
+    useEffect(() => {
+        const fetchNurses = async () => {
+            setLoadingNurses(true)
+            try {
+                const nursesClient = createNursesApiClient()
+                const params: any = {
+                    page: 1,
+                    limit: 100,
+                }
+                if (nurseSearchQuery.trim()) {
+                    params.search = nurseSearchQuery.trim()
+                }
+
+                const response = await nursesClient.getNurses(params)
+                const nurseOptions = response.data.data.map((nurse) => ({
+                    value: String(nurse.id),
+                    label: nurse.name,
+                }))
+                setNurses(nurseOptions)
+            } catch (error) {
+                console.error("Failed to fetch nurses:", error)
+                setNurses([])
+            } finally {
+                setLoadingNurses(false)
+            }
+        }
+
+        // Debounce search, but fetch immediately on mount
+        const timeoutId = setTimeout(fetchNurses, nurseSearchQuery ? 300 : 0)
+
+        return () => clearTimeout(timeoutId)
+    }, [nurseSearchQuery])
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }))
@@ -49,9 +273,62 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
 
     const isFormValid = selectedPatient && date && formData.department && formData.doctor && formData.ward && formData.bed && formData.reason
 
-    const handleSubmit = () => {
-        if (!isFormValid) return
-        onSubmit({ ...formData, admissionDate: date })
+    const handleSubmit = async () => {
+        if (!isFormValid || submitting) return
+
+        setSubmitting(true)
+        setSubmitError(null)
+
+        try {
+            // Format date to ISO string (set to start of day in local timezone, then convert to ISO)
+            let isoDate: string
+            if (date) {
+                const localDate = new Date(date)
+                localDate.setHours(0, 0, 0, 0)
+                isoDate = localDate.toISOString()
+            } else {
+                isoDate = new Date().toISOString()
+            }
+
+            // Prepare API payload
+            const apiPayload = {
+                patient_id: selectedPatient!.patientId,
+                date: isoDate,
+                casuality: formData.casualty === "yes",
+                credit_limit: formData.creditLimit ? parseFloat(formData.creditLimit) : 0,
+                tpa: formData.tpa || "",
+                admission_type: (formData.admissionType || "elective") as "emergency" | "elective" | "daycare" | "observation" | "mlc",
+                department_id: formData.department,
+                doctor_id: formData.doctor,
+                ward_id: formData.ward,
+                bed_id: formData.bed,
+                nurse_id: formData.nurse || "",
+                expected_days: formData.expectedDuration ? parseInt(formData.expectedDuration, 10) : 1,
+                admission_reason: formData.reason,
+            }
+
+            // Call create IPD API
+            const ipdClient = createIPDApiClient()
+            const response = await ipdClient.createIPD(apiPayload)
+
+            if (response.data.success) {
+                // Success - call parent onSubmit with the response data
+                onSubmit({ 
+                    ...formData, 
+                    admissionDate: date,
+                    ipdId: response.data.data.id,
+                    apiResponse: response.data
+                })
+            } else {
+                setSubmitError("Failed to create admission. Please try again.")
+            }
+        } catch (error) {
+            console.error("Error creating IPD:", error)
+            const errorMessage = error instanceof Error ? error.message : "An error occurred while creating admission"
+            setSubmitError(errorMessage)
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -119,14 +396,22 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
 
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-gray-700">TPA</Label>
-                        <Select onValueChange={(val) => handleChange("tpa", val)}>
+                        <Select 
+                            onValueChange={(val) => handleChange("tpa", val)}
+                            disabled={loadingInsurances}
+                        >
                             <SelectTrigger className="bg-white border-gray-200 h-10 w-full">
-                                <SelectValue placeholder="Select TPA" />
+                                <SelectValue placeholder={loadingInsurances ? "Loading..." : "Select TPA"} />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="nlem">NLEM</SelectItem>
-                                <SelectItem value="star">Star Health</SelectItem>
-                                <SelectItem value="icici">ICICI Lombard</SelectItem>
+                                {insurances.map((insurance) => (
+                                    <SelectItem key={insurance.value} value={insurance.value}>
+                                        {insurance.label}
+                                    </SelectItem>
+                                ))}
+                                {insurances.length === 0 && !loadingInsurances && (
+                                    <div className="p-2 text-sm text-gray-500">No insurance providers found</div>
+                                )}
                             </SelectContent>
                         </Select>
                     </div>
@@ -164,61 +449,57 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Department *</Label>
-                            <Select onValueChange={(val) => handleChange("department", val)}>
+                            <Select 
+                                onValueChange={(val) => handleChange("department", val)}
+                                disabled={loadingDepartments}
+                            >
                                 <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] w-full">
-                                    <SelectValue placeholder="Select Department" />
+                                    <SelectValue placeholder={loadingDepartments ? "Loading..." : "Select Department"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="cardiology">Cardiology</SelectItem>
-                                    <SelectItem value="orthopedics">Orthopedics</SelectItem>
-                                    <SelectItem value="ent">ENT</SelectItem>
-                                    <SelectItem value="gynecology">Gynecology</SelectItem>
-                                    <SelectItem value="neurology">Neurology</SelectItem>
+                                    {departments.map((dept) => (
+                                        <SelectItem key={dept.value} value={dept.value}>
+                                            {dept.label}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Doctor *</Label>
-                            <Select onValueChange={(val) => handleChange("doctor", val)}>
-                                <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] [&>svg]:opacity-100 w-full">
-                                    <SelectValue placeholder="Select Doctor" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="dr_kiran">Dr. Kiran Madha</SelectItem>
-                                    <SelectItem value="dr_sarah">Dr. Sarah Smith</SelectItem>
-                                    <SelectItem value="dr_rohan">Dr. Rohan Mehta</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <SearchableSelect
+                                label="Doctor *"
+                                placeholder="Select Doctor"
+                                options={doctors}
+                                value={formData.doctor}
+                                onChange={(val) => handleChange("doctor", val)}
+                                onSearch={setDoctorSearchQuery}
+                                loading={loadingDoctors}
+                                required
+                            />
                         </div>
                     </div>
 
-                    {/* Row 5: Ward & Room */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Row 5: Ward */}
+                    <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Ward</Label>
-                            <Select onValueChange={(val) => handleChange("ward", val)}>
+                            <Select 
+                                onValueChange={(val) => handleChange("ward", val)}
+                                disabled={loadingWards}
+                            >
                                 <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] [&>svg]:opacity-100 w-full">
-                                    <SelectValue placeholder="Select Ward" />
+                                    <SelectValue placeholder={loadingWards ? "Loading..." : "Select Ward"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="general">General Ward</SelectItem>
-                                    <SelectItem value="private">Private Ward</SelectItem>
-                                    <SelectItem value="icu">ICU</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Room</Label>
-                            <Select onValueChange={(val) => handleChange("room", val)}>
-                                <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] [&>svg]:opacity-100 w-full">
-                                    <SelectValue placeholder="Select Room" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="101">Room 101</SelectItem>
-                                    <SelectItem value="102">Room 102</SelectItem>
-                                    <SelectItem value="icu_1">ICU-1</SelectItem>
+                                    {wards.map((ward) => (
+                                        <SelectItem key={ward.value} value={ward.value}>
+                                            {ward.label}
+                                        </SelectItem>
+                                    ))}
+                                    {wards.length === 0 && !loadingWards && (
+                                        <div className="p-2 text-sm text-gray-500">No wards found</div>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -228,29 +509,36 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Bed</Label>
-                            <Select onValueChange={(val) => handleChange("bed", val)}>
+                            <Select 
+                                onValueChange={(val) => handleChange("bed", val)}
+                                disabled={loadingBeds}
+                            >
                                 <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] [&>svg]:opacity-100 w-full">
-                                    <SelectValue placeholder="Select Bed" />
+                                    <SelectValue placeholder={loadingBeds ? "Loading..." : "Select Bed"} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="b01">B-01 (Available)</SelectItem>
-                                    <SelectItem value="b02">B-02 (Available)</SelectItem>
-                                    <SelectItem value="b03">B-03 (Occupied)</SelectItem>
+                                    {beds.map((bed) => (
+                                        <SelectItem key={bed.value} value={bed.value}>
+                                            {bed.label}
+                                        </SelectItem>
+                                    ))}
+                                    {beds.length === 0 && !loadingBeds && (
+                                        <div className="p-2 text-sm text-gray-500">No beds found</div>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Nurse</Label>
-                            <Select onValueChange={(val) => handleChange("nurse", val)}>
-                                <SelectTrigger className="bg-white border-blue-100 h-10 [&>svg]:text-[#2CB470] [&>svg]:opacity-100 w-full">
-                                    <SelectValue placeholder="Select Nurse" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="nurse_a">Nurse A</SelectItem>
-                                    <SelectItem value="nurse_b">Nurse B</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <SearchableSelect
+                                label="Nurse"
+                                placeholder="Select Nurse"
+                                options={nurses}
+                                value={formData.nurse}
+                                onChange={(val) => handleChange("nurse", val)}
+                                onSearch={setNurseSearchQuery}
+                                loading={loadingNurses}
+                            />
                         </div>
                     </div>
 
@@ -295,17 +583,29 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3">
-                    <Button variant="outline" className="border-gray-200 text-gray-600 uppercase" onClick={onCancel}>
-                        Cancel
-                    </Button>
-                    <Button
-                        className="bg-[#2CB470] hover:bg-[#28a063] text-white uppercase font-semibold"
-                        disabled={!isFormValid}
-                        onClick={handleSubmit}
-                    >
-                        Admit Patient
-                    </Button>
+                <div className="flex flex-col gap-3">
+                    {submitError && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
+                            {submitError}
+                        </div>
+                    )}
+                    <div className="flex justify-end gap-3">
+                        <Button 
+                            variant="outline" 
+                            className="border-gray-200 text-gray-600 uppercase" 
+                            onClick={onCancel}
+                            disabled={submitting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-[#2CB470] hover:bg-[#28a063] text-white uppercase font-semibold"
+                            disabled={!isFormValid || submitting}
+                            onClick={handleSubmit}
+                        >
+                            {submitting ? "Submitting..." : "Admit Patient"}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

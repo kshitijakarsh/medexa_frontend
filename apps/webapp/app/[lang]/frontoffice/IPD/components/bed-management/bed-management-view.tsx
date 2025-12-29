@@ -1,3 +1,4 @@
+"use client";
 
 import React from "react";
 import { OverviewStats } from "./overview-stats";
