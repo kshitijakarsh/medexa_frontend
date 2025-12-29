@@ -15,6 +15,7 @@ import { IPDFilterState } from "./types";
 import { buildUrl } from "@/lib/routes";
 
 import { AdmissionView } from "./components/admission/admission-view";
+import { BedManagementView } from "./components/bed-management/bed-management-view";
 
 export default function IPDPage() {
     const searchParams = useSearchParams();
@@ -58,6 +59,10 @@ export default function IPDPage() {
 
     // Render Logic
     const renderContent = () => {
+        if (view === "bed-management") {
+            return <BedManagementView />;
+        }
+
         if (view === "admission") {
             return (
                 <AdmissionView onBack={() => router.back()} />
