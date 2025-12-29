@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { StatusToggle } from "@/app/[lang]/surgery/components/common/StatusToggle";
 import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
 // Mock Data matching the image context
 const MOCK_TEAM_DETAILS = {
@@ -28,7 +29,8 @@ const MOCK_TEAM_DETAILS = {
     ]
 };
 
-export default function TeamDetailsPage({ params }: { params: { id: string } }) {
+export default function TeamDetailsPage() {
+    const { id } = useParams<{ id: string }>();
     const router = useRouter();
     const [isActive, setIsActive] = useState(MOCK_TEAM_DETAILS.isActive);
 

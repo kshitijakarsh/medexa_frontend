@@ -1,6 +1,12 @@
 import React from "react";
 import { AlertCircle, AlertTriangle, Link as LinkIcon } from "lucide-react";
-import { ClinicalItem } from "@/types";
+
+interface ClinicalItem {
+  id: string;
+  name: string;
+  detail?: string;
+  type: "problem" | "allergy" | "medication";
+}
 
 const problems: ClinicalItem[] = [
   { id: "1", name: "Hypertension - Well controlled", type: "problem" },

@@ -6,8 +6,6 @@ export enum SurgeryStatus {
   COMPLETED = 'Completed'
 }
 
-
-
 export interface SurgeryRecord {
   otRoom: string;
   patient: Patient;
@@ -34,8 +32,6 @@ export interface CriticalAlert {
   sub: string;
 }
 
-
-// --- Types ---
 
 export interface CheckItemData {
   id?: string;

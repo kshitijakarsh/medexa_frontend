@@ -1,7 +1,14 @@
 
 import React from 'react';
 import { Info, ChevronRight } from 'lucide-react';
-import { Medication } from '@/types';
+
+interface Medication {
+  slNo: number;
+  name: string;
+  dose: string;
+  frequency: string;
+  remainingDuration: string;
+}
 
 const medications: Medication[] = [
   { slNo: 1, name: 'Metformin', dose: '500mg', frequency: 'twice daily', remainingDuration: '10 Days' },
