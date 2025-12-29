@@ -3,6 +3,7 @@ export const DOCTOR_BASE = `/doctor`
 export const FRONTOFFICE_BASE = "/frontoffice"
 export const HR = "/hr"
 export const NURSE_BASE = "/nurse"
+export const SURGERY_BASE = "/surgery"
 
 export const ROUTES = {
   ORGANIZATION: `/organization-setup`,
@@ -26,11 +27,11 @@ export const ROUTES = {
   DOCTOR_APPOINTMENT_SCREENING: `${DOCTOR_BASE}/appointment/`,
   DOCTOR_SCREENING_VISIT_PURPOSE_HISTORY_VIEW: `/visit-purpose/history/`,
   DOCTOR_SCREENING_SOAP_NOTE_HISTORY_VIEW: `/soap-note/history/`,
-  DOCTOR_SCREENING_NURSE_NOTE_HISTORY_VIEW:`/nurse-notes/history/`,
-  DOCTOR_SCREENING_VITALS_HISTORY_VIEW:`/vitals/history/`,
-  DOCTOR_SCREENING_ATTACHMENT_HISTORY_VIEW:`/attachment/history/`,
-  DOCTOR_SCREENING_CONSUMABLE_HISTORY_VIEW:`/consumable/history/`,
-  DOCTOR_SCREENING_EQUIPMENT_HISTORY_VIEW:`/equipment/history/`,
+  DOCTOR_SCREENING_NURSE_NOTE_HISTORY_VIEW: `/nurse-notes/history/`,
+  DOCTOR_SCREENING_VITALS_HISTORY_VIEW: `/vitals/history/`,
+  DOCTOR_SCREENING_ATTACHMENT_HISTORY_VIEW: `/attachment/history/`,
+  DOCTOR_SCREENING_CONSUMABLE_HISTORY_VIEW: `/consumable/history/`,
+  DOCTOR_SCREENING_EQUIPMENT_HISTORY_VIEW: `/equipment/history/`,
 
   DOCTOR_PROFILE: `${DOCTOR_BASE}/profile`,
   DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${DOCTOR_BASE}/profile/soap/create`,
@@ -43,11 +44,11 @@ export const ROUTES = {
   NURSE_APPOINTMENT_SCREENING: `${NURSE_BASE}/appointment/`,
   NURSE_SCREENING_VISIT_PURPOSE_HISTORY_VIEW: `/visit-purpose/history/`,
   NURSE_SCREENING_SOAP_NOTE_HISTORY_VIEW: `/soap-note/history/`,
-  NURSE_SCREENING_NURSE_NOTE_HISTORY_VIEW:`/nurse-notes/history/`,
-  NURSE_SCREENING_VITALS_HISTORY_VIEW:`/vitals/history/`,
-  NURSE_SCREENING_ATTACHMENT_HISTORY_VIEW:`/attachment/history/`,
-  NURSE_SCREENING_CONSUMABLE_HISTORY_VIEW:`/consumable/history/`,
-  NURSE_SCREENING_EQUIPMENT_HISTORY_VIEW:`/equipment/history/`,
+  NURSE_SCREENING_NURSE_NOTE_HISTORY_VIEW: `/nurse-notes/history/`,
+  NURSE_SCREENING_VITALS_HISTORY_VIEW: `/vitals/history/`,
+  NURSE_SCREENING_ATTACHMENT_HISTORY_VIEW: `/attachment/history/`,
+  NURSE_SCREENING_CONSUMABLE_HISTORY_VIEW: `/consumable/history/`,
+  NURSE_SCREENING_EQUIPMENT_HISTORY_VIEW: `/equipment/history/`,
   NURSE_PROFILE: `${NURSE_BASE}/profile`,
   NURSE_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${NURSE_BASE}/profile/soap/create`,
   NURSE_PROFILE_SOAP_NOTE_TEMPLATE: `${NURSE_BASE}/profile/soap/`,
@@ -58,6 +59,13 @@ export const ROUTES = {
   // HR
   HR: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
+
+  // Surgery
+  SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
+  SURGERY_OT_TEAMS: `${SURGERY_BASE}/teams`,
+  SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/teams/new`,
+  SURGERY_OT_TEMPLATES : `${SURGERY_BASE}/templates`,
+  SURGERY_OT_TEMPLATES_NEW : `${SURGERY_BASE}/templates/new`,
 }
 
 // Build URL with query parameters

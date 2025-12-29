@@ -17,7 +17,7 @@ const Button = ({
     <ButtonComponent
       className={cn(
         variant === "default" &&
-          "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md",
+        "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md",
         "rounded-xl px-6 h-11 font-semibold",
         className
       )}

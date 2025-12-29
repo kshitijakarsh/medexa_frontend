@@ -36,8 +36,10 @@ import {
   HR,
   ROUTES,
   FRONTOFFICE_BASE,
+  SURGERY_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { title } from "process"
 
 export function AppSidebar({ }) {
   const pathname = usePathname()
@@ -48,6 +50,7 @@ export function AppSidebar({ }) {
     doctor: pathname.includes(DOCTOR_BASE),
     hr: pathname.includes(HR),
     frontoffice: pathname.includes(FRONTOFFICE_BASE),
+    surgery: pathname.includes(SURGERY_BASE),
   }
 
   const items = [
@@ -95,6 +98,56 @@ export function AppSidebar({ }) {
         {
           title: "Frontoffice",
           url: [ROUTES.FRONTOFFICE_DASHBOARD],
+          icon: BriefcaseMedical,
+        },
+      ]
+      : []),
+    ...(modulesAvailable.surgery
+      ? [
+        {
+          title: "Dashboard",
+          url: [withLocale(ROUTES.SURGERY_DASHBOARD)],
+          icon: BriefcaseMedical,
+        },
+        // {
+        //   title: "Surgery",
+        //   url: [withLocale(ROUTES.SURGERY_LIST)],
+        //   icon: BriefcaseMedical,
+        // },
+        // {
+        //   title: "OT Schedule",
+        //   url: [withLocale(ROUTES.SURGERY_SCHEDULE)],
+        //   icon: BriefcaseMedical,
+        // },
+        // {
+        //   title: "Pre-Op Checklist",
+        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_PRE_OP)],
+        //   icon: BriefcaseMedical,
+        // },
+        // {
+        //   title: "Intra-Op Checklist",
+        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_INTRA_OP)],
+        //   icon: BriefcaseMedical,
+        // },
+        // {
+        //   title: "Post-Op Checklist",
+        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_POST_OP)],
+        //   icon: BriefcaseMedical,
+        // },
+        {
+          title: "OT Settings - Teams",
+          url: [
+            withLocale(ROUTES.SURGERY_OT_TEAMS),
+            
+          ],
+          icon: BriefcaseMedical,
+        },
+        {
+          title: "OT Settings - Templates",
+          url: [
+            withLocale(ROUTES.SURGERY_OT_TEMPLATES),
+            
+          ],
           icon: BriefcaseMedical,
         },
       ]
