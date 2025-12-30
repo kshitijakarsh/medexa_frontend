@@ -11,6 +11,8 @@ import Button from "@/components/ui/button"
 import { PatientHeader } from "./patient-details/patient-header"
 import { PatientTabs, type PatientTab } from "./patient-details/patient-tabs"
 import { OverviewTab } from "./patient-details/overview-tab"
+import { AllergiesTab } from "./patient-details/allergies-tab"
+import { DocumentsTab } from "./patient-details/documents-tab"
 import { QuickActionsSidebar } from "./patient-details/quick-actions-sidebar"
 import type { PatientDetails } from "./patient-details/types"
 
@@ -40,9 +42,9 @@ export function PatientDetailsModal({ open, onClose, patient }: PatientDetailsMo
             case "medications":
                 return <div className="text-center text-gray-500 py-8">Medications view coming soon</div>
             case "allergies":
-                return <div className="text-center text-gray-500 py-8">Allergies & Problems view coming soon</div>
+                return <AllergiesTab key={`allergies-${patient.id}`} patientId={patient.id} />
             case "documents":
-                return <div className="text-center text-gray-500 py-8">Documents view coming soon</div>
+                return <DocumentsTab key={`documents-${patient.id}`} patientId={patient.id} />
             default:
                 return <OverviewTab patient={patient} />
         }

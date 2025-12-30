@@ -312,9 +312,9 @@ export default function PatientDetailsPage() {
                     />
                 )
             case "allergies":
-                return <AllergiesTab allergies={patient.allergies} />
+                return <AllergiesTab patientId={patient.id} />
             case "documents":
-                return <DocumentsTab documents={patient.documents} />
+                return <DocumentsTab patientId={patient.id} />
             default:
                 return <OverviewTab patient={patient} />
         }
