@@ -113,6 +113,26 @@ class TenantApiClient {
     }
   }
 
+
+  async getTenantByModules(): Promise<AxiosResponse<TenantResponse>> {
+    try {
+      return await axios.get<TenantResponse>(
+        `${this.baseUrl}/api/v1/tenant-modules`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get tenant error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   async getTenants(
     params: { search?: string; page?: number; limit?: number } = {}
   ): Promise<
@@ -130,8 +150,7 @@ class TenantApiClient {
         success: boolean
         pagination?: any
       }>(
-        `${this.baseUrl}/api/v1/tenants${
-          queryParams.toString() ? `?${queryParams.toString()}` : ""
+        `${this.baseUrl}/api/v1/tenants${queryParams.toString() ? `?${queryParams.toString()}` : ""
         }`,
         this.getJsonRequestConfig()
       )

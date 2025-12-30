@@ -109,7 +109,7 @@ export function InsuranceForm({ mode, id, initialData }: Props) {
             const presigned = await generatePresignedUrl.mutateAsync({
                 fileName: values.employee_photo.name,
                 contentType: values.employee_photo.type,
-                path: "insurance",
+                path: "insurances",
             });
 
             await uploadToS3({

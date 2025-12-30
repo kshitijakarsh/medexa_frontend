@@ -82,10 +82,13 @@ export async function fetchAllowedModules() {
 
   const tenantClient = createTenantApiClient({ authToken: token });
 
+  // const tenantRes = await tenantClient.getTenantByModules();
   const tenantRes = await tenantClient.getTenantById(tenantId);
+
   const tenant = tenantRes.data.data;
 
   const tenantModules = tenant.tenant_modules || [];
+  // const tenantModules = tenant
 
   const toKey = (name: string) =>
     name.trim().toLowerCase().replace(/\s+/g, "_");

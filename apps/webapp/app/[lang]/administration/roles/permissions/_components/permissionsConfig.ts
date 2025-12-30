@@ -231,6 +231,8 @@ import {
   BriefcaseBusiness,
   BriefcaseMedical,
   IdCard,
+  Syringe,
+  UserRound,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -472,60 +474,232 @@ export const mainModules: MainModule[] = [
     icon: BriefcaseMedical,
     subModules: [
       {
-        key: "visit",
-        label: "Visit",
-        actions: ["view", "viewOne"]
+        key: "users",
+        label: "Users",
+        actions: ["view"],
+      },
+      {
+        key: "vitals",
+        label: "Vitals",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
         key: "visit_purpose",
         label: "Visit Purpose",
-        actions: ["view", "create", "edit", "viewOne"]
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
-        key: "reception",
-        label: "Reception",
-        actions: ["view", "create", "edit", "delete"],
+        key: "soap_templates",
+        label: "SOAP Templates",
+        actions: ["view", "viewOne", "create", "update", "delete"],
       },
       {
-        key: "appointment",
-        label: "Appointment Management",
-        actions: ["view", "create", "edit", "delete", "cancel"],
+        key: "soap_notes",
+        label: "SOAP Notes",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
-        key: "prescription",
-        label: "Prescription Management",
-        actions: ["view", "create", "edit", "delete", "approve"],
+        key: "nurseOrders",
+        label: "Nurse Orders",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
+      {
+        key: "nurse_notes",
+        label: "Nurse Notes",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "medications",
+        label: "Medications",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "medical_history",
+        label: "Medical History",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "attachments",
+        label: "Attachments",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "allergies",
+        label: "Allergies",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "additional_observations",
+        label: "Additional Observations",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+    ],
+  },
+
+  {
+    key: "nurse",
+    id: 9,
+    label: "Nurse",
+    icon: Syringe,
+    subModules: [
+      {
+        key: "users",
+        label: "Users",
+        actions: ["view"],
+      },
+      {
+        key: "vitals",
+        label: "Vitals",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "visit_purpose",
+        label: "Visit Purpose",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "soap_templates",
+        label: "SOAP Templates",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "soap_notes",
+        label: "SOAP Notes",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "nurseOrders",
+        label: "Nurse Orders",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "nurse_notes",
+        label: "Nurse Notes",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "medications",
+        label: "Medications",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "medical_history",
+        label: "Medical History",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "attachments",
+        label: "Attachments",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "allergies",
+        label: "Allergies",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "additional_observations",
+        label: "Additional Observations",
+        actions: ["view", "viewOne"],
+      },
+    ],
+  },
+
+  {
+    key: "frontoffice",
+    id: 10,
+    label: "Front Office",
+    icon: UserRound, // you can swap with Users / UserCog if preferred
+    subModules: [
       {
         key: "patient",
-        label: "Patient Records",
-        actions: ["view", "create", "edit", "delete", "export"],
+        label: "Patients",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
-        key: "lab",
-        label: "Lab Reports",
-        actions: ["view", "upload", "edit", "delete"],
+        key: "patientRelation",
+        label: "Patient Relations",
+        actions: ["view", "create", "delete"],
+      },
+      {
+        key: "slot",
+        label: "Slots",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "visit",
+        label: "Visits",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "ipds",
+        label: "IPD",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
       },
     ],
   },
   {
     key: "frontoffice",
-    id: 9,
+    id: 10,
     label: "Front Office",
-    icon: Building2,
+    icon: UserRound, // you can swap with Users / UserCog if preferred
     subModules: [
       {
-        key: "reception",
-        label: "Reception",
-        actions: ["view", "create", "edit", "delete"],
+        key: "patient",
+        label: "Patients",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
-        key: "appointment",
-        label: "Appointment Management",
-        actions: ["view", "create", "edit", "delete", "cancel"],
+        key: "patientRelation",
+        label: "Patient Relations",
+        actions: ["view", "create", "delete"],
+      },
+      {
+        key: "slot",
+        label: "Slots",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "visit",
+        label: "Visits",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "ipds",
+        label: "IPD",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
       },
     ],
-  },
+  }
+
+  // {
+  //   key: "frontoffice",
+  //   id: 10,
+  //   label: "Front Office",
+  //   icon: Building2,
+  //   subModules: [
+  //     {
+  //       key: "reception",
+  //       label: "Reception",
+  //       actions: ["view", "create", "edit", "delete"],
+  //     },
+  //     {
+  //       key: "appointment",
+  //       label: "Appointment Management",
+  //       actions: ["view", "create", "edit", "delete", "cancel"],
+  //     },
+  //   ],
+  // }
 
 
   // {
