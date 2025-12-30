@@ -1,93 +1,118 @@
-import React from "react";
-import { AlertCircle, AlertTriangle, Link as LinkIcon } from "lucide-react";
+"use client";
 
-interface ClinicalItem {
-  id: string;
-  name: string;
-  detail?: string;
-  type: "problem" | "allergy" | "medication";
+import React from "react";
+import { AlertCircle, Pill, LucideIcon } from "lucide-react";
+import { MOCK_DATA } from "@/app/[lang]/surgery/lib/constants";
+import { ClinicalItem } from "@/app/[lang]/surgery/lib/types";
+import { cn } from "@workspace/ui/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+
+type ClinicalType = "problem" | "allergy" | "medication";
+
+const TYPE_CONFIG: Record<
+  ClinicalType,
+  {
+    icon: LucideIcon;
+    cardStyle: string;
+    detailStyle: string;
+  }
+> = {
+  problem: {
+    icon: AlertCircle,
+    cardStyle: "bg-[#FEF9E7] border-yellow-200",
+    detailStyle: "opacity-80",
+  },
+  allergy: {
+    icon: AlertCircle,
+    cardStyle: "bg-[#FEF2F2] border-red-200",
+    detailStyle: "opacity-80",
+  },
+  medication: {
+    icon: Pill,
+    cardStyle: "bg-blue-50 border-blue-200",
+    detailStyle: "text-gray-500",
+  },
+};
+
+// Internal component for rendering a single clinical list section
+const ClinicalListSection = ({
+  title,
+  items,
+  type,
+}: {
+  title: string;
+  items: ClinicalItem[];
+  type: ClinicalType;
+}) => {
+  const config = TYPE_CONFIG[type];
+  const Icon = config.icon;
+
+  return (
+    <Card className="shadow-none border-0">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base font-medium">
+          <Icon className="w-4 h-4" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-3">
+          {items.map((item, index) => (
+            <div
+              key={item.id ?? index}
+              className={cn(
+                "flex gap-0.5 rounded-md border px-2 py-3 text-sm",
+                config.cardStyle
+              )}
+            >
+              <span>
+                {item.name}
+                <span className="mx-1">–</span>
+              </span>
+
+              <span className={config.detailStyle}>
+                {item.detail}
+              </span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+interface ClinicalSidebarProps {
+  problems?: ClinicalItem[];
+  allergies?: ClinicalItem[];
+  medications?: ClinicalItem[];
 }
 
-const problems: ClinicalItem[] = [
-  { id: "1", name: "Hypertension - Well controlled", type: "problem" },
-  { id: "2", name: "Dyslipidemia - On treatment", type: "problem" },
-  { id: "3", name: "Allergic Rhinitis - Seasonal", type: "problem" },
-];
-
-const allergies: ClinicalItem[] = [
-  { id: "1", name: "Penicillin - Rash", type: "allergy" },
-  { id: "2", name: "Sulfa Drugs - Stevens-Johnson", type: "allergy" },
-  { id: "3", name: "Latex - Contact dermatitis", type: "allergy" },
-];
-
-const medications: ClinicalItem[] = [
-  { id: "1", name: "Amlodipine", detail: "5mg once daily", type: "medication" },
-  {
-    id: "2",
-    name: "Atorvastatin",
-    detail: "20mg at bedtime",
-    type: "medication",
-  },
-  { id: "3", name: "Aspirin", detail: "75mg once daily", type: "medication" },
-];
-
-const ClinicalSidebar: React.FC = () => {
+const ClinicalSidebar: React.FC<ClinicalSidebarProps> = ({
+  problems = MOCK_DATA.activeProblems,
+  allergies = MOCK_DATA.allergies,
+  medications = MOCK_DATA.medications.map((m) => ({
+    id: String(m.slNo),
+    name: m.name,
+    detail: `${m.dose} - ${m.frequency}`,
+  })),
+}) => {
   return (
-    <div className="space-y-6">
-      {/* Active Problems */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
-        <div className="flex items-center gap-2 mb-4 text-slate-700">
-          <AlertCircle size={18} />
-          <h3 className="font-medium">Active Problems</h3>
-        </div>
-        <div className="space-y-2">
-          {problems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-yellow-50 border border-yellow-100 text-slate-700 text-sm px-4 py-2.5 rounded-md"
-            >
-              {item.name}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Allergies */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
-        <div className="flex items-center gap-2 mb-4 text-slate-700">
-          <AlertTriangle size={18} />
-          <h3 className="font-medium">Allergies</h3>
-        </div>
-        <div className="space-y-2">
-          {allergies.map((item) => (
-            <div
-              key={item.id}
-              className="bg-red-50 border border-red-100 text-slate-700 text-sm px-4 py-2.5 rounded-md"
-            >
-              {item.name}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Ongoing Medications */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
-        <div className="flex items-center gap-2 mb-4 text-slate-700">
-          <LinkIcon size={18} />
-          <h3 className="font-medium">Ongoing Medications</h3>
-        </div>
-        <div className="space-y-2">
-          {medications.map((item) => (
-            <div
-              key={item.id}
-              className="bg-blue-50 border border-blue-100 text-slate-700 text-sm px-4 py-2.5 rounded-md hover:bg-blue-50 transition-colors"
-            >
-              <div className="font-medium">{item.name}</div>
-              <div className="text-xs text-slate-500">{item.detail}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <div className="space-y-4">
+      <ClinicalListSection
+        title="Active Problems"
+        items={problems}
+        type="problem"
+      />
+      <ClinicalListSection
+        title="Allergies"
+        items={allergies}
+        type="allergy"
+      />
+      <ClinicalListSection
+        title="Ongoing Medications"
+        items={medications}
+        type="medication"
+      />
     </div>
   );
 };

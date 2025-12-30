@@ -1,15 +1,23 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
 import { NoteField } from "@/app/[lang]/surgery/components/common/NoteField";
+import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+
+const ASA_OPTIONS = [
+  { value: "asa_1", label: "ASA I - Normal healthy patient" },
+  { value: "asa_2", label: "ASA II - Mild systemic disease" },
+  { value: "asa_3", label: "ASA III - Severe systemic disease" },
+  { value: "asa_4", label: "ASA IV - Life-threatening disease" },
+  { value: "asa_5", label: "ASA V - Moribund patient" },
+];
+
+const RISK_LEVEL_OPTIONS = [
+  { value: "low", label: "Low Risk" },
+  { value: "moderate", label: "Moderate Risk" },
+  { value: "high", label: "High Risk" },
+];
 
 const RISK_CONFIG = [
   {
@@ -17,14 +25,7 @@ const RISK_CONFIG = [
     label: "ASA Physical Status Classification",
     placeholder: "Select ASA Physical Status Classification",
     value: "ASA I - Normal healthy patient",
-    options: [
-      "ASA I - Normal healthy patient",
-      "ASA II - Mild systemic disease",
-      "ASA III - Severe systemic disease",
-      "ASA IV - Severe systemic disease that is a constant threat to life",
-      "ASA V - Moribund patient",
-      "ASA VI - Brain-dead organ donor",
-    ],
+    options: ASA_OPTIONS,
   },
   {
     key: "risk",
@@ -32,37 +33,9 @@ const RISK_CONFIG = [
     placeholder: "Select Surgery Risk Level",
     value: "High Risk",
     isHighRisk: true,
-    options: ["Low Risk", "Moderate Risk", "High Risk", "Critical Risk"],
+    options: RISK_LEVEL_OPTIONS,
   },
 ];
-
-
-
-const SelectField = ({
-  label,
-  placeholder,
-  options,
-}: {
-  label: string;
-  placeholder: string;
-  options: string[];
-}) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-slate-800">{label}</label>
-    <Select>
-      <SelectTrigger className="w-full bg-white border-slate-200 text-slate-500 text-sm h-10 rounded-lg">
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option} value={option.toLowerCase().replace(/\s+/g, "-")}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
 
 interface ASARiskProps {
   isEditing?: boolean;

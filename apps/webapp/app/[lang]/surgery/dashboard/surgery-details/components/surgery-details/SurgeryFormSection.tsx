@@ -1,98 +1,102 @@
-import React from 'react';
-import { Calendar as CalendarIcon, Clock } from 'lucide-react';
+"use client";
+
+import React from "react";
+import { Calendar as CalendarIcon, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+
+const PROCEDURE_OPTIONS = [
+  { value: "appendectomy", label: "Appendectomy" },
+  { value: "cataract_surgery", label: "Cataract Surgery" },
+  { value: "knee_replacement", label: "Knee Replacement" },
+];
+
+const DEPARTMENT_OPTIONS = [
+  { value: "general_surgery", label: "General Surgery" },
+  { value: "ophthalmology", label: "Ophthalmology" },
+  { value: "orthopedics", label: "Orthopedics" },
+];
+
+const OT_ROOM_OPTIONS = [
+  { value: "ot_1", label: "OT Room 1" },
+  { value: "ot_2", label: "OT Room 2" },
+  { value: "ot_3", label: "OT Room 3" },
+];
 
 const SurgeryFormSection: React.FC = () => {
   return (
-    <div className="bg-white rounded-xl shadow-soft p-6">
-      <h3 className="text-base font-bold text-slate-800 mb-5">Schedule Surgery</h3>
+    <Card className="shadow-none border-0">
+      <CardHeader>
+        <CardTitle className="text-base font-bold text-slate-800">Schedule Surgery</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <SelectField
+          label="Procedure"
+          placeholder="Select Procedure Name"
+          options={PROCEDURE_OPTIONS}
+        />
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-1">
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Procedure</label>
-          <div className="relative">
-            <select className="w-full appearance-none bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>Select Procedure Name</option>
-              <option>Appendectomy</option>
-              <option>Cataract Surgery</option>
-              <option>Knee Replacement</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-            </div>
-          </div>
-        </div>
+        {/* Department */}
+        <SelectField
+          label="Department"
+          placeholder="Select Procedure Category"
+          options={DEPARTMENT_OPTIONS}
+        />
 
-        {/* Row 2 */}
-        <div className="grid grid-cols-1">
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Department</label>
-          <div className="relative">
-            <select className="w-full appearance-none bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>Select Procedure Category</option>
-              <option>General Surgery</option>
-              <option>Ophthalmology</option>
-              <option>Orthopedics</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 3 */}
+        {/* Urgency & Duration */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Urgency</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-slate-800">Urgency</Label>
+            <Input
               type="text"
               placeholder="Enter Urgency"
-              className="w-full bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+              className="h-10"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Estimated Duration (hours)</label>
-            <input
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-slate-800">Estimated Duration (hours)</Label>
+            <Input
               type="text"
               placeholder="Select Estimated Duration"
-              className="w-full bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+              className="h-10"
             />
           </div>
         </div>
 
-        {/* Row 4 */}
+        {/* Date, Time, OT Room */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Surgery Date</label>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-slate-800">Surgery Date</Label>
             <div className="relative">
-              <input
+              <Input
                 type="text"
                 placeholder="Select Date"
-                className="w-full bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                className="h-10 pr-10"
               />
               <CalendarIcon size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">Surgery Time</label>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-medium text-slate-800">Surgery Time</Label>
             <div className="relative">
-              <input
+              <Input
                 type="text"
                 placeholder="Select Time"
-                className="w-full bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
+                className="h-10 pr-10"
               />
               <Clock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">OT Room</label>
-            <input
-              type="text"
-              placeholder="Select OT Room"
-              className="w-full bg-white border border-slate-200 text-slate-700 rounded-md py-2.5 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-slate-400"
-            />
-          </div>
+          <SelectField
+            label="OT Room"
+            placeholder="Select OT Room"
+            options={OT_ROOM_OPTIONS}
+          />
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

@@ -3,11 +3,29 @@ import { InfoField } from "../../../../components/common/InfoField";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/app/[lang]/surgery/components/common/forms/form-textarea";
 
-const GRADE_OPTIONS = [
-  { value: "grade1", label: "Grade 1" },
-  { value: "grade2", label: "Grade 2" },
-  { value: "grade3", label: "Grade 3" },
-  { value: "grade4", label: "Grade 4" },
+const MALLAMPATI_GRADE_OPTIONS = [
+  { value: "grade1", label: "Grade I – Full visibility of soft palate, uvula, tonsillar pillars" },
+  { value: "grade2", label: "Grade II – Soft palate & uvula visible" },
+  { value: "grade3", label: "Grade III – Only soft palate visible" },
+  { value: "grade4", label: "Grade IV – Only hard palate visible" },
+];
+
+const MOUTH_OPENING_OPTIONS = [
+  { value: "normal", label: "> 3cm (Normal)" },
+  { value: "adequate", label: "2-3cm (Adequate)" },
+  { value: "restricted", label: "< 2cm (Restricted)" },
+];
+
+const NECK_MOBILITY_OPTIONS = [
+  { value: "normal", label: "Normal" },
+  { value: "mildly_restricted", label: "Mildly Restricted" },
+  { value: "severely_restricted", label: "Severely Restricted" },
+];
+
+const DIFFICULT_AIRWAY_RISK_OPTIONS = [
+  { value: "low", label: "Low Risk" },
+  { value: "moderate", label: "Moderate Risk" },
+  { value: "high", label: "High Risk" },
 ];
 
 interface AirwayAssessmentProps {
@@ -29,16 +47,16 @@ export const AirwayAssessment = ({ isEditing = false }: AirwayAssessmentProps) =
         <>
           {/* Form Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <FormSelect label="Mallampati Grade" placeholder="Select Mallampati Grade" options={GRADE_OPTIONS} />
-            <FormSelect label="Mouth Opening" placeholder="Select Mouth Opening" options={GRADE_OPTIONS} />
-            <FormSelect label="Neck Mobility" placeholder="Select Neck Mobility" options={GRADE_OPTIONS} />
-            <FormSelect label="Difficult Airway Risk" placeholder="Select Risk" options={GRADE_OPTIONS} />
+            <FormSelect label="Mallampati Grade" placeholder="Select Mallampati Grade" options={MALLAMPATI_GRADE_OPTIONS} />
+            <FormSelect label="Mouth Opening" placeholder="Select Mouth Opening" options={MOUTH_OPENING_OPTIONS} />
+            <FormSelect label="Neck Mobility" placeholder="Select Neck Mobility" options={NECK_MOBILITY_OPTIONS} />
+            <FormSelect label="Difficult Airway Risk" placeholder="Select Risk" options={DIFFICULT_AIRWAY_RISK_OPTIONS} />
           </div>
 
           {/* Additional Notes */}
           <FormTextarea
             label="Additional Notes"
-            placeholder="Enter Additional Note"
+            placeholder="Patient has adequate mouth opening with normal neck mobility. No history of difficult intubation. Airway assessment suggests low risk for intubation."
             className="min-h-[120px]"
           />
         </>

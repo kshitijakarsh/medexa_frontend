@@ -551,7 +551,7 @@ export const PREOP_STATS: PreOpStat[] = [
     total: 4,
   },
   {
-    label: "Medical / Legal Clearance",
+    label: "Medical & Legal Clearance",
     completed: 6,
     total: 7,
   },

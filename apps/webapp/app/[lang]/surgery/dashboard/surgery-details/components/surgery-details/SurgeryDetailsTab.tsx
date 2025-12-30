@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Send } from "lucide-react";
 import { MOCK_DATA } from "@/app/[lang]/surgery/lib/constants";
-import NewButton from "@/components/common/new-button";
 import SurgeryFormSection from "./SurgeryFormSection";
 import SurgicalTeamSection from "./SurgicalTeamSection";
 import ClinicalSidebar from "./ClinicalSidebar";
 import { DetailSection } from "./DetailsSection";
 import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
-import { ClinicalList } from "./ClinicalList";
 
 interface SurgeryDetailsTabProps {
   isEditing: boolean;
@@ -17,6 +15,16 @@ interface SurgeryDetailsTabProps {
 }
 
 export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTabProps) => {
+  // Prepare clinical data from MOCK_DATA
+  const clinicalData = {
+    problems: MOCK_DATA.activeProblems,
+    allergies: MOCK_DATA.allergies,
+    medications: MOCK_DATA.medications.map((m) => ({
+      id: String(m.slNo),
+      name: m.name,
+      detail: `${m.dose} - ${m.frequency}`,
+    })),
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -43,7 +51,11 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
           </div>
 
           <div className="w-90 shrink-0">
-            <ClinicalSidebar />
+            <ClinicalSidebar
+              problems={clinicalData.problems}
+              allergies={clinicalData.allergies}
+              medications={clinicalData.medications}
+            />
           </div>
         </div>
       ) : (
@@ -114,25 +126,10 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
           </div>
 
           <div className="col-span-12 lg:col-span-4">
-            <ClinicalList
-              title="Active Problems"
-              items={MOCK_DATA.activeProblems}
-              type="problem"
-            />
-            <ClinicalList
-              title="Allergies"
-              items={MOCK_DATA.allergies}
-              type="allergy"
-            />
-            <ClinicalList
-              title="Ongoing Medications"
-              items={MOCK_DATA.medications.map((m) => ({
-                id: String(m.slNo),
-                name: m.name,
-                detail: `${m.dose} - ${m.frequency}`,
-                type: "medication",
-              }))}
-              type="medication"
+            <ClinicalSidebar
+              problems={clinicalData.problems}
+              allergies={clinicalData.allergies}
+              medications={clinicalData.medications}
             />
           </div>
         </div>

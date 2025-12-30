@@ -45,10 +45,10 @@ const StandardizedButton = ({
 }) => {
   const isPrimary = action.variant === "primary";
   const baseClass =
-    "flex items-center gap-1 text-sm py-1 pr-4 pl-2 rounded-lg transition-colors w-full justify-start";
+    "flex items-center gap-1 text-sm py-1.5 pr-4 pl-2 rounded-md transition-colors w-full justify-start";
   const primaryClass = "bg-blue-500 py-1 border-blue-200 text-white justify-center";
   const outlineClass =
-    "text-blue-500 border border-blue-200 hover:bg-blue-50";
+    "text-blue-500 border border-blue-200";
 
   return (
     <button
@@ -57,7 +57,7 @@ const StandardizedButton = ({
         }`}
     >
       {action.icon && !isPrimary && (
-        <div className="bg-blue-100 p-1 rounded text-blue-500 shrink-0">
+        <div className="bg-blue-100 p-2 rounded-sm text-blue-500 shrink-0">
           {action.icon}
         </div>
       )}
@@ -141,56 +141,60 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
       </div>
 
       {/* Right Column - All Buttons */}
-      <div className="flex flex-col gap-2 min-w-[200px]">
-        {topRightActions.map((action, idx) => (
-          <StandardizedButton key={idx} action={action} />
-        ))}
+      <div className="flex flex-col justify-between min-w-[200px] py-1">
+        <div className="flex flex-col gap-2">
+          {topRightActions.map((action, idx) => (
+            <StandardizedButton key={idx} action={action} />
+          ))}
 
-        {/* Render legacy actions if provided */}
-        {actions && <div className="flex flex-col gap-2">{actions}</div>}
+          {/* Render legacy actions if provided */}
+          {actions && <div className="flex flex-col gap-2">{actions}</div>}
 
-        {/* Fallback for legacy prop usage or internal actions if not replaced yet */}
-        {isEditing && !actions && topRightActions.length === 0 && (
-          <>
-            <StandardizedButton
-              action={{
-                label: "Print Document",
-                icon: <Printer size={12} />,
-                position: "top-right",
-                variant: "outline",
-              }}
-            />
-            <StandardizedButton
-              action={{
-                label: "Download Document",
-                icon: <Download size={12} />,
-                position: "top-right",
-                variant: "outline",
-              }}
-            />
-          </>
-        )}
+          {/* Fallback for legacy prop usage or internal actions if not replaced yet */}
+          {isEditing && !actions && topRightActions.length === 0 && (
+            <>
+              <StandardizedButton
+                action={{
+                  label: "Print Document",
+                  icon: <Printer size={12} />,
+                  position: "top-right",
+                  variant: "outline",
+                }}
+              />
+              <StandardizedButton
+                action={{
+                  label: "Download Document",
+                  icon: <Download size={12} />,
+                  position: "top-right",
+                  variant: "outline",
+                }}
+              />
+            </>
+          )}
 
-        {onViewDetails && !isEditing && (
-          <div className="mb-1">
-            <StandardizedButton
-              action={{
-                label: "View Details",
-                icon: <List size={12} />,
-                position: "bottom-right",
-                onClick: onViewDetails,
-                variant: "outline"
-              }}
-              className="pr-10"
-            />
-          </div>
-        )}
-        {bottomRightActions.map((action, idx) => (
-          <div key={idx} className="mb-1">
-            <StandardizedButton action={action} />
-          </div>
-        ))}
-        {customAction && <div className="mb-1">{customAction}</div>}
+        </div>
+
+        <div className="flex flex-col gap-2 mt-auto">
+          {onViewDetails && !isEditing && (
+            <div className="">
+              <StandardizedButton
+                action={{
+                  label: "View Details",
+                  icon: <List size={12} />,
+                  position: "bottom-right",
+                  onClick: onViewDetails,
+                  variant: "outline"
+                }}
+              />
+            </div>
+          )}
+          {bottomRightActions.map((action, idx) => (
+            <div key={idx} className="">
+              <StandardizedButton action={action} />
+            </div>
+          ))}
+          {customAction && <div className="">{customAction}</div>}
+        </div>
       </div>
     </div>
   );

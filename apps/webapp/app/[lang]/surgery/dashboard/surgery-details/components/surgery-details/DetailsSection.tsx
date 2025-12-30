@@ -1,4 +1,6 @@
 import React from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { Separator } from "@workspace/ui/components/separator";
 
 interface DetailSectionProps {
   title: string;
@@ -10,18 +12,14 @@ export const DetailSection: React.FC<DetailSectionProps> = ({
   children,
 }) => {
   return (
-    <div className="bg-white rounded-xl shadow-soft mb-3">
-      <h3 className="px-6 pt-6 mb-2 text-base font-medium">
-        {title}
-      </h3>
-
-      <div className="h-px w-full bg-blue-50 mb-6" />
-
-      <div className="px-6 pb-6">
+    <Card className="shadow-none border-0 mb-3">
+      <CardHeader>
+        <CardTitle className="text-base font-medium">{title}</CardTitle>
+      </CardHeader>
+      <Separator className="bg-blue-50" />
+      <CardContent>
         {children}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
-
-

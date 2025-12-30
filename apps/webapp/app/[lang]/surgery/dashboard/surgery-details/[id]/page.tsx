@@ -108,11 +108,11 @@ export default function SurgeryDetailsPage() {
       </div>
 
       {activeTab === "Post-Op Care" ? (
-        <PostOpCare isEditing={isEditing} />
+        <PostOpCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
       ) : activeTab === "Nurse" ? (
-        <NurseCare isEditing={isEditing} />
+        <NurseCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
       ) : activeTab === "Intra-Op Notes" ? (
-        <IntraOpNotes isEditing={isEditing} />
+        <IntraOpNotes isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
       ) : activeTab === "Anesthesia Plan" ? (
         <AnesthesiaPlan
           activeTab={anesthesiaActiveTab}
@@ -121,7 +121,7 @@ export default function SurgeryDetailsPage() {
           setIsEditing={setIsEditing}
         />
       ) : activeTab === "Pre-Op Checklist" ? (
-        <PreOpChecklist isEditing={isEditing} />
+        <PreOpChecklist isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} onEdit={() => setIsEditing(true)} />
       ) : (
         <SurgeryDetailsTab isEditing={isEditing} setIsEditing={setIsEditing} />
       )}
