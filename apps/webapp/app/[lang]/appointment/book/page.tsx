@@ -64,6 +64,8 @@ export default function BookAppointmentPage() {
         return "walk_in"
       case "appointment":
         return "appointment"
+      case "multi-doctor":
+        return "appointment"
       default:
         return "appointment"
     }
@@ -81,7 +83,7 @@ export default function BookAppointmentPage() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [bookingData, setBookingData] = useState<any>(null)
 
-  const isMultiDoctor = formData?.visitPurpose === "multi_doctor_appointment"
+  const isMultiDoctor = formData?.visitPurpose === "multi_doctor_appointment" || visitTypeParam === "multi-doctor"
 
   // Update patient visit type if query param changes
   useEffect(() => {
@@ -295,6 +297,7 @@ export default function BookAppointmentPage() {
         return (
           <StandardAppointmentForm
             initialPatientVisitType={patientVisitType}
+            initialVisitPurpose={visitTypeParam === "multi-doctor" ? "multi_doctor_appointment" : "doctor_consultation"}
             onPatientVisitTypeChange={setPatientVisitType}
             selectedSlot={selectedSlot}
             onSlotSelect={setSelectedSlot}

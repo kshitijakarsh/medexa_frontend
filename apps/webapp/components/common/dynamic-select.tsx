@@ -206,10 +206,14 @@ export const DynamicSelect: React.FC<DynamicSelectProps> = ({
   };
 
   const selectedLabels = multi
-    ? options
-      .filter((o) => (value as string[])?.includes(o.value))
-      .map((o) => o.label)
-      .join(", ")
+    ? (() => {
+      const selected = (value as string[]) || [];
+      if (selected.length === 0) return null;
+      if (selected.length === 1) {
+        return options.find((o) => o.value === selected[0])?.label;
+      }
+      return `${selected.length} selected`;
+    })()
     : options.find((o) => o.value === value)?.label;
 
   return (

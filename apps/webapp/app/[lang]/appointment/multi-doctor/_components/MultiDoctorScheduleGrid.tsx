@@ -35,6 +35,8 @@ interface MultiDoctorScheduleGridProps {
   onCancelAppointment?: (appointmentId: string) => void
   onViewAppointment?: (appointmentId: string) => void
   onConfirmAppointment?: (appointmentId: string) => void
+  onRescheduleAppointment?: (appointmentId: string, doctorId: string, time: string) => void
+  selectedSlot?: string | null
 }
 
 // Generate time slots for display
@@ -68,9 +70,11 @@ export function MultiDoctorScheduleGrid({
   onCancelAppointment,
   onViewAppointment,
   onConfirmAppointment,
+  onRescheduleAppointment,
+  selectedSlot,
 }: MultiDoctorScheduleGridProps) {
   const [scrollPosition, setScrollPosition] = useState(0)
-  const scrollStep = 300
+  const scrollStep = 250
 
   const handleScrollLeft = () => {
     setScrollPosition((prev) => Math.max(0, prev - scrollStep))
@@ -112,118 +116,134 @@ export function MultiDoctorScheduleGrid({
     })
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Loading schedules...</div>
-      </div>
-    )
-  }
-
-  if (doctors.length === 0) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-gray-500">Please select at least one doctor</div>
-      </div>
-    )
-  }
-
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div className="w-full max-w-full overflow-hidden">
       {/* Header with Doctor Names and Navigation */}
-      <div className="bg-[#0B84FF] text-white relative">
-        <div className="flex items-center">
+      <div className="bg-[#001A4D] text-white relative rounded-t-lg">
+        <div className="grid grid-cols-[40px_1fr_40px] items-center py-2">
           {/* Left Arrow */}
-          {scrollPosition > 0 && (
+          <div className="flex justify-center">
             <button
               onClick={handleScrollLeft}
-              className="absolute left-0 top-0 bottom-0 px-2 bg-blue-700 hover:bg-blue-800 z-10 flex items-center"
+              className={`z-10 flex items-center justify-center text-green-500 hover:text-green-400 ${scrollPosition <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={scrollPosition <= 0}
             >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-          )}
-
-          {/* Doctor Headers */}
-          <div
-            className="flex overflow-x-auto scrollbar-hide"
-            style={{
-              transform: `translateX(-${scrollPosition}px)`,
-              transition: "transform 0.3s ease",
-            }}
-          >
-            {doctors.map((doctor) => (
-              <div
-                key={doctor.id}
-                className="min-w-[250px] px-4 py-3 font-semibold text-sm border-r border-blue-600"
-              >
-                {doctor.name}
+              <div className="rounded-full border border-green-500 p-1">
+                <ChevronLeft className="h-4 w-4" />
               </div>
-            ))}
+            </button>
+          </div>
+
+          {/* Doctor Headers Mask */}
+          <div className="overflow-hidden min-w-0">
+            <div
+              className="flex transition-transform duration-300 ease-in-out"
+              style={{
+                transform: `translateX(-${scrollPosition}px)`,
+              }}
+            >
+              {doctors.map((doctor, index) => (
+                <div
+                  key={doctor.id}
+                  className="flex items-center min-w-[400px] w-[400px] justify-center relative flex-shrink-0"
+                >
+                  <div className="w-full px-4 py-2 font-semibold text-sm text-center truncate">
+                    {doctor.name}
+                  </div>
+                  {/* Divider Line */}
+                  {index < doctors.length - 1 && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 h-4 w-[1px] bg-white/30" />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Right Arrow */}
-          <button
-            onClick={handleScrollRight}
-            className="absolute right-0 top-0 bottom-0 px-2 bg-blue-700 hover:bg-blue-800 z-10 flex items-center"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+          <div className="flex justify-center">
+            <button
+              onClick={handleScrollRight}
+              className="z-10 flex items-center justify-center text-green-500 hover:text-green-400"
+            >
+              <div className="rounded-full border border-green-500 p-1">
+                <ChevronRight className="h-4 w-4" />
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Schedule Grid */}
-      <div className="overflow-x-auto">
-        <div
-          className="flex gap-4 p-4"
-          style={{
-            transform: `translateX(-${scrollPosition}px)`,
-            transition: "transform 0.3s ease",
-          }}
-        >
-          {doctors.map((doctor) => (
-            <div key={doctor.id} className="min-w-[250px] space-y-2">
-              {timeSlots.map((timeSlot, idx) => {
-                const appointment = getAppointmentForSlot(doctor.id, timeSlot)
-                const isAvailable = isSlotAvailable(doctor.id, timeSlot)
+      <div className="grid grid-cols-[40px_1fr_40px] bg-transparent">
+        {/* Left Spacer to match header arrow width */}
+        <div />
 
-                if (appointment) {
-                  // Booked slot
-                  return (
-                    <AppointmentSlotCard
-                      key={`${doctor.id}-${timeSlot}-${idx}`}
-                      slotNumber={2}
-                      time={timeSlot}
-                      isBooked={true}
-                      patientData={appointment.patient}
-                      status={appointment.status}
-                      onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
-                      onCancel={() => onCancelAppointment?.(appointment.id)}
-                      onView={() => onViewAppointment?.(appointment.id)}
-                      onConfirm={() => onConfirmAppointment?.(appointment.id)}
-                    />
-                  )
-                }
+        {/* Scrollable Content */}
+        <div className="overflow-hidden min-w-0">
+          <div
+            className="flex transition-transform duration-300 ease-in-out"
+            style={{
+              transform: `translateX(-${scrollPosition}px)`,
+            }}
+          >
+            {doctors.map((doctor) => (
+              <div key={doctor.id} className="min-w-[400px] w-[400px] space-y-2 p-2 flex-shrink-0 border-r border-transparent">
+                {timeSlots.map((timeSlot, idx) => {
+                  const appointment = getAppointmentForSlot(doctor.id, timeSlot)
+                  const isAvailable = isSlotAvailable(doctor.id, timeSlot)
 
-                if (isAvailable) {
-                  // Available slot
-                  return (
-                    <AppointmentSlotCard
-                      key={`${doctor.id}-${timeSlot}-${idx}`}
-                      slotNumber={1}
-                      time={timeSlot}
-                      isBooked={false}
-                      onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
-                      onCancel={() => { }}
-                    />
-                  )
-                }
+                  if (appointment) {
+                    return (
+                      <AppointmentSlotCard
+                        key={`${doctor.id}-${timeSlot}-${idx}`}
+                        slotNumber={2}
+                        time={timeSlot}
+                        isBooked={true}
+                        patientData={appointment.patient}
+                        status={appointment.status}
+                        onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
+                        onCancel={() => onCancelAppointment?.(appointment.id)}
+                        onView={() => onViewAppointment?.(appointment.id)}
+                        onConfirm={() => onConfirmAppointment?.(appointment.id)}
+                        onReschedule={() => onRescheduleAppointment?.(appointment.id, doctor.id, timeSlot)}
+                      />
+                    )
+                  }
 
-                // Empty/unavailable slot
-                return null
-              })}
-            </div>
-          ))}
+                  if (isAvailable) {
+                    let isSelected = false
+                    if (selectedSlot) {
+                      const [selStart] = selectedSlot.split("-")
+                      const [h = "0", m = "00", p = "AM"] = timeSlot.split(/[: ]/)
+                      let hNum = parseInt(h)
+                      if (p === "PM" && hNum !== 12) hNum += 12
+                      else if (p === "AM" && hNum === 12) hNum = 0
+                      const timeSlot24 = `${hNum.toString().padStart(2, '0')}:${m}`
+                      isSelected = selStart === timeSlot24
+                    }
+
+                    return (
+                      <AppointmentSlotCard
+                        key={`${doctor.id}-${timeSlot}-${idx}`}
+                        slotNumber={1}
+                        time={timeSlot}
+                        isBooked={false}
+                        isSelected={isSelected}
+                        onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
+                        onCancel={() => { }}
+                      />
+                    )
+                  }
+
+                  return null
+                })}
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Right Spacer */}
+        <div />
       </div>
     </div>
   )

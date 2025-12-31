@@ -14,6 +14,7 @@ import { MultiDoctorAppointmentView } from "./MultiDoctorAppointmentView"
 
 interface StandardAppointmentFormProps {
   initialPatientVisitType?: "appointment" | "walk_in"
+  initialVisitPurpose?: string
   onPatientVisitTypeChange?: (type: "appointment" | "walk_in") => void
   selectedSlot: string | null
   onSlotSelect: (slot: string) => void
@@ -22,6 +23,7 @@ interface StandardAppointmentFormProps {
 
 export function StandardAppointmentForm({
   initialPatientVisitType = "appointment",
+  initialVisitPurpose = "doctor_consultation",
   onPatientVisitTypeChange,
   selectedSlot,
   onSlotSelect,
@@ -48,7 +50,7 @@ export function StandardAppointmentForm({
 
   const [formData, setFormData] = useState<AppointmentFormData>({
     patientVisitType: initialPatientVisitType,
-    visitPurpose: "doctor_consultation",
+    visitPurpose: initialVisitPurpose,
     department: "",
     doctor: "",
     nurse: "",
@@ -80,8 +82,9 @@ export function StandardAppointmentForm({
     setFormData((prev) => ({
       ...prev,
       patientVisitType: initialPatientVisitType,
+      visitPurpose: initialVisitPurpose
     }))
-  }, [initialPatientVisitType])
+  }, [initialPatientVisitType, initialVisitPurpose])
 
   // Notify parent of form data changes
   useEffect(() => {
@@ -329,15 +332,35 @@ export function StandardAppointmentForm({
     { value: "20", label: "20 mins" },
     { value: "30", label: "30 mins" },
     { value: "45", label: "45 mins" },
-    { value: "60", label: "1 hour" },
   ]
+
+  // Check for Multi Doctor redirection
+  const isMultiDoctor = formData.visitPurpose === "multi_doctor_appointment"
+
+  useEffect(() => {
+    if (isMultiDoctor) {
+      // Redirect to the dedicated multi-doctor page
+      // Assuming existing route structure based on file path: /appointment/multi-doctor
+      // We might need to handle language parameter [lang]
+      const currentPath = window.location.pathname
+      // quick hack to preserve lang if present at start
+      const langMatch = currentPath.match(/^\/([a-z]{2})\//)
+      const langPrefix = langMatch ? `/${langMatch[1]}` : ''
+      window.location.href = `${langPrefix}/appointment/multi-doctor`
+    }
+  }, [isMultiDoctor])
+
+  /*
+  // Old Multi Doctor View Logic - REMOVED/COMMENTED OUT to enforce separate route
+  const isMultiDoctorView = false // formData.visitPurpose === "multi_doctor_appointment"
+  */
 
   const isProcedure =
     formData.visitPurpose === "procedure_appointment" ||
     formData.visitPurpose === "multi_procedure"
 
   const isTeleconsultation = formData.visitPurpose === "teleconsultation"
-  const isMultiDoctor = formData.visitPurpose === "multi_doctor_appointment"
+  // The original `isMultiDoctor` definition is now replaced by the one above the useEffect.
 
   const communicationModes = [
     { value: "video", label: "Video Call" },
@@ -390,13 +413,7 @@ export function StandardAppointmentForm({
         />
       </div>
 
-      {isMultiDoctor ? (
-        <MultiDoctorAppointmentView
-          formData={formData}
-          onFormDataChange={(newData) => setFormData((prev) => ({ ...prev, ...newData }))}
-          onSlotSelect={onSlotSelect}
-        />
-      ) : isProcedure ? (
+      {isProcedure ? (
         // Procedure Form Layout
         <>
           {/* Row 2: Category & Type */}

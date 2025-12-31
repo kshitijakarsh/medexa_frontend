@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { DoctorMultiSelect } from "../../../multi-doctor/_components/DoctorMultiSelect"
 import { MultiDoctorScheduleGrid } from "../../../multi-doctor/_components/MultiDoctorScheduleGrid"
 import { AppDatePicker } from "@/components/common/app-date-picker"
+import { MultiDoctorBookingModal } from "../../../multi-doctor/_components/MultiDoctorBookingModal"
 import { createSlotsApiClient } from "@/lib/api/slots"
 import { getAuthToken } from "@/app/utils/onboarding"
 import type { Slot } from "@/lib/api/slots"
@@ -13,6 +14,7 @@ interface MultiDoctorAppointmentViewProps {
     formData: any
     onFormDataChange: (data: any) => void
     onSlotSelect: (slot: string) => void
+    selectedSlot?: string | null
 }
 
 interface DoctorOption {
@@ -24,6 +26,7 @@ export function MultiDoctorAppointmentView({
     formData,
     onFormDataChange,
     onSlotSelect,
+    selectedSlot,
 }: MultiDoctorAppointmentViewProps) {
     const [selectedDoctors, setSelectedDoctors] = useState<string[]>(
         Array.isArray(formData.doctors) ? formData.doctors : formData.doctor ? [formData.doctor] : []
@@ -35,10 +38,14 @@ export function MultiDoctorAppointmentView({
     const [isLoading, setIsLoading] = useState(false)
     const [doctorOptions, setDoctorOptions] = useState<DoctorOption[]>([])
 
+    // State for modal
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [bookingSlot, setBookingSlot] = useState<{ doctorId: string, time: string } | null>(null)
+
     // Mock appointments for the grid view (can be empty if we are just booking new)
     const [appointments, setAppointments] = useState<any[]>([])
 
-    // Fetch doctors list (reusing logic or simplified)
+    // Fetch doctors list
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
@@ -147,37 +154,23 @@ export function MultiDoctorAppointmentView({
         fetchSlots()
     }, [selectedDoctors, selectedDate])
 
-    const handleSlotAdd = (doctorId: string, time: string) => {
-        if (!time) return
+    const handleSlotClick = (doctorId: string, time: string) => {
+        setBookingSlot({ doctorId, time })
 
-        const parts = time.split(' ')
-        if (parts.length < 2) return
-        const [timePart, period] = parts
+        // Convert "02:00 PM" to "14:00" for parent selectedSlot
+        const [h, m, p] = time.split(/[: ]/)
+        // Handle undefined just in case (though fixed in grid)
+        const hVal = h || "12"
+        const pVal = p || "AM"
 
-        if (!timePart) return
+        let hNum = parseInt(hVal, 10)
+        if (pVal === "PM" && hNum !== 12) hNum += 12
+        else if (pVal === "AM" && hNum === 12) hNum = 0
+        const time24 = `${hNum.toString().padStart(2, '0')}:${m || "00"}`
+        const slotRange = `${time24}-${time24}`
 
-        let [hoursStr, minutesStr] = timePart.split(':')
-        let hours = parseInt(hoursStr || "0", 10)
-        let minutes = parseInt(minutesStr || "0", 10)
-
-        if (period === 'PM' && hours !== 12) hours += 12
-        if (period === 'AM' && hours === 12) hours = 0
-
-        const startHour = hours
-        const startMinute = minutes
-
-        // Create Date objects to add duration easily
-        const d = new Date()
-        d.setHours(startHour, startMinute, 0, 0)
-        const endTime = new Date(d.getTime() + 20 * 60000) // 20 mins
-
-        const endHour = endTime.getHours()
-        const endMinute = endTime.getMinutes()
-
-        const fmt = (n: number) => n.toString().padStart(2, '0')
-        const slotString = `${fmt(startHour)}:${fmt(startMinute)}-${fmt(endHour)}:${fmt(endMinute)}`
-
-        onSlotSelect(slotString)
+        onSlotSelect(slotRange)
+        setIsModalOpen(true)
     }
 
     return (
@@ -206,9 +199,23 @@ export function MultiDoctorAppointmentView({
                     appointments={appointments}
                     slots={slots}
                     isLoading={isLoading}
-                    onAddAppointment={handleSlotAdd}
+                    onAddAppointment={handleSlotClick}
+                    selectedSlot={selectedSlot}
                 />
             </div>
+
+            <MultiDoctorBookingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                selectedDoctors={selectedDoctors}
+                doctorOptions={doctorOptions}
+                selectedDate={selectedDate}
+                selectedTime={bookingSlot?.time}
+                onConfirm={() => {
+                    console.log("Booking confirmed for", bookingSlot)
+                    setIsModalOpen(false)
+                }}
+            />
         </div>
     )
 }
