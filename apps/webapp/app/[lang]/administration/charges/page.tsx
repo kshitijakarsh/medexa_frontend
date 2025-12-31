@@ -22,14 +22,24 @@ import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDa
 import { useUserStore } from "@/store/useUserStore";
 import { PERMISSIONS } from "@/app/utils/permissions";
 import { Can } from "@/components/common/app-can";
-
+import { useDictionary } from "@/i18n/use-dictionary";
+import { useParams } from "next/navigation";
 
 const ChargesSection = [
   { key: "service", label: "Service and Charge" },
   { key: "category", label: "Charges Category" },
   { key: "tax", label: "Tax Category" },
   { key: "unit", label: "Unit Type" },
-];
+] as const;
+
+// will get used in translation 
+const LABEL_TO_TRANSLATION_KEY = {
+  "Service and Charge": "service",
+  "Charges Category": "category",
+  "Tax Category": "tax",
+  "Unit Type": "unit",
+} as const;
+
 const PERMISSION_MAP = {
   service: PERMISSIONS.SERVICE,
   category: PERMISSIONS.CATEGORY,
@@ -41,7 +51,8 @@ const PERMISSION_MAP = {
 
 export default function ChargesPage() {
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
-
+  const params = useParams();
+  const lang = params.lang as string;
   const router = useRouter();
   const [tab, setTab] = useState<"service" | "category" | "tax" | "unit">("service");
   const [data, setData] = useState<any[]>([]);
@@ -51,6 +62,8 @@ export default function ChargesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isBulkOpen, setIsBulkOpen] = useState(false);
   const [bulkMode, setBulkMode] = useState(false);
+  const dict = useDictionary();
+  const trans = dict.pages.charges;
   /* -------------------- Filters -------------------- */
   const [filters, setFilters] = useState<any>({});
   useEffect(() => { load(); }, [tab]);
@@ -86,48 +99,48 @@ export default function ChargesPage() {
   const columnsFor = (t: typeof tab) => {
     if (t === "service") {
       return [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "serviceName", label: "Service Name", render: (r: any) => r.serviceName },
-        { key: "chargeCategory", label: "Charge Category", render: (r: any) => r.chargeCategoryLabel || r.chargeCategory },
-        { key: "unit", label: "Unit", render: (r: any) => r.unitLabel || r.unit },
-        { key: "tax", label: "Tax", render: (r: any) => r.taxLabel || r.tax || "" },
-        { key: "standardCharge", label: "Standard Charge", render: (r: any) => r.standardCharge },
-        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/> , className: "text-center w-[80px]" },
+        { key: "sno", label: trans.columns.srNo, render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "serviceName", label: trans.columns.serviceName, render: (r: any) => r.serviceName },
+        { key: "chargeCategory", label: trans.columns.chargeCategory, render: (r: any) => r.chargeCategoryLabel || r.chargeCategory },
+        { key: "unit", label: trans.columns.unit, render: (r: any) => r.unitLabel || r.unit },
+        { key: "tax", label: trans.columns.tax, render: (r: any) => r.taxLabel || r.tax || "" },
+        { key: "standardCharge", label: trans.columns.standardCharge, render: (r: any) => r.standardCharge },
+        { key: "status", label: trans.columns.status, render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: trans.columns.action, render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/> , className: "text-center w-[80px]" },
       ];
     }
    
     if (t === "tax") {
       // category / tax / unit table
       return [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label:  t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "tax" ? r.taxName : r.chargeName) },
-        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-        { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
-        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+        { key: "sno", label: trans.columns.srNo, render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label:  t === "tax" ? trans.columns.taxName : trans.columns.chargeName, render: (r: any) => (t === "tax" ? r.taxName : r.chargeName) },
+        { key: "createdOn", label: trans.columns.createdOn, render: (r: any) => r.createdOn },
+        { key: "percentage", label: trans.columns.percentage, render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: trans.columns.status, render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: trans.columns.action, render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
       ];
     }
     if (t === "category") {
       // category / tax / unit table
       return [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label:  "Charge Name", render: (r: any) => ( r.chargeName) },
-        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
-        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+        { key: "sno", label: trans.columns.srNo, render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label: trans.columns.chargeName, render: (r: any) => ( r.chargeName) },
+        { key: "createdOn", label: trans.columns.createdOn, render: (r: any) => r.createdOn },
+        // { key: "percentage", label: trans.columns.percentage, render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: trans.columns.status, render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: trans.columns.action, render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
       ];
     }
     //  if (t === "unit") {
       // category / tax / unit table
       return [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label: t === "unit" ? "Unit Type" : t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
-        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
-        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+        { key: "sno", label: trans.columns.srNo, render: (r: any) => r.sno, className: "w-[60px] text-center" },
+        { key: "name", label: t === "unit" ? trans.columns.unitType : t === "tax" ? trans.columns.taxName : trans.columns.chargeName, render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
+        { key: "createdOn", label: trans.columns.createdOn, render: (r: any) => r.createdOn },
+        // { key: "percentage", label: trans.columns.percentage, render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        { key: "status", label: trans.columns.status, render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+        { key: "action", label: trans.columns.action, render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
       ];
     // }
   };
@@ -153,11 +166,15 @@ export default function ChargesPage() {
     setLoading(false);
   };
 
-
   const permissionStrings =
     (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
 
-  const filteredTabs = ChargesSection.filter((t) => {
+const translatedTabs = ChargesSection.map((tab) => ({
+  key: tab.key,
+  label: trans.tabs[LABEL_TO_TRANSLATION_KEY[tab.label]],
+}));
+
+  const filteredTabs = translatedTabs.filter((t) => {
     const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
     return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
   });
@@ -167,7 +184,7 @@ export default function ChargesPage() {
     < >
       <div className="p-5 space-y-8">
         <div className="flex justify-between items-center">
-          <PageHeader title="Charges" />
+          <PageHeader title={trans.title} />
 
         </div>
         {/* <div className="bg-white p-5 rounded-md shadow-sm">
@@ -237,7 +254,7 @@ export default function ChargesPage() {
                 <SearchInput
                   value={search}
                   onChange={(v: any) => setSearch(v)}
-                  placeholder="Search..."
+                  placeholder={dict.common.search}
                 />
               </div>
 
@@ -248,7 +265,7 @@ export default function ChargesPage() {
               >
                 <NewButton
                   handleClick={() => {
-                    if (tab === "service") router.push("/administration/charges/add");
+                    if (tab === "service") router.push("/${lang}/administration/charges/add");
                     else if (bulkMode) setIsBulkOpen(true);
                     else setIsAddOpen(true);
                   }}

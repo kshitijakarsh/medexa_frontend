@@ -1830,13 +1830,14 @@ import { createWardApiClient } from "@/lib/api/administration/wards"
 import { useUserStore } from "@/store/useUserStore"
 import { Can } from "@/components/common/app-can"
 import { PERMISSIONS } from "@/app/utils/permissions"
+import { useDictionary } from "@/i18n/use-dictionary"
 
-const Tabs = [
-  { key: "ward", label: "Ward" },
-  { key: "bedType", label: "Bed Type" },
-  { key: "wardType", label: "Ward Type" },
-  { key: "floor", label: "Floor" },
-]
+// const Tabs = [
+//   { key: "ward", label: "Ward" },
+//   { key: "bedType", label: "Bed Type" },
+//   { key: "wardType", label: "Ward Type" },
+//   { key: "floor", label: "Floor" },
+// ]
 
 const formatDate = (d?: string) =>
   d ? format(new Date(d), "dd MMM yyyy, hh:mm a") : "—"
@@ -1878,6 +1879,15 @@ function UnitsWardsBedsPageContent() {
   const limit = 10
 
   const clearAllFilters = () => setFilters({})
+  const dict = useDictionary()
+  const trans = dict.pages.unitsWardsBeds
+
+  const Tabs = [
+  { key: "ward", label: trans.tabs.ward },
+  { key: "bedType", label: trans.tabs.bedType },
+  { key: "wardType", label: trans.tabs.wardType },
+  { key: "floor", label: trans.tabs.floor },
+]
 
   /* ---------------------------------------
         FILTER TABS AS PER PEMISSION
@@ -2254,25 +2264,25 @@ function UnitsWardsBedsPageContent() {
   const columns =
     addMode === "ward"
       ? [
-        { key: "id", label: "ID", render: (r: any) => r.id },
+        { key: "id", label: trans.columns.id, render: (r: any) => r.id },
         {
           key: "ward_number",
-          label: "Ward Number",
+          label: trans.columns.wardNumber,
           render: (r: any) => r.ward_number,
         },
         {
           key: "ward_type",
-          label: "Ward Type",
+          label: trans.columns.wardType,
           render: (r: any) => r.wardType?.name ?? "—",
         },
         {
           key: "floor",
-          label: "Floor",
+          label: trans.columns.floor,
           render: (r: any) => r.floor?.floor_name ?? "—",
         },
         {
           key: "status",
-          label: "Status",
+          label: trans.columns.status,
           render: (r: any) => (
             <span
               className={
@@ -2285,12 +2295,12 @@ function UnitsWardsBedsPageContent() {
         },
         {
           key: "created_at",
-          label: "Created On",
+          label: trans.columns.createdOn,
           render: (r: any) => formatDate(r.created_at),
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.columns.action,
           render: (r: any) => (
             <UnitsWardsBedsRowActions
               onEdit={() => {
@@ -2307,11 +2317,11 @@ function UnitsWardsBedsPageContent() {
       ]
       : addMode === "bedType"
         ? [
-          { key: "id", label: "ID", render: (r: any) => r.id },
-          { key: "name", label: "Name", render: (r: any) => r.name },
+          { key: "id", label: trans.columns.id, render: (r: any) => r.id },
+          { key: "name", label: trans.columns.name, render: (r: any) => r.name },
           {
             key: "status",
-            label: "Status",
+            label: trans.columns.status,
             render: (r: any) => (
               <span
                 className={
@@ -2324,12 +2334,12 @@ function UnitsWardsBedsPageContent() {
           },
           {
             key: "created_at",
-            label: "Created On",
+            label: trans.columns.createdOn,
             render: (r: any) => formatDate(r.created_at),
           },
           {
             key: "action",
-            label: "Action",
+            label: trans.columns.action,
             render: (r: any) => (
               <UnitsWardsBedsRowActions
                 onEdit={() => {
@@ -2346,11 +2356,11 @@ function UnitsWardsBedsPageContent() {
         ]
         : addMode === "wardType"
           ? [
-            { key: "id", label: "ID", render: (r: any) => r.id },
-            { key: "name", label: "Name", render: (r: any) => r.name },
+            { key: "id", label: trans.columns.id, render: (r: any) => r.id },
+            { key: "name", label: trans.columns.name, render: (r: any) => r.name },
             {
               key: "status",
-              label: "Status",
+              label: trans.columns.status,
               render: (r: any) => (
                 <span
                   className={
@@ -2363,12 +2373,12 @@ function UnitsWardsBedsPageContent() {
             },
             {
               key: "created_at",
-              label: "Created On",
+              label: trans.columns.createdOn,
               render: (r: any) => formatDate(r.created_at),
             },
             {
               key: "action",
-              label: "Action",
+              label: trans.columns.action,
               render: (r: any) => (
                 <UnitsWardsBedsRowActions
                   onEdit={() => {
@@ -2385,15 +2395,15 @@ function UnitsWardsBedsPageContent() {
           ]
           : [
             // floors
-            { key: "id", label: "ID", render: (r: any) => r.id },
+            { key: "id", label: trans.columns.id, render: (r: any) => r.id },
             {
               key: "floor_name",
-              label: "Floor",
+              label: trans.columns.floor,
               render: (r: any) => r.floor_name,
             },
             {
               key: "status",
-              label: "Status",
+              label: trans.columns.status,
               render: (r: any) => (
                 <span
                   className={
@@ -2406,12 +2416,12 @@ function UnitsWardsBedsPageContent() {
             },
             {
               key: "created_at",
-              label: "Created On",
+              label: trans.columns.createdOn,
               render: (r: any) => formatDate(r.created_at),
             },
             {
               key: "action",
-              label: "Action",
+              label: trans.columns.action,
               render: (r: any) => (
                 <UnitsWardsBedsRowActions
                   onEdit={() => {
@@ -2435,7 +2445,7 @@ function UnitsWardsBedsPageContent() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="Units / Wards / Beds" />
+        <PageHeader title= {trans.title} />
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* HEADER */}
           <div className="flex flex-col md:flex-row justify-between gap-4">

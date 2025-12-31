@@ -18,6 +18,7 @@ import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDa
 import { PERMISSIONS } from "@/app/utils/permissions";
 import { Can } from "@/components/common/app-can";
 import { useUserStore } from "@/store/useUserStore";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function CompanyListPage() {
     const userPermissions = useUserStore((s) => s.user?.role.permissions);
@@ -28,6 +29,8 @@ export default function CompanyListPage() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [filters, setFilters] = useState<any>({});
+    const dict = useDictionary();
+    const trans = dict.pages.insurance;
 
     useEffect(() => {
         setLoading(true);
@@ -66,16 +69,16 @@ export default function CompanyListPage() {
     };
 
     const columns = [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sr, className: "w-[60px]" },
-        { key: "providerName", label: "Provider Name", render: (r: any) => r.providerName },
-        { key: "companyName", label: "Insurance Company Name", render: (r: any) => r.companyName },
-        { key: "approvalUrl", label: "Approval URL", render: (r: any) => <a className="text-blue-600 underline" href={r.approvalUrl} target="_blank" rel="noreferrer">{r.approvalUrl}</a> },
-        { key: "address", label: "Address", render: (r: any) => r.address },
-        { key: "trn", label: "TRN", render: (r: any) => r.trn },
-        { key: "status", label: "Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span>, className: "w-[80px] text-center" },
+        { key: "sno", label: trans.table.sno, render: (r: any) => r.sr, className: "w-[60px]" },
+        { key: "providerName", label: trans.table.providerName, render: (r: any) => r.providerName },
+        { key: "companyName", label: trans.table.insuranceCompanyName, render: (r: any) => r.companyName },
+        { key: "approvalUrl", label: trans.table.approvalURL, render: (r: any) => <a className="text-blue-600 underline" href={r.approvalUrl} target="_blank" rel="noreferrer">{r.approvalUrl}</a> },
+        { key: "address", label: trans.table.address, render: (r: any) => r.address },
+        { key: "trn", label: trans.table.trn, render: (r: any) => r.trn },
+        { key: "status", label: trans.table.status, render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span>, className: "w-[80px] text-center" },
         {
             key: "action",
-            label: "Action",
+            label: trans.table.action,
             render: (r: any) => (
                 <InsuranceRowActionMenu
                     onView={() => router.push(`/insurance/${r.id}`)}
@@ -97,7 +100,7 @@ export default function CompanyListPage() {
     return (
         <>
             <div className="p-5 space-y-6">
-                <PageHeader title="Company List" />
+                <PageHeader title={trans.title} />
                 <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex gap-2 flex-wrap">
@@ -114,7 +117,7 @@ export default function CompanyListPage() {
 
 
                             <div className="min-w-[220px]">
-                                <SearchInput value={search} onChange={setSearch} placeholder="Search by provider or company..." />
+                                <SearchInput value={search} onChange={setSearch} placeholder={trans.table.placeholderSearch} />
                             </div>
 
                             <QuickActions />

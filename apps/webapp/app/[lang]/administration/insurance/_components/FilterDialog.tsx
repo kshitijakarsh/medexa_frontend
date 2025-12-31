@@ -16,6 +16,7 @@ import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
 import { AppSelect } from "@/components/common/app-select";
 import { Input } from "@workspace/ui/components/input";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // ✅ Schema for filtering company list
 const filterSchema = z.object({
@@ -52,6 +53,7 @@ export function FilterDialog({
     },
   });
 
+  const dict = useDictionary();
   const handleApply = (values: FilterForm) => {
     console.log("✅ Applied Filters:", values);
     onApply(values);
@@ -59,7 +61,7 @@ export function FilterDialog({
   };
 
   return (
-    <AppDialog open={open} onClose={onClose} title="Filter" maxWidth="md:max-w-md">
+    <AppDialog open={open} onClose={onClose} title={dict.pages.insurance.filterdialog.title} maxWidth="md:max-w-md">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleApply)}
@@ -71,10 +73,10 @@ export function FilterDialog({
             name="providerName"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Provider Name</FormLabel>
+                <FormLabel>{dict.pages.insurance.filterdialog.providerName}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Provider Name"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderProviderName}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error}
@@ -95,10 +97,10 @@ export function FilterDialog({
             name="companyName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company Name</FormLabel>
+                <FormLabel>{dict.pages.insurance.filterdialog.companyName}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter Company Name"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderInsuranceCompanyName}
                     {...field}
                   />
                 </FormControl>
@@ -112,10 +114,10 @@ export function FilterDialog({
             name="trn"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>TRN</FormLabel>
+                <FormLabel>{dict.pages.insurance.filterdialog.trn}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Enter TRN Number"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderTRN}
                     {...field}
                   />
                 </FormControl>
@@ -129,10 +131,10 @@ export function FilterDialog({
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>City</FormLabel>
+                <FormLabel>{dict.pages.insurance.filterdialog.city}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select City"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderCity}
                     value={field.value}
                     onChange={field.onChange}
                     options={[
@@ -152,16 +154,16 @@ export function FilterDialog({
             name="status"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{dict.common.status}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Status"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderStatus}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error}
                     options={[
-                      { label: "Active", value: "Active" },
-                      { label: "Inactive", value: "Inactive" },
+                      { label: dict.common.active, value: "Active" },
+                      { label: dict.common.inactive, value: "Inactive" },
                     ]}
                   />
                 </FormControl>
@@ -174,7 +176,7 @@ export function FilterDialog({
             <CancelButton onClick={onClose} />
             <ActionButton
               loading={isLoading}
-              label="Apply Filter"
+              label={dict.common.applyfilters}
               type="submit"
             />
           </div>

@@ -12,13 +12,16 @@ import { createPatientCategoryApiClient } from "@/lib/api/administration/patient
 import { PERMISSIONS } from "@/app/utils/permissions";
 import { useUserStore } from "@/store/useUserStore";
 import { Can } from "@/components/common/app-can";
-
+import { useDictionary } from "@/i18n/use-dictionary";
 /* ------------------------------------------
    API CLIENT
 ------------------------------------------- */
 const api = createPatientCategoryApiClient({});
 
 export default function PatientPage() {
+
+  const dict = useDictionary();
+  const trans = dict.pages.patients;
   /* ------------------------------------------
      RBAC
   ------------------------------------------- */
@@ -122,28 +125,28 @@ export default function PatientPage() {
   const columns = [
     {
       key: "sno",
-      label: "Sr.No",
+      label: trans.table.sno,
       render: (r: any) => r.sno,
       className: "w-[60px]",
     },
     {
       key: "patientType",
-      label: "Patient type",
+      label: trans.patientTypes,
       render: (r: any) => r.patientType,
     },
     {
       key: "createdOn",
-      label: "Created On",
+      label: trans.table.createdOn,
       render: (r: any) => r.createdOn,
     },
     {
       key: "addedBy",
-      label: "Added By",
+      label: trans.table.addedBy,
       render: (r: any) => r.addedBy,
     },
     {
       key: "status",
-      label: "Operation Status",
+      label: trans.table.status,
       render: (r: any) => (
         <span
           className={
@@ -158,7 +161,7 @@ export default function PatientPage() {
     },
     {
       key: "action",
-      label: "Action",
+      label: trans.table.action,
       className: "text-right",
       render: (r: any) => (
         <ChargesRowActions
@@ -175,14 +178,14 @@ export default function PatientPage() {
 
   return (
     <div className="p-5 space-y-8">
-      <PageHeader title="Patient Category" />
+      <PageHeader title={trans.title} />
 
       <div className="bg-white p-5 rounded-md shadow-sm">
         {/* ACTION BAR */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <div className="flex items-center">
             <button className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm">
-              Patient Type
+              {trans.patientTypes}
             </button>
           </div>
 
@@ -197,7 +200,7 @@ export default function PatientPage() {
               <SearchInput
                 value={search}
                 onChange={setSearch}
-                placeholder="Search..."
+                placeholder= {dict.common.search}
               />
             </div>
 
@@ -242,7 +245,7 @@ export default function PatientPage() {
             <div className="flex-1 overflow-y-auto p-5 space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Patient Type
+                  {trans.patientTypes}
                 </label>
                 <input
                   value={patientType}
@@ -255,7 +258,7 @@ export default function PatientPage() {
               {/* STATUS TOGGLE */}
               <div className="rounded-lg bg-[#E0FBFF] px-4 py-3 flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-800">
-                  Status
+                  {dict.common.status}
                 </span>
 
                 <div className="flex items-center gap-4">
@@ -266,7 +269,7 @@ export default function PatientPage() {
                         : "text-gray-500"
                     }`}
                   >
-                    Inactive
+                    {dict.common.inactive}
                   </span>
 
                   <button
@@ -296,7 +299,7 @@ export default function PatientPage() {
                         : "text-gray-500"
                     }`}
                   >
-                    Active
+                    {dict.common.active}
                   </span>
                 </div>
               </div>
@@ -308,13 +311,13 @@ export default function PatientPage() {
                 className="px-4 py-2 border rounded-md text-sm"
                 onClick={() => setIsDrawerOpen(false)}
               >
-                Cancel
+                {dict.common.cancel}
               </button>
               <button
                 className="px-4 py-2 bg-[#12B28C] text-white rounded-md text-sm"
                 onClick={handleCreate}
               >
-                Save
+                {dict.common.save}
               </button>
             </div>
           </div>

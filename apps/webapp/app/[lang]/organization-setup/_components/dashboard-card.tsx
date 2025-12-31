@@ -165,20 +165,27 @@ import { Newspaper } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { AddMasterPanel } from "./add-master-panel";
 import { masterConfig } from "./fecth-master";
+import { useParams } from "next/navigation";
 
 interface DashboardCardProps {
+  id: string;
   title: string;
   subtitle: string;
   active: number;
 }
 
-export function DashboardCard({ title, subtitle, active }: DashboardCardProps) {
+export function DashboardCard({ title, subtitle, active, id }: DashboardCardProps) {
   const router = useRouter();
-  const config = masterConfig[title];
+  const config = masterConfig[id];
+  const params = useParams<{ lang?: string }>();
+  const lang = params?.lang || "en";
+  console.log("DashboardCard config:", id);
 
   const handleCardClick = () => {
+    console.log("Card clicked:", id);
     if (config?.route) {
-      router.push(config.route);
+      console.log("Navigating to:", config.route);
+      router.push(`/${lang}${config.route}`);
     }
   };
 

@@ -41,6 +41,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@workspace/ui/components/input";
 import { Search, X } from "lucide-react";
 import React from "react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface SearchInputProps {
   value: string;
@@ -66,7 +67,7 @@ export default function SearchInput({
   minChars = 3,
 }: SearchInputProps) {
   const [internalValue, setInternalValue] = useState(value);
-
+  const dict = useDictionary();
   // Sync internal state when parent updates value externally
   useEffect(() => {
     setInternalValue(value);
@@ -99,7 +100,7 @@ export default function SearchInput({
   return (
     <div className={`relative ${className}`} style={{ width }}>
       <Input
-        placeholder={placeholder}
+        placeholder={dict.common.search}
         className={`pr-9 pl-3 py-2 rounded-lg border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0`}
         value={internalValue}
         onChange={(e) => handleChange(e.target.value)}

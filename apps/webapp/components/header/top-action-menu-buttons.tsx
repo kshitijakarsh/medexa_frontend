@@ -28,6 +28,9 @@ import { logoutCognitoUser } from "@/app/utils/auth"
 import { usePathname, useRouter } from "next/navigation"
 import { getProfileRoute } from "@/app/utils/get-profile-route"
 import { getLocale } from "@/i18n/get-locale"
+import {LanguageSwitcher } from "./LanguageSwitcher"
+import { useDictionary } from "@/i18n/use-dictionary"
+
 
 interface UserProfile {
   name: string
@@ -47,6 +50,7 @@ interface UserProfile {
 
 interface TopActionButtonsProps {
   user: UserProfile
+
 }
 
 export function TopActionButtons({ user }: TopActionButtonsProps) {
@@ -58,6 +62,8 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
 
   const router = useRouter()
   const pathname = usePathname()
+  const dict = useDictionary()
+  const t = dict.common;
 
   const handleClickViewProfile = () => {
     const profileRoute = getProfileRoute(pathname)
@@ -70,19 +76,11 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
     <div className="flex items-center gap-3">
       {/* Quick Actions */}
       <button className="text-blue-500 font-medium text-sm flex items-center gap-1 hover:text-blue-600 transition-colors">
-        Quick Actions <span className="text-base font-bold">+</span>
+        {t.quickActions} <span className="text-base font-bold">+</span>
       </button>
 
       {/* Language Selector */}
-      <Button
-        variant="ghost"
-        className="bg-blue-50 hover:bg-blue-100 text-gray-700 rounded-full px-3 py-1.5 flex items-center gap-2 h-auto shadow-sm transition-all"
-      >
-        <span className="bg-green-500 text-white rounded-full p-1">
-          <Globe2 className="h-3.5 w-3.5" />
-        </span>
-        <span className="text-sm font-medium">English</span>
-      </Button>
+      <LanguageSwitcher />
 
       {/* Menu Button + Sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
@@ -122,7 +120,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
             <div>
               <h3 className="font-semibold text-gray-900">{user.name}</h3>
               <p className="text-xs text-gray-500">
-                {user.role} | ID: {user.employeeId}
+                {user.role} | {t?.employeeId}: {user.employeeId}
               </p>
             </div>
           </div>
@@ -135,21 +133,21 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
               onClick={handleClickViewProfile}
             >
               <User className="h-4 w-4 mr-2 text-green-600" />
-              View Profile
+              {t?.viewProfile}
             </Button>
             <Button
               variant="outline"
               className="flex-1 border-green-100 hover:bg-green-50"
             >
               <Lock className="h-4 w-4 mr-2 text-green-600" />
-              Change Password
+              {t?.changePassword}
             </Button>
           </div>
 
           {/* Account Info */}
           <div className="bg-white rounded-xl p-4 mt-6 mx-2 shadow-sm border border-gray-100">
             <p className="text-sm text-gray-600">
-              Account Status:{" "}
+              {t?.accountStatus}:{" "}
               <span
                 className={
                   user.accountStatus === "Active"
@@ -161,7 +159,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
               </span>
             </p>
             <p className="text-sm text-gray-600 mt-2">
-              Last Login:{" "}
+              {t?.lastLogin}:{" "}
               <span className="text-gray-800">{user.lastLogin}</span>
             </p>
 
@@ -171,7 +169,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              {t?.logout}
             </Button>
           </div>
 

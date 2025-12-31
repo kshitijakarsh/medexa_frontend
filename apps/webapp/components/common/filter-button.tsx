@@ -34,6 +34,7 @@
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 import { Delete, SlidersHorizontal } from "lucide-react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function FilterButton({
   count = 0,
@@ -49,6 +50,8 @@ export default function FilterButton({
   className?: string;
 }) {
   const appliedCount = Object.values(filters).filter(Boolean).length;
+  const dict = useDictionary();
+  const t = dict.actions;
 
   const hasFilters = appliedCount > 0;
 //  console.log(filters, appliedCount)
@@ -72,7 +75,7 @@ export default function FilterButton({
         {/* Icon */}
         <SlidersHorizontal size={18} className="text-blue-700" />
 
-        <span className="text-base font-medium">Filter</span>
+        <span className="text-base font-medium">{t.filter}</span>
 
         {/* Badge */}
         {hasFilters && (
@@ -99,7 +102,7 @@ export default function FilterButton({
             rounded-full flex items-center gap-2 cursor-pointer hover:bg-red-600
           "
         >
-          Clear <Delete className="w-5 h-5" />
+          {t.clear} <Delete className="w-5 h-5" />
         </Button>
       )}
     </div>

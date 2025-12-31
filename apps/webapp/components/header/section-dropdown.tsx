@@ -506,6 +506,8 @@ import { useUserStore } from "@/store/useUserStore"
 import { usePathname, useRouter } from "next/navigation"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 import { Locale, locales } from "@/i18n/locales"
+import { useDictionary } from "@/i18n/use-dictionary"
+
 
 const moduleIconMap: Record<string, any> = {
   analytics: BarChart3,
@@ -553,6 +555,9 @@ export function SectionDropdown() {
   const router = useRouter()
   const pathname = usePathname()
   const { withLocale } = useLocaleRoute()
+  const dict = useDictionary()
+  const t: Partial<Record<string, string>> = dict.modules
+
 
   // ⬅️ GET USER FROM ZUSTAND (NOT VIA API)
   const user = useUserStore((s) => s.user)
@@ -568,7 +573,7 @@ export function SectionDropdown() {
           className="bg-[#062e65] text-white flex items-center gap-2 px-4 py-2 rounded-full"
         >
           <Loader2 className="h-4 w-4 animate-spin text-green-300" />
-          <span>Loading...</span>
+          <span>{dict.common.loading}</span>
         </Button>
       </div>
     )
@@ -603,18 +608,34 @@ export function SectionDropdown() {
   // permissionStrings.push("doctor:check:view");
 
   // Get unique module names
+  // const moduleKeys = Array.from(
+  //   new Set(permissionStrings.map((p) => p.split(":")[0]))
+  // )
+
+  type ModuleKey = keyof typeof moduleLandingPath
+
   const moduleKeys = Array.from(
     new Set(permissionStrings.map((p) => p.split(":")[0]))
-  )
+  ).filter((k): k is ModuleKey => k in moduleLandingPath)
+
 
   // Build dropdown sections dynamically
+  // const sections = moduleKeys.map((moduleKey) => ({
+  //   label: moduleKey
+  //     .replace(/_/g, " ")
+  //     .replace(/\b\w/g, (c: any) => c.toUpperCase()),
+  //   moduleKey,
+  //   icon: moduleIconMap[moduleKey] || DefaultIcon,
+  // }))
+
   const sections = moduleKeys.map((moduleKey) => ({
-    label: moduleKey
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (c: any) => c.toUpperCase()),
-    moduleKey,
-    icon: moduleIconMap[moduleKey] || DefaultIcon,
-  }))
+  label:
+    t?.[moduleKey] ??
+    moduleKey.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+  moduleKey,
+  icon: moduleIconMap[moduleKey] || DefaultIcon,
+}))
+
 
   // console.log(user)
 

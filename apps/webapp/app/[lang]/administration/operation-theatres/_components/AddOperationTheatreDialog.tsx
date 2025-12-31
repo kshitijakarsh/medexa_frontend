@@ -18,6 +18,7 @@ import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
 import { useState } from "react";
 import { AppSelect } from "@/components/common/app-select";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const addOTSchema = z.object({
     operationRoom: z.string().min(1, "Enter Operation Room Number"),
@@ -35,6 +36,8 @@ export function AddOperationTheatreDialog({
     onClose: () => void;
 }) {
     const [isLoading, setLoading] = useState<boolean>(false)
+    const dict = useDictionary();
+    const trans = dict.pages.operationTheatres.dialog
     const form = useForm<AddOTForm>({
         resolver: zodResolver(addOTSchema),
         defaultValues: {
@@ -50,7 +53,7 @@ export function AddOperationTheatreDialog({
     };
 
     return (
-        <AppDialog open={open} onClose={onClose} title="Operation Theatres" maxWidth="md:max-w-md">
+        <AppDialog open={open} onClose={onClose} title={trans.addTitle} maxWidth="md:max-w-md">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4 text-sm">
                     <FormField
@@ -58,9 +61,9 @@ export function AddOperationTheatreDialog({
                         name="operationRoom"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Operation Room Number</FormLabel>
+                                <FormLabel>{trans.fields.operationroom}</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter Operation Room Number" {...field} />
+                                    <Input placeholder={trans.placeholders.operationroom} {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -71,9 +74,9 @@ export function AddOperationTheatreDialog({
                         name="roomName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Operation Room Name</FormLabel>
+                                <FormLabel>{trans.fields.operationroomName}</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter Operation Room Name" {...field} />
+                                    <Input placeholder={trans.placeholders.operationroomName} {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -111,7 +114,7 @@ export function AddOperationTheatreDialog({
                         name="floor"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Select Floor</FormLabel>
+                                <FormLabel>{trans.fields.floor}</FormLabel>
                                 <FormControl>
                                     <AppSelect
                                         value={field.value}
@@ -143,7 +146,7 @@ export function AddOperationTheatreDialog({
               Save
             </Button> */}
                         <CancelButton onClick={onClose} />
-                        <ActionButton loading={isLoading} label="Apply Filter" />
+                        <ActionButton loading={isLoading} label={dict.common.appplyfilters} />
                     </div>
                 </form>
             </Form>
