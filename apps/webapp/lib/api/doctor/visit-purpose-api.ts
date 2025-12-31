@@ -6,6 +6,55 @@ interface ApiConfig {
     baseUrl?: string;
 }
 
+/* ------------------------------------------
+   Response / Payload Types
+------------------------------------------- */
+
+export interface VisitPurposeItem {
+    id: string;
+    tenant_id: string;
+    patient_id: string;
+    visit_id: string;
+    chief_complaint: string;
+    history_of_present_illness: string;
+    onset: string;
+    duration: string;
+    severity: string;
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    updated_by: string;
+    is_deleted: boolean;
+    patient: {
+        id: string;
+        first_name: string;
+        last_name: string;
+        patient_number: string;
+    };
+    createdBy: {
+        id: string;
+        name: string;
+        email?: string;
+        role?: {
+            name: string;
+        };
+    };
+}
+
+export interface VisitPurposeListResponse {
+    success: boolean;
+    message: string;
+    data: VisitPurposeItem[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+        hasNextPage?: boolean;
+        hasPrevPage?: boolean;
+    };
+}
+
 /* ---------------- CLIENT: Visit Purpose ---------------- */
 
 class VisitPurposeApiClient {
@@ -58,11 +107,11 @@ class VisitPurposeApiClient {
     async getByPatient(
         patientId: string,
         params?: { page?: number; limit?: number }
-    ): Promise<AxiosResponse<any>> {
+    ): Promise<AxiosResponse<VisitPurposeListResponse>> {
         try {
             const config = await this.getJsonRequestConfig();
 
-            return axios.get(
+            return axios.get<VisitPurposeListResponse>(
                 `${this.baseUrl}/api/v1/patients/${patientId}/visit-purposes`,
                 { ...config, params }
             );

@@ -6,7 +6,7 @@ import { PatientSearchPanel, Patient } from "./patient-search-panel"
 import { AdmissionForm } from "./admission-form"
 import { AdmissionSuccessScreen } from "./admission-success-screen"
 import { useRouter } from "next/navigation"
-import { format } from "date-fns"
+import { format } from "@workspace/ui/hooks/use-date-fns"
 
 interface AdmissionViewProps {
     onBack: () => void
@@ -29,7 +29,6 @@ export function AdmissionView({ onBack }: AdmissionViewProps) {
             doctorName: data.doctor || "Dr. Rohan Mehta",
             department: data.department || "General Medicine",
             ward: data.ward || "General Ward",
-            room: data.room || "Room 101",
             bed: data.bed || "B-01",
             admissionDate: data.admissionDate ? format(new Date(data.admissionDate), "dd/MM/yyyy") : format(new Date(), "dd/MM/yyyy"),
             admissionTime: "10:00-10:15",

@@ -25,7 +25,7 @@ import Image from "next/image";
 import { useDoctors } from "@/hooks/use-doctors";
 import { useDepartments } from "@/hooks/use-departments";
 import { createVisitsApiClient, VisitItem } from "@/lib/api/visits-api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 import { getIdToken } from "@/app/utils/auth";
 import axios from "axios";
@@ -53,10 +53,14 @@ export default function AppointmentPage() {
   const [isCalendarView, setIsCalendarView] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [appointments, setAppointments] = useState<AppointmentEntry[]>([]);
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  
+  // Initialize filters - if tab=completed, set status to "Completed"
   const [filters, setFilters] = useState<FilterState>({
     department: "",
     doctor: "",
-    status: "",
+    status: tabParam === "completed" ? "Completed" : "",
     dateFilter: "all",
   });
   const [doctorSearchQuery, setDoctorSearchQuery] = useState("");
@@ -71,6 +75,22 @@ export default function AppointmentPage() {
   const router = useRouter();
   const { withLocale } = useLocaleRoute();
 
+  // Update status filter when tab parameter changes
+  useEffect(() => {
+    if (tabParam === "completed") {
+      setFilters(prev => ({
+        ...prev,
+        status: "Completed", // Use capitalized for UI, convert to lowercase for API
+      }));
+    } else if (!tabParam) {
+      // Reset status filter if no tab parameter
+      setFilters(prev => ({
+        ...prev,
+        status: prev.status === "Completed" ? "" : prev.status,
+      }));
+    }
+  }, [tabParam]);
+
   // Load Data
   useEffect(() => {
     const fetchData = async () => {
@@ -83,7 +103,10 @@ export default function AppointmentPage() {
           page: 1,
           limit: 50,
         };
-        if (filters.status && filters.status !== "all") params.status = filters.status;
+        if (filters.status && filters.status !== "all") {
+          // Convert status to lowercase for API (API expects lowercase like "completed", "booked", etc.)
+          params.status = filters.status.toLowerCase();
+        }
         // Use camelCase parameters to match backend convention (seen in slots-api)
         if (filters.department && filters.department !== "all-departments") params.departmentId = filters.department;
         if (filters.doctor && filters.doctor !== "all-doctors") params.doctorId = filters.doctor;
@@ -162,7 +185,7 @@ export default function AppointmentPage() {
               consultantDoctor: doctorName,
               specialty: "General", // API missing specialty in top level, might need to infer or fetch
               appointmentDate: visit.time_slot_start.split('T')[0] || "",
-              bookedSlot: new Date(visit.time_slot_start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              bookedSlot: visit.time_slot_start?.split('T')[1]?.substring(0, 5) || "",
               serviceType: visit.visit_type === 'doctor_consultation' ? "Doctor Consultation" : visit.visit_type,
               visitType: formatVisitType(visit.patient_visit_type), // Use patient_visit_type from backend
               paymentStatus: (visit.charges?.[0]?.status === 'pending' ? 'Pending' : 'Paid') as any,
@@ -184,15 +207,19 @@ export default function AppointmentPage() {
   }, [filters]);
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
+    // Prevent changing status filter when on completed tab
+    if (key === "status" && tabParam === "completed") {
+      return;
+    }
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleClearFilters = () => {
-    // Reset to defaults
+    // Reset to defaults, but keep status as "Completed" if on completed tab
     setFilters({
       department: "",
       doctor: "", // "all-doctors" value is controlled primarily by the UI, but here we set to empty string which means 'All' in our logic
-      status: "",
+      status: tabParam === "completed" ? "Completed" : "",
       dateFilter: "all",
     });
     setDepartmentSearchQuery("");
@@ -380,22 +407,25 @@ export default function AppointmentPage() {
                   value={filters.status}
                   onChange={(val) => handleFilterChange("status", val)}
                   options={STATUS_OPTIONS}
+                  disabled={tabParam === "completed"} // Disable status filter on completed tab
                   icon={<Image src="/images/donut_large.svg" alt="Status" width={20} height={20} className="w-5 h-5" />}
-                  triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
+                  triggerClassName={`h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm ${tabParam === "completed" ? "opacity-60 cursor-not-allowed" : ""}`}
                 />
               </div>
             </div>
 
-            {/* Right Side: Calendar View Toggle */}
-            <div className="flex items-center gap-3 ml-auto">
-              <CalendarDays className="w-5 h-5 text-blue-500" />
-              <span className="text-sm font-semibold text-gray-800">Calendar View</span>
-              <Switch
-                checked={isCalendarView}
-                onCheckedChange={setIsCalendarView}
-                className="data-[state=checked]:bg-blue-500"
-              />
-            </div>
+            {/* Right Side: Calendar View Toggle - Hidden on completed tab */}
+            {tabParam !== "completed" && (
+              <div className="flex items-center gap-3 ml-auto">
+                <CalendarDays className="w-5 h-5 text-blue-500" />
+                <span className="text-sm font-semibold text-gray-800">Calendar View</span>
+                <Switch
+                  checked={isCalendarView}
+                  onCheckedChange={setIsCalendarView}
+                  className="data-[state=checked]:bg-blue-500"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -413,7 +443,8 @@ export default function AppointmentPage() {
               filters={{
                 department: filters.department !== "all-departments" ? filters.department : "",
                 doctor: filters.doctor !== "all-doctors" ? filters.doctor : "",
-                status: filters.status !== "all" ? filters.status : "",
+                // Exclude status filter from count on completed tab (status is locked and shouldn't be clearable)
+                status: tabParam === "completed" ? "" : (filters.status !== "all" ? filters.status : ""),
                 dateFilter: filters.dateFilter !== "all" ? filters.dateFilter : ""
               }}
             />
@@ -441,26 +472,31 @@ export default function AppointmentPage() {
               Quick <Image src="/images/unfold_more.svg" alt="Quick" width={14} height={14} className="w-3.5 h-3.5" />
             </Button>
 
-            <Button
-              onClick={() => router.push(withLocale("/appointment/book?visitType=emergency"))}
-              className="bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
-            >
-              ER <div className="bg-white/20 p-0.5 rounded"><Image src="/images/emergency_home.svg" alt="ER" width={18} height={18} className="w-[18px] h-[18px]" /></div>
-            </Button>
+            {/* Hide ER, Walk-In, and Appointment buttons on completed tab */}
+            {tabParam !== "completed" && (
+              <>
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=emergency"))}
+                  className="bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  ER <div className="bg-white/20 p-0.5 rounded"><Image src="/images/emergency_home.svg" alt="ER" width={18} height={18} className="w-[18px] h-[18px]" /></div>
+                </Button>
 
-            <Button
-              onClick={() => router.push(withLocale("/appointment/book?visitType=walkin"))}
-              className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
-            >
-              Walk-In <div className="bg-white/20 p-0.5 rounded-full"><Image src="/images/directions_run.svg" alt="Walk-In" width={18} height={18} className="w-[18px] h-[18px]" /></div>
-            </Button>
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=walkin"))}
+                  className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  Walk-In <div className="bg-white/20 p-0.5 rounded-full"><Image src="/images/directions_run.svg" alt="Walk-In" width={18} height={18} className="w-[18px] h-[18px]" /></div>
+                </Button>
 
-            <Button
-              onClick={() => router.push(withLocale("/appointment/book?visitType=appointment"))}
-              className="bg-[#2CB470] hover:bg-[#259b60] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
-            >
-              Add Appointment <Plus className="w-4 h-4 bg-white text-[#2CB470] rounded-full p-0.5" />
-            </Button>
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=appointment"))}
+                  className="bg-[#2CB470] hover:bg-[#259b60] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  Add Appointment <Plus className="w-4 h-4 bg-white text-[#2CB470] rounded-full p-0.5" />
+                </Button>
+              </>
+            )}
 
             <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 ml-2 shadow-sm shrink-0">
               <Button

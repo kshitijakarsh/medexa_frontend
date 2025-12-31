@@ -2,9 +2,18 @@ import { Visit } from "./types"
 
 interface VisitsTabProps {
     visits: Visit[]
+    loading?: boolean
 }
 
-export function VisitsTab({ visits }: VisitsTabProps) {
+export function VisitsTab({ visits, loading = false }: VisitsTabProps) {
+    if (loading) {
+        return (
+            <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">
+                Loading visits...
+            </div>
+        )
+    }
+
     if (visits.length === 0) {
         return (
             <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center text-gray-500">
@@ -40,8 +49,8 @@ export function VisitsTab({ visits }: VisitsTabProps) {
                                     <span className="text-[13px] text-gray-500 font-medium">{visit.doctor.name}</span>
                                 </td>
                                 <td className="py-4 px-6 align-top">
-                                    <span className="block text-[13px] font-bold text-[#1C1C1E] mb-1">Diagnosis</span>
-                                    <span className="text-[13px] text-gray-500 font-medium">{visit.diagnosis || '-'}</span>
+                                    <span className="block text-[13px] font-bold text-[#1C1C1E] mb-1">Purpose / Diagnosis</span>
+                                    <span className="text-[13px] text-gray-500 font-medium">{visit.purpose || visit.diagnosis || '-'}</span>
                                 </td>
                                 <td className="py-4 px-6 align-middle text-right">
                                     <span

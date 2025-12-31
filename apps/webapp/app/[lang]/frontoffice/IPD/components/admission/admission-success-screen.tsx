@@ -14,7 +14,6 @@ interface AdmissionSuccessScreenProps {
         doctorName: string
         department: string
         ward: string
-        room: string
         bed: string
         admissionDate: string
         admissionTime?: string
@@ -27,7 +26,7 @@ export function AdmissionSuccessScreen({ data, onClose }: AdmissionSuccessScreen
     const router = useRouter()
 
     const admissionId = data?.admissionId || `ADM-${Math.floor(Math.random() * 90000) + 10000}`
-    const location = `${data.ward}, ${data.room}, ${data.bed}`
+    const location = `${data.ward}, ${data.bed}`
 
     return (
         <div className="flex flex-col items-center justify-center py-10 px-4 max-w-2xl mx-auto w-full">

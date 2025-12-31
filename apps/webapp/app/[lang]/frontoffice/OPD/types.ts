@@ -9,9 +9,9 @@ export interface OPDEntry {
     specialty: string;
     date: string;
     time: string;
-    bookingType: "New Consultation" | "Follow Up" | "Emergency" | "Walk-in";
+    bookingType: string;
     priorityType: "VIP" | "Normal" | "Urgent";
-    status: "In Consultation" | "Called" | "Booked" | "Waiting" | "Completed" | "Cancelled" | "Pending" | "Missed";
+    status: string;
     action?: string;
     // New fields for Completed View
     reason?: string;
