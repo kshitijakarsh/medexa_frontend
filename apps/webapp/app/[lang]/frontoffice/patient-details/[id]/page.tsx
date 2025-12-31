@@ -214,22 +214,28 @@ export default function PatientDetailsPage() {
             })
     }
 
-    // Fetch visit purposes when visits tab is active
+    // Fetch visit purposes when patient is loaded (needed for overview tab)
     useEffect(() => {
         const fetchVisitPurposes = async () => {
-            if (!patientId || !patient || activeTab !== "visits") return
+            if (!patientId || !patient) {
+                console.log("PatientDetailsPage: Skipping fetch - patientId:", patientId, "patient:", !!patient)
+                return
+            }
 
             // Only fetch if visits haven't been fetched yet for this patient
-            if (!visitsFetchedRef.current && patient.visits.length === 0) {
+            if (!visitsFetchedRef.current && (!patient.visits || patient.visits.length === 0)) {
+                console.log("PatientDetailsPage: Fetching visit purposes for patient:", patientId)
                 visitsFetchedRef.current = true
                 setVisitsLoading(true)
                 try {
                     const visitPurposeClient = createVisitPurposeApiClient({})
+                    console.log("PatientDetailsPage: API client created, making request...")
                     const response = await visitPurposeClient.getByPatient(patientId, {
                         page: 1,
                         limit: 100,
                     })
 
+                    console.log("PatientDetailsPage: API response received", response.data)
                     if (response.data.success) {
                         const visits = mapVisitPurposesToVisits(response.data.data)
                         setPatient((prev) => {
@@ -255,17 +261,19 @@ export default function PatientDetailsPage() {
                         })
                     }
                 } catch (err: any) {
-                    console.error("Error fetching visit purposes:", err)
+                    console.error("PatientDetailsPage: Error fetching visit purposes", err)
                     visitsFetchedRef.current = false // Reset on error so we can retry
                 } finally {
                     setVisitsLoading(false)
                 }
+            } else {
+                console.log("PatientDetailsPage: Skipping fetch - already fetched:", visitsFetchedRef.current, "visits length:", patient.visits?.length)
             }
         }
 
         fetchVisitPurposes()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [patientId, activeTab]) // Only depend on patientId and activeTab - patient is checked inside but not in deps to prevent loop
+    }, [patientId, patient]) // Fetch when patient is loaded, not when tab changes
 
     if (loading) {
         return (
