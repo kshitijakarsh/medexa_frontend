@@ -129,8 +129,8 @@ import { Toaster } from "@workspace/ui/components/sonner"
 import { AppSidebar } from "./app-sidebar"
 import type { Dictionary } from "@/i18n/get-dictionary"
 import { UserLoader } from "./user-loader"
-import { useUserStore } from "@/store/useUserStore"
-import { TenantStatusGuard } from "@/app/[lang]/components/tenant-status-guard"
+// import { useUserStore } from "@/store/useUserStore"
+import { TenantStatusGuard } from "@/app/[lang]/_components/tenant-status-guard"
 import { DictionaryProvider } from "@/i18n/dictionary-context"
 
 interface ProvidersProps {
@@ -175,7 +175,10 @@ export function Providers({ children, dict }: ProvidersProps) {
             <Toaster position="top-right" richColors closeButton expand />
             <UserLoader />
             <TenantStatusGuard>
-              <SidebarWrapper>{children}</SidebarWrapper>
+              <SidebarProvider>
+                <AppSidebar />
+                {children}
+              </SidebarProvider>
             </TenantStatusGuard>
           </DictionaryProvider>
         ) : (
@@ -183,37 +186,14 @@ export function Providers({ children, dict }: ProvidersProps) {
             <Toaster position="top-right" richColors closeButton expand />
             <UserLoader />
             <TenantStatusGuard>
-              <SidebarWrapper>{children}</SidebarWrapper>
+              <SidebarProvider>
+                <AppSidebar />
+                {children}
+              </SidebarProvider>
             </TenantStatusGuard>
           </>
         )}
       </NextThemesProvider>
     </QueryClientProvider>
-  )
-}
-
-function SidebarWrapper({ children }: { children: React.ReactNode }) {
-  const loading = useUserStore((s) => s.loading)
-  const user = useUserStore((s) => s.user)
-
-  // 🔄 Show global loading UI until UserLoader finishes
-  if (loading || !user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen w-full gap-3">
-        <div className="flex space-x-2">
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce" />
-        </div>
-        <p className="text-primary/80 text-sm">Loading your workspace…</p>
-      </div>
-    )
-  }
-
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      {children}
-    </SidebarProvider>
   )
 }

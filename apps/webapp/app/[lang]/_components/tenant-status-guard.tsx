@@ -56,8 +56,23 @@ export function TenantStatusGuard({ children }: { children: React.ReactNode }) {
   }, [user, loading, pathname, router, locale])
 
   // Show global loading UI until UserLoader finishes or user is available
-  // This replaces the internal spinner and matches SidebarWrapper's style
-  // Removed explicit loader as per user request to avoid duplication with UserLoader/SidebarWrapper
+  // Matches the style previously in SidebarWrapper to avoid double loaders + usage
+  if (loading || !user) {
+    // Skip blocking loader for login/onboarding if desired, but typically we want to wait for user check
+    // unless we know we are on a public page. 
+    // For now, consistent loader.
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full bg-background/50 backdrop-blur-sm">
+        <div className="relative flex items-center justify-center">
+          <div className="absolute animate-ping h-8 w-8 rounded-full bg-primary/20 opacity-75"></div>
+          <div className="relative animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+        <p className="mt-4 text-sm font-medium text-foreground/60 animate-pulse">
+          Loading workspace...
+        </p>
+      </div>
+    )
+  }
 
   return <>{children}</>
 }
