@@ -10,35 +10,42 @@ import {
   FormControl,
   FormMessage,
 } from "@workspace/ui/components/form"
+import type { Dictionary } from "@/i18n/get-dictionary"
+
 import { Label } from "@workspace/ui/components/label"
 
 interface PaymentDetailsSectionProps {
   form: any // react-hook-form instance
+  dict: Dictionary
 }
 
-export const PaymentDetailsSection = ({ form }: PaymentDetailsSectionProps) => {
-  return (
-    <FormSection title="Payment Details">
+export const PaymentDetailsSection = ({ form, dict }: PaymentDetailsSectionProps) => {
+
+const t = dict.pages.onboarding
+const common = dict.common
+
+return (
+    <FormSection title={t.paymentDetails.sectionTitle}>
       <div className="space-y-4">
         {/* Gateway & Merchant Info */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <FormInput
             control={form.control}
             name="gateway_id"
-            label="Gateway ID"
-            placeholder="Enter gateway ID"
+            label={t.paymentDetails.fields.gatewayId.label}
+            placeholder={t.paymentDetails.fields.gatewayId.placeholder}
           />
           <FormInput
             control={form.control}
             name="merchant_id"
-            label="Merchant ID"
-            placeholder="Enter merchant ID"
+            label={t.paymentDetails.fields.merchantId.label}
+            placeholder={t.paymentDetails.fields.merchantId.placeholder}
           />
           <FormInput
             control={form.control}
             name="terminal_key"
-            label="Terminal Key"
-            placeholder="Enter terminal key"
+            label={t.paymentDetails.fields.terminalKey.label}
+            placeholder={t.paymentDetails.fields.terminalKey.placeholder}
           />
         </div>
 
@@ -47,20 +54,20 @@ export const PaymentDetailsSection = ({ form }: PaymentDetailsSectionProps) => {
           <FormInput
             control={form.control}
             name="vault_path"
-            label="Vault Path"
-            placeholder="Enter vault path"
+            label={t.paymentDetails.fields.vaultPath.label}
+            placeholder={t.paymentDetails.fields.vaultPath.placeholder}
           />
           <FormInput
             control={form.control}
             name="bank_name"
-            label="Bank Name"
-            placeholder="Enter bank name"
+            label={t.paymentDetails.fields.bankName.label}
+            placeholder={t.paymentDetails.fields.bankName.placeholder}
           />
           <FormInput
             control={form.control}
             name="bank_account_no"
-            label="Bank Account Number"
-            placeholder="Enter account number"
+            label={t.paymentDetails.fields.bankAccountNumber.label}
+            placeholder={t.paymentDetails.fields.bankAccountNumber.placeholder}
           />
         </div>
 
@@ -72,7 +79,7 @@ export const PaymentDetailsSection = ({ form }: PaymentDetailsSectionProps) => {
             render={({ field }) => (
               <FormItem>
                 <Label className="block text-sm text-slate-600 mb-1">
-                  VAT Registered
+                  {t.paymentDetails.fields.vatRegistered.label}
                 </Label>
                 <FormControl>
                   <div className="flex items-center gap-2 h-10">
@@ -83,7 +90,7 @@ export const PaymentDetailsSection = ({ form }: PaymentDetailsSectionProps) => {
                       className="w-4 h-4 cursor-pointer"
                     />
                     <span className="text-sm text-slate-600">
-                      {field.value ? "Yes" : "No"}
+                      {field.value ? common.yes : common.no}
                     </span>
                   </div>
                 </FormControl>
@@ -94,14 +101,14 @@ export const PaymentDetailsSection = ({ form }: PaymentDetailsSectionProps) => {
           <FormInput
             control={form.control}
             name="vat_number"
-            label="VAT Number"
-            placeholder="Enter VAT number"
+            label={t.paymentDetails.fields.vatNumber.label}
+            placeholder={t.paymentDetails.fields.vatNumber.placeholder}
           />
           <FormInput
             control={form.control}
             name="currency_code"
-            label="Currency Code"
-            placeholder="USD"
+            label={t.paymentDetails.fields.currencyCode.label}
+            placeholder={t.paymentDetails.fields.currencyCode.placeholder}
             maxLength={3}
           />
         </div>
