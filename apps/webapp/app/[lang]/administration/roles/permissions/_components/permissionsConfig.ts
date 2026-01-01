@@ -643,44 +643,44 @@ export const mainModules: MainModule[] = [
       },
     ],
   },
-  {
-    key: "frontoffice",
-    id: 10,
-    label: "Front Office",
-    icon: UserRound, // you can swap with Users / UserCog if preferred
-    subModules: [
-      {
-        key: "patient",
-        label: "Patients",
-        actions: ["view", "viewOne", "create", "edit", "delete"],
-      },
-      {
-        key: "patientRelation",
-        label: "Patient Relations",
-        actions: ["view", "create", "delete"],
-      },
-      {
-        key: "slot",
-        label: "Slots",
-        actions: ["view", "viewOne", "create", "edit", "delete"],
-      },
-      {
-        key: "visit",
-        label: "Visits",
-        actions: ["view", "viewOne", "create", "edit", "delete"],
-      },
-      {
-        key: "ipds",
-        label: "IPD",
-        actions: ["view", "viewOne", "create", "edit", "delete"],
-      },
-      {
-        key: "storage",
-        label: "Storage",
-        actions: ["create"],
-      },
-    ],
-  }
+  // {
+  //   key: "frontoffice",
+  //   id: 10,
+  //   label: "Front Office",
+  //   icon: UserRound, // you can swap with Users / UserCog if preferred
+  //   subModules: [
+  //     {
+  //       key: "patient",
+  //       label: "Patients",
+  //       actions: ["view", "viewOne", "create", "edit", "delete"],
+  //     },
+  //     {
+  //       key: "patientRelation",
+  //       label: "Patient Relations",
+  //       actions: ["view", "create", "delete"],
+  //     },
+  //     {
+  //       key: "slot",
+  //       label: "Slots",
+  //       actions: ["view", "viewOne", "create", "edit", "delete"],
+  //     },
+  //     {
+  //       key: "visit",
+  //       label: "Visits",
+  //       actions: ["view", "viewOne", "create", "edit", "delete"],
+  //     },
+  //     {
+  //       key: "ipds",
+  //       label: "IPD",
+  //       actions: ["view", "viewOne", "create", "edit", "delete"],
+  //     },
+  //     {
+  //       key: "storage",
+  //       label: "Storage",
+  //       actions: ["create"],
+  //     },
+  //   ],
+  // }
 
   // {
   //   key: "frontoffice",

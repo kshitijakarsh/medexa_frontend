@@ -445,12 +445,28 @@ import { useUpdateVisitStatus } from "../_component/common/useUpdateVisitStatus"
 import { SoapNoteData } from "../_component/Tabs/soap/SOAPNote";
 import { useSaveSoapNote, useSoapNoteByVisitId } from "../_component/Tabs/_hooks/useSoapNotes";
 import { canWorkOnVisit } from "../_component/common/visitGuards";
+import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils/permissions";
+import { usePermissionGuard } from "@/app/hooks/usePermissionGuard";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function ConsultationDetailPage() {
   const queryClient = useQueryClient();
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
+  const permissionKeys = normalizePermissionList(userPermissions)
+  const canViewVisitPurpose = hasPermission(
+    permissionKeys,
+    PERMISSIONS.DOCTOR.VISIT_PURPOSE.VIEW
+  );
+
+  const canViewSoapNotes = hasPermission(
+    permissionKeys,
+    PERMISSIONS.DOCTOR.SOAP_NOTES.VIEW
+  );
+
 
   const { id: visitId } = useParams() as { id: string };
-  console.log(visitId)
+  // console.log(visitId)
 
   /* ---------------------- GET Visit Details ---------------------- */
   const { data: visitData, isLoading } = useDoctorVisitById(visitId);
@@ -467,10 +483,17 @@ export default function ConsultationDetailPage() {
 
 
   /* ---------------------- GET Visit Purpose ---------------------- */
+  // const {
+  //   data: visitPurpose,
+  //   isLoading: purposeLoading,
+  // } = useVisitPurposeByVisitId(visitId);
+
   const {
     data: visitPurpose,
     isLoading: purposeLoading,
-  } = useVisitPurposeByVisitId(visitId);
+  } = useVisitPurposeByVisitId(visitId, {
+    enabled: canViewVisitPurpose,
+  });
 
   /* ---------------------- Local Form State ---------------------- */
   const [visitPurposeData, setVisitPurposeData] = useState<VisitPurposeData>({
@@ -503,7 +526,9 @@ export default function ConsultationDetailPage() {
 
   /* ---------------- SOAP NOTE ---------------- */
 
-  const { data: soapNote } = useSoapNoteByVisitId(visitId);
+  const { data: soapNote } = useSoapNoteByVisitId(visitId, {
+    enabled: canViewSoapNotes,
+  });
 
   const [soapNoteData, setSoapNoteData] = useState<SoapNoteData>({
     subjective: "",

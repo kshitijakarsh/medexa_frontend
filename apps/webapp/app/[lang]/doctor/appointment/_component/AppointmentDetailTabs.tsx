@@ -94,6 +94,7 @@ import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 import { useEffect, useMemo, useState } from "react";
 import { canWorkOnVisit } from "./common/visitGuards";
+import { useUserStore } from "@/store/useUserStore";
 
 export function AppointmentDetailTabs({
   active,
@@ -113,8 +114,9 @@ export function AppointmentDetailTabs({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
 
-  const tabs = appointmentTabsConfig(injectedProps);
+  const tabs = appointmentTabsConfig(injectedProps, userPermissions);
 
   // ✅ Resolve initial tab ONCE
   const resolvedInitialTab = useMemo(() => {
