@@ -532,7 +532,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view", "viewOne", "create", "edit", "delete"],
+        actions: ["view",],
       },
       {
         key: "medications",
