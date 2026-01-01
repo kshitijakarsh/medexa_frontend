@@ -35,12 +35,12 @@ import {
 } from "@workspace/ui/components/command";
 import { cn } from "@workspace/ui/lib/utils";
 import NewButton from "@/components/common/new-button";
-import OrderLaboratoryTestModal from "./OrderLaboratoryTestModal";
-import OrderRadiologyProcedureModal from "./OrderRadiologyProcedureModal";
-import NurseOrdersModal from "./NurseOrdersModal";
-import ImplantsConsumablesModal from "./ImplantsConsumablesModal";
-import BloodRequirementModal from "./BloodRequirementModal";
-import MedicalClearanceModal from "./MedicalClearanceModal";
+import OrderLaboratoryTestModal from "../modals/OrderLaboratoryTestModal";
+import OrderRadiologyProcedureModal from "../modals/OrderRadiologyProcedureModal";
+import NurseOrdersModal from "../modals/NurseOrdersModal";
+import ImplantsConsumablesModal from "../modals/ImplantsConsumablesModal";
+import BloodRequirementModal from "../modals/BloodRequirementModal";
+import MedicalClearanceModal from "../modals/MedicalClearanceModal";
 
 import {
     SectionConfig,
@@ -49,7 +49,7 @@ import {
     AddOption,
     STATUS_STYLES,
     newItemUrgencyStyle
-} from "./PreOpChecklist";
+} from "../PreOpChecklist";
 
 const sectionTypeMapping: Record<string, string> = {
     "Consents Required": "Consent Form",

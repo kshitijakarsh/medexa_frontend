@@ -3,7 +3,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { SurgeryStatus } from "../../lib/types";
+import { SurgeryStatus } from "../../_lib/types";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import { MoreVertical } from "lucide-react";
 import Image from "next/image";
@@ -212,7 +212,7 @@ const SurgeryTable: React.FC = () => {
           />
         </div>
 
-        <Button variant="link" className="text-blue-500 text-sm">Advanced Filters</Button>
+        <Button variant="link" className="text-blue-500 text-sm">View All</Button>
       </div>
 
       {error ? (

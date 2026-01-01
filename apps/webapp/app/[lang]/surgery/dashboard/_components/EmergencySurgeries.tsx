@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { EMERGENCY_SURGERIES } from "../../lib/constants";
+import { EMERGENCY_SURGERIES } from "../../_lib/constants";
 import PatientCard from "./UI/PatientCard";
 import { useRouter } from "next/navigation";
 import { Button } from "@workspace/ui/components/button"

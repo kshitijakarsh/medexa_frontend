@@ -1,5 +1,5 @@
 import { Info } from "lucide-react";
-import { InfoField } from "../../../../components/common/InfoField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
 

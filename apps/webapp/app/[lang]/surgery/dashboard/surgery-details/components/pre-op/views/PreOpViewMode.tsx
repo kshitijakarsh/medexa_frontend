@@ -20,12 +20,12 @@ import {
 } from "@workspace/ui/components/dropdown-menu";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
-import DocumentViewModal, { DocumentData } from "./DocumentViewModal";
-import NurseOrderViewModal, { NurseOrderData } from "./NurseOrderViewModal";
-import ImplantsConsumablesViewModal, { ImplantConsumableData } from "./ImplantsConsumablesViewModal";
-import BloodRequirementViewModal, { BloodRequirementData } from "./BloodRequirementViewModal";
-import ConsentUploadModal from "./ConsentUploadModal";
-import ApproveClearanceModal from "./ApproveClearanceModal";
+import DocumentViewModal, { DocumentData } from "../modals/DocumentViewModal";
+import NurseOrderViewModal, { NurseOrderData } from "../modals/NurseOrderViewModal";
+import ImplantsConsumablesViewModal, { ImplantConsumableData } from "../modals/ImplantsConsumablesViewModal";
+import BloodRequirementViewModal, { BloodRequirementData } from "../modals/BloodRequirementViewModal";
+import ConsentUploadModal from "../modals/ConsentUploadModal";
+import ApproveClearanceModal from "../modals/ApproveClearanceModal";
 import {
     ItemStatus,
     ChecklistItem,
@@ -33,7 +33,7 @@ import {
     SectionConfig,
     STATUS_STYLES,
     newItemUrgencyStyle
-} from "./PreOpChecklist";
+} from "../PreOpChecklist";
 
 // Reusing types and constants from PreOpChecklist
 

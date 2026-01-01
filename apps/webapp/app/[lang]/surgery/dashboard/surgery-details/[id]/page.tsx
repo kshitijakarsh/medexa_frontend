@@ -3,7 +3,7 @@
 import React from "react";
 import { ArrowLeft, List, Save, FilePlus2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Patient } from "../../../lib/types";
+import { Patient } from "../../../_lib/types";
 import PatientBanner from "../components/shared/PatientBanner";
 import PostOpCare from "../components/post-op/PostOpCare";
 import NurseCare from "../components/nurse/NurseCare";

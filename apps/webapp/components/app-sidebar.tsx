@@ -150,6 +150,13 @@ export function AppSidebar({ }) {
           ],
           icon: BriefcaseMedical,
         },
+        {
+          title : "Ward Store",
+          url : [
+            withLocale(ROUTES.SURGERY_WARD_STORE)
+          ],
+          icon : BriefcaseMedical
+        }
       ]
       : []),
     // {

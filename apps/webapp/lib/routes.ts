@@ -66,6 +66,7 @@ export const ROUTES = {
   SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/teams/new`,
   SURGERY_OT_TEMPLATES : `${SURGERY_BASE}/templates`,
   SURGERY_OT_TEMPLATES_NEW : `${SURGERY_BASE}/templates/new`,
+  SURGERY_WARD_STORE : `${SURGERY_BASE}/ward-store`,
 }
 
 // Build URL with query parameters

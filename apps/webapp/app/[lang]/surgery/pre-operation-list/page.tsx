@@ -13,7 +13,7 @@ import {
 import TabSwitcher from "@/components/common/TabSwitcher";
 import { useRouter } from "next/navigation";
 
-import { FilterDropdown } from "../components/dashboard/UI/FilterDropdown";
+import { FilterDropdown } from "../dashboard/_components/UI/FilterDropdown";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 // import type { Column } from "@/components/common/data-table";
 

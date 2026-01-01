@@ -17,7 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@workspace/ui/components/select";
-import { ChecklistItem } from "./PreOpViewMode";
+import { ChecklistItem } from "../PreOpChecklist";
 import { Info, CheckCircle2 } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
 

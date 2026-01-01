@@ -17,10 +17,10 @@ export default function NewButton({
     return (
         <Button
             onClick={handleClick}
-            className={`bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg flex items-center gap-2 pr-0 rounded-[5.6rem] cursor-pointer transition-colors duration-200 ${className}`}
+            className={`bg-green-500 hover:bg-green-600 text-white font-medium flex items-center gap-2 pr-0 rounded-[5.6rem] cursor-pointer transition-colors duration-200 ${className}`}
         >
             {name}
-            <span className="p-2 bg-green-600 rounded-full">{icon}</span>
+            <span className="p-3 bg-green-600 rounded-full mr-0.5">{icon}</span>
         </Button>
     )
 }

@@ -283,7 +283,7 @@ export default function TemplatesList() {
                         name="Create Template"
                         className="h-9 text-sm"
                         handleClick={() => {
-                            router.push("/surgery/dashboard/templates/new");
+                            router.push("/surgery/templates/new");
                         }}
                     ></NewButton>
 

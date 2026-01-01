@@ -1,5 +1,5 @@
 import React from "react";
-import { UrgencyLevel } from "../../lib/types";
+import { UrgencyLevel } from "../../_lib/types";
 
 interface StatusBadgeProps {
     status: UrgencyLevel;

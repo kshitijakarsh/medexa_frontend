@@ -118,6 +118,12 @@ export function DynamicTabs({
 }: DynamicTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.key);
 
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab]);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
@@ -156,11 +162,10 @@ export function DynamicTabs({
             type="button"
             onClick={() => handleClick(tab.key)}
             className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer
-            ${
-              activeTab === tab.key
+            ${activeTab === tab.key
                 ? "bg-[#0086F8] text-white hover:bg-[#0086F8]"
                 : "bg-white text-gray-600 hover:bg-blue-100"
-            }`}
+              }`}
           >
             {tab.label}
           </Button>

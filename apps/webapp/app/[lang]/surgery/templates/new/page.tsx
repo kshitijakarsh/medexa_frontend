@@ -3,10 +3,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Trash2, Send } from "lucide-react";
-import { DynamicSection } from "../../components/common/DynamicSection";
+import { DynamicSection } from "../../_components/common/DynamicSection";
 import { FormInput } from "@/components/ui/form-input";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
+import { createSurgeryTemplateApiClient } from "@/lib/api/surgery/templates";
+
+// --- Types ---
+interface Procedure {
+    id: string;
+    title: string;
+    details?: string;
+}
 
 // --- Mock Data ---
 const MOCK_PROCEDURES = [
@@ -40,15 +49,51 @@ const PendingActionItem = ({ title, details, onRemove }: { title: string, detail
 export default function CreateTemplatePage() {
     const router = useRouter();
 
+    // API Client
+    const templatesApi = createSurgeryTemplateApiClient({});
+
+    // Fetch Procedures
+    const { data: proceduresData, isLoading: isLoadingProcedures } = useQuery({
+        queryKey: ["procedures"],
+        queryFn: async () => {
+            const response = await templatesApi.getProcedures({ limit: 100 });
+            return response.data.data;
+        }
+    });
+
+    const procedureOptions = proceduresData?.map(p => p.title) || [];
+
+    // Fetch Clearances
+    const { data: clearancesData, isLoading: isLoadingClearances } = useQuery({
+        queryKey: ["clearances"],
+        queryFn: async () => {
+            const response = await templatesApi.getClearances({ limit: 100 });
+            return response.data.data;
+        }
+    });
+
+    const clearanceOptions = clearancesData?.map(c => c.name) || [];
+
+    // Fetch Consents
+    const { data: consentsData, isLoading: isLoadingConsents } = useQuery({
+        queryKey: ["consents"],
+        queryFn: async () => {
+            const response = await templatesApi.getConsents({ limit: 100 });
+            return response.data.data;
+        }
+    });
+
+    const consentOptions = consentsData?.map(c => c.name) || [];
+
     // State
     const [templateName, setTemplateName] = useState("");
     const [isActive, setIsActive] = useState(true);
 
     // Sections State
-    const [procedures, setProcedures] = useState(MOCK_PROCEDURES);
+    const [procedures, setProcedures] = useState<{ title: string; details?: string }[]>([]);
     const [investigations, setInvestigations] = useState(MOCK_INVESTIGATIONS);
-    const [medicalClearances, setMedicalClearances] = useState(["Anesthesia Clearance", "Cardiology Clearance", "Physician Clearance"]);
-    const [consents, setConsents] = useState(["Surgical Consent", "Anesthesia Consent", "Blood Transfusion Consent"]);
+    const [medicalClearances, setMedicalClearances] = useState<string[]>([]);
+    const [consents, setConsents] = useState<string[]>([]);
     const [nursingOrders, setNursingOrders] = useState(["Monitor vital signs every 2 hours", "Maintain strict intake & output chart", "Ensure consent forms are signed"]);
     const [patientPrep, setPatientPrep] = useState(["NPO for 6 Hours", "DVT Prophylaxis - Stockings"]);
     const [anesthesiaReq, setAnesthesiaReq] = useState(["General Anesthesia", "Endotracheal Intubation"]);
@@ -62,6 +107,24 @@ export default function CreateTemplatePage() {
         onAddItem: (item: string) => setter([...getter, item]),
         onRemoveItem: (index: number) => setter(getter.filter((_, i) => i !== index))
     });
+
+    // Special handler for procedures to include description
+    const handleAddProcedure = (title: string) => {
+        const found = proceduresData?.find(p => p.title === title);
+        if (found) {
+            setProcedures([...procedures, { title: found.title, details: found.details }]);
+        } else {
+            setProcedures([...procedures, { title, details: "" }]);
+        }
+    };
+
+    const handleAddClearance = (name: string) => {
+        setMedicalClearances([...medicalClearances, name]);
+    };
+
+    const handleAddConsent = (name: string) => {
+        setConsents([...consents, name]);
+    };
 
     return (
         <div className="min-h-screen">
@@ -115,13 +178,15 @@ export default function CreateTemplatePage() {
                     <DynamicSection
                         title="Procedures"
                         items={procedures}
-                        {...makeHandlers(procedures, setProcedures)}
-                        placeholder="Select Procedure"
+                        onAddItem={handleAddProcedure}
+                        onRemoveItem={(index) => setProcedures(procedures.filter((_, i) => i !== index))}
+                        placeholder={isLoadingProcedures ? "Loading Procedures..." : "Select Procedure"}
+                        options={procedureOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title}
-                                details={typeof item === 'string' ? undefined : item.details}
+                                title={item.title}
+                                details={item.details}
                                 onRemove={onRemove}
                             />
                         )}
@@ -145,8 +210,10 @@ export default function CreateTemplatePage() {
                     <DynamicSection
                         title="Medical Clearances"
                         items={medicalClearances}
-                        {...makeHandlers(medicalClearances, setMedicalClearances)}
-                        placeholder="Add Medical Clearances"
+                        onAddItem={handleAddClearance}
+                        onRemoveItem={(index) => setMedicalClearances(medicalClearances.filter((_, i) => i !== index))}
+                        placeholder={isLoadingClearances ? "Loading Clearances..." : "Add Medical Clearances"}
+                        options={clearanceOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
@@ -159,8 +226,10 @@ export default function CreateTemplatePage() {
                     <DynamicSection
                         title="Consents Required"
                         items={consents}
-                        {...makeHandlers(consents, setConsents)}
-                        placeholder="Add Consents Required"
+                        onAddItem={handleAddConsent}
+                        onRemoveItem={(index) => setConsents(consents.filter((_, i) => i !== index))}
+                        placeholder={isLoadingConsents ? "Loading Consents..." : "Add Consents Required"}
+                        options={consentOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}

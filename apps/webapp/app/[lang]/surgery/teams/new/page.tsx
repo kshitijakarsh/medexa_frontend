@@ -3,33 +3,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "@workspace/ui/lib/sonner";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, Loader2 } from "lucide-react";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import { createSurgeryTeamApiClient, CreateSurgeryTeamParams } from "@/lib/api/surgery/teams";
-
-const MOCK_SURGEONS = [
-    { id: "123", name: "Dr. Sarah Smith" },
-    { id: "124", name: "Dr. Mike Chen" },
-    { id: "125", name: "Dr. Emily Wong" },
-    { id: "126", name: "Dr. John Doe" },
-    { id: "127", name: "Dr. Lisa Ray" }
-];
+import { createDoctorApiClient } from "@/lib/api/surgery/doctor";
+import { createNurseApiClient } from "@/lib/api/nurse-api";
+import { getAuthToken } from "@/app/utils/onboarding";
 
 const MOCK_ANAESTHETISTS = [
     { id: "201", name: "Dr. Alan Grant" },
     { id: "202", name: "Dr. Ellie Sattler" },
     { id: "203", name: "Dr. Ian Malcolm" }
-];
-
-const MOCK_NURSES = [
-    { id: "301", name: "Nurse Jackie" },
-    { id: "302", name: "Nurse Ratched" },
-    { id: "303", name: "Nurse Nightingale" },
-    { id: "304", name: "Nurse Joy" }
 ];
 
 const MOCK_TECHNICIANS = [
@@ -44,6 +32,40 @@ const toOptions = (items: { id: string; name: string }[]) =>
 export default function CreateTeamPage() {
     const router = useRouter();
 
+    // API Clients
+    const teamsApi = createSurgeryTeamApiClient({});
+    const doctorApi = createDoctorApiClient({});
+
+    // Fetch Doctors
+    const { data: doctorData, isLoading: isLoadingDoctors } = useQuery({
+        queryKey: ["doctors-soap-notes-creators"],
+        queryFn: async () => {
+            const response = await doctorApi.getAll({ limit: 100 });
+            return response.data.data;
+        },
+    });
+
+    // Fetch Nurses
+    const { data: nurseData, isLoading: isLoadingNurses } = useQuery({
+        queryKey: ["nurses-consumables-creators"],
+        queryFn: async () => {
+            const token = await getAuthToken();
+            const nurseApi = createNurseApiClient({ authToken: token });
+            const response = await nurseApi.getConsumablesCreators({ limit: 100 } as any);
+            return response.data.data;
+        },
+    });
+
+    const surgeonOptions = doctorData?.map(doc => ({
+        value: doc.id,
+        label: doc.name || `${doc.first_name} ${doc.last_name}`
+    })) || [];
+
+    const nurseOptions = nurseData?.map(nurse => ({
+        value: nurse.id,
+        label: nurse.name || `${nurse.first_name} ${nurse.last_name}`
+    })) || [];
+
     // Form State
     const [teamName, setTeamName] = useState("");
     const [specialty, setSpecialty] = useState("");
@@ -56,9 +78,6 @@ export default function CreateTeamPage() {
     const [scrubNurse, setScrubNurse] = useState("");
     const [circulatingNurse, setCirculatingNurse] = useState("");
     const [otTechnician, setOtTechnician] = useState("");
-
-    // API Client
-    const teamsApi = createSurgeryTeamApiClient({});
 
     // Create Team Mutation
     const createTeamMutation = useMutation({
@@ -195,46 +214,51 @@ export default function CreateTeamPage() {
                         {/* Lead Surgeon */}
                         <FormSelect
                             label="Lead Surgeon"
-                            placeholder="Select Surgeon"
+                            placeholder={isLoadingDoctors ? "Loading Doctors..." : "Select Surgeon"}
                             value={leadSurgeon}
                             onValueChange={setLeadSurgeon}
-                            options={toOptions(MOCK_SURGEONS)}
+                            options={surgeonOptions}
+                            disabled={isLoadingDoctors}
                         />
 
                         {/* Assistant Surgeon */}
                         <FormSelect
                             label="Assistant Surgeon"
-                            placeholder="Select Assistant Surgeon"
+                            placeholder={isLoadingDoctors ? "Loading Doctors..." : "Select Assistant Surgeon"}
                             value={assistantSurgeon}
                             onValueChange={setAssistantSurgeon}
-                            options={toOptions(MOCK_SURGEONS)}
+                            options={surgeonOptions}
+                            disabled={isLoadingDoctors}
                         />
 
                         {/* Anaesthetist */}
                         <FormSelect
                             label="Anaesthetist"
-                            placeholder="Select Anaesthetist"
+                            placeholder={isLoadingDoctors ? "Loading Doctors..." : "Select Anaesthetist"}
                             value={anaesthetist}
                             onValueChange={setAnaesthetist}
-                            options={toOptions(MOCK_ANAESTHETISTS)}
+                            options={surgeonOptions}
+                            disabled={isLoadingDoctors}
                         />
 
                         {/* Scrub Nurse */}
                         <FormSelect
                             label="Scrub Nurse"
-                            placeholder="Select Scrub Nurse"
+                            placeholder={isLoadingNurses ? "Loading Nurses..." : "Select Scrub Nurse"}
                             value={scrubNurse}
                             onValueChange={setScrubNurse}
-                            options={toOptions(MOCK_NURSES)}
+                            options={nurseOptions}
+                            disabled={isLoadingNurses}
                         />
 
                         {/* Circulating Nurse */}
                         <FormSelect
                             label="Circulating Nurse"
-                            placeholder="Select Circulating Nurse"
+                            placeholder={isLoadingNurses ? "Loading Nurses..." : "Select Circulating Nurse"}
                             value={circulatingNurse}
                             onValueChange={setCirculatingNurse}
-                            options={toOptions(MOCK_NURSES)}
+                            options={nurseOptions}
+                            disabled={isLoadingNurses}
                         />
 
                         {/* OT Technician */}

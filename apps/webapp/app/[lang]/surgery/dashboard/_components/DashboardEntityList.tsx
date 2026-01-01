@@ -8,8 +8,8 @@ interface Column<T> {
     render?: (row: T) => React.ReactNode;
     className?: string;
 }
-import { SurgeryRequest } from "./../../lib/types";
-import { StatusBadge } from "../common/StatusBadge";
+import { SurgeryRequest } from "./../../_lib/types";
+import { StatusBadge } from "../../_components/common/StatusBadge";
 import {
     SlidersHorizontal,
     Search,
