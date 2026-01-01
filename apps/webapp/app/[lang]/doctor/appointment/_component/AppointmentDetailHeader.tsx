@@ -288,7 +288,8 @@ export function AppointmentDetailHeader({
       flex 
       justify-between 
       items-start 
-      border border-[#E8F6FF]
+      border border-0 border-b-2
+      border-b-[#0086F8]
       gap-3
     ">
 
