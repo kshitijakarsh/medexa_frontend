@@ -20,6 +20,7 @@ import type { UserItem } from "@/lib/api/administration/users"
 import { Can } from "@/components/common/app-can"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import { useUserStore } from "@/store/useUserStore"
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 const limit = 10
 
@@ -289,7 +290,9 @@ function EmployeeConfigurationPageContent() {
 export default function EmployeeConfigurationPage() {
   return (
     <Suspense fallback={<div className="p-5">Loading...</div>}>
-      <EmployeeConfigurationPageContent />
+      <PermissionGuard permission={PERMISSIONS.USER.VIEW}>
+        <EmployeeConfigurationPageContent />
+      </PermissionGuard>
     </Suspense>
   )
 }

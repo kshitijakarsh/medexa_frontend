@@ -18,7 +18,18 @@ const schema = z.object({
   active: z.boolean().catch(false),
 });
 
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/app/utils/permissions";
+
 export default function EditUnitPage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.CHARGE_UNIT.EDIT}>
+      <EditUnitPageContent />
+    </PermissionGuard>
+  )
+}
+
+function EditUnitPageContent() {
   const params = useParams() as { id?: string };
   const id = params?.id ? Number(params.id) : undefined;
   const router = useRouter();

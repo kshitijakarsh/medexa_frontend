@@ -402,6 +402,7 @@ import { PageHeader } from "@/components/common/page-header"
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable"
 import { PaginationControls } from "@/components/common/data-table/PaginationControls"
 import { AddRoleDialog } from "./_components/AddDialog"
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 import { createRoleApiClient } from "@/lib/api/administration/roles"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
@@ -669,7 +670,9 @@ function RolesPageContent() {
 export default function RolesPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RolesPageContent />
+      <PermissionGuard permission={PERMISSIONS.ROLE.VIEW}>
+        <RolesPageContent />
+      </PermissionGuard>
     </Suspense>
   )
 }

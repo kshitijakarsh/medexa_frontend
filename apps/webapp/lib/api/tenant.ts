@@ -42,6 +42,16 @@ interface TenantResponse {
   success: boolean
 }
 
+interface TenantModuleShort {
+  id: number
+  name_en: string
+}
+
+interface TenantModulesResponse {
+  data: TenantModuleShort[]
+  success: boolean
+}
+
 interface Country {
   id: number
   name_en: string
@@ -114,9 +124,9 @@ class TenantApiClient {
   }
 
 
-  async getTenantByModules(): Promise<AxiosResponse<TenantResponse>> {
+  async getTenantByModules(): Promise<AxiosResponse<TenantModulesResponse>> {
     try {
-      return await axios.get<TenantResponse>(
+      return await axios.get<TenantModulesResponse>(
         `${this.baseUrl}/api/v1/tenant-modules`,
         this.getJsonRequestConfig()
       )

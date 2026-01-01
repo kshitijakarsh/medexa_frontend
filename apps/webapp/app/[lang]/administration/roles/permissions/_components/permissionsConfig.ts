@@ -233,6 +233,7 @@ import {
   IdCard,
   Syringe,
   UserRound,
+  Scissors,
 } from "lucide-react";
 
 export interface PermissionNode {
@@ -291,6 +292,11 @@ export const mainModules: MainModule[] = [
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
+        key: "tenantModule",
+        label: "Role Modules",
+        actions: ["view"],
+      },
+      {
         key: "user",
         label: "Users",
         actions: ["view", "create", "edit", "delete", "viewOne"],
@@ -308,33 +314,48 @@ export const mainModules: MainModule[] = [
       {
         key: "insurance",
         label: "Insurance",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
-        key: "charges",
+        key: "charge",
         label: "Charges",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "chargeCategory",
+        label: "Charge Category",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "chargeUnit",
+        label: "Charge Unit",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "taxCategory",
+        label: "Tax Category",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
         key: "patientCategory",
         label: "Patients",
-        actions: ["view", "create", "edit", "delete"],
+        actions: ["view", "create", "edit", "delete", "viewOne"],
       },
-      {
-        key: "tax",
-        label: "Tax",
-        actions: ["view", "create", "edit", "delete"],
-      },
-      {
-        key: "category",
-        label: "Category",
-        actions: ["view", "create", "edit", "delete"],
-      },
-      {
-        key: "unit",
-        label: "Unit",
-        actions: ["view", "create", "edit", "delete"],
-      },
+      // {
+      //   key: "tax",
+      //   label: "Tax",
+      //   actions: ["view", "create", "edit", "delete"],
+      // },
+      // {
+      //   key: "category",
+      //   label: "Category",
+      //   actions: ["view", "create", "edit", "delete"],
+      // },
+      // {
+      //   key: "unit",
+      //   label: "Unit",
+      //   actions: ["view", "create", "edit", "delete"],
+      // },
       {
         key: "operation",
         label: "Operation",
@@ -476,6 +497,11 @@ export const mainModules: MainModule[] = [
       {
         key: "users",
         label: "Users",
+        actions: ["view"],
+      },
+      {
+        key: "visit",
+        label: "Visits",
         actions: ["view"],
       },
       {
@@ -640,6 +666,64 @@ export const mainModules: MainModule[] = [
         key: "storage",
         label: "Storage",
         actions: ["create"],
+      },
+    ],
+  },
+  {
+    key: "surgery",
+    id: 12,
+    label: "Surgery",
+    icon: Scissors,
+    subModules: [
+      {
+        key: "surgeries",
+        label: "Surgeries",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "consents",
+        label: "Consents",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "surgeryTeams",
+        label: "Surgery Teams",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "surgeryNurseNotes",
+        label: "Surgery Nurse Notes",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "consumptionLogs",
+        label: "Consumption Logs",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "intraops",
+        label: "Intraoperative",
+        actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "procedures",
+        label: "Procedures",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "equipmentUsageLogs",
+        label: "Equipment Usage Logs",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "clearances",
+        label: "Clearances",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "anesthesiaPlans",
+        label: "Anesthesia Plans",
+        actions: ["view", "create", "edit", "delete"],
       },
     ],
   },

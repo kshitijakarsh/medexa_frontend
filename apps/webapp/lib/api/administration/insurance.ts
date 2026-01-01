@@ -83,7 +83,7 @@ export interface UpdateInsuranceParams {
 
 /* ---------------- CLIENT ---------------- */
 
-class InsuranceApiClient {
+export class InsuranceApiClient {
   private baseUrl: string;
   private authToken: string;
 
@@ -120,8 +120,7 @@ class InsuranceApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          `Get insurance providers error: ${
-            error.response?.data?.message || error.message
+          `Get insurance providers error: ${error.response?.data?.message || error.message
           }`
         );
       }
@@ -142,8 +141,7 @@ class InsuranceApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          `Get insurance error: ${
-            error.response?.data?.message || error.message
+          `Get insurance error: ${error.response?.data?.message || error.message
           }`
         );
       }
@@ -165,8 +163,7 @@ class InsuranceApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          `Create insurance error: ${
-            error.response?.data?.message || error.message
+          `Create insurance error: ${error.response?.data?.message || error.message
           }`
         );
       }
@@ -189,8 +186,7 @@ class InsuranceApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          `Update insurance error: ${
-            error.response?.data?.message || error.message
+          `Update insurance error: ${error.response?.data?.message || error.message
           }`
         );
       }
@@ -211,8 +207,7 @@ class InsuranceApiClient {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         throw new Error(
-          `Delete insurance error: ${
-            error.response?.data?.message || error.message
+          `Delete insurance error: ${error.response?.data?.message || error.message
           }`
         );
       }

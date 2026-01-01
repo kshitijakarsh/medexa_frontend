@@ -72,6 +72,31 @@ export const PERMISSIONS = {
         DELETE: "administration:unit:delete",
         VIEW: "administration:unit:view",
     },
+    CHARGE: {
+        CREATE: "administration:charge:create",
+        EDIT: "administration:charge:edit",
+        DELETE: "administration:charge:delete",
+        VIEW: "administration:charge:view",
+        VIEW_ONE: "administration:charge:viewOne",
+    },
+    CHARGE_CATEGORY: {
+        CREATE: "administration:chargeCategory:create",
+        EDIT: "administration:chargeCategory:edit",
+        DELETE: "administration:chargeCategory:delete",
+        VIEW: "administration:chargeCategory:view",
+    },
+    CHARGE_UNIT: {
+        CREATE: "administration:chargeUnit:create",
+        EDIT: "administration:chargeUnit:edit",
+        DELETE: "administration:chargeUnit:delete",
+        VIEW: "administration:chargeUnit:view",
+    },
+    TAX_CATEGORY: {
+        CREATE: "administration:taxCategory:create",
+        EDIT: "administration:taxCategory:edit",
+        DELETE: "administration:taxCategory:delete",
+        VIEW: "administration:taxCategory:view",
+    },
     OPERATION_THEATRES: {
         CREATE: "administration:operationTheatres:create",
         EDIT: "administration:operationTheatres:edit",
@@ -342,7 +367,7 @@ export function normalizePermissionList(
             if (p.name) return p.name;
 
             if (p.permission)
-                return `${p.permission.module_key}.${p.permission.name}`;
+                return `${p.permission.module_key}:${p.permission.name}`;
 
             return "";
         })

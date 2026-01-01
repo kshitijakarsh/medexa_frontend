@@ -12,10 +12,10 @@ interface RowAction {
   disabled?: boolean;
 }
 const PERMISSION_MAP: Record<string, any> = {
-  service: PERMISSIONS.SERVICE,
-  category: PERMISSIONS.CATEGORY,
-  tax: PERMISSIONS.TAX,
-  unit: PERMISSIONS.UNIT,
+  service: PERMISSIONS.CHARGE,
+  category: PERMISSIONS.CHARGE_CATEGORY,
+  tax: PERMISSIONS.TAX_CATEGORY,
+  unit: PERMISSIONS.CHARGE_UNIT,
 }
 
 export function ChargesRowActions({ onEdit, onView, onDelete, onPermission, userPermissions, mode }: any) {

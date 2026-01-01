@@ -114,13 +114,16 @@
 
 "use client";
 
-import { createInsuranceApiClient } from "@/lib/api/administration/insurance";
+import {
+  createInsuranceApiClient,
+  CreateInsuranceParams,
+} from "@/lib/api/administration/insurance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@workspace/ui/lib/sonner";
 
 const insuranceClient = createInsuranceApiClient({
   authToken: "", // token handled by getIdToken internally
-}) as any; // TODO: fix typing issue
+});
 
 /* ---------------- QUERY KEYS ---------------- */
 
@@ -169,7 +172,8 @@ export function useCreateInsurance() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: insuranceClient.createInsurance.bind(insuranceClient),
+    mutationFn: (payload: CreateInsuranceParams) =>
+      insuranceClient.createInsurance(payload),
 
     onSuccess: () => {
       toast.success("Insurance company created successfully");

@@ -24,9 +24,7 @@ import {
     useUpdateInsurance,
 } from "./hooks/hooks";
 
-import { uploadToS3 } from "@/lib/storage/uploadToS3";
-import { getPublicS3Url } from "@/lib/storage/getPublicS3Url";
-import { useGeneratePresignedUrl } from "@/app/hooks/useStorage";
+import { useFileUpload } from "@/app/hooks/useFileUpload";
 import type {
     CreateInsuranceParams,
     UpdateInsuranceParams,
@@ -62,9 +60,10 @@ export function InsuranceForm({ mode, id, initialData }: Props) {
     const router = useRouter();
     const createInsurance = useCreateInsurance();
     const updateInsurance = useUpdateInsurance();
-    const generatePresignedUrl = useGeneratePresignedUrl();
+    const { uploadFile, isUploading } = useFileUpload();
 
-    const isSubmitting = createInsurance.isPending || updateInsurance.isPending;
+    const isSubmitting =
+        createInsurance.isPending || updateInsurance.isPending || isUploading;
 
     const form = useForm<FormValues>({
         resolver: zodResolver(schema),
@@ -102,25 +101,10 @@ export function InsuranceForm({ mode, id, initialData }: Props) {
 
     /* ---------- SUBMIT ---------- */
     const onSubmit = async (values: FormValues) => {
-        let logoUrl =
-            initialData?.insurance_company_logo_url;
+        let logoUrl = initialData?.insurance_company_logo_url;
 
         if (values.employee_photo) {
-            const presigned = await generatePresignedUrl.mutateAsync({
-                fileName: values.employee_photo.name,
-                contentType: values.employee_photo.type,
-                path: "insurances",
-            });
-
-            await uploadToS3({
-                file: values.employee_photo,
-                presignedUrl: presigned.uploadUrl,
-            });
-
-            logoUrl = getPublicS3Url(
-                presigned.bucket,
-                presigned.key
-            );
+            logoUrl = await uploadFile(values.employee_photo, "insurances");
         }
 
         // const payload: UpdateInsuranceParams = {

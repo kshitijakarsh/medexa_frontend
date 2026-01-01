@@ -115,188 +115,6 @@
 
 
 
-// "use client";
-
-// import { AppDialog } from "@/components/common/app-dialog";
-// import {
-//   Form,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormControl,
-//   FormMessage,
-// } from "@workspace/ui/components/form";
-// import { Input } from "@workspace/ui/components/input";
-// import { useForm } from "@workspace/ui/hooks/use-form";
-// import { z } from "@workspace/ui/lib/zod";
-// import { zodResolver } from "@workspace/ui/lib/zod";
-
-// import { PrimaryButton } from "@/components/common/buttons/primary-button";
-// import { CancelButton } from "@/components/common/buttons/cancel-button";
-// import { useCreateAttachment } from "../_hooks/useAttachments";
-
-// import { UploadCloud, FileText, X } from "lucide-react";
-
-// /* ---------- SCHEMA ---------- */
-// const schema = z.object({
-//   title: z.string().min(1, "Title required"),
-//   file: z.instanceof(File, { message: "File is required" }),
-// });
-
-// type FormValues = z.infer<typeof schema>;
-
-// interface Props {
-//   visitId: string;
-//   patientId: string;
-//   open: boolean;
-//   onClose: () => void;
-// }
-
-// export default function AddAttachmentModal({
-//   visitId,
-//   patientId,
-//   open,
-//   onClose,
-// }: Props) {
-//   const createAttachment = useCreateAttachment(visitId);
-
-//   const form = useForm<FormValues>({
-//     resolver: zodResolver(schema),
-//     defaultValues: {
-//       title: "",
-//       file: undefined,
-//     },
-//   });
-
-//   async function submit(values: FormValues) {
-//     const s3Url = URL.createObjectURL(values.file);
-
-//     await createAttachment.mutateAsync({
-//       visit_id: visitId,
-//       patient_id: patientId,
-//       title: values.title,
-//       s3_url: s3Url,
-//     });
-
-//     onClose();
-//     form.reset();
-//   }
-
-//   return (
-//     <AppDialog
-//       open={open}
-//       onClose={onClose}
-//       title="Add Attachment"
-//       maxWidth="md:max-w-xl lg:max-w-xl"
-//     >
-//       <Form {...form}>
-//         <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
-//           {/* ---------- TITLE ---------- */}
-//           <FormField
-//             name="title"
-//             control={form.control}
-//             render={({ field }) => (
-//               <FormItem>
-//                 <FormLabel>Attachment Title</FormLabel>
-//                 <FormControl>
-//                   <Input placeholder="Lab Report" {...field} />
-//                 </FormControl>
-//                 <FormMessage />
-//               </FormItem>
-//             )}
-//           />
-
-//           {/* ---------- MODERN FILE UPLOAD ---------- */}
-//           <FormField
-//             name="file"
-//             control={form.control}
-//             render={({ field }) => {
-//               const file = field.value;
-
-//               return (
-//                 <FormItem>
-//                   <FormLabel>Upload File</FormLabel>
-
-//                   <FormControl>
-//                     {!file ? (
-//                       <label
-//                         htmlFor="file-upload"
-//                         className="
-//                           flex flex-col items-center justify-center
-//                           border-2 border-dashed rounded-xl
-//                           px-6 py-8 cursor-pointer
-//                           transition
-//                           hover:border-blue-500
-//                           hover:bg-blue-50
-//                         "
-//                       >
-//                         <UploadCloud className="h-8 w-8 text-blue-500 mb-2" />
-//                         <p className="text-sm font-medium">
-//                           Click to upload or drag & drop
-//                         </p>
-//                         <p className="text-xs text-gray-500 mt-1">
-//                           PDF or Image (PNG, JPG)
-//                         </p>
-
-//                         <input
-//                           id="file-upload"
-//                           type="file"
-//                           accept="image/*,.pdf"
-//                           className="hidden"
-//                           onChange={(e) =>
-//                             field.onChange(e.target.files?.[0])
-//                           }
-//                         />
-//                       </label>
-//                     ) : (
-//                       <div className="flex items-center justify-between rounded-xl border px-4 py-3 bg-gray-50">
-//                         <div className="flex items-center gap-3">
-//                           <FileText className="h-6 w-6 text-blue-600" />
-//                           <div>
-//                             <p className="text-sm font-medium">
-//                               {file.name}
-//                             </p>
-//                             <p className="text-xs text-gray-500">
-//                               {(file.size / 1024).toFixed(1)} KB
-//                             </p>
-//                           </div>
-//                         </div>
-
-//                         <button
-//                           type="button"
-//                           onClick={() => field.onChange(undefined)}
-//                           className="text-gray-400 hover:text-red-500"
-//                         >
-//                           <X className="h-4 w-4" />
-//                         </button>
-//                       </div>
-//                     )}
-//                   </FormControl>
-
-//                   <FormMessage />
-//                 </FormItem>
-//               );
-//             }}
-//           />
-
-//           {/* ---------- FOOTER ---------- */}
-//           <div className="flex justify-end gap-3 pt-4 border-t">
-//             <CancelButton onClick={onClose} />
-//             <PrimaryButton
-//               type="submit"
-//               label={
-//                 createAttachment.isPending ? "Uploading..." : "Upload"
-//               }
-//             />
-//           </div>
-//         </form>
-//       </Form>
-//     </AppDialog>
-//   );
-// }
-
-
-
 "use client";
 
 import { AppDialog } from "@/components/common/app-dialog";
@@ -317,10 +135,9 @@ import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
 
 import { UploadCloud, FileText, X } from "lucide-react";
-import axios from "axios";
 
 import { useCreateAttachment } from "../_hooks/useAttachments";
-import { useGeneratePresignedUrl } from "../../../../../../hooks/useStorage";
+import { useFileUpload } from "@/app/hooks/useFileUpload";
 
 /* ---------- SCHEMA ---------- */
 const schema = z.object({
@@ -344,7 +161,7 @@ export default function AddAttachmentModal({
   onClose,
 }: Props) {
   const createAttachment = useCreateAttachment(visitId);
-  const generatePresignedUrl = useGeneratePresignedUrl();
+  const { uploadFile, isUploading } = useFileUpload();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -355,39 +172,10 @@ export default function AddAttachmentModal({
   });
 
   async function submit(values: FormValues) {
-    /* 1️⃣ Generate presigned URL */
-    const presigned = await generatePresignedUrl.mutateAsync({
-      fileName: values.file.name,
-      contentType: values.file.type,
-      path: "patients",
-    });
+    /* 1️⃣ Upload file to S3 */
+    const s3PublicUrl = await uploadFile(values.file, "patients");
 
-    /* 2️⃣ Upload file to S3 (THIS IS REQUIRED) */
-    // await axios.put(presigned.uploadUrl, values.file, {
-    //   // headers: {
-    //   //   "Content-Type": values.file.type,
-
-    //   // },
-    //   // Important: prevent axios/AWS SDK from trying to sign the request
-    //   withCredentials: false,
-    // });
-    // console.log(presigned, presigned.key, presigned.uploadUrl)
-
-    await axios.put(presigned.uploadUrl.split("?")[0] ?? '', values.file, {
-      withCredentials: false,
-      headers: {
-        "Content-Type": values.file.type,
-      },
-    });
-    // await fetch(presigned.uploadUrl, {
-    //   method: "PUT",
-    //   body: values.file, // File or Blob
-    // });
-
-    /* 3️⃣ Build final S3 URL */
-    const s3PublicUrl = `https://${presigned.bucket}.s3.ap-south-1.amazonaws.com/${presigned.key}`;
-
-    /* 4️⃣ Save attachment metadata */
+    /* 2️⃣ Save attachment metadata */
     await createAttachment.mutateAsync({
       visit_id: visitId,
       patient_id: patientId,
@@ -398,7 +186,6 @@ export default function AddAttachmentModal({
     onClose();
     form.reset();
   }
-
 
   return (
     <AppDialog
@@ -486,8 +273,7 @@ export default function AddAttachmentModal({
             <PrimaryButton
               type="submit"
               label={
-                createAttachment.isPending ||
-                  generatePresignedUrl.isPending
+                createAttachment.isPending || isUploading
                   ? "Uploading..."
                   : "Upload"
               }

@@ -19,7 +19,18 @@ const schema = z.object({
   active: z.boolean().catch(false),
 });
 
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/app/utils/permissions";
+
 export default function EditTaxPage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.TAX_CATEGORY.EDIT}>
+      <EditTaxPageContent />
+    </PermissionGuard>
+  )
+}
+
+function EditTaxPageContent() {
   const params = useParams() as { id?: string };
   const id = params?.id ? Number(params.id) : undefined;
   const router = useRouter();
@@ -156,9 +167,9 @@ export default function EditTaxPage() {
                   <FormItem>
                     <FormLabel>Percentage (%) *</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        placeholder="Enter Percentage" 
+                      <Input
+                        type="number"
+                        placeholder="Enter Percentage"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value) || 0)}
                         value={field.value || 0}

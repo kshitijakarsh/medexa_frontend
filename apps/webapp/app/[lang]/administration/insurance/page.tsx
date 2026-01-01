@@ -345,14 +345,24 @@ import { InsuranceRowActionMenu } from "./_components/InsuranceRowActionMenu";
 import { FilterDialog } from "./_components/FilterDialog";
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { QuickActions } from "./_components/QuickActions";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PaginationControls } from "@/components/common/data-table/PaginationControls";
 
 import {
     useInsuranceList,
     useDeleteInsurance,
 } from "./_components/hooks/hooks";
-import { PaginationControls } from "@/components/common/data-table/PaginationControls";
+
 
 export default function CompanyListPage() {
+    return (
+        <PermissionGuard permission={PERMISSIONS.INSURANCE.VIEW}>
+            <CompanyListPageContent />
+        </PermissionGuard>
+    );
+}
+
+function CompanyListPageContent() {
     const router = useRouter();
     const { withLocale } = useLocaleRoute();
     const userPermissions = useUserStore((s) => s.user?.role.permissions);

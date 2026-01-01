@@ -10,6 +10,8 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { AppDialog } from "@/components/common/app-dialog";
 import { StatusSwitch } from "@/components/common/switch-green";
 import { addCategories, addTaxes, addUnits } from "./api";
+import { PERMISSIONS } from "@/app/utils/permissions";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
 
 const schemaName = z.object({
   name: z.string().min(1, "Required"),
@@ -90,61 +92,67 @@ export function AddSingleDialog({ open, onClose, mode, onSaved }: any) {
 
   return (
     <AppDialog open={open} onClose={onClose} title={title} maxWidth="md:max-w-lg">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
-          <FormField name="name" control={form.control} render={({ field }) => (
-            <FormItem>
-              <FormLabel>{label}</FormLabel>
-              <FormControl><Input placeholder={`Enter ${label}`} {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-
-          {mode === "category" && (
-            <FormField name="description" control={form.control} render={({ field }) => (
+      <PermissionGuard permission={
+        mode === "category" ? PERMISSIONS.CHARGE_CATEGORY.CREATE :
+          mode === "tax" ? PERMISSIONS.TAX_CATEGORY.CREATE :
+            PERMISSIONS.CHARGE_UNIT.CREATE
+      }>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSave)} className="space-y-4">
+            <FormField name="name" control={form.control} render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl><Input placeholder="Enter description" {...field} /></FormControl>
+                <FormLabel>{label}</FormLabel>
+                <FormControl><Input placeholder={`Enter ${label}`} {...field} /></FormControl>
                 <FormMessage />
               </FormItem>
             )} />
-          )}
 
-          {mode === "tax" && (
-            <FormField name="percentage" control={form.control} render={({ field }) => (
+            {mode === "category" && (
+              <FormField name="description" control={form.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl><Input placeholder="Enter description" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
+
+            {mode === "tax" && (
+              <FormField name="percentage" control={form.control} render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Percentage (%)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter percentage"
+                      {...field}
+                      onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                      value={field.value || 0}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            )}
+
+            <FormField name="active" control={form.control} render={({ field }) => (
               <FormItem>
-                <FormLabel>Percentage (%)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter percentage"
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
-                    value={field.value || 0}
-                  />
-                </FormControl>
-                <FormMessage />
+                <FormLabel>Status</FormLabel>
+                <div className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"} h-9 px-2 rounded-md`}>
+                  <span className="text-sm text-red-500">Inactive</span>
+                  <FormControl><StatusSwitch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                  <span className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"}`}>Active</span>
+                </div>
               </FormItem>
             )} />
-          )}
 
-          <FormField name="active" control={form.control} render={({ field }) => (
-            <FormItem>
-              <FormLabel>Status</FormLabel>
-              <div className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"} h-9 px-2 rounded-md`}>
-                <span className="text-sm text-red-500">Inactive</span>
-                <FormControl><StatusSwitch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                <span className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"}`}>Active</span>
-              </div>
-            </FormItem>
-          )} />
-
-          <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose} className="text-blue-600 border-blue-500" disabled={isSaving}>Cancel</Button>
-            <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white" disabled={isSaving}> {isSaving ? "Saving..." : "Save"}</Button>
-          </div>
-        </form>
-      </Form>
+            <div className="flex justify-end gap-3 pt-4">
+              <Button type="button" variant="outline" onClick={onClose} className="text-blue-600 border-blue-500" disabled={isSaving}>Cancel</Button>
+              <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white" disabled={isSaving}> {isSaving ? "Saving..." : "Save"}</Button>
+            </div>
+          </form>
+        </Form>
+      </PermissionGuard>
     </AppDialog>
   );
 }
