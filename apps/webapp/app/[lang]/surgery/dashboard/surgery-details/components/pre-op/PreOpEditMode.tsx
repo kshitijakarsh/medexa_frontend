@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArchiveRestore, Trash2, MoreVertical, FileSearch, SquareCheckBig, Stethoscope, Plus, Eye, Pencil, FilePlus, Send } from "lucide-react";
+import { ArchiveRestore, Trash2, MoreVertical, FileSearch, SquareCheckBig, Stethoscope, Plus, Eye, Pencil, FilePlus, Send, Check, ChevronsUpDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
@@ -20,293 +20,42 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@workspace/ui/components/select";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@workspace/ui/components/command";
+import { cn } from "@workspace/ui/lib/utils";
 import NewButton from "@/components/common/new-button";
 import OrderLaboratoryTestModal from "./OrderLaboratoryTestModal";
 import OrderRadiologyProcedureModal from "./OrderRadiologyProcedureModal";
 import NurseOrdersModal from "./NurseOrdersModal";
 import ImplantsConsumablesModal from "./ImplantsConsumablesModal";
 import BloodRequirementModal from "./BloodRequirementModal";
+import MedicalClearanceModal from "./MedicalClearanceModal";
 
-type ItemStatus = "Completed" | "Ordered" | "Pending" | "Processing" | "Due" | "N/A";
+import {
+    SectionConfig,
+    ChecklistItem,
+    ItemStatus,
+    AddOption,
+    STATUS_STYLES,
+    newItemUrgencyStyle
+} from "./PreOpChecklist";
 
-type ChecklistItem = {
-    label: string;
-    status: ItemStatus;
-    subLabel?: string;
-    category?: string;
-    urgency?: string;
-    orderedBy?: string;
-    previousResult?: {
-        date: string;
-        count: number;
-    };
-};
-
-type AddOption = {
-    value: string;
-    label: string;
-    group?: string;
-};
-
-type SectionConfig = {
-    title: string;
-
-    showChanged?: boolean;
-    items: ChecklistItem[];
-    addLabel: string;
-    addOptions: AddOption[];
-};
-
-const SECTIONS: SectionConfig[] = [
-    {
-        title: "Procedures",
-        showChanged: false,
-        items: [
-            {
-                label: "Laparoscopic Cholecystectomy",
-                // Status not needed for info section
-                status: "Pending",
-                subLabel: "Impression: Normal sinus rhythm. No ST-T wave changes. No evidence of acute ischemia."
-            },
-        ],
-        addLabel: "Add Procedure",
-        addOptions: [
-            { value: "lap_chole", label: "Laparoscopic Cholecystectomy" },
-            { value: "appendectomy", label: "Appendectomy" },
-            { value: "hernia_repair", label: "Hernia Repair" },
-            { value: "hip_replacement", label: "Total Hip Replacement" },
-            { value: "knee_arthroscopy", label: "Knee Arthroscopy" },
-            { value: "mastectomy", label: "Mastectomy" },
-        ],
-    },
-    {
-        title: "Required Investigations",
-        showChanged: true,
-        items: [
-            { label: "Complete Blood Count (CBC)", status: "Completed", subLabel: "2025-09-27 19:30", urgency: "Stat", orderedBy: "Dr. Vinay" },
-            { label: "Liver Function Test (LFT)", status: "Completed", subLabel: "2025-09-27 19:30", category: "Laboratory Test", urgency: "Stat", orderedBy: "Dr. Vinay" },
-            {
-                label: "Renal Function Test (RFT)",
-                status: "Ordered",
-                subLabel: "2025-09-27 19:30",
-                category: "Radiology & Imaging",
-                urgency: "Stat",
-                orderedBy: "Dr. Sarah",
-                previousResult: {
-                    date: "05-Dec-2025",
-                    count: 2
-                }
-            },
-            { label: "Blood Sugar (Fasting)", status: "Pending", category: "Laboratory Test", urgency: "Stat" },
-            { label: "Coagulation Profile (PT/INR)", status: "Pending", category: "Laboratory Test", urgency: "Stat" },
-        ],
-        addLabel: "Add Investigation",
-        addOptions: [
-            { value: "cbc", label: "Complete Blood Count (CBC)" },
-            { value: "lft", label: "Liver Function Test (LFT)" },
-            { value: "rft", label: "Renal Function Test (RFT)" },
-            { value: "fasting_sugar", label: "Blood Sugar (Fasting)" },
-            { value: "pt_inr", label: "Coagulation Profile (PT/INR)" },
-        ],
-    },
-    {
-        title: "Medical Clearances",
-        items: [
-            { label: "Anaesthesia Clearance", status: "Pending" },
-            { label: "Physician Clearance", status: "Completed" },
-            { label: "Cardiology Clearance", status: "Completed" },
-        ],
-        addLabel: "Add Clearance",
-        addOptions: [
-            { value: "anaesthesia", label: "Anaesthesia Clearance" },
-            { value: "physician", label: "Physician Clearance" },
-            { value: "cardiology", label: "Cardiology Clearance" },
-            { value: "pulmonology", label: "Pulmonology Clearance" },
-            { value: "nephrology", label: "Nephrology Clearance" },
-        ],
-    },
-    {
-        title: "Consents Required",
-        items: [
-            { label: "Surgical Consent", status: "Completed", subLabel: "Signed by patient & surgeon" },
-            { label: "Anaesthesia Consent", status: "Pending" },
-            { label: "Blood Transfusion Consent", status: "Pending" },
-        ],
-        addLabel: "Add Consent",
-        addOptions: [
-            { value: "surgical_consent", label: "Surgical Consent" },
-            { value: "anaesthesia_consent", label: "Anaesthesia Consent" },
-            { value: "blood_consent", label: "Blood Transfusion Consent" },
-            { value: "high_risk_consent", label: "High Risk Consent" },
-        ],
-    },
-    {
-        title: "Nursing Orders (Pre-Op)",
-        items: [
-            { label: "NPO Status Check", status: "Completed", subLabel: "Confirmed NPO since 10 PM" },
-            { label: "Pre-medication Administered", status: "Ordered", subLabel: "Midazolam ordered" },
-            { label: "Vitals Recorded", status: "Pending" },
-        ],
-        addLabel: "Add Nursing Order",
-        addOptions: [
-            { value: "npo_check", label: "NPO Status Check" },
-            { value: "pre_med", label: "Pre-medication Administered" },
-            { value: "vitals", label: "Vitals Recorded" },
-            { value: "voiding", label: "Voiding/Catheterization" },
-            { value: "gown_change", label: "Gown Change Confirmed" },
-        ],
-    },
-    {
-        title: "Patient Preparation Requirements",
-        items: [
-            { label: "Site Marking", status: "Completed", subLabel: "Marked by Dr. Vinay" },
-            { label: "Skin Preparation", status: "Pending" },
-            { label: "Jewelry/Dentures Removed", status: "Pending" },
-        ],
-        addLabel: "Add Prep Requirement",
-        addOptions: [
-            { value: "site_marking", label: "Site Marking" },
-            { value: "skin_prep", label: "Skin Preparation" },
-            { value: "jewelry_removal", label: "Jewelry/Dentures Removed" },
-            { value: "nail_polish", label: "Nail Polish Removal" },
-            { value: "ted_stockings", label: "TED Stockings Applied" },
-        ],
-    },
-    {
-        title: "Anaesthesia Requirements",
-        items: [
-            { label: "GA Machine Check", status: "Pending" },
-            { label: "Spinal Tray", status: "Ordered", subLabel: "Requested from CSSD" },
-            { label: "Difficult Airway Cart", status: "N/A" },
-        ],
-        addLabel: "Add Anaesthesia Req",
-        addOptions: [
-            // Anaesthesia Type
-            { value: "ga", label: "General Anaesthesia (GA)", group: "Anaesthesia Type" },
-            { value: "regional", label: "Regional Anaesthesia", group: "Anaesthesia Type" },
-            { value: "spinal", label: "Spinal Anaesthesia", group: "Anaesthesia Type" },
-            { value: "epidural", label: "Epidural Anaesthesia", group: "Anaesthesia Type" },
-            { value: "cse", label: "Combined Spinal–Epidural (CSE)", group: "Anaesthesia Type" },
-            { value: "local", label: "Local Anaesthesia", group: "Anaesthesia Type" },
-            { value: "local_sedation", label: "Local Anaesthesia with Sedation", group: "Anaesthesia Type" },
-            { value: "mac", label: "Monitored Anaesthesia Care (MAC)", group: "Anaesthesia Type" },
-            { value: "tiva", label: "Total Intravenous Anaesthesia (TIVA)", group: "Anaesthesia Type" },
-
-            // Airway Management
-            { value: "ett", label: "Endotracheal Intubation", group: "Airway Management" },
-            { value: "lma", label: "Laryngeal Mask Airway (LMA)", group: "Airway Management" },
-            { value: "mask_vent", label: "Mask Ventilation", group: "Airway Management" },
-            { value: "nasal_intubation", label: "Nasal Intubation", group: "Airway Management" },
-            { value: "video_laryngo", label: "Video Laryngoscopy Required", group: "Airway Management" },
-            { value: "difficult_airway", label: "Anticipated Difficult Airway", group: "Airway Management" },
-            { value: "awake_fiberoptic", label: "Awake Fiberoptic Intubation (if required)", group: "Airway Management" },
-
-            // Monitoring Requirements
-            { value: "asa_standard", label: "Standard ASA Monitoring", group: "Monitoring Requirements" },
-            { value: "ibp", label: "Invasive Blood Pressure Monitoring", group: "Monitoring Requirements" },
-            { value: "cvp", label: "Central Venous Line Required", group: "Monitoring Requirements" },
-            { value: "art_line", label: "Arterial Line Required", group: "Monitoring Requirements" },
-            { value: "bis", label: "BIS Monitoring", group: "Monitoring Requirements" },
-            { value: "capno", label: "Capnography", group: "Monitoring Requirements" },
-            { value: "temp_monitor", label: "Temperature Monitoring", group: "Monitoring Requirements" },
-
-            // Vascular Access
-            { value: "periph_iv", label: "Peripheral IV Line", group: "Vascular Access" },
-            { value: "two_large_iv", label: "Two Large Bore IV Lines", group: "Vascular Access" },
-            { value: "cvc_access", label: "Central Venous Access", group: "Vascular Access" },
-            { value: "picc", label: "PICC Line", group: "Vascular Access" },
-            { value: "diff_iv_usg", label: "Difficult IV Access – Ultrasound Guided", group: "Vascular Access" },
-
-            // Special Anaesthesia Considerations
-            { value: "high_risk", label: "High-Risk Anaesthesia Case", group: "Special Anaesthesia Considerations" },
-            { value: "cardiac_risk", label: "Cardiac Risk Monitoring", group: "Special Anaesthesia Considerations" },
-            { value: "pulm_risk", label: "Pulmonary Risk Precautions", group: "Special Anaesthesia Considerations" },
-            { value: "renal_risk", label: "Renal Risk Considerations", group: "Special Anaesthesia Considerations" },
-            { value: "elderly", label: "Elderly / Geriatric Anaesthesia", group: "Special Anaesthesia Considerations" },
-            { value: "peds", label: "Pediatric Anaesthesia", group: "Special Anaesthesia Considerations" },
-            { value: "obesity", label: "Obesity / OSA Precautions", group: "Special Anaesthesia Considerations" },
-
-            // Blood & Fluid Related
-            { value: "blood_prod", label: "Blood Products Anticipated", group: "Blood & Fluid Related" },
-            { value: "massive_transfusion", label: "Massive Transfusion Protocol On Standby", group: "Blood & Fluid Related" },
-            { value: "fluid_restrict", label: "Fluid Restriction Required", group: "Blood & Fluid Related" },
-            { value: "goal_fluid", label: "Goal-Directed Fluid Therapy", group: "Blood & Fluid Related" },
-
-            // Post-Anaesthesia Plan
-            { value: "post_vent", label: "Planned Post-Op Ventilation", group: "Post-Anaesthesia Plan" },
-            { value: "extubate_ot", label: "Extubation in OT", group: "Post-Anaesthesia Plan" },
-            { value: "extubate_icu", label: "Extubation in ICU", group: "Post-Anaesthesia Plan" },
-            { value: "pacu", label: "PACU Observation Required", group: "Post-Anaesthesia Plan" },
-            { value: "icu_transfer", label: "ICU Transfer Post Surgery", group: "Post-Anaesthesia Plan" },
-            { value: "hdu_transfer", label: "HDU / Step-down Transfer", group: "Post-Anaesthesia Plan" },
-        ],
-    },
-    {
-        title: "Equipment & Instruments",
-        items: [
-            { label: "Laparoscopic Tower", subLabel: "Reserved for OR 2", status: "Ordered" },
-            { label: "Laparoscopic Cholecystectomy Set", status: "Pending" },
-            { label: "Cautery Logic (Diathermy)", status: "Pending" },
-        ],
-        addLabel: "Add Equipment",
-        addOptions: [
-            { value: "lap_tower", label: "Laparoscopic Tower" },
-            { value: "c_arm", label: "C-Arm Image Intensifier" },
-            { value: "microscope", label: "Operating Microscope" },
-            { value: "harmonic", label: "Harmonic Scalpel" },
-            { value: "cautery", label: "Cautery Logic (Diathermy)" },
-        ],
-    },
-    {
-        title: "Implants & Consumables",
-        items: [
-            { label: "Prolene Mesh (15x15)", status: "Ordered", subLabel: "Size verification needed" },
-            { label: "Tacker (Absorbable)", status: "Pending" },
-            { label: "Trocars (10mm, 5mm)", status: "Pending" },
-        ],
-        addLabel: "Add Implant/Consumable",
-        addOptions: [
-            { value: "mesh", label: "Prolene Mesh" },
-            { value: "tacker", label: "Tacker (Fixation Device)" },
-            { value: "trocars", label: "Trocars" },
-            { value: "stapler", label: "Linear Cutter Stapler" },
-            { value: "sutures", label: "Sutures (Vicryl/Prolene)" },
-        ],
-    },
-    {
-        title: "Blood & Resource Preparation",
-        items: [
-            { label: "Blood Grouping & Cross Matching", status: "Completed", subLabel: "O+ Confirmed" },
-            { label: "Reserve 2 Units PRBC", status: "Ordered", subLabel: "Sent to Blood Bank" },
-        ],
-        addLabel: "Add Blood/Resource",
-        addOptions: [
-            { value: "grouping", label: "Blood Grouping & Cross Matching" },
-            { value: "prbc", label: "Reserve PRBC (Packed Red Blood Cells)" },
-            { value: "ffp", label: "Reserve FFP (Fresh Frozen Plasma)" },
-            { value: "platelets", label: "Reserve Platelets" },
-            { value: "icu_bed", label: "Post-Op ICU Bed Reservation" },
-        ],
-    },
-];
-
-
-const STATUS_STYLES: Record<ItemStatus, string> = {
-    Completed: "bg-green-500 text-white",
-    Ordered: "bg-orange-500 text-white",
-    Pending: "bg-slate-300 text-slate-700",
-    Processing: "bg-blue-500 text-white",
-    Due: "bg-red-500 text-white",
-    "N/A": "bg-slate-200 text-slate-500",
-};
-
-const newItemUrgencyStyle = (urgency: string) => {
-    switch (urgency.toLowerCase()) {
-        case "stat": return "bg-red-100 text-red-500 border-red-200";
-        case "urgent": return "bg-orange-100 text-orange-500 border-orange-200";
-        case "routine": return "bg-blue-100 text-blue-500 border-blue-200";
-        default: return "bg-slate-100 text-slate-500 border-slate-200";
-    }
+const sectionTypeMapping: Record<string, string> = {
+    "Consents Required": "Consent Form",
+    "Nursing Orders (Pre-Op)": "Nursing Order",
+    "Anaesthesia Requirements": "Anaesthesia Req",
+    "Equipment & Instruments": "Equipment",
 };
 
 
@@ -318,12 +67,16 @@ type SectionCardProps = {
     onOrderNurse?: (order: string) => void;
     onOrderImplant?: (implant: string) => void;
     onOrderBlood?: (blood: string) => void;
+    onOrderClearance?: (clearance: string) => void;
+    onRemoveItem: (index: number) => void;
 };
 
-const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, onOrderImplant, onOrderBlood }: SectionCardProps) => {
+const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, onOrderImplant, onOrderBlood, onOrderClearance, onRemoveItem }: SectionCardProps) => {
+
     const { title, items, addLabel, addOptions } = config;
     const [selectedValue, setSelectedValue] = React.useState<string>("");
     const [error, setError] = React.useState<string>("");
+    const [openPopover, setOpenPopover] = React.useState(false);
 
     const validateSelection = (): boolean => {
         if (!selectedValue) {
@@ -333,6 +86,8 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
         return true;
     };
 
+
+    console.log(addOptions);
     return (
         <Card className="shadow-none border-0 mb-4 bg-white">
             <CardHeader>
@@ -343,7 +98,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
 
                     {items.length > 0 && (
                         <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
-                            {items.filter(i => i.status === "Completed" || i.status === "Ordered").length}/{items.length} Completed
+                            {items.filter((i: ChecklistItem) => i.status === "Completed" || i.status === "Ordered").length}/{items.length} Completed
                         </span>
                     )}
                 </div>
@@ -351,10 +106,10 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
 
             <CardContent className="pt-0 space-y-3">
                 {/* Existing items */}
-                {items.map((item) => (
+                {items.map((item: ChecklistItem, index: number) => (
                     <div
-                        key={item.label}
-                        className={`rounded-lg p-4 border ${item.status === "Completed"
+                        key={`${item.label}-${index}`}
+                        className={`rounded-lg p-3 border ${item.status === "Completed"
                             ? "border-green-200 bg-green-50/50"
                             : "border-slate-200 bg-white"
                             }`}
@@ -401,12 +156,15 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                             {/* Right side: Status + Action */}
                             <div className="flex items-center gap-2">
                                 <span
-                                    className={`text-xs font-medium px-3 py-1.5 rounded-full ${STATUS_STYLES[item.status]}`}
+                                    className={`text-xs font-medium px-3 py-1.5 rounded-full ${item.status ? STATUS_STYLES[item.status] : "bg-slate-200 text-slate-500"}`}
                                 >
-                                    {item.status}
+                                    {item.status || "Pending"}
                                 </span>
                                 {title !== "Required Investigations" ? (
-                                    <button className="p-2 bg-red-100 text-red-400 rounded-sm transition-colors hover:bg-red-200">
+                                    <button
+                                        onClick={() => onRemoveItem(index)}
+                                        className="p-2 bg-red-100 text-red-400 rounded-sm transition-colors hover:bg-red-200"
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 ) : (
@@ -426,7 +184,10 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
                                                         View <Eye size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600">
+                                                    <DropdownMenuItem
+                                                        onClick={() => onRemoveItem(index)}
+                                                        className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
+                                                    >
                                                         Delete <Trash2 size={14} />
                                                     </DropdownMenuItem>
                                                 </>
@@ -438,7 +199,10 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
                                                         Edit <Pencil size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600">
+                                                    <DropdownMenuItem
+                                                        onClick={() => onRemoveItem(index)}
+                                                        className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
+                                                    >
                                                         Delete <Trash2 size={14} />
                                                     </DropdownMenuItem>
                                                 </>
@@ -481,39 +245,74 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                             <Label className="text-xs font-medium text-slate-700">
                                 {addLabel}
                             </Label>
-                            <Select value={selectedValue} onValueChange={(val) => {
-                                setSelectedValue(val);
-                                setError("");
-                            }}>
-                                <SelectTrigger className={`h-10 w-full ${error ? "border-red-500" : ""}`}>
-                                    <SelectValue placeholder={`Select ${addLabel.replace("Add ", "")}`} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {/* Check if options have groups */}
-                                    {addOptions.some(opt => opt.group) ? (
-                                        Array.from(new Set(addOptions.map(opt => opt.group).filter(Boolean))).map((group) => (
-                                            <SelectGroup key={group}>
-                                                <SelectLabel className="text-xs font-bold text-slate-500 px-2 py-1.5 uppercase tracking-wider bg-slate-50">
-                                                    {group}
-                                                </SelectLabel>
-                                                {addOptions
-                                                    .filter(opt => opt.group === group)
-                                                    .map(opt => (
-                                                        <SelectItem key={opt.value} value={opt.value} className="pl-6">
+                            {title === "Consents Required" ? (
+                                <Popover open={openPopover} onOpenChange={setOpenPopover}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={openPopover}
+                                            className={cn("h-10 w-full justify-between bg-white text-xs font-normal", error && "border-red-500")}
+                                        >
+                                            {selectedValue
+                                                ? addOptions.find((opt) => opt.value === selectedValue)?.label
+                                                : `Select ${addLabel.replace("Add ", "")}`}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                                        <Command>
+                                            <CommandInput placeholder={`Search ${addLabel.replace("Add ", "")}...`} className="h-9 text-xs" />
+                                            <CommandList>
+                                                <CommandEmpty className="text-xs">No forms found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {addOptions.map((opt) => (
+                                                        <CommandItem
+                                                            key={opt.value}
+                                                            value={opt.label}
+                                                            onSelect={(currentValue) => {
+                                                                // cmdk value is typically lowercase label
+                                                                const selected = addOptions.find(o => o.label.toLowerCase() === currentValue.toLowerCase());
+                                                                if (selected) {
+                                                                    setSelectedValue(selected.value);
+                                                                    setError("");
+                                                                    setOpenPopover(false);
+                                                                }
+                                                            }}
+                                                            className="text-xs"
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedValue === opt.value ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
                                                             {opt.label}
-                                                        </SelectItem>
+                                                        </CommandItem>
                                                     ))}
-                                            </SelectGroup>
-                                        ))
-                                    ) : (
-                                        addOptions.map((opt) => (
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                            ) : (
+                                <Select value={selectedValue} onValueChange={(val) => {
+                                    setSelectedValue(val);
+                                    setError("");
+                                }}>
+                                    <SelectTrigger className={`h-10 w-full ${error ? "border-red-500" : ""}`}>
+                                        <SelectValue placeholder={`Select ${addLabel.replace("Add ", "")}`} />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-[300px]">
+
+                                        {addOptions.map((opt) => (
                                             <SelectItem key={opt.value} value={opt.value}>
                                                 {opt.label}
                                             </SelectItem>
-                                        ))
-                                    )}
-                                </SelectContent>
-                            </Select>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            )}
                             {error && (
                                 <p className="text-xs text-red-500 mt-1">{error}</p>
                             )}
@@ -541,7 +340,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                             if (onOrderLab) {
                                                 onOrderLab(selectedValue);
                                             } else {
-                                                const label = addOptions.find(o => o.value === selectedValue)?.label || selectedValue;
+                                                const label = addOptions.find((o: AddOption) => o.value === selectedValue)?.label || selectedValue;
                                                 onAddItem({
                                                     label,
                                                     status: "Ordered",
@@ -559,7 +358,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                             if (onOrderRad) {
                                                 onOrderRad(selectedValue);
                                             } else {
-                                                const label = addOptions.find(o => o.value === selectedValue)?.label || selectedValue;
+                                                const label = addOptions.find((o: AddOption) => o.value === selectedValue)?.label || selectedValue;
                                                 onAddItem({
                                                     label,
                                                     status: "Ordered",
@@ -592,6 +391,15 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     setSelectedValue("");
                                 }
                             }} name="Add" />
+                        ) : title === "Medical Clearances" ? (
+                            <NewButton handleClick={() => {
+                                if (validateSelection()) {
+                                    if (onOrderClearance) {
+                                        onOrderClearance(selectedValue);
+                                    }
+                                    setSelectedValue("");
+                                }
+                            }} name="Add" />
                         ) : title === "Blood & Resource Preparation" ? (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
@@ -604,12 +412,12 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                         ) : (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
-                                    const label = addOptions.find(o => o.value === selectedValue)?.label || selectedValue;
+                                    const label = addOptions.find((o: AddOption) => o.value === selectedValue)?.label || selectedValue;
                                     onAddItem({
                                         label,
                                         status: "Ordered",
                                         subLabel: "Just added",
-                                        category: "Laboratory Tests"
+                                        category: sectionTypeMapping[title] || "Requirement"
                                     });
                                     setSelectedValue("");
                                 }
@@ -626,12 +434,13 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
 /* Main component                      */
 /* ---------------------------------- */
 
-type PreOpEditModeProps = {
+export type PreOpEditModeProps = {
+    sections: SectionConfig[];
+    setSections: React.Dispatch<React.SetStateAction<SectionConfig[]>>;
     onSaveDraft?: () => void;
 };
 
-export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
-    const [sections, setSections] = React.useState<SectionConfig[]>(SECTIONS);
+export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditModeProps) => {
     const [isLabModalOpen, setIsLabModalOpen] = React.useState(false);
     const [selectedLabTest, setSelectedLabTest] = React.useState("");
     const [isRadModalOpen, setIsRadModalOpen] = React.useState(false);
@@ -640,13 +449,28 @@ export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
     const [selectedNurseOrder, setSelectedNurseOrder] = React.useState("");
     const [isImplantsModalOpen, setIsImplantsModalOpen] = React.useState(false);
     const [selectedImplant, setSelectedImplant] = React.useState("");
-    const [isBloodModalOpen, setIsBloodModalOpen] = React.useState(false);
     const [selectedBlood, setSelectedBlood] = React.useState("");
+    const [isBloodModalOpen, setIsBloodModalOpen] = React.useState(false);
+    const [selectedTemplate, setSelectedTemplate] = React.useState("");
+    const [isClearanceModalOpen, setIsClearanceModalOpen] = React.useState(false);
+    const [selectedClearance, setSelectedClearance] = React.useState("");
 
     const handleAddItem = (sectionTitle: string, newItem: ChecklistItem) => {
         setSections(prev => prev.map(section => {
             if (section.title === sectionTitle) {
                 return { ...section, items: [...section.items, newItem] };
+            }
+            return section;
+        }));
+    };
+
+    const handleRemoveItem = (sectionTitle: string, itemIndex: number) => {
+        setSections(prev => prev.map(section => {
+            if (section.title === sectionTitle) {
+                return {
+                    ...section,
+                    items: section.items.filter((_, i) => i !== itemIndex)
+                };
             }
             return section;
         }));
@@ -766,7 +590,24 @@ export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
             label,
             status: "Ordered",
             subLabel: details.join(" | ") || "Details recorded",
-            urgency: data.urgency
+        });
+    };
+
+    const handleOrderClearance = (clearanceValue: string) => {
+        setSelectedClearance(clearanceValue);
+        setIsClearanceModalOpen(true);
+    };
+
+    const handleClearanceSave = (data: any) => {
+        const section = sections.find(s => s.title === "Medical Clearances");
+        const label = section?.addOptions.find(o => o.value === data.clearanceType)?.label || data.clearanceType;
+
+        handleAddItem("Medical Clearances", {
+            label,
+            status: "Pending",
+            doctor: data.doctor,
+            urgency: data.urgency,
+            subLabel: `Note: ${data.notes || "Not specified"}`
         });
     };
 
@@ -797,11 +638,11 @@ export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
                             <Label className="text-xs font-medium text-slate-700">
                                 Surgery Template
                             </Label>
-                            <Select>
+                            <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
                                 <SelectTrigger className="h-10 w-full">
                                     <SelectValue placeholder="Select Surgery Template" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="z-[100]">
                                     <SelectItem value="appendectomy">Appendectomy</SelectItem>
                                     <SelectItem value="cholecystectomy">Cholecystectomy</SelectItem>
                                     <SelectItem value="hernia_repair">Hernia Repair</SelectItem>
@@ -828,11 +669,13 @@ export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
                     key={section.title}
                     config={section}
                     onAddItem={(item) => handleAddItem(section.title, item)}
+                    onRemoveItem={(index) => handleRemoveItem(section.title, index)}
                     onOrderLab={section.title === "Required Investigations" ? handleOrderLab : undefined}
                     onOrderRad={section.title === "Required Investigations" ? handleOrderRad : undefined}
                     onOrderNurse={section.title === "Patient Preparation Requirements" ? handleOrderNurse : undefined}
                     onOrderImplant={section.title === "Implants & Consumables" ? handleOrderImplant : undefined}
                     onOrderBlood={section.title === "Blood & Resource Preparation" ? handleOrderBlood : undefined}
+                    onOrderClearance={section.title === "Medical Clearances" ? handleOrderClearance : undefined}
                 />
             ))}
 
@@ -864,6 +707,20 @@ export const PreOpEditMode = ({ onSaveDraft }: PreOpEditModeProps) => {
                 onSave={handleRadSave}
                 initialProcedure={selectedRadTest}
                 procedureOptions={sections.find(s => s.title === "Required Investigations")?.addOptions || []}
+            />
+
+            <MedicalClearanceModal
+                open={isClearanceModalOpen}
+                onOpenChange={setIsClearanceModalOpen}
+                onSave={handleClearanceSave}
+                initialClearance={selectedClearance}
+                clearanceOptions={sections.find(s => s.title === "Medical Clearances")?.addOptions || []}
+                doctorOptions={[
+                    { value: "dr_vinay", label: "Dr. Vinay" },
+                    { value: "dr_kiran", label: "Dr. Kiran Madha" },
+                    { value: "dr_john", label: "Dr. John Doe" },
+                    { value: "dr_sarah", label: "Dr. Sarah" },
+                ]}
             />
 
             <NurseOrdersModal

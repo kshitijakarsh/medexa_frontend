@@ -1,10 +1,10 @@
 "use client";
 
 import { Textarea } from "@workspace/ui/components/textarea";
-import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Label } from "@workspace/ui/components/label";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 
 const ANESTHESIA_TYPES = [
   { value: "general", label: "General Anesthesia" },

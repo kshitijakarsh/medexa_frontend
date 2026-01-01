@@ -12,9 +12,9 @@ import {
 import { AppSelect } from "@/components/common/app-select";
 import { Button } from "@workspace/ui/components/button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-import { Patient } from "@/app/[lang]/surgery/lib/types";
+import { Patient } from "@/app/[lang]/surgery/_lib/types";
 import PatientBanner from "@/app/[lang]/surgery/dashboard/surgery-details/components/shared/PatientBanner";
-import PatientCard from "@/app/[lang]/surgery/components/dashboard/UI/PatientCard";
+import PatientCard from "@/app/[lang]/surgery/dashboard/_components/UI/PatientCard";
 import AddSurgeryModal from "@/app/[lang]/surgery/dashboard/surgery-details/components/shared/AddSurgeryModal";
 import SurgeryDetailsModal from "@/app/[lang]/surgery/dashboard/surgery-details/components/shared/SurgeryDetailsModal";
 import { StatusPill } from "@/components/common/pasient-card/status-pill";

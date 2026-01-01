@@ -1,9 +1,9 @@
 "use client";
 
 import { Textarea } from "@workspace/ui/components/textarea";
-import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
-import { NoteField } from "@/app/[lang]/surgery/components/common/NoteField";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
+import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 
 const ASA_OPTIONS = [
   { value: "asa_1", label: "ASA I - Normal healthy patient" },

@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import { InfoField } from "../../../../components/common/InfoField";
 import { FormSelect } from "@/components/ui/form-select";
-import { FormTextarea } from "@/app/[lang]/surgery/components/common/forms/form-textarea";
+import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
 
 const MALLAMPATI_GRADE_OPTIONS = [
   { value: "grade1", label: "Grade I – Full visibility of soft palate, uvula, tonsillar pillars" },

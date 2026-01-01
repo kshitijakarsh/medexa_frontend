@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2, Send } from "lucide-react";
 import { DynamicSection } from "../../components/common/DynamicSection";
 import { FormInput } from "@/components/ui/form-input";
-import { StatusToggle } from "@/app/[lang]/surgery/components/common/StatusToggle";
+import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 
 // --- Mock Data ---
 const MOCK_PROCEDURES = [

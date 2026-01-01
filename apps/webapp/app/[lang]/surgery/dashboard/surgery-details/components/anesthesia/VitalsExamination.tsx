@@ -5,7 +5,7 @@ import { Info, Heart, Activity, Wind, Droplets, Thermometer, Ruler, Weight, User
 import Button from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { NoteField } from "@/app/[lang]/surgery/components/common/NoteField";
+import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
 
 const VitalCard = ({
   icon,

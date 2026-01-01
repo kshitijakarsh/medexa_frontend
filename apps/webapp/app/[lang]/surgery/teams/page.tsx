@@ -20,11 +20,11 @@ import {
     MoreVertical,
     Ellipsis
 } from "lucide-react";
-import { FilterDropdown } from "@/app/[lang]/surgery/components/dashboard/UI/FilterDropdown";
-import SearchWithDropdown from "@/app/[lang]/surgery/components/common/SearchWithDropdown";
-import DateFilter from "@/app/[lang]/surgery/components/common/DateFilter";
-import { StatusToggle } from "@/app/[lang]/surgery/components/common/StatusToggle";
-import ViewModeToggle from "@/app/[lang]/surgery/components/common/ViewModeToggle";
+import { FilterDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/FilterDropdown";
+import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
+import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
+import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
+import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 

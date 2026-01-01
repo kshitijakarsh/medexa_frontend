@@ -1,7 +1,7 @@
 "use client";
 
 import ChecklistSidebar from "../shared/ChecklistSidebar";
-import { NURSE_SIDEBAR_HEADER, NURSE_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/lib/constants";
+import { NURSE_SIDEBAR_HEADER, NURSE_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/_lib/constants";
 import { NurseCareEditMode } from "./NurseCareEditMode";
 import { NurseCareViewMode } from "./NurseCareViewMode";
 

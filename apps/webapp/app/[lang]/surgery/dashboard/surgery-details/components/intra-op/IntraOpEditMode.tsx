@@ -7,7 +7,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { Checkbox } from "@workspace/ui/components/checkbox";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 import { Button } from "@workspace/ui/components/button";
 
 // Options for select fields
@@ -119,7 +119,7 @@ type IntraOpEditModeProps = {
 
 export const IntraOpEditMode = ({ onSaveDraft }: IntraOpEditModeProps) => {
     const [specimensChecked, setSpecimensChecked] = useState(false);
-    const [drainsChecked, setDrainsChecked] = useState(true);
+    const [drainsChecked, setDrainsChecked] = useState(false);
     const [catheterChecked, setCatheterChecked] = useState(false);
 
     return (

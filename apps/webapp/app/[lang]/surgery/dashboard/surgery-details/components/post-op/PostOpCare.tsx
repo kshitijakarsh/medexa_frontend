@@ -2,7 +2,7 @@
 
 import React from "react";
 import ChecklistSidebar from "../shared/ChecklistSidebar";
-import { SURGERY_SIDEBAR_HEADER, SURGERY_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/lib/constants";
+import { SURGERY_SIDEBAR_HEADER, SURGERY_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/_lib/constants";
 import { PostOpEditMode } from "./PostOpEditMode";
 import { PostOpViewMode } from "./PostOpViewMode";
 

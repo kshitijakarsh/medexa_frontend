@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/componen
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import {

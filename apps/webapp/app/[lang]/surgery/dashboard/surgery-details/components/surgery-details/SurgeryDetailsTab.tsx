@@ -2,12 +2,12 @@
 
 import React from "react";
 import { Send } from "lucide-react";
-import { MOCK_DATA } from "@/app/[lang]/surgery/lib/constants";
+import { MOCK_DATA } from "@/app/[lang]/surgery/_lib/constants";
 import SurgeryFormSection from "./SurgeryFormSection";
 import SurgicalTeamSection from "./SurgicalTeamSection";
 import ClinicalSidebar from "./ClinicalSidebar";
 import { DetailSection } from "./DetailsSection";
-import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 
 interface SurgeryDetailsTabProps {
   isEditing: boolean;

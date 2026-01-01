@@ -1,7 +1,7 @@
 "use client";
 
 import ChecklistSidebar from "../shared/ChecklistSidebar";
-import { INTRAOP_SIDEBAR_HEADER, INTRAOP_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/lib/constants";
+import { INTRAOP_SIDEBAR_HEADER, INTRAOP_SIDEBAR_ITEMS } from "@/app/[lang]/surgery/_lib/constants";
 import { IntraOpEditMode } from "./IntraOpEditMode";
 import { IntraOpViewMode } from "./IntraOpViewMode";
 

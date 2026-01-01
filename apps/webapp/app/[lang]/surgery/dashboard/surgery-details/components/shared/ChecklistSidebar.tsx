@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowRight } from "lucide-react";
-import { PREOP_SIDEBAR_ITEMS, PREOP_SIDEBAR_HEADER } from "@/app/[lang]/surgery/lib/constants";
-import { PreOpSidebarItem, PreOpSidebarHeader } from "@/app/[lang]/surgery/lib/types";
+import { PREOP_SIDEBAR_ITEMS, PREOP_SIDEBAR_HEADER } from "@/app/[lang]/surgery/_lib/constants";
+import { PreOpSidebarItem, PreOpSidebarHeader } from "@/app/[lang]/surgery/_lib/types";
 
 interface ChecklistSidebarProps {
   header?: PreOpSidebarHeader;

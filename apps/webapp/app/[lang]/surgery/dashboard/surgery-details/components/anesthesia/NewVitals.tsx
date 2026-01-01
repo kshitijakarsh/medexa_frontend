@@ -6,7 +6,7 @@ import {
     DialogContent,
 } from "@workspace/ui/components/dialog";
 import { FormInput } from "@/components/ui/form-input";
-import { FormTextarea } from "@/app/[lang]/surgery/components/common/forms/form-textarea";
+import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
 
 export const NewVitals = ({
     open,

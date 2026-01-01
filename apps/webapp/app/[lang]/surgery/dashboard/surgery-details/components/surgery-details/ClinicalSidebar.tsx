@@ -2,8 +2,8 @@
 
 import React from "react";
 import { AlertCircle, Pill, LucideIcon } from "lucide-react";
-import { MOCK_DATA } from "@/app/[lang]/surgery/lib/constants";
-import { ClinicalItem } from "@/app/[lang]/surgery/lib/types";
+import { MOCK_DATA } from "@/app/[lang]/surgery/_lib/constants";
+import { ClinicalItem } from "@/app/[lang]/surgery/_lib/types";
 import { cn } from "@workspace/ui/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 

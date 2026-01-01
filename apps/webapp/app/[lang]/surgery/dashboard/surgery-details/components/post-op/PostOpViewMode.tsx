@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { DetailSection } from "../surgery-details/DetailsSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import {

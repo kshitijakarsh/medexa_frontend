@@ -10,7 +10,7 @@ import {
 import NewButton from "@/components/common/new-button";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
-import { FormTextarea } from "@/app/[lang]/surgery/components/common/forms/form-textarea";
+import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
 
 // Constants
 const DISEASE_OPTIONS = [

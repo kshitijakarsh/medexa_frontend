@@ -110,6 +110,17 @@ class SurgeryTeamApiClient {
             await this.getConfig()
         );
     }
+
+    /* ---------------------------------------------------
+       GET: Surgery Team by ID
+    --------------------------------------------------- */
+    async getById(id: string) {
+        const config = await this.getConfig();
+        return axios.get<{ success: boolean; data: SurgeryTeam }>(
+            `${this.baseUrl}/api/v1/surgery-teams/${id}`,
+            config
+        );
+    }
 }
 
 export const createSurgeryTeamApiClient = (config: ApiConfig) =>

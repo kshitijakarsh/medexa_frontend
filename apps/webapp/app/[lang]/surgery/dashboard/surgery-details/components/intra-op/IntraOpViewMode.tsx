@@ -1,6 +1,6 @@
 "use client";
 
-import { InfoField } from "@/app/[lang]/surgery/components/common/InfoField";
+import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { DetailSection } from "../surgery-details/DetailsSection";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 

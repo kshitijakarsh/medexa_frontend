@@ -10,6 +10,7 @@ import {
     Printer,
     Download,
     Info,
+    Trash2,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -23,27 +24,18 @@ import DocumentViewModal, { DocumentData } from "./DocumentViewModal";
 import NurseOrderViewModal, { NurseOrderData } from "./NurseOrderViewModal";
 import ImplantsConsumablesViewModal, { ImplantConsumableData } from "./ImplantsConsumablesViewModal";
 import BloodRequirementViewModal, { BloodRequirementData } from "./BloodRequirementViewModal";
+import ConsentUploadModal from "./ConsentUploadModal";
+import ApproveClearanceModal from "./ApproveClearanceModal";
+import {
+    ItemStatus,
+    ChecklistItem,
+    PreOpMetric,
+    SectionConfig,
+    STATUS_STYLES,
+    newItemUrgencyStyle
+} from "./PreOpChecklist";
 
-type ItemStatus = "Completed" | "Ordered" | "Pending" | "Processing" | "Due" | "N/A";
-
-type ChecklistItem = {
-    label: string;
-    status?: ItemStatus;
-    subLabel?: string;
-    category?: string;
-    urgency?: string;
-    orderedBy?: string;
-    previousResult?: {
-        date: string;
-        count: number;
-    };
-};
-
-export type PreOpMetric = {
-    title: string;
-    completed: number;
-    total: number;
-};
+// Reusing types and constants from PreOpChecklist
 
 const MetricCard = ({ metric }: { metric: PreOpMetric }) => {
     const percentage = Math.round((metric.completed / metric.total) * 100);
@@ -64,158 +56,19 @@ const MetricCard = ({ metric }: { metric: PreOpMetric }) => {
     );
 };
 
-type AddOption = {
-    value: string;
-    label: string;
-    group?: string;
-};
-
-type SectionConfig = {
-    title: string;
-    count?: string;
-    showChanged?: boolean;
-    items: ChecklistItem[];
-    addLabel: string;
-    addOptions: AddOption[];
-};
-
-const SECTIONS: SectionConfig[] = [
-    {
-        title: "Procedures",
-        showChanged: false,
-        items: [
-            {
-                label: "Laparoscopic Cholecystectomy",
-                subLabel: "Impression: Normal sinus rhythm. No ST-T wave changes. No evidence of acute ischemia."
-            },
-        ],
-        addLabel: "",
-        addOptions: [],
-    },
-    {
-        title: "Required Investigations",
-        showChanged: true,
-        items: [
-            { label: "Complete Blood Count (CBC)", status: "Completed", subLabel: "2025-09-27 19:30", urgency: "Stat", orderedBy: "Dr. Vinay" },
-            { label: "Liver Function Test (LFT)", status: "Completed", subLabel: "2025-09-27 19:30", category: "Laboratory Test", urgency: "Stat", orderedBy: "Dr. Vinay" },
-            {
-                label: "Renal Function Test (RFT)",
-                status: "Ordered",
-                subLabel: "2025-09-27 19:30",
-                category: "Radiology & Imaging",
-                urgency: "Stat",
-                orderedBy: "Dr. Sarah",
-                previousResult: {
-                    date: "05-Dec-2025",
-                    count: 2
-                }
-            },
-            { label: "Blood Sugar (Fasting)", status: "Pending", category: "Laboratory Test", urgency: "Stat" },
-            { label: "Coagulation Profile (PT/INR)", status: "Pending", category: "Laboratory Test", urgency: "Stat" },
-        ],
-        addLabel: "Add Investigation",
-        addOptions: [],
-    },
-    {
-        title: "Medical Clearances",
-        items: [
-            { label: "Anaesthesia Clearance", status: "Pending" },
-            { label: "Physician Clearance", status: "Completed" },
-            { label: "Cardiology Clearance", status: "Completed" },
-        ],
-        addLabel: "Add Clearance",
-        addOptions: [],
-    },
-    {
-        title: "Consents Required",
-        items: [
-            { label: "Surgical Consent", status: "Completed", subLabel: "Signed by patient & surgeon" },
-            { label: "Anaesthesia Consent", status: "Pending" },
-            { label: "Blood Transfusion Consent", status: "Pending" },
-        ],
-        addLabel: "Add Consent",
-        addOptions: [],
-    },
-    {
-        title: "Nursing Orders (Pre-Op)",
-        items: [
-            { label: "NPO Status Check", status: "Completed", subLabel: "Confirmed NPO since 10 PM" },
-            { label: "Pre-medication Administered", status: "Ordered", subLabel: "Midazolam ordered" },
-            { label: "Vitals Recorded", status: "Pending" },
-        ],
-        addLabel: "Add Nursing Order",
-        addOptions: [],
-    },
-    {
-        title: "Patient Preparation Requirements",
-        items: [
-            { label: "Site Marking", status: "Completed", subLabel: "Marked by Dr. Vinay" },
-            { label: "Skin Preparation", status: "Pending" },
-            { label: "Jewelry/Dentures Removed", status: "Pending" },
-        ],
-        addLabel: "Add Prep Requirement",
-        addOptions: [],
-    },
-    {
-        title: "Anaesthesia Requirements",
-        items: [
-            { label: "GA Machine Check", status: "Pending" },
-            { label: "Spinal Tray", status: "Ordered", subLabel: "Requested from CSSD" },
-            { label: "Difficult Airway Cart", status: "N/A" },
-        ],
-        addLabel: "Add Anaesthesia Req",
-        addOptions: [],
-    },
-    {
-        title: "Equipment & Instruments",
-        items: [
-            { label: "Laparoscopic Tower", subLabel: "Reserved for OR 2", status: "Ordered" },
-            { label: "Laparoscopic Cholecystectomy Set", status: "Pending" },
-            { label: "Cautery Logic (Diathermy)", status: "Pending" },
-        ],
-        addLabel: "Add Equipment",
-        addOptions: [],
-    },
-    {
-        title: "Implants & Consumables",
-        items: [
-            { label: "Prolene Mesh (15x15)", status: "Ordered", subLabel: "Size verification needed" },
-            { label: "Tacker (Absorbable)", status: "Pending" },
-            { label: "Trocars (10mm, 5mm)", status: "Pending" },
-        ],
-        addLabel: "Add Implant/Consumable",
-        addOptions: [],
-    },
-    {
-        title: "Blood & Resource Preparation",
-        items: [
-            { label: "Blood Grouping & Cross Matching", status: "Completed", subLabel: "O+ Confirmed" },
-            { label: "Reserve 2 Units PRBC", status: "Ordered", subLabel: "Sent to Blood Bank" },
-        ],
-        addLabel: "Add Blood/Resource",
-        addOptions: [],
-    },
-];
-
-const STATUS_STYLES: Record<ItemStatus, string> = {
-    Completed: "bg-green-500 text-white",
-    Ordered: "bg-orange-500 text-white",
-    Pending: "bg-slate-300 text-slate-700",
-    Processing: "bg-blue-500 text-white",
-    Due: "bg-red-500 text-white",
-    "N/A": "bg-slate-200 text-slate-500",
-};
-
-const newItemUrgencyStyle = (urgency: string) => {
-    switch (urgency.toLowerCase()) {
-        case "stat": return "bg-red-100 text-red-500 border-red-200";
-        case "urgent": return "bg-orange-100 text-orange-500 border-orange-200";
-        case "routine": return "bg-blue-100 text-blue-500 border-blue-200";
-        default: return "bg-slate-100 text-slate-500 border-slate-200";
-    }
-};
-
-const ViewSectionCard = ({ config, onViewDocument }: { config: SectionConfig; onViewDocument: (item: ChecklistItem, sectionTitle: string) => void }) => {
+const ViewSectionCard = ({
+    config,
+    onViewDocument,
+    onItemClick,
+    onDeleteItem,
+    onApproveClearance,
+}: {
+    config: SectionConfig;
+    onViewDocument: (item: ChecklistItem, sectionTitle: string) => void;
+    onItemClick?: (item: ChecklistItem, sectionTitle: string) => void;
+    onDeleteItem?: (item: ChecklistItem, sectionTitle: string) => void;
+    onApproveClearance?: (item: ChecklistItem) => void;
+}) => {
     const { title, count, items } = config;
 
     return (
@@ -238,10 +91,11 @@ const ViewSectionCard = ({ config, onViewDocument }: { config: SectionConfig; on
                 {items.map((item) => (
                     <div
                         key={item.label}
-                        className={`rounded-lg p-4 border ${item.status === "Completed"
+                        onClick={() => onItemClick?.(item, title)}
+                        className={`rounded-lg p-4 border transition-colors ${item.status === "Completed"
                             ? "border-green-200 bg-green-50/50"
                             : "border-slate-200 bg-white"
-                            }`}
+                            } ${onItemClick ? "cursor-pointer hover:border-blue-200" : ""}`}
                     >
                         <div className="flex items-start justify-between">
                             <div className="flex-1">
@@ -290,32 +144,63 @@ const ViewSectionCard = ({ config, onViewDocument }: { config: SectionConfig; on
                                         {item.status}
                                     </span>
                                 )}
-                                {!["Procedures", "Patient Preparation Requirements", "Equipment & Instruments"].includes(title) && (
+                                {!["Procedures", "Patient Preparation Requirements", "Equipment & Instruments"].includes(title) && !(title === "Consents Required" && item.status === "Pending") && (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
-                                            <button className="flex items-center gap-1 text-xs text-blue-500 font-medium px-2 py-1 rounded-sm transition-colors bg-white hover:bg-slate-50">
+                                            <button
+                                                className="flex items-center gap-1 text-xs text-blue-500 font-medium px-2 py-1 rounded-sm transition-colors bg-white hover:bg-slate-50"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 Action
                                                 <MoreVertical size={14} className="text-green-500" />
                                             </button>
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                className="gap-2 cursor-pointer justify-between"
-                                                onClick={() => {
-                                                    if (["Required Investigations", "Consents Required", "Nursing Orders (Pre-Op)", "Implants & Consumables", "Blood & Resource Preparation"].includes(title)) {
-                                                        onViewDocument(item, title);
-                                                    }
-                                                }}
-                                            >
-                                                View <Eye size={14} className="text-slate-500" />
-                                            </DropdownMenuItem>
-                                            {!["Medical Clearances", "Implants & Consumables", "Blood & Resource Preparation"].includes(title) && (
+                                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                                            {title !== "Medical Clearances" && (
+                                                <DropdownMenuItem
+                                                    className="gap-2 cursor-pointer justify-between"
+                                                    onClick={() => {
+                                                        if (["Required Investigations", "Consents Required", "Nursing Orders (Pre-Op)", "Implants & Consumables", "Blood & Resource Preparation"].includes(title)) {
+                                                            onViewDocument(item, title);
+                                                        }
+                                                    }}
+                                                >
+                                                    View <Eye size={14} className="text-slate-500" />
+                                                </DropdownMenuItem>
+                                            )}
+                                            {(!["Implants & Consumables", "Blood & Resource Preparation"].includes(title) && title !== "Medical Clearances") && (
                                                 <>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
                                                         Print <Printer size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
                                                         Download <Download size={14} className="text-slate-500" />
+                                                    </DropdownMenuItem>
+                                                </>
+                                            )}
+                                            {title === "Consents Required" && (
+                                                <DropdownMenuItem
+                                                    className="gap-2 cursor-pointer justify-between"
+                                                    onClick={() => onDeleteItem?.(item, title)}
+                                                >
+                                                    Delete <Trash2 size={14} />
+                                                </DropdownMenuItem>
+                                            )}
+                                            {title === "Medical Clearances" && (
+                                                <>
+                                                    {item.status === "Pending" && (
+                                                        <DropdownMenuItem
+                                                            className="gap-2 cursor-pointer justify-between"
+                                                            onClick={() => onApproveClearance?.(item)}
+                                                        >
+                                                            Approve Clearances <Printer size={14} className="text-slate-500" />
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    <DropdownMenuItem
+                                                        className="gap-2 cursor-pointer justify-between"
+                                                        onClick={() => onViewDocument(item, title)}
+                                                    >
+                                                        View <Eye size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                 </>
                                             )}
@@ -347,12 +232,14 @@ const ViewSectionCard = ({ config, onViewDocument }: { config: SectionConfig; on
     );
 };
 
-type PreOpViewModeProps = {
+export type PreOpViewModeProps = {
+    sectionsData: SectionConfig[];
+    setSectionsData: React.Dispatch<React.SetStateAction<SectionConfig[]>>;
     onEdit?: () => void;
     metrics?: PreOpMetric[];
 };
 
-export const PreOpViewMode = ({ onEdit, metrics = [] }: PreOpViewModeProps) => {
+export const PreOpViewMode = ({ sectionsData, setSectionsData, onEdit, metrics = [] }: PreOpViewModeProps) => {
     const [selectedDocument, setSelectedDocument] = React.useState<DocumentData | undefined>(undefined);
     const [isDocumentModalOpen, setIsDocumentModalOpen] = React.useState(false);
 
@@ -364,6 +251,13 @@ export const PreOpViewMode = ({ onEdit, metrics = [] }: PreOpViewModeProps) => {
 
     const [selectedBloodReq, setSelectedBloodReq] = React.useState<BloodRequirementData | undefined>(undefined);
     const [isBloodReqModalOpen, setIsBloodReqModalOpen] = React.useState(false);
+
+    const [isConsentUploadModalOpen, setIsConsentUploadModalOpen] = React.useState(false);
+    const [selectedConsentItem, setSelectedConsentItem] = React.useState<ChecklistItem | undefined>(undefined);
+
+    const [isApproveModalOpen, setIsApproveModalOpen] = React.useState(false);
+    const [selectedClearanceItem, setSelectedClearanceItem] = React.useState<ChecklistItem | undefined>(undefined);
+    const [approveModalMode, setApproveModalMode] = React.useState<'approve' | 'view'>('approve');
 
     const handleViewDocument = (item: ChecklistItem, sectionTitle: string) => {
         if (sectionTitle === "Nursing Orders (Pre-Op)") {
@@ -409,17 +303,83 @@ export const PreOpViewMode = ({ onEdit, metrics = [] }: PreOpViewModeProps) => {
                 orderedBy: item.orderedBy || "Dr. Vinay",
             });
             setIsBloodReqModalOpen(true);
+        } else if (sectionTitle === "Medical Clearances") {
+            setSelectedClearanceItem(item);
+            setApproveModalMode('view');
+            setIsApproveModalOpen(true);
         } else {
-            // Mocking document data based on the item
             setSelectedDocument({
                 title: item.label,
                 description: "Patient complained of Stomach pain; Test done this morning. Please review before prescribing medication.",
                 conductedBy: item.orderedBy?.replace("Dr. ", "Nurse ") || "Nurse Sarah", // Mock logic
                 date: item.subLabel || "14 Nov 2024 · 08:45 AM",
-                // imageUrl: is left undefined to show placeholder
             });
             setIsDocumentModalOpen(true);
         }
+    };
+
+    const handleItemClick = (item: ChecklistItem, sectionTitle: string) => {
+        if (sectionTitle === "Consents Required" && item.status === "Pending") {
+            setSelectedConsentItem(item);
+            setIsConsentUploadModalOpen(true);
+        }
+    };
+
+    const handleConsentUpload = (notes: string) => {
+        if (!selectedConsentItem) return;
+
+        setSectionsData(prev => prev.map(section => {
+            if (section.title === "Consents Required") {
+                return {
+                    ...section,
+                    items: section.items.map(item => {
+                        if (item.label === selectedConsentItem.label) {
+                            return { ...item, status: "Completed", subLabel: "Uploaded · Just now" };
+                        }
+                        return item;
+                    })
+                };
+            }
+            return section;
+        }));
+    };
+
+    const handleDeleteItem = (itemToDelete: ChecklistItem, sectionTitle: string) => {
+        setSectionsData(prev => prev.map(section => {
+            if (section.title === sectionTitle) {
+                return {
+                    ...section,
+                    items: section.items.filter(item => item.label !== itemToDelete.label)
+                };
+            }
+            return section;
+        }));
+    };
+
+    const handleClearanceApprove = (data: { status: string; notes: string; doctor: string }) => {
+        if (!selectedClearanceItem) return;
+
+        setSectionsData(prev => prev.map(section => {
+            if (section.title === "Medical Clearances") {
+                return {
+                    ...section,
+                    items: section.items.map(item => {
+                        if (item.label === selectedClearanceItem.label) {
+                            return {
+                                ...item,
+                                status: "Completed",
+                                subLabel: `Approved by ${data.doctor} · ${new Date().toLocaleDateString()}`,
+                                doctor: data.doctor,
+                                clearanceStatus: data.status,
+                                notes: data.notes
+                            };
+                        }
+                        return item;
+                    })
+                };
+            }
+            return section;
+        }));
     };
 
     return (
@@ -435,11 +395,18 @@ export const PreOpViewMode = ({ onEdit, metrics = [] }: PreOpViewModeProps) => {
 
 
             {/* All checklist sections */}
-            {SECTIONS.map((section) => (
+            {sectionsData.map((section) => (
                 <ViewSectionCard
                     key={section.title}
                     config={section}
                     onViewDocument={handleViewDocument}
+                    onItemClick={handleItemClick}
+                    onDeleteItem={handleDeleteItem}
+                    onApproveClearance={(item) => {
+                        setSelectedClearanceItem(item);
+                        setApproveModalMode('approve');
+                        setIsApproveModalOpen(true);
+                    }}
                 />
             ))}
 
@@ -467,19 +434,21 @@ export const PreOpViewMode = ({ onEdit, metrics = [] }: PreOpViewModeProps) => {
                 data={selectedBloodReq}
             />
 
-            {/* Footer Actions */}
-            <div className="flex justify-end pt-4">
-                {onEdit && (
-                    <Button
-                        variant="outline"
-                        className="border-blue-500 text-blue-500 hover:bg-blue-50"
-                        onClick={onEdit}
-                    >
-                        <Pencil size={16} className="mr-2" />
-                        EDIT PRE-OP CHECKLIST
-                    </Button>
-                )}
-            </div>
+            <ConsentUploadModal
+                open={isConsentUploadModalOpen}
+                onOpenChange={setIsConsentUploadModalOpen}
+                title={selectedConsentItem?.label || "Upload Consent"}
+                onUpload={handleConsentUpload}
+            />
+
+            <ApproveClearanceModal
+                open={isApproveModalOpen}
+                onOpenChange={setIsApproveModalOpen}
+                title={selectedClearanceItem?.label || "Approve Clearance"}
+                onApprove={handleClearanceApprove}
+                mode={approveModalMode}
+                itemData={selectedClearanceItem}
+            />
         </div>
     );
 };

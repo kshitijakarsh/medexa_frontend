@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 
 const SURGEON_TEAM_OPTIONS = [
   { value: "team_a", label: "Team A" },

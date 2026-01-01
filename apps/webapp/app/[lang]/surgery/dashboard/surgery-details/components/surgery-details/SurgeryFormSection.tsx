@@ -5,7 +5,7 @@ import { Calendar as CalendarIcon, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
-import { SelectField } from "@/app/[lang]/surgery/components/common/SelectField";
+import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 
 const PROCEDURE_OPTIONS = [
   { value: "appendectomy", label: "Appendectomy" },

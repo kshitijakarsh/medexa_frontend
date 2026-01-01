@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Clock, Phone, Mail, User, List, Printer, Download } from "lucide-react";
-import { Patient } from "@/app/[lang]/surgery/lib/types";
+import { Patient } from "@/app/[lang]/surgery/_lib/types";
 
 const defaultPatient: Patient = {
   id: "1",

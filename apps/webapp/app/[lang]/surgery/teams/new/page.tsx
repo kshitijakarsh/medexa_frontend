@@ -6,10 +6,9 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@workspace/ui/lib/sonner";
 import { ArrowLeft, Send } from "lucide-react";
-import { DynamicSection } from "@/app/[lang]/surgery/components/common/DynamicSection";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
-import { StatusToggle } from "@/app/[lang]/surgery/components/common/StatusToggle";
+import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import { createSurgeryTeamApiClient, CreateSurgeryTeamParams } from "@/lib/api/surgery/teams";
 
 const MOCK_SURGEONS = [
