@@ -1,8 +1,8 @@
-import { Button } from "@workspace/ui/components/button";
+import Button from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 interface NewButtonProps {
-   handleClick: () => void; 
+    handleClick: () => void;
     name?: string;
     icon?: React.ReactNode; // for flexibility
     className?: string;

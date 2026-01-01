@@ -527,6 +527,7 @@ const moduleIconMap: Record<string, any> = {
   settings: Settings,
   frontoffice: Building,
   nurse: Syringe,
+  surgery: BriefcaseMedical,
 }
 
 const DefaultIcon = Cog
@@ -545,6 +546,7 @@ const moduleLandingPath: Record<string, string> = {
   inventory: "/inventory",
   analytics: "/analytics",
   hr: "/hr/employee-configuration",
+  surgery: "/surgery/dashboard",
   // hr_payroll: "/hr-payroll",
   // add more when developed…
 }
@@ -604,7 +606,7 @@ export function SectionDropdown() {
 
   // Get unique module names
   const moduleKeys = Array.from(
-    new Set(permissionStrings.map((p) => p.split(":")[0]))
+    new Set([...permissionStrings.map((p) => p.split(":")[0]), "surgery"])
   )
 
   // Build dropdown sections dynamically

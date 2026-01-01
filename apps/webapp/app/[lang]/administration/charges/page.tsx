@@ -14,7 +14,7 @@ import { fetchUnits, fetchTaxes, fetchCategories, fetchServices, deleteById, upd
 import { PageHeader } from "@/components/common/page-header";
 import { useRouter } from "next/navigation";
 import ChargesRowActions from "./_components/ChargesRowActions";
-import TabSwitcher from "@/components/common/tab-switcher-menu";
+import TabSwitcher from "@/components/common/TabSwitcher";
 import { QuickActions } from "./_components/QuickActions";
 import FilterButton from "@/components/common/filter-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
@@ -93,42 +93,42 @@ export default function ChargesPage() {
         { key: "tax", label: "Tax", render: (r: any) => r.taxLabel || r.tax || "" },
         { key: "standardCharge", label: "Standard Charge", render: (r: any) => r.standardCharge },
         { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/> , className: "text-center w-[80px]" },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onView={() => router.push(`/administration/charges/${r.id}`)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab} />, className: "text-center w-[80px]" },
       ];
     }
-   
+
     if (t === "tax") {
       // category / tax / unit table
       return [
         { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label:  t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "tax" ? r.taxName : r.chargeName) },
+        { key: "name", label: t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "tax" ? r.taxName : r.chargeName) },
         { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
         { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
         { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab} />, className: "text-center w-[80px]" },
       ];
     }
     if (t === "category") {
       // category / tax / unit table
       return [
         { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label:  "Charge Name", render: (r: any) => ( r.chargeName) },
+        { key: "name", label: "Charge Name", render: (r: any) => (r.chargeName) },
         { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
         // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
         { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
+        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab} />, className: "text-center w-[80px]" },
       ];
     }
     //  if (t === "unit") {
-      // category / tax / unit table
-      return [
-        { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
-        { key: "name", label: t === "unit" ? "Unit Type" : t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
-        { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
-        { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
-        { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab}/>, className: "text-center w-[80px]" },
-      ];
+    // category / tax / unit table
+    return [
+      { key: "sno", label: "Sr.No", render: (r: any) => r.sno, className: "w-[60px] text-center" },
+      { key: "name", label: t === "unit" ? "Unit Type" : t === "tax" ? "Tax Name" : "Charge Name", render: (r: any) => (t === "unit" ? r.unit : t === "tax" ? r.taxName : r.chargeName) },
+      { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
+      // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+      { key: "status", label: "Service Status", render: (r: any) => <span className={r.status === "Active" ? "text-green-600" : "text-red-500"}>{r.status}</span> },
+      { key: "action", label: "Action", render: (r: any) => <ChargesRowActions onEdit={() => console.log("edit", r)} onDelete={() => handleDelete(r.id)} userPermissions={userPermissions} mode={tab} />, className: "text-center w-[80px]" },
+    ];
     // }
   };
 

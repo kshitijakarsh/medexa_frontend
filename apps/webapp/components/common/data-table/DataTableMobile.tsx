@@ -114,7 +114,7 @@ import { MoveRight, SquareArrowOutUpRight } from "lucide-react";
 interface Column<T> {
     key: keyof T | string;
     label: string;
-    render?: (row: T, i?:number) => React.ReactNode;
+    render?: (row: T, i?: number) => React.ReactNode;
 }
 
 interface Props<T> {

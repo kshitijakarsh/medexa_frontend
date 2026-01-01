@@ -10,7 +10,7 @@ import { DataTableMobile } from "./DataTableMobile"
 //     render?: (row: T) => React.ReactNode;
 //     className?: string;
 // }
-interface Column<T> {
+export interface Column<T> {
   key: keyof T | string
   label: string
   render?: (row: T, index?: number) => React.ReactNode
