@@ -15,6 +15,20 @@ export interface PermissionItem {
   }
 }
 
+export interface Module {
+  id: number
+  module_key: string
+  name_en: string
+  name_local: string
+}
+
+export interface TenantData {
+  status: string
+  modules: Module[]
+  tenant_key?: string
+  external_id?: string
+}
+
 export interface RoleData {
   id: number
   name: string
@@ -30,6 +44,7 @@ export interface CurrentUser {
   phone: string,
   address?: string,
   hospital?: any,
+  tenant?: TenantData, // Added tenant
   role: RoleData,
   logo?: string,
   status: string
