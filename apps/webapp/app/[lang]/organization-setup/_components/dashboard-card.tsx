@@ -179,10 +179,10 @@ export function DashboardCard({ title, subtitle, active, id }: DashboardCardProp
   const config = masterConfig[id];
   const params = useParams<{ lang?: string }>();
   const lang = params?.lang || "en";
-  console.log("DashboardCard config:", id);
+  // console.log("DashboardCard config:", id);
 
   const handleCardClick = () => {
-    console.log("Card clicked:", id);
+    // console.log("Card clicked:", id);
     if (config?.route) {
       console.log("Navigating to:", config.route);
       router.push(`/${lang}${config.route}`);

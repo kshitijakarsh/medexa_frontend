@@ -477,37 +477,37 @@ export default function MastersPage() {
   //   );
   // }, [user]);
 
-// temprerory fix
+  // temprerory fix
   const allowedSubmodules = useMemo(() => {
-  const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
-    typeof p === "string" ? p : p.name
-  );
+    const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
+      typeof p === "string" ? p : p.name
+    );
 
-  // normal extraction (your existing logic)
-  const subs = Array.from(
-    new Set(
-      permissionStrings
-        .filter((p) => p.startsWith("administration:"))
-        .map((p) => p.split(":")[1])
-    )
-  );
+    // normal extraction (your existing logic)
+    const subs = Array.from(
+      new Set(
+        permissionStrings
+          .filter((p) => p.startsWith("administration:"))
+          .map((p) => p.split(":")[1])
+      )
+    );
 
-  // SPECIAL RULE FOR "user" SUBMODULE
-  const userPermissions = permissionStrings.filter((p) =>
-    p.startsWith("administration:user:")
-  );
+    // SPECIAL RULE FOR "user" SUBMODULE
+    const userPermissions = permissionStrings.filter((p) =>
+      p.startsWith("administration:user:")
+    );
 
-  const hasOnlyViewOne =
-    userPermissions.length === 1 &&
-    userPermissions[0].endsWith("viewOne");
+    const hasOnlyViewOne =
+      userPermissions.length === 1 &&
+      userPermissions[0].endsWith("viewOne");
 
-  // If user ONLY has viewOne → remove "user" from allowed list
-  if (hasOnlyViewOne) {
-    return subs.filter((s) => s !== "user");
-  }
+    // If user ONLY has viewOne → remove "user" from allowed list
+    if (hasOnlyViewOne) {
+      return subs.filter((s) => s !== "user");
+    }
 
-  return subs;
-}, [user]);
+    return subs;
+  }, [user]);
 
 
 
@@ -524,7 +524,7 @@ export default function MastersPage() {
       const mastersWithKeys = masters
         .map((m) => {
           const config = masterConfig[m.id];
-          console.log("masterConfig:", m.id, config);
+          // console.log("masterConfig:", m.id, config);
           if (!config) return null;
 
           return {
@@ -613,7 +613,7 @@ export default function MastersPage() {
           </div>
         ) : (
           Object.entries(grouped).map(([category, items]) => (
-            <DashboardSection key={category} title={category} id = {category} items={items} />
+            <DashboardSection key={category} title={category} id={category} items={items} />
           ))
         )}
       </div>
