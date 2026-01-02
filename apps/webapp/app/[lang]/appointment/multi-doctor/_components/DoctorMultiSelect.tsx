@@ -16,6 +16,7 @@ interface DoctorMultiSelectProps {
   onChange: (value: string[]) => void
   disabled?: boolean
   className?: string
+  hideTags?: boolean
 }
 
 export function DoctorMultiSelect({
@@ -26,6 +27,7 @@ export function DoctorMultiSelect({
   onChange,
   disabled = false,
   className,
+  hideTags = false,
 }: DoctorMultiSelectProps) {
   const selectedDoctors = options.filter((opt) => value.includes(opt.value))
 
@@ -47,21 +49,21 @@ export function DoctorMultiSelect({
       />
 
       {/* Selected Doctors Tags */}
-      {selectedDoctors.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-3">
+      {!hideTags && selectedDoctors.length > 0 && (
+        <div className="flex overflow-x-auto gap-3 mt-3 pb-2 scrollbar-none">
           {selectedDoctors.map((doctor) => (
             <div
               key={doctor.value}
-              className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full text-sm font-bold shadow-sm border border-transparent whitespace-nowrap min-w-max"
             >
               <span>{doctor.label}</span>
               <button
                 type="button"
                 onClick={() => handleRemove(doctor.value)}
-                className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                className="bg-[#FCA5A5] hover:bg-red-400 text-white rounded-full p-1 transition-colors flex items-center justify-center"
                 disabled={disabled}
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           ))}

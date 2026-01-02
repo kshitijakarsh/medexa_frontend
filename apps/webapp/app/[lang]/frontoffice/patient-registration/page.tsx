@@ -23,8 +23,80 @@ import { PatientGridView } from "./_components/patient-grid-view";
 import { ContactPopover } from "@/app/[lang]/appointment/_components/contact-popover";
 import { Badge } from "@workspace/ui/components/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import { createPatientsApiClient, type PatientItem } from "@/lib/api/patients-api";
+import { format } from "@workspace/ui/hooks/use-date-fns";
 
-// Dummy data for demonstration
+// Helper function to calculate age from DOB
+const calculateAge = (dobString: string | null | undefined): string => {
+    if (!dobString) return "N/A";
+    try {
+        const dob = new Date(dobString);
+        if (isNaN(dob.getTime())) return "N/A";
+        
+        const now = new Date();
+        let years = now.getFullYear() - dob.getFullYear();
+        let months = now.getMonth() - dob.getMonth();
+        let days = now.getDate() - dob.getDate();
+        
+        if (days < 0) {
+            months--;
+            days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+        
+        return `${years} Year${years !== 1 ? 's' : ''}, ${months} Month${months !== 1 ? 's' : ''}, ${days} Day${days !== 1 ? 's' : ''}`;
+    } catch {
+        return "N/A";
+    }
+};
+
+// Map API response to PatientEntry
+const mapPatientToEntry = (patient: PatientItem): PatientEntry => {
+    // Determine if VIP based on category name (case-insensitive)
+    const categoryName = patient.category?.name?.toLowerCase() || "";
+    const isVip = categoryName.includes("vip");
+    
+    // Map category
+    let category: "VIP" | "Normal" | "Emergency" = "Normal";
+    if (isVip) {
+        category = "VIP";
+    } else if (categoryName.includes("emergency")) {
+        category = "Emergency";
+    }
+    
+    // Map status
+    const patientStatus = patient.status?.toLowerCase() || "active";
+    let status: PatientEntry["status"] = "Active";
+    let registrationStatus: PatientEntry["registrationStatus"] = "Registered Patient";
+    
+    if (patientStatus === "inactive") {
+        status = "Inactive";
+    }
+    
+    // For now, default to "Registered Patient" - this might need to come from API
+    // You may need to add a field to the API response for registration status
+    
+    return {
+        id: String(patient.id),
+        mrn: patient.civil_id ? `MRN-${patient.civil_id}` : `MRN-${patient.id}`,
+        patientName: `${patient.first_name || ""} ${patient.last_name || ""}`.trim(),
+        patientImg: patient.photo_url || undefined,
+        isVip,
+        dob: calculateAge(patient.dob),
+        phone: patient.mobile_number || "N/A",
+        email: patient.email || "N/A",
+        gender: (patient.gender ? (patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1).toLowerCase()) : "Other") as "Male" | "Female" | "Other",
+        category,
+        lastVisit: patient.dob ? format(new Date(patient.dob), "dd-MM-yyyy") : "N/A", // Using DOB as placeholder - API might need last_visit field
+        status,
+        registrationStatus,
+    };
+};
+
+// Dummy data for demonstration (kept as fallback)
 const DUMMY_PATIENTS: PatientEntry[] = [
     {
         id: "1",
@@ -173,7 +245,7 @@ const STATUS_OPTIONS = [
 export default function PatientRegistrationPage() {
     const [loading, setLoading] = useState(false);
     const [viewMode, setViewMode] = useState<"list" | "grid">("list");
-    const [patients, setPatients] = useState<PatientEntry[]>(DUMMY_PATIENTS);
+    const [patients, setPatients] = useState<PatientEntry[]>([]);
     const [filters, setFilters] = useState<PatientFilterState>({
         department: "",
         category: "",
@@ -183,41 +255,67 @@ export default function PatientRegistrationPage() {
     });
     const [departmentSearchQuery, setDepartmentSearchQuery] = useState("");
     const [mrnSearch, setMrnSearch] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPatients, setTotalPatients] = useState(0);
 
     const { departments: departmentOptions } = useDepartments(departmentSearchQuery);
 
     const router = useRouter();
     const { withLocale } = useLocaleRoute();
 
-    // Filter patients based on current filters
+    // Fetch patients from API
     useEffect(() => {
-        let filtered = [...DUMMY_PATIENTS];
+        const fetchPatients = async () => {
+            setLoading(true);
+            try {
+                const apiClient = createPatientsApiClient();
+                const params: any = {
+                    page,
+                    limit: 100, // Get more results for filtering
+                };
 
-        // Filter by registration status (tabs)
-        if (filters.registrationStatus) {
-            filtered = filtered.filter(p => p.registrationStatus === filters.registrationStatus);
-        }
+                // Add search if MRN search is provided
+                if (mrnSearch) {
+                    params.search = mrnSearch;
+                }
 
-        // Filter by category
-        if (filters.category && filters.category !== "all") {
-            filtered = filtered.filter(p => p.category === filters.category);
-        }
+                // Add status filter
+                if (filters.status && filters.status !== "all") {
+                    params.status = filters.status.toLowerCase();
+                }
 
-        // Filter by status
-        if (filters.status && filters.status !== "all") {
-            filtered = filtered.filter(p => p.status === filters.status);
-        }
+                // Add category filter
+                if (filters.category && filters.category !== "all") {
+                    params.category = filters.category;
+                }
 
-        // Filter by MRN search
-        if (mrnSearch) {
-            filtered = filtered.filter(p =>
-                p.mrn.toLowerCase().includes(mrnSearch.toLowerCase()) ||
-                p.patientName.toLowerCase().includes(mrnSearch.toLowerCase())
-            );
-        }
+                const response = await apiClient.getPatients(params);
+                
+                if (response.data.success) {
+                    const mappedPatients = response.data.data.map(mapPatientToEntry);
+                    
+                    // Filter by registration status (tabs) - client-side for now
+                    // This might need to come from API in the future
+                    let filtered = mappedPatients;
+                    if (filters.registrationStatus) {
+                        // For now, all patients are "Registered Patient" unless we have this field from API
+                        // You may need to add registration_status to the API response
+                        filtered = mappedPatients.filter(p => p.registrationStatus === filters.registrationStatus);
+                    }
+                    
+                    setPatients(filtered);
+                    setTotalPatients(response.data.pagination?.total || 0);
+                }
+            } catch (error) {
+                console.error("Error fetching patients:", error);
+                setPatients([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        setPatients(filtered);
-    }, [filters, mrnSearch]);
+        fetchPatients();
+    }, [filters, mrnSearch, page]);
 
     const handleFilterChange = (key: keyof PatientFilterState, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
@@ -235,9 +333,16 @@ export default function PatientRegistrationPage() {
         setMrnSearch("");
     };
 
+    // Handle patient card click
+    const handlePatientClick = (patient: PatientEntry) => {
+        router.push(withLocale(`/frontoffice/patient-details/${patient.id}`));
+    };
+
     // Get count for each status tab
     const getTabCount = (status: string) => {
-        return DUMMY_PATIENTS.filter(p => p.registrationStatus === status).length;
+        // For now, return 0 or calculate from patients array
+        // This might need to come from API in the future
+        return patients.filter(p => p.registrationStatus === status).length;
     };
 
     // Columns for List View
@@ -246,7 +351,10 @@ export default function PatientRegistrationPage() {
             key: "patient",
             label: "Patient",
             render: (row: PatientEntry) => (
-                <div className="flex items-center gap-3 relative">
+                <div
+                    className="flex items-center gap-3 relative cursor-pointer hover:bg-gray-50 rounded p-1 -m-1 transition-colors"
+                    onClick={() => handlePatientClick(row)}
+                >
                     {/* VIP Crown Icon */}
                     {row.isVip && (
                         <div className="absolute -top-1.5 -left-1.5 z-10 w-4 h-4 rounded-full flex items-center justify-center bg-transparent">
@@ -472,7 +580,7 @@ export default function PatientRegistrationPage() {
                     </div>
                 ) : (
                     <div className="mt-4">
-                        <PatientGridView data={patients} />
+                        <PatientGridView data={patients} onPatientClick={handlePatientClick} />
                     </div>
                 )}
 

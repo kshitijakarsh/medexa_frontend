@@ -20,6 +20,7 @@ import Button from "@/components/ui/button"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { getAuthToken } from "@/app/utils/onboarding"
 import { createVisitsApiClient } from "@/lib/api/visits"
+import { createPatientsApiClient, PatientItem } from "@/lib/api/patients-api"
 
 export type PatientVisitType = "appointment" | "walk_in" | "emergency"
 
@@ -48,12 +49,32 @@ interface LastVisit {
 
 // ... imports
 
+// Helper function to map backend patient to Patient type
+function mapBackendPatientToPatient(p: PatientItem): Patient {
+  return {
+    id: String(p.id),
+    name: `${p.first_name || ""} ${p.last_name || ""}`.trim(),
+    patientId: `PAT-${p.id}`,
+    cprNid: p.civil_id || "",
+    dateOfBirth: p.dob || "",
+    gender: p.gender || "",
+    bloodGroup: p.blood_group || "",
+    maritalStatus: p.marital_status || "",
+    nationality: p.country?.name_en || "",
+    phone: p.mobile_number || "",
+    email: p.email || "",
+    address: p.permanent_address || "",
+    avatar: p.photo_url || undefined,
+  }
+}
+
 export default function BookAppointmentPage() {
   const router = useRouter()
   const params = useParams<{ lang?: string }>()
   const searchParams = useSearchParams()
   const lang = params?.lang || "en"
   const visitTypeParam = searchParams.get("visitType") || ""
+  const patientIdParam = searchParams.get("patientId") || ""
 
   // Map query param visitType to PatientVisitType
   const getInitialPatientVisitType = (param: string): PatientVisitType => {
@@ -63,6 +84,8 @@ export default function BookAppointmentPage() {
       case "walkin":
         return "walk_in"
       case "appointment":
+        return "appointment"
+      case "multi-doctor":
         return "appointment"
       default:
         return "appointment"
@@ -81,7 +104,7 @@ export default function BookAppointmentPage() {
   const [showSuccess, setShowSuccess] = useState(false)
   const [bookingData, setBookingData] = useState<any>(null)
 
-  const isMultiDoctor = formData?.visitPurpose === "multi_doctor_appointment"
+  const isMultiDoctor = formData?.visitPurpose === "multi_doctor_appointment" || visitTypeParam === "multi-doctor"
 
   // Update patient visit type if query param changes
   useEffect(() => {
@@ -89,6 +112,30 @@ export default function BookAppointmentPage() {
       setPatientVisitType(getInitialPatientVisitType(visitTypeParam))
     }
   }, [visitTypeParam])
+
+  // Fetch and select patient when patientId is in query params
+  useEffect(() => {
+    const fetchPatientById = async () => {
+      if (patientIdParam) {
+        // Only fetch if no patient is selected, or if the selected patient ID doesn't match the param
+        if (!selectedPatient || selectedPatient.id !== patientIdParam) {
+          try {
+            const client = createPatientsApiClient()
+            const response = await client.getPatient(patientIdParam)
+            
+            if (response.data.success) {
+              const patient = mapBackendPatientToPatient(response.data.data)
+              setSelectedPatient(patient)
+            }
+          } catch (error) {
+            console.error("Failed to fetch patient:", error)
+          }
+        }
+      }
+    }
+
+    fetchPatientById()
+  }, [patientIdParam, selectedPatient?.id])
 
   const handleBookAppointment = async () => {
     // Validation for emergency appointments
@@ -295,6 +342,7 @@ export default function BookAppointmentPage() {
         return (
           <StandardAppointmentForm
             initialPatientVisitType={patientVisitType}
+            initialVisitPurpose={visitTypeParam === "multi-doctor" ? "multi_doctor_appointment" : "doctor_consultation"}
             onPatientVisitTypeChange={setPatientVisitType}
             selectedSlot={selectedSlot}
             onSlotSelect={setSelectedSlot}

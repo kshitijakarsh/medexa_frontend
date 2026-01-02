@@ -244,9 +244,9 @@ export default function AddPatientPage() {
   ]
 
   const insuranceProviders = [
-    { value: "provider1", label: "Insurance Company 1" },
-    { value: "provider2", label: "Insurance Company 2" },
-    { value: "provider3", label: "Insurance Company 3" },
+    { value: "12312", label: "Insurance Company 1" },
+    { value: "123123", label: "Insurance Company 2" },
+    { value: "123123123", label: "Insurance Company 3" },
   ]
 
   const planTypes = [
@@ -344,6 +344,7 @@ export default function AddPatientPage() {
         <LinkFamilyModal
           open={showLinkFamilyModal}
           onClose={() => setShowLinkFamilyModal(false)}
+          currentPatientId={createdPatientId}
           currentPatientMrn={mrn}
         />
       </main>

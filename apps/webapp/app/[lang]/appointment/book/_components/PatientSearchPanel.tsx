@@ -75,6 +75,13 @@ export function PatientSearchPanel({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
+  // Update search query when patient is selected externally (e.g., from query param)
+  useEffect(() => {
+    if (selectedPatient && searchQuery !== selectedPatient.name) {
+      setSearchQuery(selectedPatient.name)
+    }
+  }, [selectedPatient?.id, selectedPatient?.name]) // Update when patient changes
+
   // Fetch patients whenever searchQuery changes (with debounce)
   useEffect(() => {
     const term = searchQuery.trim()

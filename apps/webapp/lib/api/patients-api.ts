@@ -36,6 +36,7 @@ export interface PatientItem {
     city?: string | null;
     permanent_address?: string | null;
     photo_url?: string | null;
+    status?: string | null;
     category?: PatientCategory | null;
     country?: PatientCountry | null;
     issuing_country?: PatientCountry | null;
@@ -44,11 +45,13 @@ export interface PatientItem {
 export interface PatientListResponse {
     success: boolean;
     data: PatientItem[];
-    pagination: {
+    pagination?: {
         page: number;
         limit: number;
         total: number;
         totalPages: number;
+        hasNextPage?: boolean;
+        hasPrevPage?: boolean;
     };
 }
 
@@ -56,6 +59,11 @@ export interface PatientListParams {
     page?: number;
     limit?: number;
     search?: string;
+    status?: string;
+    gender?: string;
+    blood_group?: string;
+    country_id?: string;
+    category?: string;
 }
 
 /* ------------------------------------------
