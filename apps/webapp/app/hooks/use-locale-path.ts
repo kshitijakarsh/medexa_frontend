@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation"
 
-const SUPPORTED_LOCALES = ["en", "nl"] as const
+const SUPPORTED_LOCALES = ["en", "ar"] as const
 type Locale = (typeof SUPPORTED_LOCALES)[number]
 
 export function useLocalePath(): Locale {

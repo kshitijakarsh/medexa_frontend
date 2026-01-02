@@ -31,14 +31,25 @@ import { PERMISSIONS } from "@/app/utils/permissions"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 
 import { PermissionGuard } from "@/components/auth/PermissionGuard"
-import { normalizePermissionList } from "@/app/utils/permissions"
+import { normalizePermissionList } from "@/app/utils/permissions";
+import { useDictionary } from "@/i18n/use-dictionary";
+import { useParams } from "next/navigation";
 
 const ChargesSection = [
   { key: "service", label: "Service and Charge" },
   { key: "category", label: "Charges Category" },
   { key: "tax", label: "Tax Category" },
   { key: "unit", label: "Unit Type" },
-]
+] as const;
+
+// will get used in translation 
+const LABEL_TO_TRANSLATION_KEY = {
+  "Service and Charge": "service",
+  "Charges Category": "category",
+  "Tax Category": "tax",
+  "Unit Type": "unit",
+} as const;
+
 const PERMISSION_MAP = {
   service: PERMISSIONS.CHARGE,
   category: PERMISSIONS.CHARGE_CATEGORY,
@@ -82,11 +93,21 @@ function ChargesPageContent() {
   const [editMode, setEditMode] = useState<
     "service" | "category" | "tax" | "unit"
   >("service")
+
+  const params = useParams();
+  const lang = params.lang as string;
+  const dict = useDictionary();
+  const trans = dict.pages.charges;
   /* -------------------- Filters -------------------- */
   const [filters, setFilters] = useState<any>({})
 
+  const translatedTabs = ChargesSection.map((tab) => ({
+    key: tab.key,
+    label: trans.tabs[LABEL_TO_TRANSLATION_KEY[tab.label]],
+  }));
+
   /* Filter Tabs based on Permissions */
-  const filteredTabs = ChargesSection.filter((t) => {
+  const filteredTabs = translatedTabs.filter((t) => {
     const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
     return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
   });
@@ -204,38 +225,38 @@ function ChargesPageContent() {
       return [
         {
           key: "sno",
-          label: "Sr.No",
+          label: trans.columns.srNo,
           render: (r: any) => r.sno,
           className: "w-[60px] text-center",
         },
         {
           key: "serviceName",
-          label: "Service Name",
+          label: trans.columns.serviceName,
           render: (r: any) => r.serviceName,
         },
         {
           key: "chargeCategory",
-          label: "Charge Category",
+          label: trans.columns.chargeCategory,
           render: (r: any) => r.chargeCategoryLabel || r.chargeCategory,
         },
         {
           key: "unit",
-          label: "Unit",
+          label: trans.columns.unit,
           render: (r: any) => r.unitLabel || r.unit,
         },
         {
           key: "tax",
-          label: "Tax",
+          label: trans.columns.tax,
           render: (r: any) => r.taxLabel || r.tax || "",
         },
         {
           key: "standardCharge",
-          label: "Standard Charge",
+          label: trans.columns.standardCharge,
           render: (r: any) => r.standardCharge,
         },
         {
           key: "status",
-          label: "Service Status",
+          label: trans.columns.status,
           render: (r: any) => (
             <span
               className={
@@ -248,7 +269,7 @@ function ChargesPageContent() {
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.columns.action,
           render: (r: any) => (
             <ChargesRowActions
               onEdit={() => {
@@ -256,7 +277,7 @@ function ChargesPageContent() {
                 setEditMode(tab)
                 setIsEditOpen(true)
               }}
-              onView={() => router.push(`/administration/charges/${r.id}`)}
+              onView={() => router.push(withLocale(`/administration/charges/${r.id}`))}
               onDelete={() => handleDelete(r.id)}
               userPermissions={permissionStrings}
               mode={tab}
@@ -272,28 +293,28 @@ function ChargesPageContent() {
       return [
         {
           key: "sno",
-          label: "Sr.No",
+          label: trans.columns.srNo,
           render: (r: any) => r.sno,
           className: "w-[60px] text-center",
         },
         {
           key: "name",
-          label: t === "tax" ? "Tax Name" : "Charge Name",
+          label: t === "tax" ? trans.columns.taxName : trans.columns.chargeName,
           render: (r: any) => (t === "tax" ? r.taxName : r.chargeName),
         },
         {
           key: "createdOn",
-          label: "Created On",
+          label: trans.columns.createdOn,
           render: (r: any) => r.createdOn,
         },
         {
           key: "percentage",
-          label: "Percentage(%)",
+          label: trans.columns.percentage,
           render: (r: any) => (t === "tax" ? `${r.percentage}%` : ""),
         },
         {
           key: "status",
-          label: "Service Status",
+          label: trans.columns.status,
           render: (r: any) => (
             <span
               className={
@@ -306,7 +327,7 @@ function ChargesPageContent() {
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.columns.action,
           render: (r: any) => (
             <ChargesRowActions
               onEdit={() => {
@@ -328,20 +349,20 @@ function ChargesPageContent() {
       return [
         {
           key: "sno",
-          label: "Sr.No",
+          label: trans.columns.srNo,
           render: (r: any) => r.sno,
           className: "w-[60px] text-center",
         },
-        { key: "name", label: "Charge Name", render: (r: any) => r.chargeName },
+        { key: "name", label: trans.columns.chargeName, render: (r: any) => r.chargeName },
         {
           key: "createdOn",
-          label: "Created On",
+          label: trans.columns.createdOn,
           render: (r: any) => r.createdOn,
         },
-        // { key: "percentage", label: "Percentage(%)", render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
+        // { key: "percentage", label: trans.columns.percentage, render: (r: any) => (t === "tax" ? `${r.percentage}%` : "") },
         {
           key: "status",
-          label: "Service Status",
+          label: trans.columns.status,
           render: (r: any) => (
             <span
               className={
@@ -354,7 +375,7 @@ function ChargesPageContent() {
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.columns.action,
           render: (r: any) => (
             <ChargesRowActions
               onEdit={() => {
@@ -376,19 +397,19 @@ function ChargesPageContent() {
       return [
         {
           key: "sno",
-          label: "Sr.No",
+          label: trans.columns.srNo,
           render: (r: any) => r.sno,
           className: "w-[60px] text-center",
         },
-        { key: "name", label: "Unit Type", render: (r: any) => r.unit },
+        { key: "name", label: trans.columns.unitType, render: (r: any) => r.unit },
         {
           key: "createdOn",
-          label: "Created On",
+          label: trans.columns.createdOn,
           render: (r: any) => r.createdOn,
         },
         {
           key: "status",
-          label: "Service Status",
+          label: trans.columns.status,
           render: (r: any) => (
             <span
               className={
@@ -401,7 +422,7 @@ function ChargesPageContent() {
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.columns.action,
           render: (r: any) => (
             <ChargesRowActions
               onEdit={() => {
@@ -420,7 +441,8 @@ function ChargesPageContent() {
     }
 
     return []
-  }
+
+  };
 
   const onApplyFilters = (f: any) => {
     // simple client-side filter demo
@@ -495,7 +517,8 @@ function ChargesPageContent() {
     <>
       <div className="p-5 space-y-8">
         <div className="flex justify-between items-center">
-          <PageHeader title="Charges" />
+          <PageHeader title={trans.title} />
+
         </div>
         <div className="bg-white p-5 rounded-md shadow-sm">
           {/* Tabs */}
@@ -521,7 +544,7 @@ function ChargesPageContent() {
                 <SearchInput
                   value={search}
                   onChange={(v: any) => setSearch(v)}
-                  placeholder="Search..."
+                  placeholder={dict.common.search}
                 />
               </div>
 

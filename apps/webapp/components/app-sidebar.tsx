@@ -44,10 +44,12 @@ import {
   FRONTOFFICE_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 export function AppSidebar({ }) {
   const pathname = usePathname()
   const { withLocale } = useLocaleRoute()
+  const dict = useDictionary()
 
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
@@ -60,7 +62,7 @@ export function AppSidebar({ }) {
     ...(!modulesAvailable.hr && !modulesAvailable.doctor && !modulesAvailable.frontoffice
       ? [
         {
-          title: "Organization Setup",
+          title: dict.nav.organizationSetup,
           url: [
             withLocale(ROUTES.ORGANIZATION),
             withLocale(ROUTES.ADMINISTRATION_CHARGES),

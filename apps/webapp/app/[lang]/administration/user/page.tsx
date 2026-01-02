@@ -20,6 +20,7 @@ import type { UserItem } from "@/lib/api/administration/users"
 import { Can } from "@/components/common/app-can"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import { useUserStore } from "@/store/useUserStore"
+import { useDictionary } from "@/i18n/use-dictionary"
 import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 const limit = 10
@@ -39,6 +40,8 @@ function EmployeeConfigurationPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryClient = useQueryClient()
+  const dict = useDictionary()
+  const trans = dict.pages.users
 
   /* ----------------------------------
           URL State
@@ -139,24 +142,24 @@ function EmployeeConfigurationPageContent() {
   const columns = [
     {
       key: "role",
-      label: "Role",
+      label: trans.table.role,
       render: (r: TableUserRow) => (
         <span className="text-gray-800 font-medium">{r.role}</span>
       ),
     },
     {
       key: "email",
-      label: "Email",
+      label: trans.table.email,
       render: (r: TableUserRow) => <span>{r.email}</span>,
     },
     {
       key: "phone",
-      label: "Phone",
+      label: trans.table.phone,
       render: (r: TableUserRow) => <span>{r.phone}</span>,
     },
     {
       key: "status",
-      label: "Status",
+      label: trans.table.status,
       render: (r: TableUserRow) => (
         <span
           className={r.status === "Active" ? "text-green-600" : "text-red-500"}
@@ -168,19 +171,19 @@ function EmployeeConfigurationPageContent() {
     },
     {
       key: "createdOn",
-      label: "Created On",
+      label: trans.table.createdOn,
       render: (r: TableUserRow) => r.createdOn,
       className: "w-[140px]",
     },
     {
       key: "addedBy",
-      label: "Added By",
+      label: trans.table.addedBy,
       render: (r: TableUserRow) => r.addedBy ?? "—",
       className: "max-w-[140px] min-w-[100px]",
     },
     {
       key: "action",
-      label: "Action",
+      label: trans.table.action,
       render: (r: TableUserRow) => (
         <UserRowActions
           onEdit={() => {
@@ -211,7 +214,7 @@ function EmployeeConfigurationPageContent() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="User Management" />
+        <PageHeader title={trans.title} />
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           <div className="flex justify-end">
             <div className="flex flex-wrap items-center justify-end gap-3 w-full lg:w-auto">
@@ -224,7 +227,7 @@ function EmployeeConfigurationPageContent() {
                   value={search}
                   onChange={setSearch}
                   onSearch={setSearchQuery}
-                  placeholder="Search by email, phone, role..."
+                  placeholder={trans.table.placeholderSearch}
                   minChars={2}
                 />
               </div>

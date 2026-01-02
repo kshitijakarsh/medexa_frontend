@@ -353,6 +353,7 @@ import {
     useDeleteInsurance,
 } from "./_components/hooks/hooks";
 
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function CompanyListPage() {
     return (
@@ -375,6 +376,8 @@ function CompanyListPageContent() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [page, setPage] = useState(1);
     const limit = 10;
+    const dict = useDictionary();
+    const trans = dict.pages.insurance;
 
     /* ---------------- DEBOUNCE SEARCH ---------------- */
     useEffect(() => {
@@ -423,17 +426,17 @@ function CompanyListPageContent() {
     const columns = [
         {
             key: "provider_name",
-            label: "Provider Name",
+            label:  trans.table.providerName,
             render: (r: any) => r.provider_name,
         },
         {
             key: "company_name",
-            label: "Insurance Company Name",
+            label: trans.table.insuranceCompanyName,
             render: (r: any) => r.company_name,
         },
         {
             key: "approval_url",
-            label: "Approval URL",
+            label: trans.table.approvalURL,
             render: (r: any) => (
                 <a
                     href={r.approval_url}
@@ -447,7 +450,7 @@ function CompanyListPageContent() {
         },
         {
             key: "status",
-            label: "Status",
+            label: trans.table.status,
             className: "text-center w-[90px]",
             render: (r: any) => (
                 <span
@@ -463,7 +466,7 @@ function CompanyListPageContent() {
         },
         {
             key: "action",
-            label: "Action",
+            label: trans.table.action,
             className: "text-center w-[90px]",
             render: (r: any) => (
                 <InsuranceRowActionMenu
@@ -492,8 +495,7 @@ function CompanyListPageContent() {
     return (
         <>
             <div className="p-5 space-y-6">
-                <PageHeader title="Insurance Companies" />
-
+                <PageHeader title={trans.title} />
                 <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
                     <div className="flex justify-end items-center gap-3">
                         <FilterButton
@@ -504,7 +506,7 @@ function CompanyListPageContent() {
                         <SearchInput
                             value={search}
                             onChange={setSearch}
-                            placeholder="Search provider or company..."
+                            placeholder={trans.table.placeholderSearch}
                         />
 
                         <QuickActions />

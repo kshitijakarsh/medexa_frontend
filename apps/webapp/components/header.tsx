@@ -7,6 +7,8 @@ import { TopActionButtons } from "./header/top-action-menu-buttons"
 import { Button } from "@workspace/ui/components/button"
 import { useUserStore } from "@/store/useUserStore"
 import { format, formatRelative } from "@workspace/ui/hooks/use-date-fns"
+import { useDictionary } from "@/i18n/use-dictionary"
+
 
 export const Header = () => {
   // const handleLogout = () => {
@@ -34,6 +36,8 @@ export const Header = () => {
   };
 
   const { toggleSidebar } = useSidebar()
+  const dict = useDictionary()
+  const t = dict.common;
 
   return (
     <div className="h-14 w-full px-4 flex items-center justify-between border-b bg-white">
@@ -56,7 +60,7 @@ export const Header = () => {
         <LogOutIcon onClick={handleLogout} className="h-4 w-4" />
       </button> */}
       <div>
-        <TopActionButtons user={userData} />
+        <TopActionButtons user={userData}/>
       </div>
     </div>
   )

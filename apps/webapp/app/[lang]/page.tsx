@@ -6,5 +6,5 @@ export default async function LangPage({
   params: Promise<{ lang: string }>
 }) {
   const { lang } = await params
-  redirect(`/${lang}/dashboard`)
+  redirect(`/dashboard`)
 }

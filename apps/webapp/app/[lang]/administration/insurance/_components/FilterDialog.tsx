@@ -195,6 +195,8 @@ import { AppDialog } from "@/components/common/app-dialog";
 import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
 import { AppSelect } from "@/components/common/app-select";
+import { Input } from "@workspace/ui/components/input";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 /* ✅ ONLY API-supported filter */
 const filterSchema = z.object({
@@ -223,8 +225,15 @@ export function FilterDialog({
     },
   });
 
+  const dict = useDictionary();
+  const handleApply = (values: FilterForm) => {
+    console.log("✅ Applied Filters:", values);
+    onApply(values);
+    onClose();
+  };
+
   return (
-    <AppDialog open={open} onClose={onClose} title="Filter" maxWidth="md:max-w-md">
+    <AppDialog open={open} onClose={onClose} title={dict.pages.insurance.filterdialog.title} maxWidth="md:max-w-md">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit((values) => {
@@ -239,15 +248,15 @@ export function FilterDialog({
             name="status"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{dict.common.status}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Status"
+                    placeholder={dict.pages.insurance.filterdialog.placeholderStatus}
                     value={field.value}
                     onChange={field.onChange}
                     options={[
-                      { label: "Active", value: "active" },
-                      { label: "Inactive", value: "inactive" },
+                      { label: dict.common.active, value: "active" },
+                      { label: dict.common.inactive, value: "inactive" },
                     ]}
                   />
                 </FormControl>
@@ -260,7 +269,7 @@ export function FilterDialog({
             <CancelButton onClick={onClose} />
             <ActionButton
               loading={isLoading}
-              label="Apply Filter"
+              label={dict.common.applyfilters}
               type="submit"
             />
           </div>

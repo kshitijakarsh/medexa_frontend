@@ -1,32 +1,40 @@
 import { ROUTES } from "@/lib/routes";
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary";
+import { Key } from "lucide-react";
 
 // Simulated API call
-export async function fetchMasters() {
+export async function fetchMasters({ dict }: { dict: DictionaryType }) {
+
+  const t = dict.pages.organizationSetupCards;
   // await new Promise((res) => setTimeout(res, 800)); // simulate delay
   return [
     {
-      title: "Departments",
-      subtitle: "Eg: Cardiology, Neurology, Orthopedics, etc.",
+      id: "Departments",
+      title: t.items.departments.title,
+      subtitle: t.items.departments.subtitle,
       active: 120,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Ward/ Beds",
-      subtitle: "ICU, General Ward, Maternity Ward, etc.",
+      id: "Ward/ Beds",
+      title: t.items.wardsBeds.title,
+      subtitle: t.items.wardsBeds.subtitle,
       active: 130,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Operation Theatres / Procedure Rooms",
-      subtitle: "OT1, OT2, minor procedure rooms, etc.",
+      id: "Operation Theatres / Procedure Rooms",
+      title: t.items.operationTheatres.title,
+      subtitle: t.items.operationTheatres.subtitle,
       active: 120,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "User",
-      subtitle: "User creation, etc.",
+      id: "User",
+      title: t.items.users.title,
+      subtitle: t.items.users.subtitle,
       active: 10,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     // {
     //   title: "Insurance",
@@ -35,112 +43,127 @@ export async function fetchMasters() {
     //   category: "Organization Setup",
     // },
     {
-      title: "Employees",
-      subtitle: "Employees creation, etc.",
+      id: "Employees",
+      title: t.items.employees.title,
+      subtitle: t.items.employees.subtitle,
       active: 10,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Charges",
-      subtitle: "Adding charges tax units and categories",
+      id: "Charges",
+      title: t.items.charges.title,
+      subtitle: t.items.charges.subtitle,
       active: 10,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Patients",
-      subtitle: "Eg. VIP, standard",
+      id: "Patients",
+      title: t.items.patients.title,
+      subtitle: t.items.patients.subtitle,
       active: 120,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Operation / Operation Category",
-      subtitle: "OT1, OT2, minor procedure rooms, etc.",
+      id: "Operation / Operation Category",
+      title: t.items.operationCategory.title,
+      subtitle: t.items.operationCategory.subtitle,
       active: 120,
-      category: "Organization Setup",
+      category: t.categories.organizationSetup,
     },
     {
-      title: "Human Resource",
-      subtitle: "Eg: Doctor, Nurse, Designation, etc.",
+      id: "Human Resource",
+      title: t.items.humanResource.title,
+      subtitle: t.items.humanResource.subtitle,
       active: 100,
-      category: "Staff & Roles",
+      category: t.categories.staffRoles,
     },
     {
-      title: "Roles",
-      subtitle: "Eg: Roles, etc.",
+      id: "Roles",
+      title: t.items.roles.title,
+      subtitle: t.items.roles.subtitle,
       active: 100,
-      category: "Staff & Roles",
+      category: t.categories.staffRoles,
     },
     {
-      title: "Shifts & Attendance Configuration",
-      subtitle: "Eg: General Ward, Maternity Ward, etc.",
+      id: "Shifts & Attendance Configuration",
+      title: t.items.shiftsAttendance.title,
+      subtitle: t.items.shiftsAttendance.subtitle,
       active: 120,
-      category: "Staff & Roles",
+      category: t.categories.staffRoles,
     },
     {
-      title: "Insurance",
-      subtitle: "Health Insurance, Life Insurance, etc.",
+      id: "Insurance",
+      title: t.items.insurance.title,
+      subtitle: t.items.insurance.subtitle,
       active: 90,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
 
     {
-      title: "Medical Procedure / Treatment Master",
-      subtitle: "Cardiology, Neuro, Ortho, etc.",
+      id: "Medical Procedure / Treatment Master",
+      title: t.items.medicalProcedure.title,
+      subtitle: t.items.medicalProcedure.subtitle,
       active: 120,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
     {
-      title: "Lab Test Master",
-      subtitle: "CBC, Lipid panel, Widal, Maternity etc.",
+      id: "Lab Test Master",
+      title: t.items.labTest.title,
+      subtitle: t.items.labTest.subtitle,
       active: 120,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
     {
-      title: "Radiology / Imaging Test Master",
-      subtitle: "X-Ray, MRI, CT-Scan, etc.",
+      id: "Radiology / Imaging Test Master",
+      title: t.items.radiology.title,
+      subtitle: t.items.radiology.subtitle,
       active: 120,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
     {
-      title: "Package / Scheme / Policy Setup",
-      subtitle: "OP, IP, minor procedure etc.",
+      id: "Package / Scheme / Policy Setup",
+      title: t.items.packageScheme.title,
+      subtitle: t.items.packageScheme.subtitle,
       active: 120,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
     {
-      title: "Tariff / Pricing / Service Charges",
-      subtitle: "Cardiology, Neuro, Ortho, etc.",
+      id: "Tariff / Pricing / Service Charges",
+      title: t.items.tariffPricing.title,
+      subtitle: t.items.tariffPricing.subtitle,
       active: 120,
-      category: "Services & Procedure",
+      category: t.categories.servicesProcedure,
     },
     {
-      title: "Inventory / Consumables Master",
-      subtitle: "Eg: Syringe, Gauze, Cotton, etc.",
+      id: "Inventory / Consumables Master",
+      title: t.items.inventory.title,
+      subtitle: t.items.inventory.subtitle,
       active: 120,
-      category: "Inventory & Pharmacy Master",
+      category: t.categories.inventoryPharmacy,
     },
     {
-      title: "Equipment / Asset Master",
-      subtitle: "Eg: ECG, MRI, Ventilator, etc.",
+      id: "Equipment / Asset Master",
+      title: t.items.equipment.title,
+      subtitle: t.items.equipment.subtitle,
       active: 120,
-      category: "Inventory & Pharmacy Master",
+      category: t.categories.inventoryPharmacy,
     },
     {
-      title: "Medicine / Drug Master",
-      subtitle: "Eg: Paracetamol, Aspirin, etc.",
+      id: "Medicine / Drug Master",
+      title: t.items.medicine.title,
+      subtitle: t.items.medicine.subtitle,
       active: 120,
-      category: "Inventory & Pharmacy Master",
+      category: t.categories.inventoryPharmacy,
     },
     {
-      title: "Supplier / Vendor Master",
-      subtitle: "Eg: Apollo, MedPlus, etc.",
+      id: "Supplier / Vendor Master",
+      title: t.items.supplier.title,
+      subtitle: t.items.supplier.subtitle,
       active: 120,
-      category: "Inventory & Pharmacy Master",
+      category: t.categories.inventoryPharmacy,
     },
   ];
 }
-
-
 
 export const masterConfig: Record<
   string,
@@ -214,7 +237,7 @@ export const masterConfig: Record<
   "Charges": {
     route: ROUTES.ADMINISTRATION_CHARGES,
     addOptions: ["Service", "Category", "Tax", "Unit"],
-    submoduleKeys: ["charges"]
+    submoduleKeys: ["charge", "chargeCategory", "taxCategory", "chargeUnit"]
   },
   "Patients": {
     route: ROUTES.ADMINISTRATION_PATIENTS,
@@ -242,3 +265,4 @@ export const masterConfig: Record<
     addOptions: ["Supplier", "Vendor"],
   },
 };
+

@@ -672,6 +672,7 @@ import {
 } from "@workspace/ui/components/accordion";
 import { PermissionNode, MainModule, mainModules } from "./permissionsConfig";
 import { CustomCheckbox } from "./CustomCheckbox";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface PermissionAccordionProps {
   allowedModules: Array<{ id?: string; key: string }> | string[];
@@ -684,7 +685,26 @@ export const PermissionAccordion = ({
   value = {},
   onChange,
 }: PermissionAccordionProps) => {
-  const visibleModules = mainModules.filter((m) =>
+
+  const dict = useDictionary();
+  const moduleDict = dict.pages.permissions.modules;
+  const subModuleDict = dict.pages.permissions.submodules;
+  const actionDict = dict.pages.permissions.children;
+
+  const translatedModules: MainModule[] = mainModules.map((m) => ({
+    ...m,
+    label: moduleDict[m.key as keyof typeof moduleDict] || m.label,
+    subModules: m.subModules.map((s) => ({
+      ...s,
+      label: subModuleDict[s.key as keyof typeof subModuleDict] || s.label,
+      children: s.children?.map((c) => ({
+        ...c,
+        label: subModuleDict[c.key as keyof typeof subModuleDict] || c.label,
+      })),
+    })),
+  }));
+
+  const visibleModules = translatedModules.filter((m) =>
     allowedModules.some((allow) => {
       if (typeof allow === "string") {
         return allow.toLowerCase() === m.key.toLowerCase();
@@ -693,15 +713,13 @@ export const PermissionAccordion = ({
     })
   );
 
-
-
   const [permissions, setPermissions] = useState<Record<string, any>>({});
   const [openMainModules, setOpenMainModules] = useState<string[]>([]);
   const [openSubModules, setOpenSubModules] = useState<string[]>([]);
 
   useEffect(() => {
     // Open all main modules by default
-    setOpenMainModules(mainModules.map((m) => m.key));
+    setOpenMainModules(translatedModules.map((m) => m.key));
 
     // Open all sub-modules by default
     const allSubModules: string[] = [];
@@ -717,7 +735,7 @@ export const PermissionAccordion = ({
     // Initialize ONLY nested structure - ignore any flat keys
     const initialPermissions: Record<string, any> = {};
 
-    mainModules.forEach((mainModule) => {
+    translatedModules.forEach((mainModule) => {
       initialPermissions[mainModule.key] = {};
 
       mainModule.subModules.forEach((subModule) => {
@@ -902,7 +920,7 @@ export const PermissionAccordion = ({
                 updatePermissions(updated);
               }}
             />
-            <span className="text-sm font-semibold text-gray-700">All</span>
+            <span className="text-sm font-semibold text-gray-700">{actionDict["All"]}</span>
           </div>
 
           {/* Individual Action Checkboxes */}
@@ -915,7 +933,7 @@ export const PermissionAccordion = ({
                   onChange={(checked) => handleActionChange(mainModuleKey, node, action, checked)}
                 />
                 <span className="text-sm text-gray-600 capitalize">
-                  {action.replace(/_/g, " ")}
+                    {actionDict[action as keyof typeof actionDict] || action.replace(/_/g, " ")}
                 </span>
               </div>
             );
@@ -1020,7 +1038,7 @@ export const PermissionAccordion = ({
                 checked={isMainModuleAllChecked(mainModule)}
                 onChange={(checked) => toggleMainModuleAll(mainModule, checked)}
               />
-              <span className="text-sm font-medium text-blue-900">All</span>
+              <span className="text-sm font-medium text-blue-900">{dict.pages.permissions.all}</span>
             </div>
           </div>
         </AccordionTrigger>

@@ -4,12 +4,68 @@
     "cancel": "إلغاء",
     "edit": "تعديل",
     "delete": "حذف",
-    "search": "بحث",
+    "update": "تحديث",
+    "view": "عرض",
+    "status": "الحالة",
+    "search": "بحث...",
     "loading": "جاري التحميل...",
-    "back": "رجوع"
+    "saving": "جارٍ الحفظ...",
+    "applying": "جارٍ التطبيق...",
+    "back": "رجوع",
+    "quickActions": "إجراءات سريعة",
+    "appplyfilters": "تطبيق التصفية",
+    "viewProfile": "عرض الملف الشخصي",
+    "changePassword": "تغيير كلمة المرور",
+    "accountStatus": "حالة الحساب",
+    "lastLogin": "آخر تسجيل دخول",
+    "logout": "تسجيل الخروج",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "employeeId": "المعرّف",
+    "importExcel": "استيراد إكسل",
+    "exportExcel": "تصدير إكسل",
+    "bulkAddDepartment": "إضافة الأقسام دفعة واحدة",
+    "noData": "لا توجد بيانات",
+    "Addnew": "إضافة جديد"
+  },
+  "actions": {
+    "add": "إضافة",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "permissions": "الأذونات",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "apply": "تطبيق"
+  },
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "صفحة {{page}} من {{total}}",
+    "first": "الأول",
+    "last": "الأخير"
+  },
+  "toast": {
+    "created": "تم الإنشاء بنجاح",
+    "updated": "تم التحديث بنجاح",
+    "deleted": "تم الحذف بنجاح",
+    "failed": "فشلت العملية"
+  },
+  "modules": {
+    "administration": "الإدارة",
+    "doctor": "طبيب",
+    "nurse": "ممرضة",
+    "frontoffice": "الاستقبال",
+    "appointment": "المواعيد",
+    "patient_mgmt": "المرضى",
+    "billing": "الفواتير",
+    "lab": "المختبر",
+    "pharmacy": "الصيدلية",
+    "inventory": "المخزون",
+    "analytics": "التحليلات",
+    "hr": "الموارد البشرية"
   },
   "nav": {
-    "organizationSetup": "إعداد المؤسسة",
+    "organizationSetup": "إعدادات المؤسسة",
     "dashboard": "لوحة التحكم",
     "settings": "الإعدادات"
   },
@@ -21,90 +77,465 @@
       "title": "تسجيل الدخول"
     },
     "onboarding": {
-      "title": "البدء"
+      "title": "التهيئة"
     },
     "organizationSetup": {
-      "title": "إعداد المؤسسة"
+      "title": "إعدادات المؤسسة"
+    },
+    "roles": {
+      "title": "إعداد أدوار المستخدمين",
+      "noResults": "لا توجد أدوار",
+      "columns": {
+        "role": "الدور",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "action": "الإجراء",
+        "table": {
+          "sno": "رقم"
+        }
+      },
+      "filters": {
+        "title": "تصفية أدوار المستخدمين",
+        "search": "ابحث عن الأدوار...",
+        "status": "اختر الحالة",
+        "applying": "جارٍ التطبيق...",
+        "apply": "تطبيق التصفية"
+      }
+    },
+    "charges": {
+      "title": "الرسوم",
+      "tabs": {
+        "service": "الخدمات والرسوم",
+        "category": "فئات الرسوم",
+        "tax": "فئات الضرائب",
+        "unit": "أنواع الوحدات"
+      },
+      "columns": {
+        "srNo": "رقم",
+        "serviceName": "اسم الخدمة",
+        "chargeCategory": "فئة الرسوم",
+        "unit": "الوحدة",
+        "tax": "الضريبة",
+        "standardCharge": "الرسوم القياسية",
+        "status": "الحالة",
+        "action": "الإجراء",
+        "taxName": "اسم الضريبة",
+        "chargeName": "اسم الرسوم",
+        "unitType": "نوع الوحدة",
+        "createdOn": "تاريخ الإنشاء",
+        "percentage": "النسبة (%)"
+      },
+      "actions": {
+        "add": "إضافة",
+        "bulk": "رفع جماعي",
+        "clear": "مسح",
+        "apply": "تطبيق"
+      },
+      "dialogs": {
+        "filterTitle": "تصفية الرسوم",
+        "addSingle": "إضافة عنصر",
+        "addBulk": "رفع جماعي"
+      },
+      "filters": {
+        "title": "تصفية",
+        "searchPlaceholder": "ابحث بالاسم",
+        "search": "بحث",
+        "category": "الفئة",
+        "unit": "الوحدة",
+        "tax": "الضريبة",
+        "status": "الحالة",
+        "statusPlaceholder": "اختر الحالة",
+        "createdDate": "تاريخ الإنشاء"
+      }
+    },
+    "organizationSetupCards": {
+      "categories": {
+        "organizationSetup": "إعدادات المؤسسة",
+        "staffRoles": "الطاقم والأدوار",
+        "servicesProcedure": "الخدمات والإجراءات",
+        "inventoryPharmacy": "المخزون والصيدلية"
+      },
+      "items": {
+        "departments": {
+          "title": "الأقسام",
+          "subtitle": "مثل: القلب، الأعصاب، العظام، إلخ."
+        },
+        "wardsBeds": {
+          "title": "الأجنحة / الأسرّة",
+          "subtitle": "العناية المركزة، جناح عام، جناح الولادة، إلخ."
+        },
+        "operationTheatres": {
+          "title": "غرف العمليات / الإجراءات",
+          "subtitle": "OT1، OT2، غرف إجراءات صغيرة، إلخ."
+        },
+        "users": {
+          "title": "المستخدمون",
+          "subtitle": "إنشاء المستخدمين، إلخ."
+        },
+        "employees": {
+          "title": "الموظفون",
+          "subtitle": "إنشاء الموظفين، إلخ."
+        },
+        "charges": {
+          "title": "الرسوم",
+          "subtitle": "إضافة الرسوم والضرائب والوحدات والفئات"
+        },
+        "patients": {
+          "title": "المرضى",
+          "subtitle": "مثل: كبار الشخصيات، العادي"
+        },
+        "operationCategory": {
+          "title": "العمليات / فئات العمليات",
+          "subtitle": "OT1، OT2، غرف إجراءات صغيرة، إلخ."
+        },
+        "humanResource": {
+          "title": "الموارد البشرية",
+          "subtitle": "مثل: طبيب، ممرضة، مسمى وظيفي، إلخ."
+        },
+        "roles": {
+          "title": "الأدوار",
+          "subtitle": "مثل: الأدوار، إلخ."
+        },
+        "shiftsAttendance": {
+          "title": "إعداد المناوبات والحضور",
+          "subtitle": "مثل: جناح عام، جناح الولادة، إلخ."
+        },
+        "insurance": {
+          "title": "التأمين",
+          "subtitle": "التأمين الصحي، تأمين الحياة، إلخ."
+        },
+        "medicalProcedure": {
+          "title": "الإجراءات الطبية / العلاج",
+          "subtitle": "القلب، الأعصاب، العظام، إلخ."
+        },
+        "labTest": {
+          "title": "تحاليل المختبر",
+          "subtitle": "CBC، دهون الدم، فيدال، الأمومة، إلخ."
+        },
+        "radiology": {
+          "title": "الأشعة / التصوير الطبي",
+          "subtitle": "أشعة سينية، رنين مغناطيسي، أشعة مقطعية، إلخ."
+        },
+        "packageScheme": {
+          "title": "الحزم / السياسات",
+          "subtitle": "خارجي، داخلي، إجراءات بسيطة، إلخ."
+        },
+        "tariffPricing": {
+          "title": "التسعير / رسوم الخدمات",
+          "subtitle": "القلب، الأعصاب، العظام، إلخ."
+        },
+        "inventory": {
+          "title": "المخزون / المستهلكات",
+          "subtitle": "مثل: محقنة، شاش، قطن، إلخ."
+        },
+        "equipment": {
+          "title": "المعدات / الأصول",
+          "subtitle": "مثل: جهاز تخطيط القلب، الرنين، جهاز التنفس، إلخ."
+        },
+        "medicine": {
+          "title": "الأدوية",
+          "subtitle": "مثل: باراسيتامول، أسبرين، إلخ."
+        },
+        "supplier": {
+          "title": "المورد / البائع",
+          "subtitle": "مثل: أبولو، ميدبلس، إلخ."
+        }
+      }
+    },
+    "permissions": {
+      "title": "الأذونات للدور:",
+      "all": "تحديد الكل",
+      "modules": {
+        "administration": "الإدارة",
+        "patient_management": "إدارة المرضى",
+        "appointment": "إدارة المواعيد",
+        "billing": "الفوترة",
+        "pharmacy": "الصيدلية",
+        "laboratory": "المختبر",
+        "hr": "الموارد البشرية",
+        "analytics": "التحليلات",
+        "doctor": "الطبيب",
+        "frontoffice": "الاستقبال"
+      },
+      "submodules": {
+        "department": "الأقسام",
+        "ward": "الأجنحة",
+        "wardType": "نوع الجناح",
+        "bedType": "نوع السرير",
+        "floor": "الطابق",
+        "role": "أدوار المستخدمين",
+        "user": "المستخدمون",
+        "operationTheatres": "غرف العمليات",
+        "insurance": "التأمين",
+        "charges": "الرسوم",
+        "patientCategory": "فئات المرضى",
+        "tax": "الضرائب",
+        "category": "الفئة",
+        "unit": "الوحدة",
+        "operation": "العمليات",
+        "operationCategory": "فئة العملية",
+        "reception": "الاستقبال",
+        "appointments": "إدارة المواعيد",
+        "appointment": "إدارة المواعيد",
+        "pharmacy": "إدارة الصيدلية",
+        "lab": "المختبر",
+        "radiology": "الأشعة",
+        "employee": "إدارة الموظفين",
+        "designation": "المسمى الوظيفي",
+        "specialisation": "إدارة التخصصات",
+        "visit": "الزيارة",
+        "visit_purpose": "سبب الزيارة",
+        "prescription": "إدارة الوصفات الطبية",
+        "patient": "سجلات المرضى",
+        "labReports": "تقارير المختبر",
+        "analytics": "التحليلات"
+      },
+      "children": {
+        "All": "الكل",
+        "view": "عرض",
+        "create": "إنشاء",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "viewOne": "عرض مفصل",
+        "export_pdf": "تصدير PDF",
+        "import_excel": "استيراد إكسل",
+        "approve": "موافقة",
+        "cancel": "إلغاء",
+        "export": "تصدير"
+      }
     },
     "department": {
-      "title": "القسم"
+      "title": "القسم",
+      "Search departments…": "ابحث عن الأقسام...",
+      "table": {
+        "sno": "الرقم",
+        "departmentName": "اسم القسم",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "addedBy": "أُضيف بواسطة",
+        "action": "الإجراء"
+      },
+      "addDepartment": {
+        "title": "إضافة قسم",
+        "dialogTitle": "القسم",
+        "dialogSubtitle": "أدخل اسم القسم",
+        "Status": {
+          "active": "نشط",
+          "inactive": "غير نشط"
+        }
+      }
     },
     "unitsWardsBeds": {
-      "title": "الوحدات والأجنحة والأسرّة"
+      "title": "الوحدات والأجنحة والأسِرّة",
+      "tabs": {
+        "ward": "جناح",
+        "bedType": "نوع السرير",
+        "wardType": "نوع الجناح",
+        "floor": "الطابق"
+      },
+      "columns": {
+        "id": "المعرّف",
+        "wardNumber": "رقم الجناح",
+        "name": "الاسم",
+        "wardType": "نوع الجناح",
+        "floor": "الطابق",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "action": "الإجراء"
+      },
+      "dialog": {
+        "ward": {
+          "addTitle": "إضافة جناح",
+          "editTitle": "تعديل الجناح"
+        },
+        "bed": {
+          "addTitle": "إضافة نوع سرير",
+          "editTitle": "تعديل نوع السرير"
+        },
+        "wardType": {
+          "addTitle": "إضافة نوع جناح",
+          "editTitle": "تعديل نوع الجناح"
+        },
+        "floor": {
+          "addTitle": "إضافة طابق",
+          "editTitle": "تعديل الطابق"
+        },
+        "fields": {
+          "wardNumber": "رقم الجناح",
+          "wardType": "نوع الجناح",
+          "bedType": "نوع السرير",
+          "wardName": "اسم الجناح",
+          "floor": "الطابق",
+          "status": "الحالة"
+        },
+        "placeholders": {
+          "wardNumber": "أدخل رقم الجناح",
+          "wardType": "اختر نوع الجناح",
+          "floor": "أدخل اسم الطابق",
+          "bedType": "اختر نوع السرير",
+          "wardName": "أدخل اسم الجناح"
+        }
+      }
     },
     "operationTheatres": {
-      "title": "غرف العمليات"
+      "title": "غرف العمليات",
+      "table": {
+        "sno": "رقم",
+        "operationroom": "غرفة العمليات",
+        "otRoomName": "اسم غرفة العمليات",
+        "floor": "الطابق",
+        "createdOn": "تاريخ الإنشاء",
+        "addedBy": "أُضيف بواسطة",
+        "action": "الإجراء"
+      },
+      "dialog": {
+        "addTitle": "غرف العمليات",
+        "filterTitle": "تصفية غرف العمليات",
+        "fields": {
+          "operationroom": "رقم غرفة العمليات",
+          "operationroomName": "اسم غرفة العمليات",
+          "floor": "اختر الطابق",
+          "addedBy": "اختر المستخدم"
+        },
+        "placeholders": {
+          "operationroom": "أدخل رقم غرفة العمليات",
+          "operationroomName": "أدخل اسم غرفة العمليات",
+          "floor": "اختر الطابق",
+          "addedBy": "اختر المستخدم"
+        }
+      }
     },
-    "employeeConfiguration": {
-      "title": "تكوين الموظف"
+    "patients": {
+      "title": "فئات المرضى",
+      "patientTypes": "نوع المريض",
+      "addPatientType": "إضافة نوع مريض",
+      "table": {
+        "sno": "الرقم",
+        "categoryName": "نوع المريض",
+        "addedBy": "أُضيف بواسطة",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "action": "الإجراء"
+      }
     },
     "insurance": {
-      "title": "التأمين"
+      "title": "قائمة الشركات",
+      "table": {
+        "sno": "الرقم",
+        "providerName": "اسم المزود",
+        "insuranceCompanyName": "اسم شركة التأمين",
+        "approvalURL": "رابط الموافقة",
+        "address": "العنوان",
+        "trn": "الرقم الضريبي (TRN)",
+        "status": "الحالة",
+        "action": "الإجراء",
+        "placeholderSearch": "ابحث باسم المزود أو الشركة..."
+      },
+      "filterdialog": {
+        "title": "تصفية",
+        "providerName": "اسم المزود",
+        "companyName": "اسم شركة التأمين",
+        "trn": "الرقم الضريبي (TRN)",
+        "status": "الحالة",
+        "city": "المدينة",
+        "createdDate": "تاريخ الإنشاء",
+        "placeholderProviderName": "اختر اسم المزود",
+        "placeholderInsuranceCompanyName": "أدخل اسم الشركة",
+        "placeholderStatus": "اختر الحالة",
+        "placeholderCreatedDate": "اختر تاريخ الإنشاء",
+        "placeholderTRN": "أدخل رقم TRN",
+        "placeholderCity": "اختر المدينة"
+      }
     },
     "tpaProvider": {
-      "title": "مزود TPA"
+      "title": "مزود الطرف الثالث"
     },
     "operation": {
-      "title": "العملية"
+      "title": "إدارة العمليات",
+      "table": {
+        "sno": "الرقم",
+        "category": "فئة العملية",
+        "addedBy": "أُضيف بواسطة",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "action": "الإجراء",
+        "operationName": "اسم العملية",
+        "operationCode": "رمز العملية",
+        "operationStatus": "حالة العملية"
+      },
+      "tabs": {
+        "operation": "العملية",
+        "operationCategory": "فئة العملية"
+      },
+      "dialogs": {
+        "Title": "فئة العملية",
+        "placeholder": "اختر فئة العملية",
+        "placeholder1": "أدخل اسم العملية",
+        "createdOn": "تاريخ الإنشاء",
+        "placeholderCreatedOn": "اختر تاريخ الإنشاء",
+        "placeholderStatus": "اختر الحالة",
+        "addedBy": "أُضيف بواسطة",
+        "placeholderAddedBy": "اختر المستخدم",
+        "addOperation": "إضافة عملية",
+        "addOperationCategory": "إضافة فئة عملية",
+        "createdBy": "أُنشئ بواسطة",
+        "placeholderCreatedBy": "اختر المُنشئ",
+        "dateRange": "نطاق التاريخ",
+        "placeholderDateRange": "اختر نطاق التاريخ"
+      }
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "table": {
+        "phone": "الهاتف",
+        "employeeName": "اسم الموظف",
+        "username": "اسم المستخدم",
+        "role": "الدور",
+        "email": "البريد الإلكتروني",
+        "status": "الحالة",
+        "createdOn": "تاريخ الإنشاء",
+        "action": "الإجراء",
+        "addedBy": "أُضيف بواسطة",
+        "placeholderSearch": "ابحث باسم الموظف أو اسم المستخدم أو البريد الإلكتروني..."
+      },
+      "filterdialog": {
+        "title": "تصفية المستخدمين",
+        "role": "الدور",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "status": "الحالة",
+        "createdDate": "تاريخ الإنشاء",
+        "addedBy": "أُضيف بواسطة",
+        "placeholderRole": "اختر الدور",
+        "placeholderEmail": "أدخل البريد الإلكتروني",
+        "placeholderStatus": "اختر الحالة",
+        "placeholderCreatedDate": "اختر تاريخ الإنشاء",
+        "placeholderAddedBy": "اختر المستخدم",
+        "placeholderPhone": "أدخل رقم الهاتف"
+      },
+      "addDialog": {
+        "title": "إضافة مستخدم جديد",
+        "role": "الدور",
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "password": "كلمة المرور",
+        "passwordReq": "متطلبات كلمة المرور:",
+        "req1": "ثمانية أحرف على الأقل",
+        "req2": "حرف كبير واحد على الأقل (A-Z)",
+        "req3": "حرف خاص واحد على الأقل (!@#$%^&*)",
+        "req4": "رقم واحد على الأقل (0-9)",
+        "alert": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد وحرف خاص واحد.",
+        "placeholderRole": "اختر الدور",
+        "placeholderRole1": "جارٍ تحميل الأدوار...",
+        "placeholderName": "أدخل الاسم",
+        "placeholderEmail": "أدخل البريد الإلكتروني",
+        "placeholderPhone": "أدخل رقم الهاتف",
+        "placeholderPassword": "أدخل كلمة المرور"
+      }
     },
     "settings": {
       "title": "الإعدادات"
-    },
-    "frontoffice": {
-      "dashboard": {
-        "appointmentBook": "حجز المواعيد",
-        "bookNewAppointments": "حجز مواعيد جديدة",
-        "patient": "المريض",
-        "managePatients": "إدارة المرضى"
-      },
-      "schedule": {
-        "title": "الجدول الزمني",
-        "allDepartments": "جميع الأقسام",
-        "allDoctors": "جميع الأطباء",
-        "year": "السنة",
-        "month": "الشهر",
-        "all": "الكل",
-        "todayAppointments": "مواعيد اليوم",
-        "tomorrow": "غداً",
-        "customDate": "تاريخ مخصص",
-        "add": "إضافة",
-        "dateAndDay": "التاريخ واليوم",
-        "session": "الجلسة",
-        "step": "الخطوة",
-        "createdOn": "تم الإنشاء في",
-        "addedBy": "تمت الإضافة بواسطة",
-        "action": "الإجراء",
-        "view": "عرض",
-        "edit": "تعديل",
-        "delete": "حذف",
-        "searchDepartment": "بحث في القسم",
-        "searchDoctor": "بحث عن طبيب",
-        "to": "إلى",
-        "january": "يناير",
-        "february": "فبراير",
-        "march": "مارس",
-        "april": "أبريل",
-        "may": "مايو",
-        "june": "يونيو",
-        "july": "يوليو",
-        "august": "أغسطس",
-        "september": "سبتمبر",
-        "october": "أكتوبر",
-        "november": "نوفمبر",
-        "december": "ديسمبر"
-      },
-      "timeSlots": {
-        "title": "أوقات مواعيد الطبيب",
-        "department": "القسم",
-        "doctor": "الطبيب",
-        "selectDoctor": "اختر الطبيب",
-        "selectDateRange": "اختر نطاق التاريخ",
-        "selectDateRangeLabel": "اختر نطاق التاريخ *",
-        "new": "جديد",
-        "noShiftsAdded": "لم تتم إضافة أي نوبات بعد. انقر على \"جديد\" لإضافة نوبة.",
-        "searchDepartment": "بحث في القسم",
-        "searchDoctor": "بحث عن طبيب"
-      }
     }
   },
   "metadata": {
@@ -112,4 +543,3 @@
     "description": "بوابة المستشفى"
   }
 }
-
