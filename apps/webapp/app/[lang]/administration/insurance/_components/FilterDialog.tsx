@@ -269,7 +269,7 @@ export function FilterDialog({
             <CancelButton onClick={onClose} />
             <ActionButton
               loading={isLoading}
-              label={dict.common.applyfilters}
+              label={dict.actions.filter}
               type="submit"
             />
           </div>
