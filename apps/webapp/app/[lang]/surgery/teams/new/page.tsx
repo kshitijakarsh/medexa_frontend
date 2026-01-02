@@ -138,7 +138,7 @@ export default function CreateTeamPage() {
             anaesthetist_id: anaesthetist,
             scrub_nurse_id: scrubNurse,
             circulating_nurse_id: circulatingNurse,
-            ot_technician_id: otTechnician,
+            // ot_technician_id: otTechnician,
         };
 
         createTeamMutation.mutate(payload);

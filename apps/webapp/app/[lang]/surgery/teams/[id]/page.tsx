@@ -37,7 +37,7 @@ export default function TeamDetailsPage() {
 
     if (isLoading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-blue-100">
+            <div className="flex h-screen items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
             </div>
         );
@@ -57,22 +57,29 @@ export default function TeamDetailsPage() {
         );
     }
 
-    // Helpers to filter members by role
-    const getSingleMemberByRole = (role: string) => {
-        const member = teamData.members?.find(m => m.role === role);
-        return member?.name || "-";
+    // Helpers to get member names from explicit fields
+    const getMemberNameByRole = (role: string) => {
+        switch (role) {
+            case "Lead Surgeon": return teamData.lead_surgeon?.name || "-";
+            case "Assistant Surgeon": return teamData.assistant_surgeon?.name || "-";
+            case "Anaesthetist": return teamData.anaesthetist?.name || "-";
+            case "Scrub Nurse": return teamData.scrub_nurse?.name || "-";
+            case "Circulating Nurse": return teamData.circulating_nurse?.name || "-";
+            case "OT Technician": return teamData.ot_technician?.name || "-";
+            default: return "-";
+        }
     };
 
     const teamName = teamData.name || "Unknown Team";
-    const specialty = (teamData as any).speciality || "General";
-    const createdBy = (teamData as any).created_by?.name || "System";
-    const createdDept = (teamData as any).created_by?.department || "Administration";
+    const specialty = teamData.speciality || "General";
+    const createdBy = teamData.createdBy?.name || "System";
+    const createdDept = "-"; // Not present in the provided JSON
     const createdDate = teamData.created_at
         ? new Date(teamData.created_at).toLocaleString()
         : "—";
 
     return (
-        <div className="min-h-screen bg-blue-100 pb-20">
+        <div className="min-h-screen pb-20">
             {/* Header */}
             <div className="sticky top-0 z-10 px-6 py-4 flex items-center gap-2">
                 <button
@@ -148,23 +155,18 @@ export default function TeamDetailsPage() {
                         <div className="w-full">
                             <InfoField
                                 label="Lead Surgeon"
-                                value={getSingleMemberByRole("Lead Surgeon")}
+                                value={getMemberNameByRole("Lead Surgeon")}
                                 className="bg-slate-50 border border-slate-100 w-full"
                             />
                         </div>
 
                         {/* Other Members Grid */}
                         <div className="grid grid-cols-2 gap-4">
-                            {teamData.members
-                                ?.filter(m => m.role !== "Lead Surgeon")
-                                .map((member, idx) => (
-                                    <InfoField
-                                        key={idx}
-                                        label={member.role}
-                                        value={member.name}
-                                        className="bg-slate-50 border border-slate-100"
-                                    />
-                                ))}
+                            <InfoField label="Assistant Surgeon" value={getMemberNameByRole("Assistant Surgeon")} className="bg-slate-50 border border-slate-100" />
+                            <InfoField label="Anaesthetist" value={getMemberNameByRole("Anaesthetist")} className="bg-slate-50 border border-slate-100" />
+                            <InfoField label="Scrub Nurse" value={getMemberNameByRole("Scrub Nurse")} className="bg-slate-50 border border-slate-100" />
+                            <InfoField label="Circulating Nurse" value={getMemberNameByRole("Circulating Nurse")} className="bg-slate-50 border border-slate-100" />
+                            <InfoField label="OT Technician" value={getMemberNameByRole("OT Technician")} className="bg-slate-50 border border-slate-100" />
                         </div>
                     </div>
                 </section>

@@ -1,17 +1,12 @@
 "use client";
 
 import { useEffect, useState, useMemo, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
+import ActionMenu from "@/components/common/action-menu";
 import { createSurgeryTeamApiClient, SurgeryTeam } from "@/lib/api/surgery/teams";
-interface Column<T> {
-    key: keyof T | string;
-    label: string;
-    render?: (row: T) => React.ReactNode;
-    className?: string;
-}
 import {
     Calendar,
     BriefcaseMedical,
@@ -30,20 +25,26 @@ import FilterButton from "@/components/common/filter-button";
 
 const limit = 10;
 
-// Define the Team interface matching the table display
+interface Column<T> {
+    key: keyof T | string;
+    label: string;
+    render?: (row: T) => React.ReactNode;
+    className?: string;
+}
+
 interface TeamTableRow {
     id: string;
     teamName: string;
     leadSurgeon: {
         name: string;
-        department: string;
+        // department: string;
     };
     membersCount: number;
     speciality: string;
     createdOn: string;
     createdBy: {
         name: string;
-        department: string;
+        // department: string;
     };
     status: "Active" | "Inactive";
 }
@@ -51,10 +52,8 @@ interface TeamTableRow {
 function TeamsListContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { lang } = useParams();
 
-    /* ----------------------------------
-            URL State
-    ----------------------------------- */
     const initialPage = parseInt(searchParams.get("page") || "1");
     const [page, setPage] = useState(initialPage);
 
@@ -84,9 +83,6 @@ function TeamsListContent() {
         router.replace(`?${params.toString()}`);
     }, [page, router]);
 
-    /* ----------------------------------
-            Fetch Teams with React Query
-    ----------------------------------- */
     const {
         data: teamsData,
         isLoading,
@@ -103,13 +99,10 @@ function TeamsListContent() {
         },
     });
 
-    /* Client-side pagination - handle different response structures */
-    // API might return: { data: [...] } or [...] directly or { data: { data: [...] } }
     const extractTeams = () => {
         if (!teamsData) return [];
         if (Array.isArray(teamsData)) return teamsData;
         if (Array.isArray(teamsData.data)) return teamsData.data;
-        if (teamsData.data && Array.isArray(teamsData.data.data)) return teamsData.data.data;
         return [];
     };
     const allTeams = extractTeams();
@@ -132,20 +125,20 @@ function TeamsListContent() {
 
     /* Map API response to table format */
     const tableData: TeamTableRow[] = paginatedTeams.map((team: SurgeryTeam) => ({
-        id: team.id,
+        id: team.id.toString(),
         teamName: team.name || "Unknown Team",
         leadSurgeon: {
-            name: (team as any).lead_surgeon?.name || "Not Assigned",
-            department: (team as any).lead_surgeon?.department || (team as any).speciality || "—",
+            name: team.lead_surgeon?.name || "Not Assigned",
+            // department: team.speciality || "—",
         },
         membersCount: team.members?.length || 0,
-        speciality: (team as any).speciality || "General",
+        speciality: team.speciality || "General",
         createdOn: team.created_at
             ? new Date(team.created_at).toLocaleString()
             : "—",
         createdBy: {
-            name: (team as any).created_by?.name || "System",
-            department: (team as any).created_by?.department || "Administration",
+            name: team.createdBy?.name || "System",
+            // department: "Administration",
         },
         status: team.status === "active" ? "Active" : "Inactive",
     }));
@@ -170,9 +163,9 @@ function TeamsListContent() {
                         <span className="text-sm font-medium text-slate-700">
                             {row.leadSurgeon.name}
                         </span>
-                        <span className="text-xs text-slate-500">
+                        {/* <span className="text-xs text-slate-500">
                             {row.leadSurgeon.department}
-                        </span>
+                        </span> */}
                     </div>
                 </div>
             )
@@ -207,9 +200,9 @@ function TeamsListContent() {
                     <span className="text-sm font-medium text-slate-700">
                         {row.createdBy.name}
                     </span>
-                    <span className="text-xs text-slate-500">
+                    {/* <span className="text-xs text-slate-500">
                         {row.createdBy.department}
-                    </span>
+                    </span> */}
                 </div>
             )
         },
@@ -232,13 +225,27 @@ function TeamsListContent() {
         {
             key: "actions",
             label: "Action",
-            render: () => (
-                <div className="flex items-center justify-center gap-1">
-                    <button className="flex items-center gap-1 text-blue-500 px-2 py-1 rounded-md transition-colors">
-                        <span className="text-xs font-medium">Action</span>
-                        <MoreVertical size={14} className="text-green-500" />
-                    </button>
-                </div>
+            render: (row) => (
+                <ActionMenu actions={[
+                    {
+                        label: "View",
+                        onClick: () => {
+                            router.push(`/${lang}/surgery/teams/${row.id}`);
+                        }
+                    },
+                    {
+                        label: "Edit",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Delete",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             )
         }
     ];
@@ -335,7 +342,7 @@ function TeamsListContent() {
                         name="Add Team"
                         className="h-9 text-sm"
                         handleClick={() => {
-                            router.push("/surgery/teams/new");
+                            router.push(`${lang}/surgery/teams/new`);
                         }}
                     ></NewButton>
 

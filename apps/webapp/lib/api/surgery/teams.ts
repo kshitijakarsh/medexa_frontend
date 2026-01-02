@@ -6,6 +6,12 @@ interface ApiConfig {
     baseUrl?: string;
 }
 
+export interface SurgeryPerson {
+    id: number | string;
+    name: string;
+    email?: string;
+}
+
 export interface SurgeryTeamMember {
     id: string;
     name: string;
@@ -14,13 +20,24 @@ export interface SurgeryTeamMember {
 }
 
 export interface SurgeryTeam {
-    id: string;
+    id: string | number;
     name: string;
     description?: string;
-    members?: SurgeryTeamMember[];
+    speciality?: string;
     status?: string;
     created_at?: string;
     updated_at?: string;
+    createdBy?: {
+        id: number | string;
+        name: string;
+    };
+    lead_surgeon?: SurgeryPerson;
+    assistant_surgeon?: SurgeryPerson;
+    anaesthetist?: SurgeryPerson;
+    scrub_nurse?: SurgeryPerson;
+    circulating_nurse?: SurgeryPerson;
+    ot_technician?: SurgeryPerson;
+    members?: SurgeryTeamMember[];
 }
 
 export interface SurgeryTeamListResponse {
@@ -50,7 +67,7 @@ export interface CreateSurgeryTeamParams {
     anaesthetist_id: string;
     scrub_nurse_id: string;
     circulating_nurse_id: string;
-    ot_technician_id: string;
+    // ot_technician_id: string;
 }
 
 export interface UpdateSurgeryTeamParams {
@@ -94,7 +111,7 @@ class SurgeryTeamApiClient {
         status?: string;
     }) {
         const config = await this.getConfig();
-        return axios.get(`${this.baseUrl}/api/v1/surgery-teams`, {
+        return axios.get<SurgeryTeamListResponse>(`${this.baseUrl}/api/v1/surgery-teams`, {
             ...config,
             params,
         });
@@ -116,7 +133,7 @@ class SurgeryTeamApiClient {
     --------------------------------------------------- */
     async getById(id: string) {
         const config = await this.getConfig();
-        return axios.get<{ success: boolean; data: SurgeryTeam }>(
+        return axios.get<SurgeryTeamResponse>(
             `${this.baseUrl}/api/v1/surgery-teams/${id}`,
             config
         );

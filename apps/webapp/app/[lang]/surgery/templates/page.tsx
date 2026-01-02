@@ -8,9 +8,9 @@ import {
     BriefcaseMedical,
     Stethoscope,
     CalendarDays,
-    MoreVertical,
     Ellipsis
 } from "lucide-react";
+import ActionMenu from "@/components/common/action-menu";
 import { FilterDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/FilterDropdown";
 import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
 import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
@@ -189,12 +189,26 @@ export default function TemplatesList() {
             key: "actions",
             label: "Action",
             render: () => (
-                <div className="flex items-center justify-center gap-1">
-                    <button className="flex items-center gap-1 text-blue-500 px-2 py-1 rounded-md transition-colors hover:bg-blue-50">
-                        <span className="text-xs font-medium">Action</span>
-                        <MoreVertical size={14} className="text-green-500" />
-                    </button>
-                </div>
+                <ActionMenu actions={[
+                    {
+                        label: "View",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Edit",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Delete",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             )
         }
     ];

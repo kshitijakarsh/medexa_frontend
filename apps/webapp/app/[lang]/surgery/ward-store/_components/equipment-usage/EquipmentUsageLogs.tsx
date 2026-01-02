@@ -5,6 +5,7 @@ import { MoreVertical } from "lucide-react";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { cn } from "@workspace/ui/lib/utils";
 import { EquipmentUsageLog } from "@/lib/api/surgery/ward";
+import ActionMenu from "@/components/common/action-menu";
 
 // --- Types ---
 export type EquipmentUsageItem = {
@@ -181,12 +182,27 @@ export const EquipmentUsageLogs = ({
             key: "action",
             label: "Action",
             render: () => (
-                <div className="flex items-center gap-1">
-                    <button className="flex items-center gap-1 text-blue-500 text-sm font-medium">
-                        Action
-                        <MoreVertical size={14} className="text-green-500" />
-                    </button>
-                </div>
+                <ActionMenu actions={[
+                    {
+                        label: "View",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Edit",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Delete",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
+
             ),
         },
     ];

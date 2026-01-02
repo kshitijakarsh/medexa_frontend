@@ -2,23 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/common/data-table";
-interface Column<T> {
-    key: keyof T | string;
-    label: string;
-    render?: (row: T) => React.ReactNode;
-    className?: string;
-}
+import ActionMenu from "@/components/common/action-menu";
 import {
-    SlidersHorizontal,
-    Search,
-    ChevronDown,
-    LayoutGrid,
-    LayoutList,
     Calendar,
     BriefcaseMedical,
     Stethoscope,
     CalendarDays,
-    MoreVertical,
     Ellipsis
 } from "lucide-react";
 import { FilterDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/FilterDropdown";
@@ -30,7 +19,13 @@ import { useState, useMemo } from "react";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 
-// Define the Surgery interface matching the requested columns
+interface Column<T> {
+    key: keyof T | string;
+    label: string;
+    render?: (row: T) => React.ReactNode;
+    className?: string;
+}
+
 interface SurgeryData {
     id: string;
     patient: {
@@ -225,12 +220,26 @@ export default function SurgeryList() {
             key: "actions",
             label: "Action",
             render: () => (
-                <div className="flex items-center justify-center gap-1">
-                    <button className="flex items-center gap-1 text-blue-500 px-2 py-1 rounded-md transition-colors">
-                        <span className="text-xs font-medium">Action</span>
-                        <MoreVertical size={14} className="text-green-500" />
-                    </button>
-                </div>
+                <ActionMenu actions={[
+                    {
+                        label: "View",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Edit",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    },
+                    {
+                        label: "Delete",
+                        // onClick: () => {
+                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        // }
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500"/>
             )
         }
     ];

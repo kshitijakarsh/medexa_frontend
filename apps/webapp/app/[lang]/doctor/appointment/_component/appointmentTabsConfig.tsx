@@ -57,7 +57,7 @@ export const appointmentTabsConfig = (props: any) => [
             />
         ),
     },
-    // { key: "Surgery", label: "Surgery", component: <SurgerySection /> },
+    { key: "Surgery", label: "Surgery", component: <SurgerySection /> },
     // { key: "Visits / Encounters", label: "Visits / Encounters", component: <p>Visits and encounters</ p > },
     // { key: "Clinical Forms", label: "Clinical Forms", component: <p>Clinical Forms </p> },
     // { key: "Bed History", label: "Bed History", component: <p>Bed History </p> },
