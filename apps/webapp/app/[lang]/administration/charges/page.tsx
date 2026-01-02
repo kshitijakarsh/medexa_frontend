@@ -30,6 +30,9 @@ import { useUserStore } from "@/store/useUserStore"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
+import { normalizePermissionList } from "@/app/utils/permissions"
+
 const ChargesSection = [
   { key: "service", label: "Service and Charge" },
   { key: "category", label: "Charges Category" },
@@ -37,20 +40,31 @@ const ChargesSection = [
   { key: "unit", label: "Unit Type" },
 ]
 const PERMISSION_MAP = {
-  service: PERMISSIONS.SERVICE,
-  category: PERMISSIONS.CATEGORY,
-  tax: PERMISSIONS.TAX,
-  unit: PERMISSIONS.UNIT,
+  service: PERMISSIONS.CHARGE,
+  category: PERMISSIONS.CHARGE_CATEGORY,
+  tax: PERMISSIONS.TAX_CATEGORY,
+  unit: PERMISSIONS.CHARGE_UNIT,
 }
 
 export default function ChargesPage() {
+  const VIEW_PERMISSIONS = [
+    PERMISSIONS.CHARGE.VIEW,
+    PERMISSIONS.CHARGE_CATEGORY.VIEW,
+    PERMISSIONS.TAX_CATEGORY.VIEW,
+    PERMISSIONS.CHARGE_UNIT.VIEW,
+  ];
+
+  return (
+    <PermissionGuard permission={VIEW_PERMISSIONS} requireAll={false}>
+      <ChargesPageContent />
+    </PermissionGuard>
+  )
+}
+
+function ChargesPageContent() {
   const userPermissions = useUserStore((s) => s.user?.role.permissions)
   const { withLocale } = useLocaleRoute()
-  // Extract permission strings from API response structure
-  const permissionStrings =
-    userPermissions?.map((p: any) =>
-      typeof p === "string" ? p : (p.permission?.name ?? p.name)
-    ) ?? []
+  const permissionStrings = normalizePermissionList(userPermissions)
 
   const router = useRouter()
   const [tab, setTab] = useState<"service" | "category" | "tax" | "unit">(
@@ -70,8 +84,29 @@ export default function ChargesPage() {
   >("service")
   /* -------------------- Filters -------------------- */
   const [filters, setFilters] = useState<any>({})
+
+  /* Filter Tabs based on Permissions */
+  const filteredTabs = ChargesSection.filter((t) => {
+    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
+    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
+  });
+
+  /* Ensure selected tab is permitted */
   useEffect(() => {
-    load()
+    if (filteredTabs.length > 0) {
+      const isCurrentTabPermitted = filteredTabs.some(t => t.key === tab);
+      if (!isCurrentTabPermitted) {
+        setTab(filteredTabs[0]?.key as any);
+      }
+    }
+  }, [filteredTabs, tab]);
+
+
+  useEffect(() => {
+    // Only load if tab is valid
+    if (filteredTabs.some(t => t.key === tab)) {
+      load()
+    }
   }, [tab, search, filters])
 
   const load = async () => {
@@ -466,7 +501,7 @@ export default function ChargesPage() {
           {/* Tabs */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-2">
             <DynamicTabs
-              tabs={ChargesSection}
+              tabs={filteredTabs}
               defaultTab="service"
               onChange={(tabKey) => setTab(tabKey as any)}
             />
@@ -479,6 +514,7 @@ export default function ChargesPage() {
                 filters={filters}
                 onClick={() => setIsFilterOpen(true)}
                 onClear={() => setFilters({})}
+                inverted={true}
               />
 
               <div className="min-w-[220px]">

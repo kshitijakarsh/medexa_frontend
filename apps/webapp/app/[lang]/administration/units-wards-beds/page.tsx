@@ -1830,6 +1830,7 @@ import { createWardApiClient } from "@/lib/api/administration/wards"
 import { useUserStore } from "@/store/useUserStore"
 import { Can } from "@/components/common/app-can"
 import { PERMISSIONS } from "@/app/utils/permissions"
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 const Tabs = [
   { key: "ward", label: "Ward" },
@@ -1894,8 +1895,15 @@ function UnitsWardsBedsPageContent() {
     return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false;
   });
 
-
-  // console.log(filteredTabs, Tabs, userPermissions)
+  /* Ensure selected tab is permitted */
+  useEffect(() => {
+    if (filteredTabs.length > 0) {
+      const isCurrentTabPermitted = filteredTabs.some(t => t.key === addMode);
+      if (!isCurrentTabPermitted && filteredTabs[0]) {
+        setAddMode(filteredTabs[0].key);
+      }
+    }
+  }, [filteredTabs, addMode]);
 
 
   /* ---------------------------------------
@@ -2456,6 +2464,7 @@ function UnitsWardsBedsPageContent() {
                 filters={filters}
                 onClick={() => setIsFilterDialogOpen(true)}
                 onClear={clearAllFilters}
+                inverted={true}
               />
 
               <SearchInput
@@ -2575,9 +2584,18 @@ function UnitsWardsBedsPageContent() {
 }
 
 export default function UnitsWardsBedsPage() {
+  const VIEW_PERMISSIONS = [
+    PERMISSIONS.WARD.VIEW,
+    PERMISSIONS.WARD_TYPE.VIEW,
+    PERMISSIONS.BED_TYPE.VIEW,
+    PERMISSIONS.FLOOR.VIEW,
+  ];
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <UnitsWardsBedsPageContent />
+      <PermissionGuard permission={VIEW_PERMISSIONS} requireAll={false}>
+        <UnitsWardsBedsPageContent />
+      </PermissionGuard>
     </Suspense>
   )
 }

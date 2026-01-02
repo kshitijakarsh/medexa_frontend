@@ -94,8 +94,18 @@ import { ArrowLeft } from "lucide-react";
 import { Header } from "@/components/header";
 import { getServiceById } from "../_components/api";
 import ActionMenu from "@/components/common/action-menu";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/app/utils/permissions";
 
 export default function ServiceDetailsPage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.CHARGE.VIEW}>
+      <ServiceDetailsPageContent />
+    </PermissionGuard>
+  );
+}
+
+function ServiceDetailsPageContent() {
   const params = useParams() as { id?: string };
   const id = params?.id ? Number(params.id) : undefined;
 

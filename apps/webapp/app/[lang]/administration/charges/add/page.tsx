@@ -45,7 +45,18 @@ const schema = z.object({
 
 type StatusType = "Active" | "Inactive"
 
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
+import { PERMISSIONS } from "@/app/utils/permissions"
+
 export default function AddServicePage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.CHARGE.CREATE}>
+      <AddServicePageContent />
+    </PermissionGuard>
+  )
+}
+
+function AddServicePageContent() {
   const router = useRouter()
   const form = useForm({
     resolver: zodResolver(schema),
@@ -91,10 +102,10 @@ export default function AddServicePage() {
         priceVaryOn: vals.priceVaryOn,
         priceVaryOptions: vals.priceVaryOn
           ? {
-              standard: Number(vals.priceVaryStandard || 0),
-              normal: Number(vals.priceVaryNormal || 0),
-              vip: Number(vals.priceVaryVip || 0),
-            }
+            standard: Number(vals.priceVaryStandard || 0),
+            normal: Number(vals.priceVaryNormal || 0),
+            vip: Number(vals.priceVaryVip || 0),
+          }
           : undefined,
       }
       await addServices([payload])
@@ -180,9 +191,8 @@ export default function AddServicePage() {
                     <div className="flex flex-col rounded-md px-3">
                       <FormLabel className="pb-2">Status</FormLabel>
                       <div
-                        className={`flex items-center gap-3 ${
-                          field.value ? "bg-green-50" : "bg-gray-50"
-                        } h-9 px-2`}
+                        className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"
+                          } h-9 px-2`}
                       >
                         <span className="text-sm text-red-500">Inactive</span>
                         <FormControl>
@@ -192,9 +202,8 @@ export default function AddServicePage() {
                           />
                         </FormControl>
                         <span
-                          className={`text-sm ${
-                            field.value ? "text-green-600" : "text-gray-400"
-                          }`}
+                          className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"
+                            }`}
                         >
                           Active
                         </span>

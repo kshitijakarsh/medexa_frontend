@@ -20,6 +20,7 @@ import type { UserItem } from "@/lib/api/administration/users"
 import { Can } from "@/components/common/app-can"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import { useUserStore } from "@/store/useUserStore"
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 const limit = 10
 
@@ -214,7 +215,9 @@ function EmployeeConfigurationPageContent() {
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           <div className="flex justify-end">
             <div className="flex flex-wrap items-center justify-end gap-3 w-full lg:w-auto">
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
 
               <div className="min-w-[200px] md:min-w-[200px]">
                 <SearchInput
@@ -287,7 +290,9 @@ function EmployeeConfigurationPageContent() {
 export default function EmployeeConfigurationPage() {
   return (
     <Suspense fallback={<div className="p-5">Loading...</div>}>
-      <EmployeeConfigurationPageContent />
+      <PermissionGuard permission={PERMISSIONS.USER.VIEW}>
+        <EmployeeConfigurationPageContent />
+      </PermissionGuard>
     </Suspense>
   )
 }

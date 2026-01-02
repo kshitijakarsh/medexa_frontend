@@ -356,6 +356,7 @@ import { QuickActions } from "./_components/QuickActions";
 import { DepartmentRowActionMenu } from "./_components/DepartmentRowActionMenu";
 import FilterDialog from "./_components/FilterDialog";
 import AddDepartmentModal from "./_components/AddDepartmentModal";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
 
 import { PageHeader } from "@/components/common/page-header";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
@@ -555,6 +556,7 @@ function DepartmentsContent() {
               filters={filters}
               onClick={() => setIsFilterOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <SearchInput
@@ -642,7 +644,9 @@ function DepartmentsContent() {
 export default function DepartmentsPage() {
   return (
     <Suspense fallback={<div>Loading…</div>}>
-      <DepartmentsContent />
+      <PermissionGuard permission={PERMISSIONS.DEPARTMENT.VIEW}>
+        <DepartmentsContent />
+      </PermissionGuard>
     </Suspense>
   );
 }

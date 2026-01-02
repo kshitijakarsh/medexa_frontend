@@ -19,7 +19,18 @@ const schema = z.object({
   active: z.boolean().catch(false),
 });
 
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
+import { PERMISSIONS } from "@/app/utils/permissions";
+
 export default function EditCategoryPage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.CHARGE_CATEGORY.EDIT}>
+      <EditCategoryPageContent />
+    </PermissionGuard>
+  )
+}
+
+function EditCategoryPageContent() {
   const params = useParams() as { id?: string };
   const id = params?.id ? Number(params.id) : undefined;
   const router = useRouter();

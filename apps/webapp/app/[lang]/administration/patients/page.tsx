@@ -12,6 +12,7 @@ import { createPatientCategoryApiClient } from "@/lib/api/administration/patient
 import { PERMISSIONS } from "@/app/utils/permissions";
 import { useUserStore } from "@/store/useUserStore";
 import { Can } from "@/components/common/app-can";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
 
 /* ------------------------------------------
    API CLIENT
@@ -19,6 +20,14 @@ import { Can } from "@/components/common/app-can";
 const api = createPatientCategoryApiClient({});
 
 export default function PatientPage() {
+  return (
+    <PermissionGuard permission={PERMISSIONS.PATIENTS.VIEW}>
+      <PatientPageContent />
+    </PermissionGuard>
+  )
+}
+
+function PatientPageContent() {
   /* ------------------------------------------
      RBAC
   ------------------------------------------- */
@@ -191,6 +200,7 @@ export default function PatientPage() {
               filters={filters}
               onClick={() => setIsFilterOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <div className="min-w-[220px]">
@@ -260,11 +270,10 @@ export default function PatientPage() {
 
                 <div className="flex items-center gap-4">
                   <span
-                    className={`text-sm font-semibold ${
-                      status === "inactive"
-                        ? "text-[#EA4B4B]"
-                        : "text-gray-500"
-                    }`}
+                    className={`text-sm font-semibold ${status === "inactive"
+                      ? "text-[#EA4B4B]"
+                      : "text-gray-500"
+                      }`}
                   >
                     Inactive
                   </span>
@@ -281,20 +290,18 @@ export default function PatientPage() {
                   >
                     <span
                       className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform
-                        ${
-                          status === "active"
-                            ? "translate-x-6"
-                            : "translate-x-1"
+                        ${status === "active"
+                          ? "translate-x-6"
+                          : "translate-x-1"
                         }`}
                     />
                   </button>
 
                   <span
-                    className={`text-sm font-semibold ${
-                      status === "active"
-                        ? "text-[#12B28C]"
-                        : "text-gray-500"
-                    }`}
+                    className={`text-sm font-semibold ${status === "active"
+                      ? "text-[#12B28C]"
+                      : "text-gray-500"
+                      }`}
                   >
                     Active
                   </span>
