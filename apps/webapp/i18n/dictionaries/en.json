@@ -136,16 +136,16 @@
         "addSingle": "Add Item",
         "addBulk": "Bulk Upload"
       },
-      "filters":{
+      "filters": {
         "title": "Filter",
         "searchPlaceholder": "Search by name",
         "search": "Search",
-        "category":"Category",
-        "unit":"Unit",
-        "tax":"Tax",
-        "status":"Status",
-        "statusPlaceholder":"Select Status",
-        "createdDate":"Created Date"
+        "category": "Category",
+        "unit": "Unit",
+        "tax": "Tax",
+        "status": "Status",
+        "statusPlaceholder": "Select Status",
+        "createdDate": "Created Date"
       }
     },
     "organizationSetupCards": {
@@ -419,8 +419,8 @@
     },
     "insurance": {
       "title": "Company List",
-      "table":{
-        "sno":"S.No",
+      "table": {
+        "sno": "S.No",
         "providerName": "Provider Name",
         "insuranceCompanyName": "Insurance Company Name",
         "approvalURL": "Approval URL",
@@ -483,7 +483,7 @@
         "placeholderDateRange": "Select Date Range"
       }
     },
-    "users": {  
+    "users": {
       "title": "User Management",
       "table": {
         "phone": "Phone",
@@ -589,6 +589,367 @@
         "noShiftsAdded": "No shifts added yet. Click \"New\" to add a shift.",
         "searchDepartment": "Search Department",
         "searchDoctor": "Search Doctor"
+      }
+    },
+    "doctor": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "Visit purpose",
+          "SOAP Notes": "SOAP Notes",
+          "Vitals": "Vitals",
+          "Prescription": "Prescription",
+          "Diagnostic Orders": "Diagnostic Orders",
+          "Attachments": "Attachments",
+          "Nurse Note": "Nurse Note",
+          "Nurse Orders": "Nurse Orders"
+        },
+        "header": {
+          "startConsultation": "Start Consultation",
+          "starting": "Starting...",
+          "finishConsultation": "Finish Consultation",
+          "finishing": "Finishing...",
+          "viewDetails": "View Details",
+          "referDoctor": "Refer Doctor"
+        },
+        "actions": {
+          "saveDraft": "Save Draft",
+          "saving": "Saving..."
+        },
+        "messages": {
+          "noContent": "No content found",
+          "startConsultationPrompt": "Please start the consultation to access patient details."
+        },
+        "tabsContent": {
+          "attachments": {
+            "title": "Attachments",
+            "add": "Add Attachments",
+            "empty": "There are no files attached.",
+            "modal": {
+              "title": "Add Attachment",
+              "labelTitle": "Attachment Title",
+              "placeholderTitle": "Lab Report",
+              "labelFile": "Upload File",
+              "dropText": "Click to upload or drag & drop",
+              "fileTypes": "PDF, PNG, JPG",
+              "upload": "Upload",
+              "uploading": "Uploading..."
+            },
+            "card": {
+              "view": "View",
+              "delete": "Delete"
+            },
+            "preview": {
+              "download": "Download Document"
+            },
+            "history": {
+              "title": "Previous History of Attachments",
+              "empty": "No attachments found.",
+              "uploadedBy": "Uploaded by",
+              "at": "at"
+            }
+          },
+          "diagnosticOrders": {
+            "labTests": "Laboratory Tests",
+            "radiology": "Radiology & Imaging",
+            "radiologyProcedure": "Radiology Procedure",
+            "noLabTests": "No laboratory tests were conducted.",
+            "noRadiology": "No radiology or imaging tests were conducted."
+          },
+          "nurseNote": {
+            "title": "Nurse Note",
+            "empty": "No nurse notes recorded for this visit.",
+            "card": {
+              "fallbackName": "Nurse"
+            },
+            "history": {
+              "title": "Previous History of Nurse Notes",
+              "empty": "No previous nurse notes found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            }
+          },
+          "nurseOrders": {
+            "title": "Nurse Orders",
+            "add": "Add Nurse Order",
+            "empty": "No nurse orders recorded.",
+            "orderTypes": {
+              "iv_fluids": "IV Fluids",
+              "medication": "Medication",
+              "wound_dressing": "Wound Dressing",
+              "oxygen_therapy": "Oxygen Therapy",
+              "special_notes": "Special Notes",
+              "monitoring": "Monitoring",
+              "catheter_care": "Catheter Care"
+            },
+            "table": {
+              "slNo": "Sl No",
+              "orderType": "Order Type",
+              "details": "Details",
+              "urgency": "Urgency",
+              "frequencyTime": "Frequency/Time",
+              "dateTime": "Date & Time",
+              "doctor": "Doctor",
+              "status": "Status",
+              "actions": "Actions",
+              "view": "View",
+              "edit": "Edit",
+              "delete": "Delete",
+              "action": "Action"
+            },
+            "modal": {
+              "title": "Add Nurse Orders",
+              "orderType": "Order Type",
+              "selectOrderType": "Select Order Type"
+            },
+            "editModal": {
+              "title": "Edit Nurse Order"
+            },
+            "form": {
+              "options": {
+                "urgent": "Urgent",
+                "routine": "Routine",
+                "stat": "STAT",
+                "pending": "Pending",
+                "completed": "Completed",
+                "in_progress": "In Progress",
+                "ordered": "Ordered"
+              },
+              "frequencies": {
+                "onceDaily": "Once daily",
+                "twiceDaily": "Twice daily",
+                "threeTimesDaily": "Three times daily",
+                "every15Minutes": "Every 15 minutes",
+                "every30Minutes": "Every 30 minutes",
+                "everyHour": "Every hour",
+                "every2Hours": "Every 2 hours",
+                "every4Hours": "Every 4 hours",
+                "every6Hours": "Every 6 hours",
+                "every8Hours": "Every 8 hours",
+                "asNeeded": "As needed",
+                "continuous": "Continuous",
+                "intermittent": "Intermittent",
+                "prn": "PRN (As Needed)"
+              },
+              "common": {
+                "cancel": "Cancel",
+                "add": "Add Order",
+                "adding": "Adding...",
+                "update": "Update",
+                "updating": "Updating...",
+                "urgency": "Urgency",
+                "selectUrgency": "Select Urgency",
+                "status": "Status",
+                "notes": "Instructions / Notes",
+                "enterNotes": "Enter Instructions / Notes",
+                "clinicalNotes": "Clinical Notes (Optional)",
+                "enterClinicalNotes": "Enter Clinical Notes",
+                "startDate": "Start Date",
+                "startTime": "Start Time",
+                "selectFrequency": "Select Frequency",
+                "duration": "Duration (hours)",
+                "selectDuration": "Select Duration"
+              },
+              "ivFluids": {
+                "fluidType": "Fluid Type",
+                "selectFluidType": "Select Fluid Type",
+                "volume": "Volume (mL)",
+                "selectVolume": "Select Volume",
+                "rate": "Rate (mL/hr)",
+                "selectRate": "Select Rate",
+                "totalVolume": "Total Volume",
+                "totalBottles": "Total Bottles",
+                "injection": "Injection",
+                "selectInjection": "Select Injection",
+                "dose": "Dose",
+                "selectDose": "Select Dose",
+                "duration": "Duration (hours/days)",
+                "selectDuration": "Select Duration"
+              },
+              "medication": {
+                "medicationName": "Medication Name",
+                "selectMedication": "Select Medication",
+                "dose": "Dose",
+                "selectDose": "Select Dose",
+                "route": "Route",
+                "selectRoute": "Select Route",
+                "frequency": "Frequency",
+                "duration": "Duration"
+              },
+              "woundDressing": {
+                "woundLocation": "Wound Location",
+                "enterWoundLocation": "Enter Wound Location",
+                "dressingType": "Dressing Type",
+                "selectDressingType": "Select Dressing Type",
+                "frequency": "Frequency"
+              },
+              "oxygenTherapy": {
+                "deliveryType": "Oxygen Delivery Type",
+                "selectDeliveryType": "Select Delivery Type",
+                "flowRate": "Flow Rate",
+                "selectFlowRate": "Select Flow Rate",
+                "frequencyMode": "Frequency / Mode",
+                "selectFrequencyMode": "Select Frequency / Mode"
+              },
+              "specialNotes": {
+                "noteType": "Note Type",
+                "enterNoteType": "Enter Note Type"
+              },
+              "monitoring": {
+                "parameter": "Parameter to Monitor",
+                "enterParameter": "Enter Parameter to Monitor",
+                "frequency": "Frequency"
+              },
+              "catheterCare": {
+                "catheterType": "Catheter Type",
+                "selectCatheterType": "Select Catheter Type",
+                "careType": "Care Type",
+                "selectCareType": "Select Care Type",
+                "frequency": "Frequency"
+              }
+            },
+            "viewModal": {
+              "title": "View Nurse Order",
+              "orderDetails": "Order Details",
+              "notes": "Notes",
+              "orderedBy": "Ordered By",
+              "close": "Close",
+              "fields": {
+                "fluidType": "Fluid Type",
+                "volume": "Volume (mL)",
+                "rate": "Rate (mL/hr)",
+                "duration": "Duration (hours)",
+                "totalVolume": "Total Volume",
+                "totalBottles": "Total Bottles",
+                "injection": "Injection",
+                "dose": "Dose",
+                "startDate": "Start Date",
+                "startTime": "Start Time",
+                "medicationName": "Medication Name",
+                "route": "Route",
+                "frequency": "Frequency",
+                "woundLocation": "Wound Location",
+                "dressingType": "Dressing Type",
+                "deliveryType": "Delivery Type",
+                "flowRate": "Flow Rate",
+                "frequencyMode": "Frequency Mode",
+                "clinicalNotes": "Clinical Notes",
+                "noteType": "Note Type",
+                "parameter": "Parameter to Monitor",
+                "catheterType": "Catheter Type",
+                "careType": "Care Type"
+              }
+            }
+          },
+          "prescription": {
+            "title": "Prescription",
+            "autoSaved": "Auto-saved",
+            "add": "Add Medication",
+            "sendPharmacy": "Send to Pharmacy",
+            "printRx": "Print Rx",
+            "empty": "No medications prescribed yet"
+          },
+          "soapNotes": {
+            "title": "SOAP Notes",
+            "autoSaved": "Auto-saved",
+            "loadTemplate": "Load Template",
+            "subjective": "Subjective (Patient's Story)",
+            "objective": "Objective (Clinical Findings)",
+            "assessment": "Assessment (Diagnosis)",
+            "plan": "Plan (Treatment & Follow-up)",
+            "empty": "Please select a template to start SOAP notes.",
+            "templateModal": {
+              "title": "Select Clinical Template",
+              "subtitle": "Choose a specialty template to auto-fill SOAP Note fields."
+            },
+            "history": {
+              "title": "Previous History of SOAP Notes",
+              "empty": "No previous SOAP notes found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            }
+          },
+          "visitPurpose": {
+            "title": "Visit Purpose",
+            "form": {
+              "chiefComplaint": "Chief Complaint",
+              "history": "History of Present Illness",
+              "onset": "Onset",
+              "duration": "Duration",
+              "severity": "Severity",
+              "additionalNotes": "Additional Notes",
+              "enterChiefComplaint": "Enter Chief Complaint",
+              "enterHistory": "Enter History of Present Illness",
+              "select": "Select",
+              "enterNotes": "Enter Additional Notes",
+              "viewOnly": "You have view-only access.",
+              "noPermission": "You do not have permission to view Visit Purpose."
+            },
+            "history": {
+              "title": "Previous History of Visit Purpose",
+              "empty": "No previous visit purpose found.",
+              "recordedBy": "Recorded by"
+            }
+          },
+          "vitals": {
+            "title": "Vitals",
+            "graph": "Vital Graph",
+            "add": "Add Vitals",
+            "modal": {
+              "title": "Add Vital",
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
+            },
+            "fields": {
+              "bp": "Blood Pressure",
+              "pulse": "Pulse Rate",
+              "respiration": "Respiration Rate",
+              "spo2": "SpO₂ (%)",
+              "systolicL": "Systolic (L)",
+              "diastolicL": "Diastolic (L)",
+              "systolicR": "Systolic (R)",
+              "diastolicR": "Diastolic (R)",
+              "temp": "Temperature",
+              "grbs": "GRBS",
+              "hb": "HB",
+              "height": "Height",
+              "weight": "Weight",
+              "bmi": "BMI",
+              "ibw": "IBW",
+              "rbs": "RBS",
+              "note": "Additional Note"
+            },
+            "placeholders": {
+              "bp": "Enter BP",
+              "pulse": "Enter Pulse Rate",
+              "respiration": "Enter RR",
+              "spo2": "Enter SpO₂",
+              "systolicL": "Enter Systolic(L)",
+              "diastolicL": "Enter Diastolic(L)",
+              "systolicR": "Enter Systolic(R)",
+              "diastolicR": "Enter Diastolic(R)",
+              "temp": "Enter Temperature",
+              "grbs": "Enter GRBS",
+              "hb": "Enter HB",
+              "height": "Enter Height",
+              "weight": "Enter Weight",
+              "bmi": "Enter BMI",
+              "ibw": "Enter IBW",
+              "rbs": "Enter RBS",
+              "note": "Enter Additional Note"
+            },
+            "history": {
+              "title": "Previous History of Vitals",
+              "empty": "No previous visits found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            },
+            "grid": {
+              "title": "Last Vital Signs",
+              "on": "on"
+            }
+          }
+        }
       }
     }
   },

@@ -14,14 +14,17 @@ interface VisitPurposeProps {
     setDirty: (dirty: boolean) => void;
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function VisitPurpose({ patientId, data, setData, setDirty }: VisitPurposeProps) {
+    const dict = useDictionary();
     return (
         <>
             <SectionWrapper
                 header={
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <SectionTitle title="Visit Purpose" />
+                            <SectionTitle title={dict.pages.doctor.appointment.tabsContent.visitPurpose.title} />
                             {/* <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
                                 ✓ Auto-saved
                             </span> */}

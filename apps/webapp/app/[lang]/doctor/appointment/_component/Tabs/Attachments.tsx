@@ -21,9 +21,12 @@ import { PERMISSIONS, hasPermission, normalizePermissionList } from "@/app/utils
 import { Can } from "@/components/common/app-can";
 import { useUserStore } from "@/store/useUserStore";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function Attachments({ patientId }: { patientId: string }) {
   const { id: visitId } = useParams() as { id: string };
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const dict = useDictionary();
 
   const { data, isLoading } = useAttachmentsByVisitId(visitId);
   const deleteAttachment = useDeleteAttachment(visitId);
@@ -46,13 +49,13 @@ export default function Attachments({ patientId }: { patientId: string }) {
       <SectionWrapper
         header={
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Attachments</h2>
+            <h2 className="text-lg font-semibold">{dict.pages.doctor.appointment.tabsContent.attachments.title}</h2>
             <Can
               permission={PERMISSIONS.DOCTOR.ATTACHMENTS.CREATE}
               userPermissions={userPermissions}
             >
               <NewButton
-                name="Add Attachments"
+                name={dict.pages.doctor.appointment.tabsContent.attachments.add}
                 handleClick={() => setShowAddModal(true)}
               />
             </Can>
@@ -118,16 +121,17 @@ function EmptyAttachments({
   onAdd: () => void;
   canCreate?: boolean;
 }) {
+  const dict = useDictionary();
   return (
     <div className="flex flex-col justify-center items-center h-72 text-gray-500">
       <FileStack size={50} />
-      <p>There are no files attached.</p>
+      <p>{dict.pages.doctor.appointment.tabsContent.attachments.empty}</p>
       {canCreate && (
         <button
           onClick={onAdd}
           className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
         >
-          Add Attachments
+          {dict.pages.doctor.appointment.tabsContent.attachments.add}
         </button>
       )}
     </div>
