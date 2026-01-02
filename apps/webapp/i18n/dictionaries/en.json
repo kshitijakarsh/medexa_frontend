@@ -950,6 +950,76 @@
             }
           }
         }
+      },
+      "profile": {
+        "soapTemplates": {
+          "title": "SOAP Templates",
+          "templateName": "Template Name",
+          "enterTemplateName": "Enter Template Name",
+          "specialty": "Specialty",
+          "selectSpecialty": "Select Specialty",
+          "dataTitle": "SOAP Templates Data",
+          "subjective": "Subjective",
+          "enterSubjective": "Enter Subjective",
+          "objective": "Objective",
+          "enterObjective": "Enter Clinical Notes",
+          "assessment": "Assessment",
+          "enterAssessment": "Enter Assessment Template",
+          "plan": "Plan",
+          "enterPlan": "Enter Plan Template",
+          "save": "Save Templates",
+          "saving": "Saving...",
+          "cancel": "Cancel",
+          "success": "SOAP template created successfully",
+          "error": "Failed to create SOAP template",
+          "createTemplate": "Create Template",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteTitle": "Delete SOAP Template?",
+          "deleteDesc": "This action cannot be undone. The SOAP template will be permanently removed.",
+          "deleteSuccess": "SOAP template deleted",
+          "deleteError": "Failed to delete SOAP template",
+          "update": "Update Templates",
+          "updating": "Updating...",
+          "updateSuccess": "SOAP template updated successfully",
+          "updateError": "Failed to update SOAP template"
+        },
+        "tabs": {
+          "overview": "Overview",
+          "soapTemplates": "SOAP Templates",
+          "allAppointments": "All Appointments",
+          "newPatients": "New Patients",
+          "followUpPatients": "Follow Up Patients"
+        },
+        "components": {
+          "table": {
+            "token": "Token",
+            "patient": "Patient",
+            "date": "Date",
+            "diagnosis": "Diagnosis",
+            "type": "Type",
+            "status": "Status",
+            "loading": "Loading appointments...",
+            "empty": "No appointments found."
+          },
+          "header": {
+            "licenseNumber": "License Number",
+            "email": "Email",
+            "opdTimings": "OPD Timings",
+            "experience": "Experience",
+            "contactNumber": "Contact Number",
+            "workingDays": "Working Days",
+            "active": "Active",
+            "specialist": "Specialist",
+            "years": "Years"
+          },
+          "overview": {
+            "totalPatientsTreated": "Total Patients Treated",
+            "todayAppointments": "Today Appointments",
+            "completedAppointments": "Completed Appointments",
+            "followUps": "Follow-ups"
+          }
+        }
       }
     }
   },

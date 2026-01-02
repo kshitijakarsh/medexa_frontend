@@ -952,6 +952,76 @@
             }
           }
         }
+      },
+      "profile": {
+        "soapTemplates": {
+          "title": "نماذج SOAP",
+          "templateName": "اسم النموذج",
+          "enterTemplateName": "أدخل اسم النموذج",
+          "specialty": "التخصص",
+          "selectSpecialty": "اختر التخصص",
+          "dataTitle": "بيانات نماذج SOAP",
+          "subjective": "ذاتي",
+          "enterSubjective": "أدخل ذاتي",
+          "objective": "موضوعي",
+          "enterObjective": "أدخل الملاحظات السريرية",
+          "assessment": "التقييم",
+          "enterAssessment": "أدخل نموذج التقييم",
+          "plan": "الخطة",
+          "enterPlan": "أدخل نموذج الخطة",
+          "save": "حفظ النماذج",
+          "saving": "جاري الحفظ...",
+          "cancel": "إلغاء",
+          "success": "تم إنشاء نموذج SOAP بنجاح",
+          "error": "فشل إنشاء نموذج SOAP",
+          "createTemplate": "إنشاء نموذج",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "deleteTitle": "حذف نموذج SOAP؟",
+          "deleteDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم إزالة نموذج SOAP بشكل دائم.",
+          "deleteSuccess": "تم حذف نموذج SOAP",
+          "deleteError": "فشل حذف نموذج SOAP",
+          "update": "تحديث النماذج",
+          "updating": "جاري التحديث...",
+          "updateSuccess": "تم تحديث نموذج SOAP بنجاح",
+          "updateError": "فشل تحديث نموذج SOAP"
+        },
+        "tabs": {
+          "overview": "نظرة عامة",
+          "soapTemplates": "نماذج SOAP",
+          "allAppointments": "جميع المواعيد",
+          "newPatients": "مرضى جدد",
+          "followUpPatients": "متابعة المرضى"
+        },
+        "components": {
+          "table": {
+            "token": "الرمز",
+            "patient": "المريض",
+            "date": "التاريخ",
+            "diagnosis": "التشخيص",
+            "type": "النوع",
+            "status": "الحالة",
+            "loading": "جاري تحميل المواعيد...",
+            "empty": "لم يتم العثور على مواعيد."
+          },
+          "header": {
+            "licenseNumber": "رقم الترخيص",
+            "email": "البريد الإلكتروني",
+            "opdTimings": "أوقات العيادات الخارجية",
+            "experience": "الخبرة",
+            "contactNumber": "رقم الاتصال",
+            "workingDays": "أيام العمل",
+            "active": "نشط",
+            "specialist": "أخصائي",
+            "years": "سنوات"
+          },
+          "overview": {
+            "totalPatientsTreated": "إجمالي المرضى المعالجين",
+            "todayAppointments": "مواعيد اليوم",
+            "completedAppointments": "المواعيد المكتملة",
+            "followUps": "المتابعة"
+          }
+        }
       }
     }
   },
