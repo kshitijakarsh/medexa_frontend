@@ -136,7 +136,7 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
         const fetchWards = async () => {
             setLoadingWards(true)
             try {
-                const wardTypeClient = createWardTypeApiClient()
+                const wardTypeClient = createWardTypeApiClient({})
                 const response = await wardTypeClient.getWardTypes({
                     page: 1,
                     limit: 100,
@@ -313,8 +313,8 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
 
             if (response.data.success) {
                 // Success - call parent onSubmit with the response data
-                onSubmit({ 
-                    ...formData, 
+                onSubmit({
+                    ...formData,
                     admissionDate: date,
                     ipdId: response.data.data.id,
                     apiResponse: response.data
@@ -396,7 +396,7 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
 
                     <div className="space-y-2">
                         <Label className="text-sm font-medium text-gray-700">TPA</Label>
-                        <Select 
+                        <Select
                             onValueChange={(val) => handleChange("tpa", val)}
                             disabled={loadingInsurances}
                         >
@@ -449,7 +449,7 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Department *</Label>
-                            <Select 
+                            <Select
                                 onValueChange={(val) => handleChange("department", val)}
                                 disabled={loadingDepartments}
                             >
@@ -484,7 +484,7 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     <div className="grid grid-cols-1 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Ward</Label>
-                            <Select 
+                            <Select
                                 onValueChange={(val) => handleChange("ward", val)}
                                 disabled={loadingWards}
                             >
@@ -509,7 +509,7 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label className="text-sm font-medium text-gray-700">Bed</Label>
-                            <Select 
+                            <Select
                                 onValueChange={(val) => handleChange("bed", val)}
                                 disabled={loadingBeds}
                             >
@@ -590,9 +590,9 @@ export function AdmissionForm({ selectedPatient, onSubmit, onCancel }: Admission
                         </div>
                     )}
                     <div className="flex justify-end gap-3">
-                        <Button 
-                            variant="outline" 
-                            className="border-gray-200 text-gray-600 uppercase" 
+                        <Button
+                            variant="outline"
+                            className="border-gray-200 text-gray-600 uppercase"
                             onClick={onCancel}
                             disabled={submitting}
                         >
