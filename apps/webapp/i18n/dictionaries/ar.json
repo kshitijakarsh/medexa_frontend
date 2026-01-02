@@ -534,6 +534,62 @@
         "placeholderPassword": "أدخل كلمة المرور"
       }
     },
+    "frontoffice": {
+      "dashboard": {
+        "appointmentBook": "حجز المواعيد",
+        "bookNewAppointments": "حجز مواعيد جديدة",
+        "patient": "المريض",
+        "managePatients": "إدارة المرضى"
+      },
+      "schedule": {
+        "title": "الجدول الزمني",
+        "allDepartments": "جميع الأقسام",
+        "allDoctors": "جميع الأطباء",
+        "year": "السنة",
+        "month": "الشهر",
+        "all": "الكل",
+        "todayAppointments": "مواعيد اليوم",
+        "tomorrow": "غداً",
+        "customDate": "تاريخ مخصص",
+        "add": "إضافة",
+        "dateAndDay": "التاريخ واليوم",
+        "session": "الجلسة",
+        "step": "الخطوة",
+        "createdOn": "تم الإنشاء في",
+        "addedBy": "تمت الإضافة بواسطة",
+        "action": "الإجراء",
+        "view": "عرض",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "searchDepartment": "بحث في القسم",
+        "searchDoctor": "بحث عن طبيب",
+        "to": "إلى",
+        "january": "يناير",
+        "february": "فبراير",
+        "march": "مارس",
+        "april": "أبريل",
+        "may": "مايو",
+        "june": "يونيو",
+        "july": "يوليو",
+        "august": "أغسطس",
+        "september": "سبتمبر",
+        "october": "أكتوبر",
+        "november": "نوفمبر",
+        "december": "ديسمبر"
+      },
+      "timeSlots": {
+        "title": "أوقات مواعيد الطبيب",
+        "department": "القسم",
+        "doctor": "الطبيب",
+        "selectDoctor": "اختر الطبيب",
+        "selectDateRange": "اختر نطاق التاريخ",
+        "selectDateRangeLabel": "اختر نطاق التاريخ *",
+        "new": "جديد",
+        "noShiftsAdded": "لم تتم إضافة أي نوبات بعد. انقر على \"جديد\" لإضافة نوبة.",
+        "searchDepartment": "بحث في القسم",
+        "searchDoctor": "بحث عن طبيب"
+      }
+    },
     "settings": {
       "title": "الإعدادات"
     }
