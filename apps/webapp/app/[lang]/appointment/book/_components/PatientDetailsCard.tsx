@@ -51,7 +51,7 @@ export function PatientDetailsCard({ patient }: PatientDetailsCardProps) {
   return (
     <div className="space-y-4">
       {/* Patient Details */}
-      <CardBlock className="p-5">
+      <CardBlock className="p-5 border-[3px] border-[#ECF3FF] shadow-sm">
         <div className="flex items-start gap-4 mb-4">
           <UserAvatar
             src={patient.avatar || ""}
@@ -67,89 +67,46 @@ export function PatientDetailsCard({ patient }: PatientDetailsCardProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-gray-600">CPR/NID:</span>{" "}
-            <span className="font-medium text-gray-800">{patient.cprNid}</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">CPR/NID</span>
+            <span className="text-base font-bold text-gray-900">{patient.cprNid}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Date Of Birth:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {patient.dateOfBirth}
-            </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Date Of Birth</span>
+            <span className="text-base font-bold text-gray-900">{patient.dateOfBirth}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Gender:</span>{" "}
-            <span className="font-medium text-gray-800">{patient.gender}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Gender</span>
+            <span className="text-base font-bold text-gray-900">{patient.gender}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Blood Group:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {patient.bloodGroup}
-            </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Blood Group</span>
+            <span className="text-base font-bold text-gray-900">{patient.bloodGroup}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Marital Status:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {patient.maritalStatus}
-            </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Marital Status</span>
+            <span className="text-base font-bold text-gray-900">{patient.maritalStatus}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Nationality:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {patient.nationality}
-            </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Nationality</span>
+            <span className="text-base font-bold text-gray-900">{patient.nationality}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Phone:</span>{" "}
-            <span className="font-medium text-gray-800">{patient.phone}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Phone</span>
+            <span className="text-base font-bold text-gray-900">{patient.phone}</span>
           </div>
-          <div>
-            <span className="text-gray-600">Email:</span>{" "}
-            <span className="font-medium text-gray-800">{patient.email}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Email</span>
+            <span className="text-base font-bold text-gray-900 break-words">{patient.email}</span>
           </div>
-          <div className="md:col-span-2">
-            <span className="text-gray-600">Address:</span>{" "}
-            <span className="font-medium text-gray-800">{patient.address}</span>
+          <div className="md:col-span-2 flex flex-col gap-1">
+            <span className="text-sm text-gray-500">Address</span>
+            <span className="text-base font-bold text-gray-900">{patient.address}</span>
           </div>
         </div>
       </CardBlock>
 
-      {/* Last Visit Summary */}
-      <CardBlock className="p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Calendar className="h-5 w-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-800">
-            Last Visit Summary
-          </h3>
-        </div>
-        <div className="space-y-2 text-sm">
-          <div>
-            <span className="text-gray-600">Referring Doctor:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {mockLastVisit.referringDoctor}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-600">Last Visit Date:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {mockLastVisit.lastVisitDate}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-600">Last Diagnosis:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {mockLastVisit.lastDiagnosis}
-            </span>
-          </div>
-          <div>
-            <span className="text-gray-600">Last Prescription:</span>{" "}
-            <span className="font-medium text-gray-800">
-              {mockLastVisit.lastPrescription}
-            </span>
-          </div>
-        </div>
-      </CardBlock>
     </div>
   )
 }

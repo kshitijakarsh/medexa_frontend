@@ -78,18 +78,17 @@ export async function fetchAllowedModules() {
   }
 
   const token = await getAuthToken();
-  const tenantId = await getTenantId(tenantSlug);
+  // const tenantId = await getTenantId(tenantSlug);
 
   const tenantClient = createTenantApiClient({ authToken: token });
 
-  const tenantRes = await tenantClient.getTenantById(tenantId);
-  const tenant = tenantRes.data.data;
+  const tenantRes = await tenantClient.getTenantByModules();
+  // const tenantRes = await tenantClient.getTenantById(tenantId);
 
-  const tenantModules = tenant.tenant_modules || [];
+  // The API returns { data: [{id, name_en}, ...], success: true }
+  const tenantModules = tenantRes.data.data || [];
 
-  const toKey = (name: string) =>
-    name.trim().toLowerCase().replace(/\s+/g, "_");
-
+  const toKey = (name: string) => name.trim().toLowerCase().replace(/\s+/g, "_");
   const dynamicModules = tenantModules.map((tm: any) => ({
     id: tm.id,
     key: toKey(tm.name_en),

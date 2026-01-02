@@ -76,7 +76,9 @@ export default function OperationTheatresPage() {
                 Filter
                 <SlidersHorizontal className="w-5 h-5" />
               </Button> */}
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
               <SearchInput value={search} onChange={setSearch} placeholder= {dict.common.search} />
               <QuickActions />
               <Can

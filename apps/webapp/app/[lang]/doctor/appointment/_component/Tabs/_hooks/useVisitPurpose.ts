@@ -7,10 +7,15 @@ const api = createVisitPurposeApiClient({});
 /* ----------------------------------------------
    GET Visit Purpose for a Visit (Doctor specific)
 ---------------------------------------------- */
-export function useVisitPurposeByVisitId(visitId: string) {
+// export function useVisitPurposeByVisitId(visitId: string) {
+export function useVisitPurposeByVisitId(
+    visitId: string,
+    options?: { enabled?: boolean }
+) {
     return useQuery({
+        retry: false,
         queryKey: ["visitPurpose", visitId],
-        enabled: !!visitId,
+        enabled: options?.enabled ?? !!visitId,
         queryFn: async () => {
             const res = await api.getByVisitForDoctor(visitId);
 

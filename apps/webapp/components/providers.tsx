@@ -205,10 +205,131 @@
 //   )
 // }
 
+// "use client"
+
+// import * as React from "react"
+// import { createContext } from "react"
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+// import { ThemeProvider as NextThemesProvider } from "next-themes"
+// import { SidebarProvider } from "@workspace/ui/components/sidebar"
+// import { usePathname } from "next/navigation"
+// import { Toaster } from "@workspace/ui/components/sonner"
+// import { AppSidebar } from "./app-sidebar"
+// import type { Dictionary } from "@/i18n/get-dictionary"
+// import { UserLoader } from "./user-loader"
+// import { useUserStore } from "@/store/useUserStore"
+// import { TenantStatusGuard } from "@/app/[lang]/_components/tenant-status-guard"
+// import { DictionaryProvider } from "@/i18n/dictionary-context"
+
+// /* ------------------------------------------------------------
+//    Dictionary Context
+// ------------------------------------------------------------ */
+
+// export const DictionaryContext = createContext<Dictionary | null>(null)
+
+// /* ------------------------------------------------------------
+//    Providers
+// ------------------------------------------------------------ */
+
+// interface ProvidersProps {
+//   children: React.ReactNode
+//   dict: Dictionary
+// }
+
+// export function Providers({ children, dict }: ProvidersProps) {
+//   const pathname = usePathname()
+
+//   const isStandalonePage =
+//     pathname.includes("/login") || pathname.includes("/onboarding")
+
+//   const [queryClient] = React.useState(
+//     () =>
+//       new QueryClient({
+//         defaultOptions: {
+//           queries: {
+//             staleTime: 60000,
+//             refetchOnWindowFocus: false,
+//           },
+//         },
+//       })
+//   )
+
+//   const content = isStandalonePage ? (
+//     <QueryClientProvider client={queryClient}>
+//       {children}
+//     </QueryClientProvider>
+//   ) : (
+//     <QueryClientProvider client={queryClient}>
+//       <NextThemesProvider
+//         attribute="class"
+//         defaultTheme="light"
+//         enableSystem
+//         disableTransitionOnChange
+//         enableColorScheme
+//       >
+//         {dict ? (
+//           <DictionaryProvider dictionary={dict}>
+//             <Toaster position="top-right" richColors closeButton expand />
+//             <UserLoader />
+//             <TenantStatusGuard>
+//               <SidebarProvider>
+//                 <AppSidebar />
+//                 {children}
+//               </SidebarProvider>
+//             </TenantStatusGuard>
+//           </DictionaryProvider>
+//         ) : (
+//           <>
+//             <Toaster position="top-right" richColors closeButton expand />
+//             <UserLoader />
+//             <TenantStatusGuard>
+//               <SidebarProvider>
+//                 <AppSidebar />
+//                 {children}
+//               </SidebarProvider>
+//             </TenantStatusGuard>
+//           </>
+//         )}
+//       </NextThemesProvider>
+//     </QueryClientProvider>
+//   )
+
+//   return content
+// }
+
+// /* ------------------------------------------------------------
+//    Sidebar Wrapper
+// ------------------------------------------------------------ */
+
+// // function SidebarWrapper({ children }: { children: React.ReactNode }) {
+// //   const loading = useUserStore((s) => s.loading)
+// //   const user = useUserStore((s) => s.user)
+
+// //   if (loading || !user) {
+// //     return (
+// //       <div className="flex flex-col items-center justify-center h-screen w-full gap-3">
+// //         <div className="flex space-x-2">
+// //           <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+// //           <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+// //           <div className="w-3 h-3 bg-primary rounded-full animate-bounce" />
+// //         </div>
+// //         <p className="text-primary/80 text-sm">Loading your workspace…</p>
+// //       </div>
+// //     )
+// //   }
+
+// //   return (
+// //     <SidebarProvider>
+// //       <AppSidebar />
+// //       {children}
+// //     </SidebarProvider>
+// //   )
+// // }
+
+
 "use client"
 
 import * as React from "react"
-import { createContext } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { SidebarProvider } from "@workspace/ui/components/sidebar"
@@ -217,27 +338,17 @@ import { Toaster } from "@workspace/ui/components/sonner"
 import { AppSidebar } from "./app-sidebar"
 import type { Dictionary } from "@/i18n/get-dictionary"
 import { UserLoader } from "./user-loader"
-import { useUserStore } from "@/store/useUserStore"
-import { TenantStatusGuard } from "@/app/[lang]/components/tenant-status-guard"
-
-/* ------------------------------------------------------------
-   Dictionary Context
------------------------------------------------------------- */
-
-export const DictionaryContext = createContext<Dictionary | null>(null)
-
-/* ------------------------------------------------------------
-   Providers
------------------------------------------------------------- */
+// import { useUserStore } from "@/store/useUserStore"
+import { TenantStatusGuard } from "@/app/[lang]/_components/tenant-status-guard"
+import { DictionaryProvider } from "@/i18n/dictionary-context"
 
 interface ProvidersProps {
   children: React.ReactNode
-  dict: Dictionary
+  dict?: Dictionary
 }
 
 export function Providers({ children, dict }: ProvidersProps) {
   const pathname = usePathname()
-
   const isStandalonePage =
     pathname.includes("/login") || pathname.includes("/onboarding")
 
@@ -253,11 +364,13 @@ export function Providers({ children, dict }: ProvidersProps) {
       })
   )
 
-  const content = isStandalonePage ? (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  ) : (
+  if (isStandalonePage) {
+    return (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+  }
+
+  return (
     <QueryClientProvider client={queryClient}>
       <NextThemesProvider
         attribute="class"
@@ -266,47 +379,30 @@ export function Providers({ children, dict }: ProvidersProps) {
         disableTransitionOnChange
         enableColorScheme
       >
-        <Toaster position="top-right" richColors closeButton expand />
-        <UserLoader />
-        <TenantStatusGuard>
-          <SidebarWrapper>{children}</SidebarWrapper>
-        </TenantStatusGuard>
+        {dict ? (
+          <DictionaryProvider dictionary={dict}>
+            <Toaster position="top-right" richColors closeButton expand />
+            <UserLoader />
+            <TenantStatusGuard>
+              <SidebarProvider>
+                <AppSidebar />
+                {children}
+              </SidebarProvider>
+            </TenantStatusGuard>
+          </DictionaryProvider>
+        ) : (
+          <>
+            <Toaster position="top-right" richColors closeButton expand />
+            <UserLoader />
+            <TenantStatusGuard>
+              <SidebarProvider>
+                <AppSidebar />
+                {children}
+              </SidebarProvider>
+            </TenantStatusGuard>
+          </>
+        )}
       </NextThemesProvider>
     </QueryClientProvider>
-  )
-
-  return (
-    <DictionaryContext.Provider value={dict}>
-      {content}
-    </DictionaryContext.Provider>
-  )
-}
-
-/* ------------------------------------------------------------
-   Sidebar Wrapper
------------------------------------------------------------- */
-
-function SidebarWrapper({ children }: { children: React.ReactNode }) {
-  const loading = useUserStore((s) => s.loading)
-  const user = useUserStore((s) => s.user)
-
-  if (loading || !user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen w-full gap-3">
-        <div className="flex space-x-2">
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-          <div className="w-3 h-3 bg-primary rounded-full animate-bounce" />
-        </div>
-        <p className="text-primary/80 text-sm">Loading your workspace…</p>
-      </div>
-    )
-  }
-
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      {children}
-    </SidebarProvider>
   )
 }

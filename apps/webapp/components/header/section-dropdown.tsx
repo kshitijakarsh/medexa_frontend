@@ -500,6 +500,7 @@ import {
   Syringe,
   Building,
   Stethoscope,
+  Scissors,
 } from "lucide-react"
 import { cn } from "@workspace/ui/lib/utils"
 import { useUserStore } from "@/store/useUserStore"
@@ -529,6 +530,7 @@ const moduleIconMap: Record<string, any> = {
   settings: Settings,
   frontoffice: Building,
   nurse: Syringe,
+  surgery: Scissors,
 }
 
 const DefaultIcon = Cog
@@ -736,7 +738,7 @@ export function SectionDropdown() {
                 // onClick={() => setSelected(section.label)}
                 onClick={() => handleSelect(section)}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2",
+                  "flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer",
                   active
                     ? "bg-green-500 text-white font-medium"
                     : "hover:bg-green-50 text-gray-700"

@@ -16,7 +16,7 @@ export function AvailableSlotGrid({
 }: AvailableSlotGridProps) {
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-gray-800">Available Slot</h3>
+      <h3 className="text-sm font-semibold text-black">Available Slot</h3>
       {slots.length > 0 ? (
         <div className="grid grid-cols-5 gap-2">
           {slots.map((slot, index) => (
@@ -25,10 +25,10 @@ export function AvailableSlotGrid({
               variant={selectedSlot === slot ? "default" : "outline"}
               onClick={() => onSlotSelect(slot)}
               className={cn(
-                "h-10 text-xs font-medium rounded-lg transition-all",
+                "h-10 text-xs font-medium rounded-2xl transition-all border",
                 selectedSlot === slot
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-[#ECF3FF] text-gray-700 border-blue-200 hover:bg-blue-50"
+                  ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                  : "bg-white text-gray-700 border-blue-200 hover:bg-blue-50"
               )}
             >
               {slot}

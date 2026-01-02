@@ -45,13 +45,15 @@
 // AppointmentDetailContent.tsx
 
 
+import { useUserStore } from "@/store/useUserStore";
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 
 export function AppointmentDetailContent({ activeTab, injectedProps }: any) {
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
 
-  const tabs = appointmentTabsConfig(injectedProps); // turn config into function
+  const tabs = appointmentTabsConfig(injectedProps, userPermissions); // pass permissions to config
 
-  const tab = tabs.find((t) => t.key === activeTab);
+  const tab = tabs.find((t) => t.key === activeTab);  
 
   return (
     <div className=" min-h-[400px]">
