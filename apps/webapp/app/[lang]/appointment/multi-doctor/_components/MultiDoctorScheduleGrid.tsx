@@ -31,7 +31,7 @@ interface MultiDoctorScheduleGridProps {
   slots: Record<string, Slot[]>
   isLoading?: boolean
   onSlotClick?: (doctorId: string, slotId: string, time: string) => void
-  onAddAppointment?: (doctorId: string, time: string) => void
+  onAddAppointment?: (doctorId: string, time: string, slotId?: string) => void
   onCancelAppointment?: (appointmentId: string) => void
   onViewAppointment?: (appointmentId: string) => void
   onConfirmAppointment?: (appointmentId: string) => void
@@ -180,7 +180,7 @@ export function MultiDoctorScheduleGrid({
                             isBooked={true}
                             patientData={appointment.patient}
                             status={appointment.status}
-                            onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
+                            onAdd={() => onAddAppointment?.(doctor.id, timeSlot, slot.id.toString())}
                             onCancel={() => onCancelAppointment?.(appointment.id)}
                             onView={() => onViewAppointment?.(appointment.id)}
                             onConfirm={() => onConfirmAppointment?.(appointment.id)}
@@ -204,7 +204,7 @@ export function MultiDoctorScheduleGrid({
                           time={timeSlot}
                           isBooked={false}
                           isSelected={isSelected}
-                          onAdd={() => onAddAppointment?.(doctor.id, timeSlot)}
+                          onAdd={() => onAddAppointment?.(doctor.id, timeSlot, slot.id.toString())}
                           onCancel={() => { }}
                         />
                       )

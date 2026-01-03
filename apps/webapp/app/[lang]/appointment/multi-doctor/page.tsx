@@ -56,7 +56,7 @@ export default function MultiDoctorAppointmentPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [bookingSlot, setBookingSlot] = useState<{ doctorId: string, time: string } | null>(null)
+  const [bookingSlot, setBookingSlot] = useState<{ doctorId: string, time: string, slotId?: string } | null>(null)
   const [doctorOptions, setDoctorOptions] = useState<DoctorOption[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState<Record<string, number>>({})
@@ -75,7 +75,7 @@ export default function MultiDoctorAppointmentPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            params: { page: 1, limit: 100 },
+            params: { page: 1, limit: 100 }, // Reduced from 1000 to avoid 400 error
           }
         )
         const options = response.data.data.map((d: any) => ({
@@ -94,6 +94,13 @@ export default function MultiDoctorAppointmentPage() {
   useEffect(() => {
     setCurrentPage(1)
   }, [selectedDoctors, selectedDate])
+
+  // Log when booking modal opens
+  useEffect(() => {
+    if (isModalOpen) {
+      console.log("🟢 Opening modal with bookingSlot:", bookingSlot)
+    }
+  }, [isModalOpen, bookingSlot])
 
   // Get selected doctor objects
   const selectedDoctorObjects = useMemo(() => {
@@ -211,8 +218,10 @@ export default function MultiDoctorAppointmentPage() {
     fetchSlotsAndAppointments()
   }, [selectedDoctors, selectedDate, currentPage])
 
-  const handleAddAppointment = (doctorId: string, time: string) => {
-    setBookingSlot({ doctorId, time })
+  const handleAddAppointment = (doctorId: string, time: string, slotId?: string) => {
+    console.log("🔵 handleAddAppointment called with:", { doctorId, time, slotId })
+    setBookingSlot({ doctorId, time, slotId })
+    console.log("🔵 bookingSlot state will be set to:", { doctorId, time, slotId })
     setIsModalOpen(true)
   }
 
@@ -337,6 +346,7 @@ export default function MultiDoctorAppointmentPage() {
         )}
       </div>
 
+      {/* Booking Modal */}
       <MultiDoctorBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -344,9 +354,12 @@ export default function MultiDoctorAppointmentPage() {
         doctorOptions={doctorOptions}
         selectedDate={selectedDate}
         selectedTime={bookingSlot?.time}
+        selectedSlotId={bookingSlot?.slotId}
         onConfirm={(patient: Patient | null, visitingPurpose: string) => {
           console.log("Booking confirmed for", bookingSlot, patient, visitingPurpose)
           setIsModalOpen(false)
+          // Refresh the slots after booking
+          window.location.reload()
         }}
       />
     </main>

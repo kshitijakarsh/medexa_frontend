@@ -27,7 +27,7 @@ interface MultiDoctorBookingModalProps {
     doctorOptions: { value: string; label: string }[]
     selectedDate: Date | null
     selectedTime?: string | null // "HH:MM AM/PM"
-    selectedSlotId?: string | null // slot ID from API
+    selectedSlotId?: string | null // slot ID from API to pass in booking
     onConfirm: (patient: Patient | null, visitingPurpose: string) => void
 }
 
@@ -85,6 +85,14 @@ export function MultiDoctorBookingModal({
             return
         }
 
+        // FORCE VISIBLE DEBUG
+        alert(`SLOT ID DEBUG:\nselectedSlotId = ${selectedSlotId}\nselectedTime = ${selectedTime}`)
+
+        console.log("=== BOOKING DEBUG ===")
+        console.log("selectedSlotId:", selectedSlotId)
+        console.log("selectedTime:", selectedTime)
+        console.log("selectedDoctors:", selectedDoctors)
+
         setIsSubmitting(true)
         try {
             const token = await getAuthToken()
@@ -101,7 +109,7 @@ export function MultiDoctorBookingModal({
             const timeSlotEnd = endTime.toISOString()
 
             // Create visit payload
-            const visitPayload = {
+            const visitPayload: any = {
                 patient_id: selectedPatient.id,
                 procedure_type_id: "1",
                 procedure_category_id: "1",
@@ -115,6 +123,14 @@ export function MultiDoctorBookingModal({
                 visit_type: "doctor_consultation",
                 patient_visit_type: "appointment",
                 status: "active",
+            }
+
+            // Add slot_id if available
+            if (selectedSlotId) {
+                visitPayload.slot_id = selectedSlotId
+                console.log("✅ Added slot_id to payload:", selectedSlotId)
+            } else {
+                console.log("❌ No slot_id available - selectedSlotId is:", selectedSlotId)
             }
 
             console.log("Booking appointment with payload:", visitPayload)
