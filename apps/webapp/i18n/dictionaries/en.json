@@ -1073,6 +1073,15 @@
           "noContent": "No content found",
           "startConsultationPrompt": "Please start the consultation to access patient details."
         }
+      },
+      "recentPatients": {
+        "title": "All Recent Patients",
+        "subtitle": "View all patient visits",
+        "visits": "Visits",
+        "allVisits": "All Visits",
+        "noPatients": "No Patients Found",
+        "noPatientsDesc": "There are no patient visits to display.",
+        "loading": "Loading..."
       }
     }
   },
