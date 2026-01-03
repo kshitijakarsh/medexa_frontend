@@ -1058,6 +1058,24 @@
           }
         }
       }
+    },
+    "nurse": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "غرض الزيارة",
+          "SOAP Notes": "ملاحظات SOAP",
+          "Vitals": "العلامات الحيوية",
+          "Attachments": "المرفقات",
+          "Nurse Note": "ملاحظات الممرضة",
+          "Nurse Orders": "طلبات الممرضة",
+          "Consumables": "المستهلكات",
+          "Equipment": "المعدات"
+        },
+        "messages": {
+          "noContent": "لا يوجد محتوى",
+          "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
+        }
+      }
     }
   },
   "metadata": {

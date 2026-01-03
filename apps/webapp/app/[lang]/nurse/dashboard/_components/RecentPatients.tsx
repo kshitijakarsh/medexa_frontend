@@ -6,9 +6,12 @@ import { RecentPatientCard } from "./RecentPatient/RecentPatientCard";
 import { RecentPatientSkeleton } from "./RecentPatient/RecentPatientSkeleton";
 import { useNurseVisitsQuery, useNurseAllVisitsQuery } from "./api";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { ROUTES } from "@/lib/routes";
 
 export default function RecentPatients() {
   const dict = useDictionary();
+  const { withLocale } = useLocaleRoute();
   const [activeTab, setActiveTab] = useState<"visits" | "all">("visits");
 
   const { data: visitsData, isLoading: visitsLoading } = useNurseVisitsQuery({
@@ -33,7 +36,7 @@ export default function RecentPatients() {
       <div className="flex items-center justify-between mb-4">
         <div className="text-base font-semibold">{dict.dashboard.recentPatients}</div>
         <Link
-          href="/nurse/dashboard/recent-patients"
+          href={withLocale(ROUTES.NURSE_RECENT_PATIENTS)}
           className="text-sm text-[#0B84FF] font-medium hover:underline"
         >
           {dict.dashboard.viewAll}
@@ -45,8 +48,8 @@ export default function RecentPatients() {
         <button
           onClick={() => setActiveTab("visits")}
           className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "visits"
-              ? "text-[#0B84FF] border-b-2 border-[#0B84FF]"
-              : "text-gray-500 hover:text-gray-700"
+            ? "text-[#0B84FF] border-b-2 border-[#0B84FF]"
+            : "text-gray-500 hover:text-gray-700"
             }`}
         >
           {dict.dashboard.visits}
@@ -54,8 +57,8 @@ export default function RecentPatients() {
         <button
           onClick={() => setActiveTab("all")}
           className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "all"
-              ? "text-[#0B84FF] border-b-2 border-[#0B84FF]"
-              : "text-gray-500 hover:text-gray-700"
+            ? "text-[#0B84FF] border-b-2 border-[#0B84FF]"
+            : "text-gray-500 hover:text-gray-700"
             }`}
         >
           {dict.dashboard.allVisits}

@@ -1056,6 +1056,24 @@
           }
         }
       }
+    },
+    "nurse": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "Visit purpose",
+          "SOAP Notes": "SOAP Notes",
+          "Vitals": "Vitals",
+          "Attachments": "Attachments",
+          "Nurse Note": "Nurse Note",
+          "Nurse Orders": "Nurse Orders",
+          "Consumables": "Consumables",
+          "Equipment": "Equipment"
+        },
+        "messages": {
+          "noContent": "No content found",
+          "startConsultationPrompt": "Please start the consultation to access patient details."
+        }
+      }
     }
   },
   "metadata": {
