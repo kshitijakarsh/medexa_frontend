@@ -94,6 +94,9 @@ import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 import { useEffect, useMemo, useState } from "react";
 import { canWorkOnVisit } from "./common/visitGuards";
+import { useUserStore } from "@/store/useUserStore";
+
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function AppointmentDetailTabs({
   active,
@@ -113,8 +116,10 @@ export function AppointmentDetailTabs({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const dict = useDictionary();
 
-  const tabs = appointmentTabsConfig(injectedProps);
+  const tabs = appointmentTabsConfig(injectedProps, userPermissions);
 
   // ✅ Resolve initial tab ONCE
   const resolvedInitialTab = useMemo(() => {
@@ -142,7 +147,7 @@ export function AppointmentDetailTabs({
     //     onStartConsultation?.();
     //   }
     //   return;
-    // }
+    //   }
     onChange(tabKey);
 
     const params = new URLSearchParams(searchParams.toString());
@@ -156,7 +161,10 @@ export function AppointmentDetailTabs({
   return (
     <DynamicTabs
       key={resolvedInitialTab}          // 🔥 FORCE remount
-      tabs={tabs.map((t) => ({ key: t.key, label: t.label }))}
+      tabs={tabs.map((t) => ({
+        key: t.key,
+        label: (dict.pages.doctor.appointment.tabs as any)[t.key] || t.label
+      }))}
       defaultTab={resolvedInitialTab}   // ✅ correct initial tab
       onChange={handleTabChange}
       variant="scroll"

@@ -7,39 +7,43 @@ import {
   Stethoscope,
   Pill,
 } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function OverviewCards() {
+  const dict = useDictionary();
+  const { overview } = dict.pages.doctor.profile.components;
+
   const stats = [
     {
-      label: "Total Patients Treated",
+      label: overview.totalPatientsTreated,
       value: 565,
       icon: <UserRound size={22} />,
       bg: "bg-purple-50",
       iconBg: "bg-purple-200 text-purple-700",
     },
     {
-      label: "Today Appointments",
+      label: overview.todayAppointments,
       value: 565,
       icon: <CalendarDays size={22} />,
       bg: "bg-blue-50",
       iconBg: "bg-blue-200 text-blue-700",
     },
     {
-      label: "Completed Appointments",
+      label: overview.completedAppointments,
       value: 565,
       icon: <CheckCircle2 size={22} />,
       bg: "bg-green-50",
       iconBg: "bg-green-200 text-green-700",
     },
     {
-      label: "Total Patients Treated",
+      label: overview.totalPatientsTreated,
       value: 565,
       icon: <Stethoscope size={22} />,
       bg: "bg-orange-50",
       iconBg: "bg-orange-200 text-orange-700",
     },
     {
-      label: "Follow-ups",
+      label: overview.followUps,
       value: 565,
       icon: <Pill size={22} />,
       bg: "bg-pink-50",

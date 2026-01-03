@@ -1,578 +1,566 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Header } from "@/components/header"
-import { PageHeader } from "@/components/common/page-header"
-import FilterButton from "@/components/common/filter-button"
-import SearchInput from "@/components/common/search-input"
-import QuickActionsMenu from "@/components/common/quick-actions-menu"
-import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable"
-import { RowActionMenu } from "@/components/common/row-action-menu"
-import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell"
-import { StatusPill } from "@/components/common/pasient-card/status-pill"
-import { TypeBadge } from "@/components/common/pasient-card/type-badge"
-import { AppSelect } from "@/components/common/app-select"
-import { Button } from "@workspace/ui/components/button"
+import { useState, useEffect } from "react";
+import { Button } from "@workspace/ui/components/button";
+import { DataTable } from "@/components/common/data-table";
+import { RowActionMenu } from "@/components/common/row-action-menu";
+import FilterButton from "@/components/common/filter-button";
+import { AppSelect } from "@/components/common/app-select";
+import { Switch } from "@workspace/ui/components/switch";
+import { Input } from "@workspace/ui/components/input";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import {
-  Calendar,
-  Stethoscope,
-  CircleDot,
-  ChevronDown,
+  CalendarDays,
   Search,
-  Grid3x3,
-  List,
-  Phone,
-  MoreVertical,
-  Gem,
-  User,
+  Grid,
+  List as ListIcon,
   Plus,
-} from "lucide-react"
-import { useRouter, useParams } from "next/navigation"
-import { cn } from "@workspace/ui/lib/utils"
-import { getAuthToken } from "@/app/utils/onboarding"
-import { createVisitsApiClient, Visit } from "@/lib/api/visits"
+  Phone,
+  LayoutGrid,
+  Stethoscope,
+  SlidersHorizontal,
+  MoreVertical,
+  X
+} from "lucide-react";
+import Image from "next/image";
+import { useDoctors } from "@/hooks/use-doctors";
+import { useDepartments } from "@/hooks/use-departments";
+import { createVisitsApiClient, VisitItem } from "@/lib/api/visits-api";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { getIdToken } from "@/app/utils/auth";
+import axios from "axios";
+import { ROUTES } from "@/lib/routes";
+import { AppointmentEntry, FilterState } from "./types";
+import { AppointmentGridView } from "./_components/appointment-grid-view";
+import { AppointmentCalendarView } from "./_components/appointment-calendar-view";
+import { ContactPopover } from "./_components/contact-popover";
+import { Badge } from "@workspace/ui/components/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
 
-interface Appointment {
-  id: string
-  patientName: string
-  mrn: string
-  appointmentId: string
-  doctorName: string
-  department: string
-  appointmentDate: string
-  bookedSlot: string
-  serviceType: string
-  visitType: "Walk-in" | "ER" | "Appointment"
-  payment: string
-  status: "Booked" | "Confirmed" | "Checked-In"
-  contact: string
-  vip?: boolean
-}
+// Options
+const STATUS_OPTIONS = [
+  { label: "All Status", value: "all" },
+  { label: "Booked", value: "Booked" },
+  { label: "Confirmed", value: "Confirmed" },
+  { label: "Checked-In", value: "Checked-In" },
+  { label: "Completed", value: "Completed" },
+  { label: "Cancelled", value: "Cancelled" },
+];
 
 export default function AppointmentPage() {
-  const router = useRouter()
-  const params = useParams<{ lang?: string }>()
-  const lang = params?.lang || "en"
+  const [loading, setLoading] = useState(false);
+  const [isCalendarView, setIsCalendarView] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
+  const [appointments, setAppointments] = useState<AppointmentEntry[]>([]);
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  
+  // Initialize filters - if tab=completed, set status to "Completed"
+  const [filters, setFilters] = useState<FilterState>({
+    department: "",
+    doctor: "",
+    status: tabParam === "completed" ? "Completed" : "",
+    dateFilter: "all",
+  });
+  const [doctorSearchQuery, setDoctorSearchQuery] = useState("");
+  const [departmentSearchQuery, setDepartmentSearchQuery] = useState("");
+  const [mrnSearch, setMrnSearch] = useState("");
 
-  // Filter states
-  const [dateFilter, setDateFilter] = useState("Today's")
-  const [departmentFilter, setDepartmentFilter] = useState("All Department")
-  const [doctorFilter, setDoctorFilter] = useState("All Doctor")
-  const [statusFilter, setStatusFilter] = useState("All Status")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchType, setSearchType] = useState("MRN")
-  const [calendarView, setCalendarView] = useState(false)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("list")
-  const [appointments, setAppointments] = useState<Appointment[]>([])
-  const [loading, setLoading] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const { doctors: doctorOptions } = useDoctors(doctorSearchQuery);
+  const { departments: departmentOptions } = useDepartments(departmentSearchQuery);
 
-  // Map API visit to Appointment interface
-  const mapVisitToAppointment = (visit: Visit): Appointment => {
-    // Format date from ISO string to DD-MM-YYYY
-    const formatDate = (isoString: string) => {
-      const date = new Date(isoString)
-      const day = date.getDate().toString().padStart(2, "0")
-      const month = (date.getMonth() + 1).toString().padStart(2, "0")
-      const year = date.getFullYear()
-      return `${day}-${month}-${year}`
-    }
+  const selectedDoctor = doctorOptions.find(d => d.value === filters.doctor);
 
-    // Format time from ISO string to HH:MM AM/PM
-    const formatTime = (isoString: string) => {
-      const date = new Date(isoString)
-      let hours = date.getHours()
-      const minutes = date.getMinutes().toString().padStart(2, "0")
-      const period = hours >= 12 ? "PM" : "AM"
-      hours = hours % 12 || 12
-      return `${hours.toString().padStart(2, "0")}:${minutes} ${period}`
-    }
+  const router = useRouter();
+  const { withLocale } = useLocaleRoute();
 
-    // Map patient_visit_type to display format
-    const mapVisitType = (type: string): "Walk-in" | "ER" | "Appointment" => {
-      switch (type.toLowerCase()) {
-        case "walk_in":
-        case "walk-in":
-          return "Walk-in"
-        case "er":
-        case "emergency":
-          return "ER"
-        case "appointment":
-        default:
-          return "Appointment"
-      }
-    }
-
-    // Map status to display format
-    const mapStatus = (
-      status: string
-    ): "Booked" | "Confirmed" | "Checked-In" => {
-      switch (status.toLowerCase()) {
-        case "active":
-          return "Booked"
-        case "confirmed":
-          return "Confirmed"
-        case "in_consultation":
-        case "checked_in":
-          return "Checked-In"
-        default:
-          return "Booked"
-      }
-    }
-
-    // Get doctor name (first doctor from doctor_ids array)
-    const doctorName =
-      visit.doctor_ids && visit.doctor_ids.length > 0 && visit.doctor_ids[0]
-        ? `Dr. ${visit.doctor_ids[0].id}` // You may need to fetch doctor details separately
-        : "N/A"
-
-    // Get patient name
-    const patientName = visit.patient
-      ? `${visit.patient.first_name} ${visit.patient.last_name}`
-      : visit.full_name || "N/A"
-
-    // Get MRN from patient_id (or you may need to fetch from patient details)
-    const mrn = visit.patient_id.toString().padStart(8, "0")
-
-    return {
-      id: visit.id.toString(),
-      patientName,
-      mrn,
-      appointmentId: `APP-${visit.id.toString().padStart(6, "0")}`,
-      doctorName,
-      department: "N/A", // Department not in API response, may need separate fetch
-      appointmentDate: formatDate(visit.time_slot_start),
-      bookedSlot: formatTime(visit.time_slot_start),
-      serviceType: visit.visit_type
-        .split("_")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" "),
-      visitType: mapVisitType(visit.patient_visit_type),
-      payment: "Pending", // Payment info not in API response
-      status: mapStatus(visit.status),
-      contact: visit.phone_no || "+974 1234 5678",
-      vip: false, // VIP status not in API response
-    }
-  }
-
-  // Fetch visits from API
+  // Update status filter when tab parameter changes
   useEffect(() => {
-    const fetchVisits = async () => {
-      setLoading(true)
+    if (tabParam === "completed") {
+      setFilters(prev => ({
+        ...prev,
+        status: "Completed", // Use capitalized for UI, convert to lowercase for API
+      }));
+    } else if (!tabParam) {
+      // Reset status filter if no tab parameter
+      setFilters(prev => ({
+        ...prev,
+        status: prev.status === "Completed" ? "" : prev.status,
+      }));
+    }
+  }, [tabParam]);
+
+  // Load Data
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const token = await getAuthToken()
-        const client = createVisitsApiClient({ authToken: token })
+        const apiClient = createVisitsApiClient();
 
+        // Prepare params
         const params: any = {
-          page: currentPage,
-          limit: 20,
+          page: 1,
+          limit: 50,
+        };
+        if (filters.status && filters.status !== "all") {
+          // Convert status to lowercase for API (API expects lowercase like "completed", "booked", etc.)
+          params.status = filters.status.toLowerCase();
         }
+        // Use camelCase parameters to match backend convention (seen in slots-api)
+        if (filters.department && filters.department !== "all-departments") params.departmentId = filters.department;
+        if (filters.doctor && filters.doctor !== "all-doctors") params.doctorId = filters.doctor;
+        // Date filter logic would go here if API supports it, currently using basic fetch
 
-        // Add filters based on state
-        if (statusFilter !== "All Status") {
-          params.status = statusFilter.toLowerCase().replace(" ", "_")
-        }
-        if (doctorFilter !== "All Doctor") {
-          // You may need to map doctor name to ID
-          // params.doctor_id = doctorFilter
-        }
-        if (departmentFilter !== "All Department") {
-          // You may need to map department name to ID
-          // params.department_id = departmentFilter
-        }
+        const response = await apiClient.getVisits(params);
 
-        const response = await client.getVisits(params)
-        const mappedAppointments = response.data.data.map(mapVisitToAppointment)
-        setAppointments(mappedAppointments)
-        setTotalPages(response.data.pagination.totalPages)
-      } catch (error) {
-        console.error("Failed to fetch visits:", error)
-        setAppointments([])
+        if (response.data.success) {
+          // Fetch all doctors to create a lookup map
+          let doctorMap = new Map<string, string>();
+          try {
+            const token = await getIdToken();
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URI || "";
+            
+            const doctorsResponse = await axios.get(
+              `${baseUrl}/api/v1/doctor/users/soap-notes-creators`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                  Authorization: token ? `Bearer ${token}` : "",
+                },
+                params: { limit: 1000 }, // Get all doctors
+              }
+            );
+            
+            if (doctorsResponse.data.success) {
+              doctorsResponse.data.data.forEach((doctor: any) => {
+                doctorMap.set(doctor.id.toString(), doctor.name);
+              });
+            }
+          } catch (err) {
+            console.warn("Failed to fetch doctors for lookup:", err);
+          }
+
+          const mapped: AppointmentEntry[] = response.data.data.map((visit) => {
+            // Map visit to AppointmentEntry
+            // NOTE: Adjust fields based on actual API data availability vs UI requirements
+            
+            // Format patient_visit_type for display (convert snake_case to Title Case)
+            const formatVisitType = (type: string | null | undefined): string => {
+              if (!type) return "Walk-in"; // Default fallback
+              // Handle special cases
+              if (type === "emergency") return "ER";
+              // Convert snake_case to Title Case (e.g., "walk_in" -> "Walk-in", "appointment" -> "Appointment")
+              return type
+                .split('_')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join('-');
+            };
+
+            // Get doctor name - try multiple approaches
+            let doctorName = "Unknown Doctor";
+            if (visit.doctor_ids && visit.doctor_ids.length > 0) {
+              const firstDoctor = visit.doctor_ids[0];
+              // Try to get name directly from the doctor object
+              if (firstDoctor?.name) {
+                doctorName = firstDoctor.name;
+              } else if (firstDoctor?.id) {
+                // Look up doctor name from the map using the ID
+                const doctorId = String(firstDoctor.id);
+                const lookedUpName = doctorMap.get(doctorId);
+                if (lookedUpName) {
+                  doctorName = lookedUpName;
+                }
+              }
+            }
+            
+            return {
+              id: visit.id,
+              appId: `APP-${String(visit.id).padStart(6, '0')}`, // Synthesized ID for display
+              mrn: visit.emergency_guardian_mrn || `MRN-${visit.patient_id}`, // Fallback if no mrn
+              patientName: visit.full_name || `${visit.patient?.first_name} ${visit.patient?.last_name}`,
+              patientImg: undefined, // API doesn't seem to return image yet, fallback to avatar
+              isVip: false, // API doesn't return VIP status yet, defaulting to false or randomize for demo? Keeping false for safety or mock some if needed.
+              consultantDoctor: doctorName,
+              specialty: "General", // API missing specialty in top level, might need to infer or fetch
+              appointmentDate: visit.time_slot_start.split('T')[0] || "",
+              bookedSlot: visit.time_slot_start?.split('T')[1]?.substring(0, 5) || "",
+              serviceType: visit.visit_type === 'doctor_consultation' ? "Doctor Consultation" : visit.visit_type,
+              visitType: formatVisitType(visit.patient_visit_type), // Use patient_visit_type from backend
+              paymentStatus: (visit.charges?.[0]?.status === 'pending' ? 'Pending' : 'Paid') as any,
+              status: (visit.status.charAt(0).toUpperCase() + visit.status.slice(1)) as any,
+              contactNumber: visit.phone_no,
+              isNewConsultation: true
+            };
+          });
+          setAppointments(mapped);
+        }
+      } catch (e) {
+        console.error(e);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
+    };
+
+    fetchData();
+  }, [filters]);
+
+  const handleFilterChange = (key: keyof FilterState, value: string) => {
+    // Prevent changing status filter when on completed tab
+    if (key === "status" && tabParam === "completed") {
+      return;
     }
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
 
-    fetchVisits()
-  }, [currentPage, statusFilter, doctorFilter, departmentFilter])
+  const handleClearFilters = () => {
+    // Reset to defaults, but keep status as "Completed" if on completed tab
+    setFilters({
+      department: "",
+      doctor: "", // "all-doctors" value is controlled primarily by the UI, but here we set to empty string which means 'All' in our logic
+      status: tabParam === "completed" ? "Completed" : "",
+      dateFilter: "all",
+    });
+    setDepartmentSearchQuery("");
+    setDoctorSearchQuery("");
+    setMrnSearch("");
+  };
 
-  const handleERClick = () => {
-    // Go directly to Book New Appointment with Emergency pre-selected
-    router.push(`/${lang}/appointment/book?visitType=emergency`)
-  }
-
-  const handleWalkInClick = () => {
-    // Go directly to Book New Appointment with Walk-in pre-selected
-    router.push(`/${lang}/appointment/book?visitType=walkin`)
-  }
-
-  const handleAddAppointmentClick = () => {
-    // Go directly to Book New Appointment with Standard Appointment pre-selected
-    router.push(`/${lang}/appointment/book?visitType=appointment`)
-  }
-
-  const quickActions = [
-    {
-      label: "Export Excel",
-      onClick: () => console.log("Export Excel"),
-      highlightColor: "#28B469",
-    },
-    {
-      label: "Import Excel",
-      onClick: () => console.log("Import Excel"),
-      highlightColor: "#28B469",
-    },
-  ]
-
-  const getVisitTypeColor = (type: string) => {
-    switch (type) {
-      case "Walk-in":
-        return "text-orange-600"
-      case "ER":
-        return "text-red-600"
-      case "Appointment":
-        return "text-green-600"
-      default:
-        return "text-gray-600"
-    }
-  }
-
+  // Columns for List View
   const columns = [
     {
       key: "patient",
       label: "Patient",
-      render: (row: Appointment) => (
-        <AppointmentPatientCell
-          name={row.patientName}
-          mrn={`MRN ${row.mrn} | ${row.appointmentId}`}
-          vip={row.vip}
-        />
+      render: (row: AppointmentEntry) => (
+        <div className="flex items-center gap-3 relative">
+          {/* VIP Crown Icon - Absolute Top Left */}
+          {row.isVip && (
+            <div className="absolute -top-1.5 -left-1.5 z-10 w-4 h-4 rounded-full flex items-center justify-center bg-transparent">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#FACC15" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5ZM19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V18H19V19Z" stroke="white" strokeWidth="1" />
+              </svg>
+            </div>
+          )}
+
+          <Avatar className="h-10 w-10 border border-gray-100">
+            <AvatarImage src={row.patientImg} />
+            <AvatarFallback className="bg-orange-100 text-orange-600 font-medium">
+              {row.patientName.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="font-semibold text-sm text-gray-900">{row.patientName}</div>
+            </div>
+            <div className="text-xs text-gray-500 flex gap-2">
+              <span>{row.mrn}</span>
+              <span className="text-blue-500">| {row.appId}</span>
+            </div>
+          </div>
+        </div>
       ),
     },
     {
       key: "doctor",
       label: "Consultant Doctor",
-      render: (row: Appointment) => (
+      render: (row: AppointmentEntry) => (
         <div>
-          <div className="font-medium text-sm">{row.doctorName}</div>
-          <div className="text-xs text-gray-500">{row.department}</div>
+          <div className="font-medium text-sm text-gray-900">{row.consultantDoctor}</div>
+          <div className="text-xs text-gray-500">{row.specialty}</div>
         </div>
-      ),
+      )
     },
     {
       key: "date",
       label: "Appointments Date",
-      render: (row: Appointment) => (
-        <span className="text-sm">{row.appointmentDate}</span>
-      ),
+      render: (row: AppointmentEntry) => (
+        <div className="text-sm text-gray-700">{row.appointmentDate}</div>
+      )
     },
     {
       key: "slot",
       label: "Booked Slot",
-      render: (row: Appointment) => (
-        <span className="text-sm">{row.bookedSlot}</span>
-      ),
+      render: (row: AppointmentEntry) => (
+        <div className="text-sm text-gray-700">{row.bookedSlot}</div>
+      )
     },
     {
       key: "service",
       label: "Service Type",
-      render: (row: Appointment) => (
-        <TypeBadge type={row.serviceType} />
-      ),
+      render: (row: AppointmentEntry) => (
+        <div className="text-sm text-gray-700">{row.serviceType}</div>
+      )
     },
     {
-      key: "visitType",
+      key: "visit",
       label: "Visit Type",
-      render: (row: Appointment) => (
-        <span className={cn("text-sm font-medium", getVisitTypeColor(row.visitType))}>
+      render: (row: AppointmentEntry) => (
+        <div className={`text-sm ${row.visitType === 'ER' ? 'text-red-500' : row.visitType === 'Appointment' ? 'text-green-500' : 'text-orange-500'}`}>
           {row.visitType}
-        </span>
-      ),
+        </div>
+      )
     },
     {
       key: "payment",
       label: "Payment",
-      render: (row: Appointment) => (
-        <span className="text-sm text-red-600">{row.payment}</span>
-      ),
+      render: (row: AppointmentEntry) => (
+        <span className="text-xs font-medium text-red-500">
+          {row.paymentStatus}
+        </span>
+      )
     },
     {
       key: "status",
       label: "Status",
-      render: (row: Appointment) => <StatusPill status={row.status} />,
+      render: (row: AppointmentEntry) => (
+        <span className={`text-xs font-medium 
+              ${(row.status === 'Booked' || row.status === 'Pending') ? 'text-[#AF5A62]' :
+            row.status === 'Confirmed' ? 'text-green-600' :
+              'text-gray-600'}`}>
+          {row.status}
+        </span>
+      )
     },
     {
       key: "contact",
       label: "Contact",
-      render: (row: Appointment) => (
-        <Phone className="w-5 h-5 text-green-600 cursor-pointer" />
-      ),
+      render: (row: AppointmentEntry) => (
+        <ContactPopover phoneNumber={row.contactNumber} />
+      )
     },
     {
       key: "action",
       label: "Action",
-      render: (row: Appointment) => (
-        <RowActionMenu
-          actions={[
-            { label: "View Details", onClick: () => console.log("View", row.id) },
-            { label: "Edit", onClick: () => console.log("Edit", row.id) },
-            {
-              label: "Cancel",
-              onClick: () => console.log("Cancel", row.id),
-              variant: "danger",
-            },
-          ]}
-        />
-      ),
-    },
-  ]
+      render: (row: AppointmentEntry) => (
+        <div className="flex items-center gap-1 text-blue-500 text-sm font-medium cursor-pointer hover:text-blue-700">
+          Action
+          <span className="flex items-center">
+            <MoreVertical className="w-4 h-4" />
+          </span>
+        </div>
+      )
+    }
+  ];
 
   return (
-    <main className="min-h-svh w-full">
-      <Header />
-      <div className="p-2 py-6 space-y-6 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
-        <PageHeader title="Appointment" />
+    <div className="min-h-screen w-full bg-[#EAF2F6] p-4 md:p-6 pb-20">
+      <div className="w-full max-w-[1700px] mx-auto space-y-4">
 
-        <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
-          {/* Top Header Section */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Left Side - Filters */}
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Date Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2"
-                  >
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    {dateFilter}
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setDateFilter("Today's")}>
-                    Today's
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setDateFilter("This Week")}>
-                    This Week
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setDateFilter("This Month")}>
-                    This Month
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+        {/* --- Top Header Row: Title & Dropdowns --- */}
+        <div className="flex flex-col gap-4">
+          {/* Section Title */}
+          <h1 className="text-md font-semibold text-gray-800">Appointment</h1>
 
-              {/* Department Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2"
-                  >
-                    {departmentFilter}
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() => setDepartmentFilter("All Department")}
-                  >
-                    All Department
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setDepartmentFilter("Cardiology")}
-                  >
-                    Cardiology
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setDepartmentFilter("Neurology")}
-                  >
-                    Neurology
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Doctor Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2"
-                  >
-                    <Stethoscope className="w-4 h-4 text-gray-600" />
-                    {doctorFilter}
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setDoctorFilter("All Doctor")}>
-                    All Doctor
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setDoctorFilter("Dr.Kiran Madha")}
-                  >
-                    Dr.Kiran Madha
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Status Filter */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2"
-                  >
-                    <CircleDot className="w-4 h-4 text-gray-600" />
-                    {statusFilter}
-                    <ChevronDown className="w-4 h-4 text-gray-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setStatusFilter("All Status")}>
-                    All Status
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter("Booked")}>
-                    Booked
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter("Confirmed")}>
-                    Confirmed
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatusFilter("Checked-In")}>
-                    Checked-In
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            {/* Right Side - Calendar View Toggle */}
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setCalendarView(!calendarView)}
-                className={cn(
-                  "h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2",
-                  calendarView && "bg-blue-50 border-blue-300"
-                )}
-              >
-                <Calendar className="w-4 h-4 text-gray-600" />
-                Calendar View
-              </Button>
-            </div>
-          </div>
-
-          {/* Second Row - Filter, Search, Quick Actions */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Left - Filter Button */}
-            <div className="flex items-center gap-3">
-              <FilterButton onClick={() => console.log("Filter clicked")} />
-            </div>
-
-            {/* Middle - Search */}
-            <div className="flex-1 max-w-md flex items-center gap-2">
-              <div className="flex-1">
-                <SearchInput
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  placeholder="Search MRN"
-                  width="100%"
+          <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
+            {/* Filter Dropdowns Row - Transparent Background */}
+            <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
+              {/* Date */}
+              <div className="w-full sm:w-[200px]">
+                <AppSelect
+                  placeholder="Today's"
+                  value={filters.dateFilter}
+                  onChange={(val) => handleFilterChange("dateFilter", val)}
+                  options={[
+                    { label: "Today's", value: "today" },
+                    { label: "Tomorrow", value: "tomorrow" },
+                  ]}
+                  icon={<CalendarDays className="w-5 h-5 text-gray-700" />}
+                  triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
                 />
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="h-9 px-3 text-sm bg-white border-gray-300 rounded-lg flex items-center gap-2"
-                  >
-                    {searchType}
-                    <Search className="w-4 h-4 text-gray-600" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setSearchType("MRN")}>
-                    MRN
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSearchType("Name")}>
-                    Name
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSearchType("Phone")}>
-                    Phone
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
 
-            {/* Right - Quick Actions and Buttons */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <QuickActionsMenu actions={quickActions} />
-              <Button
-                onClick={handleERClick}
-                className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center gap-2"
-              >
-                <Gem className="w-4 h-4" />
-                ER
-              </Button>
-              <Button
-                onClick={handleWalkInClick}
-                className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg flex items-center gap-2"
-              >
-                <User className="w-4 h-4" />
-                Walk-In
-              </Button>
-              <Button
-                onClick={handleAddAppointmentClick}
-                className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Appointment
-              </Button>
-              <div className="flex items-center gap-1 border border-gray-300 rounded-lg p-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "h-7 w-7",
-                    viewMode === "grid" && "bg-blue-100"
-                  )}
-                >
-                  <Grid3x3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("list")}
-                  className={cn(
-                    "h-7 w-7",
-                    viewMode === "list" && "bg-blue-100"
-                  )}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+              {/* Department */}
+              <div className="w-full sm:w-[200px]">
+                <AppSelect
+                  placeholder="All Department"
+                  value={filters.department}
+                  onChange={(val) => handleFilterChange("department", val)}
+                  options={departmentOptions}
+                  icon={<Image src="/images/folder_supervised.png" alt="Department" width={18} height={18} />}
+                  searchable={true}
+                  searchPlaceholder="Search Department"
+                  onSearchChange={setDepartmentSearchQuery}
+                  triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full text-gray-900 pl-2 hover:border-blue-300 transition-colors shadow-sm"
+                />
+              </div>
+
+              {/* Doctor */}
+              <div className="w-full sm:w-[200px]">
+                <AppSelect
+                  placeholder="All Doctor"
+                  value={filters.doctor}
+                  onChange={(val) => handleFilterChange("doctor", val)}
+                  options={doctorOptions}
+                  icon={<Image src="/images/stethoscope.svg" alt="Doctor" width={18} height={18} />}
+                  searchable={true}
+                  searchPlaceholder="Search Doctor"
+                  onSearchChange={setDoctorSearchQuery}
+                  triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full text-gray-900 pl-2 hover:border-blue-300 transition-colors shadow-sm"
+                />
+              </div>
+
+              {/* Status */}
+              <div className="w-full sm:w-[200px]">
+                <AppSelect
+                  placeholder="All Status"
+                  value={filters.status}
+                  onChange={(val) => handleFilterChange("status", val)}
+                  options={STATUS_OPTIONS}
+                  disabled={tabParam === "completed"} // Disable status filter on completed tab
+                  icon={<Image src="/images/donut_large.svg" alt="Status" width={20} height={20} className="w-5 h-5" />}
+                  triggerClassName={`h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm ${tabParam === "completed" ? "opacity-60 cursor-not-allowed" : ""}`}
+                />
               </div>
             </div>
-          </div>
 
-          {/* Table */}
-          <div className="mt-4">
-            <ResponsiveDataTable
-              columns={columns}
-              data={appointments}
-              loading={loading}
-              striped
-            />
+            {/* Right Side: Calendar View Toggle - Hidden on completed tab */}
+            {tabParam !== "completed" && (
+              <div className="flex items-center gap-3 ml-auto">
+                <CalendarDays className="w-5 h-5 text-blue-500" />
+                <span className="text-sm font-semibold text-gray-800">Calendar View</span>
+                <Switch
+                  checked={isCalendarView}
+                  onCheckedChange={setIsCalendarView}
+                  className="data-[state=checked]:bg-blue-500"
+                />
+              </div>
+            )}
           </div>
         </div>
-      </div>
-    </main>
-  )
-}
 
+        {/* --- Action Bar Row: Filter, Search, Action Buttons --- */}
+        <div className="flex flex-col xl:flex-row gap-4 items-center justify-between pt-2">
+          {/* Filter Toggle (Blue Button) */}
+          <div className="flex items-center gap-3 w-full xl:w-auto">
+            <FilterButton
+              onClick={handleClearFilters} // Correct if clicking filter acts as clear toggle? No, logic is confusing in Schedule page. It had onClick and onClear.
+              // In Schedule: onClick={handleClearFilters} onClear={handleClearFilters}. This is redundant/weird but I'll stick to it or better:
+              // Wait, FilterButton usually opens a drawer. Here, user just wants "Clear All".
+              // Schedule page: `onClick={handleClearFilters}`.
+              // I will use that.
+              onClear={handleClearFilters}
+              filters={{
+                department: filters.department !== "all-departments" ? filters.department : "",
+                doctor: filters.doctor !== "all-doctors" ? filters.doctor : "",
+                // Exclude status filter from count on completed tab (status is locked and shouldn't be clearable)
+                status: tabParam === "completed" ? "" : (filters.status !== "all" ? filters.status : ""),
+                dateFilter: filters.dateFilter !== "all" ? filters.dateFilter : ""
+              }}
+            />
+          </div>
+
+          {/* Right: Search & Actions */}
+          <div className="flex items-center gap-3 w-full xl:w-auto overflow-x-auto pb-2 xl:pb-0 no-scrollbar">
+
+            {/* MRN Search (Moved to right group) */}
+            <div className="relative flex items-center bg-white rounded-full border border-blue-100 px-4 h-10 shadow-sm w-[280px] shrink-0">
+              <div className="flex items-center gap-1 text-blue-500 text-sm font-medium border-r border-gray-200 pr-3 mr-3 cursor-pointer">
+                <Search className="w-4 h-4" />
+                MRN
+                <span className="text-gray-400 text-[10px]">▼</span>
+              </div>
+              <input
+                placeholder="Search MRN"
+                className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-gray-400 min-w-[80px]"
+                value={mrnSearch}
+                onChange={(e) => setMrnSearch(e.target.value)}
+              />
+            </div>
+
+            <Button variant="outline" className="rounded-full h-10 border-blue-100 bg-white text-gray-700 font-medium gap-1 min-w-[90px] shadow-sm hover:bg-gray-50 shrink-0">
+              Quick <Image src="/images/unfold_more.svg" alt="Quick" width={14} height={14} className="w-3.5 h-3.5" />
+            </Button>
+
+            {/* Hide ER, Walk-In, and Appointment buttons on completed tab */}
+            {tabParam !== "completed" && (
+              <>
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=emergency"))}
+                  className="bg-[#EF4444] hover:bg-[#DC2626] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  ER <div className="bg-white/20 p-0.5 rounded"><Image src="/images/emergency_home.svg" alt="ER" width={18} height={18} className="w-[18px] h-[18px]" /></div>
+                </Button>
+
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=walkin"))}
+                  className="bg-[#F97316] hover:bg-[#EA580C] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  Walk-In <div className="bg-white/20 p-0.5 rounded-full"><Image src="/images/directions_run.svg" alt="Walk-In" width={18} height={18} className="w-[18px] h-[18px]" /></div>
+                </Button>
+
+                <Button
+                  onClick={() => router.push(withLocale("/appointment/book?visitType=appointment"))}
+                  className="bg-[#2CB470] hover:bg-[#259b60] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
+                >
+                  Add Appointment <Plus className="w-4 h-4 bg-white text-[#2CB470] rounded-full p-0.5" />
+                </Button>
+              </>
+            )}
+
+            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-1 ml-2 shadow-sm shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 rounded-md ${viewMode === 'list' ? 'bg-[#2CB470] text-white hover:bg-[#259b60] hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+                onClick={() => setViewMode("list")}
+              >
+                <ListIcon className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-8 w-8 rounded-md ${viewMode === 'grid' ? 'bg-[#2CB470] text-white hover:bg-[#259b60] hover:text-white' : 'text-gray-400 hover:text-gray-600'}`}
+                onClick={() => setViewMode("grid")}
+              >
+                <Grid className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        {isCalendarView ? (
+          <div className="mt-4">
+            <AppointmentCalendarView
+              data={appointments}
+              doctor={selectedDoctor ? { name: selectedDoctor.label, specialty: "Specialist" } : undefined}
+            />
+          </div>
+        ) : viewMode === "list" ? (
+          <div className="rounded-t-xl overflow-hidden mt-4 [&_thead_th]:font-normal">
+            {!loading && appointments.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 bg-white rounded-b-xl border border-gray-100 shadow-sm text-center">
+                <div className="bg-gray-50 p-4 rounded-full mb-4">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">No appointments found</h3>
+                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+                  We couldn't find any appointments matching your filters. Try clearing some filters or searching for something else.
+                </p>
+                <Button
+                  onClick={handleClearFilters}
+                  className="bg-[#0095FF] hover:bg-[#0080DD] text-white rounded-full px-6"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={appointments}
+                loading={loading}
+                striped={false}
+              />
+            )}
+          </div>
+        ) : (
+          <div className="mt-4">
+            <AppointmentGridView data={appointments} />
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}

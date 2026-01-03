@@ -66,7 +66,7 @@ import { hasPermission, PERMISSIONS } from "@/app/utils/permissions";
 import { RowActionMenu } from "@/components/common/row-action-menu";
 import { Pencil, Eye, Trash2, ShieldCheck } from "lucide-react";
 import { ReactNode } from "react";
-
+import { useDictionary } from "@/i18n/use-dictionary";
 interface RowAction {
   label: string;
   onClick?: () => void;
@@ -84,10 +84,11 @@ export function InsuranceRowActionMenu({ onEdit, onView, onDelete, userPermissio
   // ];
 
   const rowActions: RowAction[] = [];
+  const dict = useDictionary();
 
   if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.EDIT)) {
     rowActions.push({
-      label: "Edit",
+      label: dict.common.edit,
       icon: <Pencil className="w-4 h-4" />,
       onClick: onEdit,
       variant: "success",
@@ -96,7 +97,7 @@ export function InsuranceRowActionMenu({ onEdit, onView, onDelete, userPermissio
 
   if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.EDIT)) {
     rowActions.push({
-      label: "View",
+      label: dict.common.view,
       icon: <Eye className="w-4 h-4" />,
       onClick: onView,
       variant: "success",
@@ -105,7 +106,7 @@ export function InsuranceRowActionMenu({ onEdit, onView, onDelete, userPermissio
 
   if (hasPermission(userPermissions, PERMISSIONS.INSURANCE.DELETE)) {
     rowActions.push({
-      label: "Delete",
+      label: dict.common.delete,
       icon: <Trash2 className="w-4 h-4" />,
       onClick: onDelete,
       variant: "danger",

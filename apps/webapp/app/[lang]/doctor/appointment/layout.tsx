@@ -237,11 +237,11 @@ export default function ConsultationLayout({ children }: { children: React.React
     emergency[0] ?? vip[0] ?? general[0] ?? null;
 
   // 🔥 MOVE REDIRECT INTO EFFECT — fixes the error
-  useEffect(() => {
-    if (!loading && !currentId && firstAvailable) {
-      router.replace(`${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${firstAvailable.id}`)}`);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!loading && !currentId && firstAvailable) {
+  //     router.replace(`${withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}${firstAvailable.id}`)}`);
+  //   }
+  // }, []);
 
   if (loading) {
     return (

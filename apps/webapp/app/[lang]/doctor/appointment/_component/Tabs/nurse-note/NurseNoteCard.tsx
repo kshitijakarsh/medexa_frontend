@@ -7,8 +7,11 @@ interface NurseNoteCardProps {
   data: NurseNote;
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function NurseNoteCard({ data }: NurseNoteCardProps) {
-  const name = data.createdBy?.name ?? "Nurse";
+  const dict = useDictionary();
+  const name = data.createdBy?.name ?? dict.pages.doctor.appointment.tabsContent.nurseNote.card.fallbackName;
   const time = format(new Date(data.created_at), "dd MMM yyyy, hh:mm a");
 
   // Optional avatar fallback (initials)

@@ -1,5 +1,4 @@
 import { Header } from "@/components/header"
-import { Providers } from "@/components/providers"
 import { ReactNode } from "react"
 
 export default async function TenantLayout({

@@ -96,6 +96,7 @@ import { z } from "@workspace/ui/lib/zod";
 import { zodResolver } from "@workspace/ui/lib/zod";
 import { StatusSwitch } from "@/components/common/switch-green";
 import { AppDialog } from "@/components/common/app-dialog";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const schema = z.object({
     name: z.string().min(1, "Bed type name is required"),
@@ -125,6 +126,8 @@ export function AddBedTypeDialog({
         },
     });
 
+    const dict = useDictionary();
+
     // ⭐ Load existing values on edit
     useEffect(() => {
         if (initialData) {
@@ -144,7 +147,7 @@ export function AddBedTypeDialog({
         <AppDialog
             open={open}
             onClose={onClose}
-            title={mode === "add" ? "Add Bed Type" : "Edit Bed Type"}
+            title={mode === "add" ? dict.pages.unitsWardsBeds.dialog.bed.addTitle : dict.pages.unitsWardsBeds.dialog.bed.editTitle}
             maxWidth="md:max-w-lg"
         >
             <Form {...form}>
@@ -154,9 +157,9 @@ export function AddBedTypeDialog({
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Bed Type</FormLabel>
+                                <FormLabel>{dict.pages.unitsWardsBeds.dialog.fields.bedType}</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter Bed Type" {...field} />
+                                    <Input placeholder={dict.pages.unitsWardsBeds.dialog.placeholders.bedType} {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -167,13 +170,13 @@ export function AddBedTypeDialog({
                         name="active"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Status</FormLabel>
+                                <FormLabel>{dict.common.status}</FormLabel>
                                 <div className={`flex items-center gap-3 px-3 py-2 rounded ${field.value ? "bg-green-50" : "bg-gray-50"}`}>
-                                    <span className="text-sm text-red-500">Inactive</span>
+                                    <span className="text-sm text-red-500">{dict.common.inactive}</span>
                                     <FormControl>
                                         <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
                                     </FormControl>
-                                    <span className="text-sm text-green-600">Active</span>
+                                    <span className="text-sm text-green-600">{dict.common.active}</span>
                                 </div>
                             </FormItem>
                         )}
@@ -181,10 +184,10 @@ export function AddBedTypeDialog({
 
                     <div className="flex justify-end gap-3 pt-4">
                         <Button type="button" variant="outline" onClick={onClose}>
-                            Cancel
+                            {dict.common.cancel}
                         </Button>
                         <Button type="submit" className="bg-green-500 text-white">
-                            {mode === "add" ? "Save" : "Update"}
+                            {mode === "add" ? dict.common.save : dict.common.update}
                         </Button>
                     </div>
 

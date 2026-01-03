@@ -141,6 +141,8 @@ import {
 } from "@workspace/ui/components/select";
 import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
+import { useDictionary } from "@/i18n/use-dictionary";
+
 
 const filterSchema = z.object({
   floor: z.string().optional(),
@@ -166,13 +168,16 @@ export function FilterDialog({
     },
   });
 
+  const dict = useDictionary();
+  const trans = dict.pages.operationTheatres.dialog;
+
   const handleApply = (values: FilterForm) => {
     console.log("Applied filters:", values);
     onClose();
   };
 
   return (
-    <AppDialog open={open} onClose={onClose} title="Filter Operation Theatres" maxWidth="md:max-w-md">
+    <AppDialog open={open} onClose={onClose} title={trans.filterTitle} maxWidth="md:max-w-md">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleApply)} className="space-y-4 text-sm">
           {/* Floor Filter */}
@@ -181,14 +186,14 @@ export function FilterDialog({
             name="floor"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Select Floor</FormLabel>
+                <FormLabel>{trans.fields.floor}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select Floor" />
+                      <SelectValue placeholder={trans.placeholders.floor} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1st Floor">1st Floor</SelectItem>
@@ -208,14 +213,14 @@ export function FilterDialog({
             name="addedBy"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Added By</FormLabel>
+                <FormLabel>{trans.fields.addedBy}</FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select User" />
+                      <SelectValue placeholder={trans.placeholders.addedBy} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Dr. Ahmed Al-Mansouri">Dr. Ahmed Al-Mansouri</SelectItem>
@@ -242,7 +247,7 @@ export function FilterDialog({
               Apply Filter
             </Button> */}
             <CancelButton onClick={onClose} />
-            <ActionButton loading={isLoading} label="Apply Filter" />
+            <ActionButton loading={isLoading} label={dict.common.appplyfilters} />
           </div>
         </form>
       </Form>

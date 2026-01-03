@@ -48,25 +48,28 @@ import { OverviewCards } from "./_components/OverviewCards";
 import { DoctorHeader } from "./_components/DoctorHeader";
 import { SoapTemplateList } from "./_components/SoapTemplateList";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-
-const TOP_TABS = [
-    { key: "overview", label: "Overview" },
-    { key: "soap", label: "SOAP Templates" },
-];
-
-const APPOINTMENT_TABS = [
-    { key: "all", label: "All Appointments" },
-    { key: "new", label: "New Patients" },
-    { key: "followup", label: "Follow Up Patients" },
-];
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export default function DoctorDashboardPage() {
     const router = useRouter();
     const params = useSearchParams();
+    const dict = useDictionary();
+    const { tabs } = dict.pages.doctor.profile;
 
     const queryTab = params.get("tab") || "overview";
     const [pageTab, setPageTab] = useState(queryTab);
     const [appointmentTab, setAppointmentTab] = useState("all");
+
+    const TOP_TABS = [
+        { key: "overview", label: tabs.overview },
+        { key: "soap", label: tabs.soapTemplates },
+    ];
+
+    const APPOINTMENT_TABS = [
+        { key: "all", label: tabs.allAppointments },
+        { key: "new", label: tabs.newPatients },
+        { key: "followup", label: tabs.followUpPatients },
+    ];
 
     useEffect(() => {
         setPageTab(queryTab);

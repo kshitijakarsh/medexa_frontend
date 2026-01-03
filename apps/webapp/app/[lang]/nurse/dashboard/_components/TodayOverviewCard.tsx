@@ -74,8 +74,10 @@ import { getTodayOverview } from "./api";
 import { SkeletonBlock } from "./ui/SkeletonBlock";
 import { DashboardSectionCard } from "./ui/DashboardSectionCard";
 import { SectionTitle } from "./ui/SectionTitle";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function TodayOverviewCard() {
+    const dict = useDictionary();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any>(null);
 
@@ -87,11 +89,11 @@ export default function TodayOverviewCard() {
 
     return (
         <DashboardSectionCard className="space-y-3">
-            <SectionTitle as="h3">Today's Overview</SectionTitle>
+            <SectionTitle as="h3">{dict.dashboard.todayOverview}</SectionTitle>
             <div className="text-sm space-y-2">
-                <div className="flex justify-between"><span>Total Appointments</span><span className="font-semibold">{data.total}</span></div>
-                <div className="flex justify-between"><span>Completed</span><span className="font-semibold text-[#2CB470]">{data.completed}</span></div>
-                <div className="flex justify-between"><span>Pending</span><span className="font-semibold text-[#F08F2B]">{data.pending}</span></div>
+                <div className="flex justify-between"><span>{dict.dashboard.totalAppointments}</span><span className="font-semibold">{data.total}</span></div>
+                <div className="flex justify-between"><span>{dict.dashboard.completed}</span><span className="font-semibold text-[#2CB470]">{data.completed}</span></div>
+                <div className="flex justify-between"><span>{dict.dashboard.pending}</span><span className="font-semibold text-[#F08F2B]">{data.pending}</span></div>
             </div>
         </DashboardSectionCard>
     );
