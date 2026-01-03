@@ -491,7 +491,6 @@ export default function AppointmentTable() {
                     label={dict.dashboard.viewAll}
                 />
             </div>
-    // ...
 
             {/* Loading */}
             {isLoading && <AppointmentTableSkeleton />}
