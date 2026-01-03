@@ -515,7 +515,7 @@ export default function AppointmentTable() {
                             <TableHead>{dict.table.status}</TableHead>
                         </TableRow>
                     </TableHeader>
-// ... rest of component
+
 
                     <TableBody>
                         {/* {rows.map((visit, idx) => (
