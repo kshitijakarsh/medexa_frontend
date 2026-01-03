@@ -23,7 +23,7 @@ import { toast } from "@workspace/ui/lib/sonner"
 import { createUserApiClient } from "@/lib/api/administration/users"
 import { createRoleApiClient } from "@/lib/api/administration/roles"
 import type { RoleItem } from "@/lib/api/administration/roles"
-import { Check, X } from "lucide-react"
+import { Check, X, Eye, EyeOff } from "lucide-react"
 import { useDictionary } from "@/i18n/use-dictionary"
 
 /* Password validation schema */
@@ -67,6 +67,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
   const userApi = createUserApiClient({})
   const roleApi = createRoleApiClient({})
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const dict = useDictionary();
   const trans = dict.pages.users.addDialog
 
@@ -270,15 +271,29 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                   <FormItem>
                     <FormLabel>{trans.password}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder={trans.placeholderPassword}
-                        type="password"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          setPassword(e.target.value)
-                        }}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder={trans.placeholderPassword}
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setPassword(e.target.value)
+                          }}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                     {password && (
