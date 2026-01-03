@@ -26,6 +26,7 @@ interface OPDFilterBarProps {
     setIsAdvancedView: (v: boolean) => void;
     hideStatus?: boolean; // Optional
     toggleLabel?: string; // New prop for dynamic label
+    currentView?: string; // Current view to conditionally show/hide elements
 }
 
 export function OPDFilterBar({
@@ -39,27 +40,33 @@ export function OPDFilterBar({
     setIsAdvancedView,
     hideStatus = false,
     toggleLabel = "Advanced View", // Default fallback
+    currentView,
 }: OPDFilterBarProps) {
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
                 {/* Filter Dropdowns Row - Transparent Background */}
                 <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-                    {/* Date */}
-                    <div className="w-full sm:w-[220px]">
-                        <AppSelect
-                            placeholder="Today's Instructions"
-                            value={filters.dateRange}
-                            onChange={(val) => onFilterChange("dateRange", val)}
-                            options={[
-                                { label: "Today's Instructions", value: "today" },
-                                { label: "Today's OPD QUE", value: "today_queue" },
-                                { label: "Tomorrow's Queue", value: "tomorrow" },
-                            ]}
-                            icon={<CalendarDays className="w-5 h-5 text-gray-700" />}
-                            triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
-                        />
-                    </div>
+                    {/* Date - Hide in completed view */}
+                    {currentView !== "completed" && (
+                        <div className="w-full sm:w-[220px]">
+                            <AppSelect
+                                placeholder={currentView === "instructions" ? "Today's Instructions" : "Today's OPD QUE"}
+                                value={filters.dateRange}
+                                onChange={(val) => onFilterChange("dateRange", val)}
+                                options={currentView === "instructions" 
+                                    ? [
+                                        { label: "Today's Instructions", value: "today" },
+                                    ]
+                                    : [
+                                        { label: "Today's OPD QUE", value: "today_queue" },
+                                        { label: "Tomorrow's Queue", value: "tomorrow" },
+                                    ]}
+                                icon={<CalendarDays className="w-5 h-5 text-gray-700" />}
+                                triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
+                            />
+                        </div>
+                    )}
 
                     {/* Department */}
                     <div className="w-full sm:w-[200px]">
@@ -128,18 +135,20 @@ export function OPDFilterBar({
                     )}
                 </div>
 
-                {/* Right Side: Toggle */}
-                <div className="flex items-center gap-3 ml-auto">
-                    <CalendarDays className="w-5 h-5 text-blue-500" />
-                    <span className="text-sm font-semibold text-gray-800">
-                        {toggleLabel}
-                    </span>
-                    <Switch
-                        checked={isAdvancedView}
-                        onCheckedChange={setIsAdvancedView}
-                        className="data-[state=checked]:bg-blue-500"
-                    />
-                </div>
+                {/* Right Side: Toggle - Hide when label is "Overview Today" or in completed view */}
+                {toggleLabel !== "Overview Today" && currentView !== "completed" && (
+                    <div className="flex items-center gap-3 ml-auto">
+                        <CalendarDays className="w-5 h-5 text-blue-500" />
+                        <span className="text-sm font-semibold text-gray-800">
+                            {toggleLabel}
+                        </span>
+                        <Switch
+                            checked={isAdvancedView}
+                            onCheckedChange={setIsAdvancedView}
+                            className="data-[state=checked]:bg-blue-500"
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

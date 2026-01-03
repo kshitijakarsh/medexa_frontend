@@ -41,10 +41,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check if pathname has locale in format: /{locale}/path or /{locale}
-  const localeMatch = pathname.match(/^\/(en|nl)(\/.*)?$/)
+  const localeMatch = pathname.match(/^\/(en|ar)(\/.*)?$/)
   const pathnameHasLocale = !!localeMatch
   const pathnameLocale = localeMatch
-    ? (localeMatch[1] as typeof defaultLocale | "nl")
+    ? (localeMatch[1] as typeof defaultLocale | "ar")
     : null
   const pathAfterLocale = localeMatch ? localeMatch[2] || "/" : pathname
 
@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.startsWith(`/t/${tenant}/`)) {
     const parts = pathname.split("/")
     if (parts.length >= 4 && locales.includes(parts[3] as any)) {
-      const locale = parts[3] as typeof defaultLocale | "nl"
+      const locale = parts[3] as typeof defaultLocale | "ar"
       const restOfPath = "/" + parts.slice(4).join("/") || "/"
       const url = request.nextUrl.clone()
       // For default locale, don't show it in URL
@@ -70,7 +70,7 @@ export async function middleware(request: NextRequest) {
   // For default locale, we'll rewrite internally (no redirect to avoid loop)
   if (!pathnameHasLocale) {
     const locale = getLocale(request)
-    // Only redirect non-default locales to show locale in URL
+    // Oary redirect non-default locales to show locale in URL
     if (locale !== defaultLocale) {
       const url = request.nextUrl.clone()
       url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`

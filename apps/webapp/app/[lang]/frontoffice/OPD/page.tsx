@@ -53,7 +53,9 @@ export default function OPDPage() {
                 try {
                     const apiClient = createVisitsApiClient();
 
-                    // Prepare params
+                    // Prepare params according to API documentation
+                    // Note: API expects strings for page and limit, but TypeScript interface uses numbers
+                    // Axios will convert numbers to strings in query params
                     const params: any = {
                         page: 1,
                         limit: 100,
@@ -67,14 +69,14 @@ export default function OPDPage() {
                         params.status = "completed";
                     }
 
-                    // Map department filter (using camelCase to match appointment page)
+                    // Map department filter - API expects department_id as string
                     if (filters.department && filters.department !== "all-departments" && filters.department !== "") {
-                        params.departmentId = filters.department;
+                        params.department_id = String(filters.department);
                     }
 
-                    // Map doctor filter (using camelCase to match appointment page)
+                    // Map doctor filter - API expects doctor_id as string
                     if (filters.doctor && filters.doctor !== "all-doctors" && filters.doctor !== "") {
-                        params.doctorId = filters.doctor;
+                        params.doctor_id = String(filters.doctor);
                     }
 
                     const response = await apiClient.getVisits(params);
@@ -222,6 +224,7 @@ export default function OPDPage() {
                     isAdvancedView={isAdvancedView}
                     setIsAdvancedView={setIsAdvancedView}
                     toggleLabel={currentView === "instructions" ? "Overview Today" : "Attendance View"}
+                    currentView={currentView}
                 // Hide generic status filter if in strict instructions view? 
                 // The design shows "All Status" dropdown in instructions view too.
                 />
