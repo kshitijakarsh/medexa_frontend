@@ -48,16 +48,19 @@
 import { useUserStore } from "@/store/useUserStore";
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function AppointmentDetailContent({ activeTab, injectedProps }: any) {
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const dict = useDictionary();
 
   const tabs = appointmentTabsConfig(injectedProps, userPermissions); // pass permissions to config
 
-  const tab = tabs.find((t) => t.key === activeTab);  
+  const tab = tabs.find((t) => t.key === activeTab);
 
   return (
     <div className=" min-h-[400px]">
-      {tab?.component || <p>No content found</p>}
+      {tab?.component || <p>{dict.pages.doctor.appointment.messages.noContent}</p>}
     </div>
   );
 }

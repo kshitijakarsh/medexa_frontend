@@ -23,9 +23,12 @@ import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils
 import { usePermissionGuard } from "@/app/hooks/usePermissionGuard";
 import { useUserStore } from "@/store/useUserStore";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function ConsultationDetailPage() {
   const queryClient = useQueryClient();
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const dict = useDictionary();
 
   const permissionKeys = normalizePermissionList(userPermissions)
   const canViewVisitPurpose = hasPermission(
@@ -271,7 +274,7 @@ export default function ConsultationDetailPage() {
         </div>
         :
         <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-sm text-yellow-800">
-          Please start the consultation to access patient details.
+          {dict.pages.doctor.appointment.messages.startConsultationPrompt}
         </div>
       }
     </div>

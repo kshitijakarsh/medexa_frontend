@@ -189,8 +189,10 @@ import { ViewAllLink } from "./ui/ViewAllLink";
 import { buildUrl, DoctorTabs, ROUTES } from "@/lib/routes";
 
 import { useDoctorVisitsQuery } from "./api";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function VipPatientsCard() {
+  const dict = useDictionary();
   const { data, isLoading } = useDoctorVisitsQuery({
     status: "vip",
     limit: 5,
@@ -206,12 +208,13 @@ export default function VipPatientsCard() {
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <VipCrownBadge size={14} />
-          <SectionTitle as="h4">VIP Patients</SectionTitle>
+          <SectionTitle as="h4">{dict.dashboard.vipPatients}</SectionTitle>
         </div>
 
         <ViewAllLink
           href={buildUrl(ROUTES.NURSE_VIEW_ALL, { tab: DoctorTabs[2]?.key })}
           disabled={!hasItems}
+          label={dict.dashboard.viewAll}
         />
       </div>
 
@@ -220,8 +223,8 @@ export default function VipPatientsCard() {
         {isLoading
           ? [...Array(3)].map((_, i) => <VipPatientSkeleton key={i} />)
           : hasItems
-          ? items.map((p) => <VipPatientItem key={p.id} p={p} />)
-          : <div className="text-gray-500 text-sm py-4">No VIP patients found.</div>
+            ? items.map((p) => <VipPatientItem key={p.id} p={p} />)
+            : <div className="text-gray-500 text-sm py-4">{dict.dashboard.noVipFound}</div>
         }
       </div>
     </DashboardSectionCard>

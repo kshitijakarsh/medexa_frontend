@@ -154,6 +154,8 @@ interface Props {
   onClose: () => void;
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function AddAttachmentModal({
   visitId,
   patientId,
@@ -163,6 +165,7 @@ export default function AddAttachmentModal({
   const finalVisitId = visitId;
   const createAttachment = useCreateAttachment(finalVisitId);
   const { uploadFile, isUploading } = useFileUpload();
+  const dict = useDictionary();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -193,7 +196,7 @@ export default function AddAttachmentModal({
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Add Attachment"
+      title={dict.pages.doctor.appointment.tabsContent.attachments.modal.title}
       maxWidth="md:max-w-xl"
     >
       <Form {...form}>
@@ -205,9 +208,9 @@ export default function AddAttachmentModal({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Attachment Title</FormLabel>
+                <FormLabel>{dict.pages.doctor.appointment.tabsContent.attachments.modal.labelTitle}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Lab Report" {...field} />
+                  <Input placeholder={dict.pages.doctor.appointment.tabsContent.attachments.modal.placeholderTitle} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -223,16 +226,16 @@ export default function AddAttachmentModal({
 
               return (
                 <FormItem>
-                  <FormLabel>Upload File</FormLabel>
+                  <FormLabel>{dict.pages.doctor.appointment.tabsContent.attachments.modal.labelFile}</FormLabel>
                   <FormControl>
                     {!file ? (
                       <label className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl px-6 py-8 cursor-pointer hover:border-blue-500 hover:bg-blue-50">
                         <UploadCloud className="h-8 w-8 text-blue-500 mb-2" />
                         <p className="text-sm font-medium">
-                          Click to upload or drag & drop
+                          {dict.pages.doctor.appointment.tabsContent.attachments.modal.dropText}
                         </p>
                         <p className="text-xs text-gray-500">
-                          PDF, PNG, JPG
+                          {dict.pages.doctor.appointment.tabsContent.attachments.modal.fileTypes}
                         </p>
                         <input
                           type="file"
@@ -276,8 +279,8 @@ export default function AddAttachmentModal({
               type="submit"
               label={
                 createAttachment.isPending || isUploading
-                  ? "Uploading..."
-                  : "Upload"
+                  ? dict.pages.doctor.appointment.tabsContent.attachments.modal.uploading
+                  : dict.pages.doctor.appointment.tabsContent.attachments.modal.upload
               }
             />
           </div>

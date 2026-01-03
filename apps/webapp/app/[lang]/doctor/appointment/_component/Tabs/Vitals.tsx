@@ -15,12 +15,15 @@ import { VitalGraph } from "./vitals/vitals-graph/VitalGraph";
 import { useUserStore } from "@/store/useUserStore";
 import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils/permissions";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 interface patientId {
   patientId: string;
 }
 
 export function Vitals({ patientId }: patientId) {
   const { id: visitId } = useParams() as { id: string };
+  const dict = useDictionary();
 
   const { data: vitals, isLoading } = useVitalsByVisitId(visitId);
   const deleteVitals = useDeleteVitals(visitId);
@@ -43,7 +46,7 @@ export function Vitals({ patientId }: patientId) {
   const tabs = [
     {
       key: "Vitals",
-      label: "Vitals",
+      label: dict.pages.doctor.appointment.tabsContent.vitals.title,
       component: (
         <VitalCardsGrid
           vitals={vitals}
@@ -60,7 +63,7 @@ export function Vitals({ patientId }: patientId) {
     },
     {
       key: "Vital Graph",
-      label: "Vital Graph",
+      label: dict.pages.doctor.appointment.tabsContent.vitals.graph,
       component: <VitalGraph vitals={vitals} />,
     },
   ];
@@ -81,7 +84,7 @@ export function Vitals({ patientId }: patientId) {
             />
             {activeTab === "Vitals" && canCreate && (
               <NewButton
-                name="Add Vitals"
+                name={dict.pages.doctor.appointment.tabsContent.vitals.add}
                 handleClick={() => {
                   setEditingVitals(null);
                   setShowModal(true);

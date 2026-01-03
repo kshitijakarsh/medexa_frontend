@@ -20,8 +20,10 @@ import {
 import { validateField } from "./visitPurposeValidation";
 import { useUserStore } from "@/store/useUserStore";
 import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils/permissions";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormProps) {
+  const dict = useDictionary();
   const userPermissions = useUserStore((s) => s.user?.role.permissions ?? []);
   const [errors, setErrors] = useState<VisitPurposeErrors>({});
   const permissionKeys = normalizePermissionList(userPermissions)
@@ -41,7 +43,7 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
   if (!canView) {
     return (
       <p className="text-sm text-muted-foreground">
-        You do not have permission to view Visit Purpose.
+        {dict.pages.doctor.appointment.tabsContent.visitPurpose.form.noPermission}
       </p>
     );
   }
@@ -76,17 +78,23 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
 
   const options = ["Minutes", "Hours", "Days", "Weeks", "Months", "Sudden", "Gradual"];
 
+  const fieldLabels: Record<string, string> = {
+    onset: dict.pages.doctor.appointment.tabsContent.visitPurpose.form.onset,
+    duration: dict.pages.doctor.appointment.tabsContent.visitPurpose.form.duration,
+    severity: dict.pages.doctor.appointment.tabsContent.visitPurpose.form.severity,
+  };
+
   return (
     <div className="flex flex-col gap-6 opacity-100">
 
       {/* Chief Complaint */}
       <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">Chief Complaint</label>
+        <label className="font-medium text-sm">{dict.pages.doctor.appointment.tabsContent.visitPurpose.form.chiefComplaint}</label>
         <Input
           value={safeData.chiefComplaint}
           disabled={isDisabled}
           onChange={(e) => handleChange("chiefComplaint", e.target.value)}
-          placeholder="Enter Chief Complaint"
+          placeholder={dict.pages.doctor.appointment.tabsContent.visitPurpose.form.enterChiefComplaint}
         />
         {errors.chiefComplaint && (
           <span className="text-red-500 text-xs">{errors.chiefComplaint}</span>
@@ -95,13 +103,13 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
 
       {/* History */}
       <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">History of Present Illness</label>
+        <label className="font-medium text-sm">{dict.pages.doctor.appointment.tabsContent.visitPurpose.form.history}</label>
         <Textarea
           value={safeData.history}
           disabled={isDisabled}
           onChange={(e) => handleChange("history", e.target.value)}
           className="min-h-[120px]"
-          placeholder="Enter History of Present Illness"
+          placeholder={dict.pages.doctor.appointment.tabsContent.visitPurpose.form.enterHistory}
         />
       </div>
 
@@ -110,7 +118,7 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
         {(["onset", "duration", "severity"] as (keyof VisitPurposeData)[]).map((key) => (
           <div key={key} className="flex flex-col gap-2">
             <label className="font-medium text-sm">
-              {key.charAt(0).toUpperCase() + key.slice(1)}
+              {fieldLabels[key]}
             </label>
 
             <Select
@@ -119,7 +127,7 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
               onValueChange={(v) => handleChange(key, v)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder={`Select ${key}`} />
+                <SelectValue placeholder={`${dict.pages.doctor.appointment.tabsContent.visitPurpose.form.select} ${fieldLabels[key]}`} />
               </SelectTrigger>
               <SelectContent>
                 {options.map((opt) => (
@@ -135,19 +143,19 @@ export function VisitPurposeForm({ data, setData, setDirty }: VisitPurposeFormPr
 
       {/* Notes */}
       <div className="flex flex-col gap-2">
-        <label className="font-medium text-sm">Additional Notes</label>
+        <label className="font-medium text-sm">{dict.pages.doctor.appointment.tabsContent.visitPurpose.form.additionalNotes}</label>
         <Textarea
           value={safeData.additional_notes}
           disabled={isDisabled}
           onChange={(e) => handleChange("additional_notes", e.target.value)}
-          placeholder="Enter Additional Notes"
+          placeholder={dict.pages.doctor.appointment.tabsContent.visitPurpose.form.enterNotes}
         />
       </div>
 
       {/* View-only hint */}
       {!canEdit && (
         <p className="text-xs text-muted-foreground italic">
-          You have view-only access.
+          {dict.pages.doctor.appointment.tabsContent.visitPurpose.form.viewOnly}
         </p>
       )}
     </div>

@@ -36,6 +36,8 @@ interface AttachmentCardProps {
   canDelete?: boolean;
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function AttachmentCard({
   data,
   onView,
@@ -47,6 +49,7 @@ export default function AttachmentCard({
   // User said "pass it and hide i from there".
   // Let's use `canDelete` if provided.
 }: AttachmentCardProps) {
+  const dict = useDictionary();
   return (
     <div className="border rounded-xl p-3 shadow-sm bg-white hover:shadow-md transition">
       <p className="font-semibold mb-2">{data.title}</p>
@@ -67,14 +70,14 @@ export default function AttachmentCard({
           onClick={onView}
           className="text-blue-600 border-blue-600 border-1 px-2 rounded-md hover:text-white hover:bg-blue-600 text-sm cursor-pointer"
         >
-          View
+          {dict.pages.doctor.appointment.tabsContent.attachments.card.view}
         </button>
 
         {onDelete && canDelete && <button
           onClick={onDelete}
           className="text-red-500 text-sm px-2 rounded-md border-red-500 border-1 hover:text-white hover:bg-red-500 cursor-pointer"
         >
-          Delete
+          {dict.pages.doctor.appointment.tabsContent.attachments.card.delete}
         </button>
         }
       </div>

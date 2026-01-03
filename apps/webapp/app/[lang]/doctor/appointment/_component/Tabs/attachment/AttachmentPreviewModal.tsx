@@ -2,6 +2,7 @@
 
 import { AppDialog } from "@/components/common/app-dialog";
 import { Button } from "@workspace/ui/components/button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 interface AttachmentPreviewModalProps {
   open: boolean,
@@ -14,6 +15,7 @@ export default function AttachmentPreviewModal({
   onClose,
   attachment,
 }: AttachmentPreviewModalProps) {
+  const dict = useDictionary();
   const downloadFile = () => {
     const a = document.createElement("a");
     a.href = attachment.fileUrl;
@@ -35,7 +37,7 @@ export default function AttachmentPreviewModal({
     >
       <div className="flex justify-end w-full">
         <Button className="bg-blue-600 text-white" onClick={downloadFile}>
-          Download Document
+          {dict.pages.doctor.appointment.tabsContent.attachments.preview.download}
         </Button>
       </div>
       <div className="p-4 max-h-[70vh] overflow-auto">

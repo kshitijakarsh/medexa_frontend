@@ -447,10 +447,12 @@ import { AppointmentTableRow } from "./Appointment/AppointmentTableRow";
 import { AppointmentTableSkeleton } from "./Appointment/AppointmentTableSkeleton";
 import { useDoctorVisitsQuery } from "./api";
 
+import { useDictionary } from "@/i18n/use-dictionary";
 import { useState } from "react";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
 export default function AppointmentTable() {
+    const dict = useDictionary();
     const [activeTab, setActiveTab] = useState(DOCTOR_DEFAULT_TAB);
     const { withLocale } = useLocaleRoute()
 
@@ -467,12 +469,17 @@ export default function AppointmentTable() {
     const rows = data?.data ?? [];
     const hasItems = rows.length > 0;
 
+    const tabs = DoctorHomeTabs.map((t) => ({
+        key: t.key,
+        label: (dict.dashboard.tabs as any)[t.key] || t.label,
+    }));
+
     return (
         <DashboardSectionCard className="mt-6">
             {/* Header */}
             <div className="flex justify-between items-center mb-4">
                 <DynamicTabs
-                    tabs={DoctorHomeTabs}
+                    tabs={tabs}
                     defaultTab={DOCTOR_DEFAULT_TAB}
                     onChange={(key) => setActiveTab(key)}
                 />
@@ -481,8 +488,10 @@ export default function AppointmentTable() {
                 <ViewAllLink
                     href={withLocale(buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: activeTab }))}
                     disabled={!hasItems}
+                    label={dict.dashboard.viewAll}
                 />
             </div>
+    // ...
 
             {/* Loading */}
             {isLoading && <AppointmentTableSkeleton />}
@@ -490,7 +499,7 @@ export default function AppointmentTable() {
             {/* Empty State */}
             {!isLoading && !hasItems && (
                 <div className="text-gray-500 p-6 text-center">
-                    No appointments found.
+                    {dict.dashboard.noAppointments}
                 </div>
             )}
 
@@ -499,14 +508,15 @@ export default function AppointmentTable() {
                 <Table>
                     <TableHeader>
                         <TableRow className="text-gray-500">
-                            <TableHead>Token</TableHead>
-                            <TableHead>Patient</TableHead>
-                            <TableHead>Time</TableHead>
-                            <TableHead>Diagnosis</TableHead>
-                            <TableHead>Types</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead>{dict.table.token}</TableHead>
+                            <TableHead>{dict.table.patient}</TableHead>
+                            <TableHead>{dict.table.time}</TableHead>
+                            <TableHead>{dict.table.diagnosis}</TableHead>
+                            <TableHead>{dict.table.types}</TableHead>
+                            <TableHead>{dict.table.status}</TableHead>
                         </TableRow>
                     </TableHeader>
+// ... rest of component
 
                     <TableBody>
                         {/* {rows.map((visit, idx) => (

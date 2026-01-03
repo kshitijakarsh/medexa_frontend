@@ -28,6 +28,41 @@
     "noData": "لا توجد بيانات",
     "Addnew": "إضافة جديد"
   },
+  "dashboard": {
+    "todayOverview": "نظرة عامة اليوم",
+    "totalAppointments": "إجمالي المواعيد",
+    "completed": "مكتمل",
+    "pending": "قيد الانتظار",
+    "recentPatients": "المرضى المتأخرين",
+    "visits": "الزيارات",
+    "allVisits": "كل الزيارات",
+    "viewAll": "عرض الكل",
+    "noAppointments": "لا توجد مواعيد",
+    "tabs": {
+      "all": "كل المواعيد",
+      "vip": "المرضى VIP",
+      "follow": "متابعة المرضى"
+    },
+    "patientTypes": "أنواع المرضى",
+    "newPatients": "مرضى جدد",
+    "followUps": "متابعات",
+    "workloadStats": "إحصائيات عبء العمل",
+    "pendingResults": "نتائج معلقة",
+    "prescriptionsIssued": "وصفات طبية صادرة",
+    "alerts": "تنبيهات",
+    "vipPatients": "المرضى VIP",
+    "noVipFound": "لا يوجد مرضى VIP.",
+    "followUpPatients": "متابعة المرضى",
+    "noFollowUpFound": "لا يوجد متابعة للمرضى."
+  },
+  "table": {
+    "token": "رمز",
+    "patient": "المريض",
+    "time": "الوقت",
+    "diagnosis": "التشخيص",
+    "types": "النوع",
+    "status": "الحالة"
+  },
   "actions": {
     "add": "إضافة",
     "edit": "تعديل",
@@ -592,6 +627,455 @@
     },
     "settings": {
       "title": "الإعدادات"
+    },
+    "doctor": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "غرض الزيارة",
+          "SOAP Notes": "ملاحظات SOAP",
+          "Vitals": "العلامات الحيوية",
+          "Prescription": "الوصفة الطبية",
+          "Diagnostic Orders": "طلبات التشخيص",
+          "Attachments": "المرفقات",
+          "Nurse Note": "ملاحظات الممرضة",
+          "Nurse Orders": "أوامر الممرضة"
+        },
+        "header": {
+          "startConsultation": "بدء الاستشارة",
+          "starting": "جاري البدء...",
+          "finishConsultation": "إنهاء الاستشارة",
+          "finishing": "جاري الإنهاء...",
+          "viewDetails": "عرض التفاصيل",
+          "referDoctor": "إحالة إلى طبيب"
+        },
+        "actions": {
+          "saveDraft": "حفظ المسودة",
+          "saving": "جاري الحفظ..."
+        },
+        "messages": {
+          "noContent": "لم يتم العثور على محتوى",
+          "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
+        },
+        "tabsContent": {
+          "attachments": {
+            "title": "المرفقات",
+            "add": "إضافة مرفقات",
+            "empty": "لا توجد ملفات مرفقة.",
+            "modal": {
+              "title": "إضافة مرفق",
+              "labelTitle": "عنوان المرفق",
+              "placeholderTitle": "تقرير المختبر",
+              "labelFile": "تحميل ملف",
+              "dropText": "انقر للتحميل أو اسحب وأفلت",
+              "fileTypes": "PDF, PNG, JPG",
+              "upload": "تحميل",
+              "uploading": "جاري التحميل..."
+            },
+            "card": {
+              "view": "عرض",
+              "delete": "حذف"
+            },
+            "preview": {
+              "download": "تحميل المستند"
+            },
+            "history": {
+              "title": "سجل المرفقات السابق",
+              "empty": "لا توجد مرفقات.",
+              "uploadedBy": "تم الرفع بواسطة",
+              "at": "في"
+            }
+          },
+          "diagnosticOrders": {
+            "labTests": "فحوصات المختبر",
+            "radiology": "الأشعة والتصوير",
+            "radiologyProcedure": "إجراء الأشعة",
+            "noLabTests": "لم يتم إجراء فحوصات مخبرية.",
+            "noRadiology": "لم يتم إجراء فحوصات أشعة أو تصوير."
+          },
+          "nurseNote": {
+            "title": "ملاحظة الممرضة",
+            "empty": "لم يتم تسجيل أي ملاحظات تمريضية لهذه الزيارة.",
+            "card": {
+              "fallbackName": "ممرضة"
+            },
+            "history": {
+              "title": "سجل ملاحظات الممرضة السابق",
+              "empty": "لم يتم العثور على ملاحظات تمريض سابقة.",
+              "recordedBy": "تم التسجيل بواسطة",
+              "at": "في"
+            }
+          },
+          "nurseOrders": {
+            "title": "أوامر الممرضة",
+            "add": "إضافة أمر ممرضة",
+            "empty": "لم يتم تسجيل أي أوامر ممرضة.",
+            "orderTypes": {
+              "iv_fluids": "سوائل وريدية",
+              "medication": "دواء",
+              "wound_dressing": "تضميد الجروح",
+              "oxygen_therapy": "العلاج بالأكسجين",
+              "special_notes": "ملاحظات خاصة",
+              "monitoring": "مراقبة",
+              "catheter_care": "العناية بالقسطرة"
+            },
+            "table": {
+              "slNo": "م.",
+              "orderType": "نوع الطلب",
+              "details": "التفاصيل",
+              "urgency": "الاستعجال",
+              "frequencyTime": "التكرار/الوقت",
+              "dateTime": "التاريخ والوقت",
+              "doctor": "الطبيب",
+              "status": "الحالة",
+              "actions": "الإجراءات",
+              "view": "عرض",
+              "edit": "تعديل",
+              "delete": "حذف",
+              "action": "إجراء"
+            },
+            "modal": {
+              "title": "إضافة أوامر ممرضة",
+              "orderType": "نوع الطلب",
+              "selectOrderType": "اختر نوع الطلب"
+            },
+            "editModal": {
+              "title": "تعديل أمر الممرضة"
+            },
+            "form": {
+              "options": {
+                "urgent": "عاجل",
+                "routine": "روتيني",
+                "stat": "فوري",
+                "pending": "قيد الانتظار",
+                "completed": "مكتمل",
+                "in_progress": "قيد التنفيذ",
+                "ordered": "تم الطلب"
+              },
+              "frequencies": {
+                "onceDaily": "مرة واحدة يومياً",
+                "twiceDaily": "مرتين يومياً",
+                "threeTimesDaily": "ثلاث مرات يومياً",
+                "every15Minutes": "كل 15 دقيقة",
+                "every30Minutes": "كل 30 دقيقة",
+                "everyHour": "كل ساعة",
+                "every2Hours": "كل ساعتين",
+                "every4Hours": "كل 4 ساعات",
+                "every6Hours": "كل 6 ساعات",
+                "every8Hours": "كل 8 ساعات",
+                "asNeeded": "عند الحاجة",
+                "continuous": "مستمر",
+                "intermittent": "متقطع",
+                "prn": "عند الحاجة (PRN)"
+              },
+              "common": {
+                "cancel": "إلغاء",
+                "add": "إضافة طلب",
+                "adding": "جاري الإضافة...",
+                "update": "تحديث",
+                "updating": "جاري التحديث...",
+                "urgency": "الاستعجال",
+                "selectUrgency": "اختر الاستعجال",
+                "status": "الحالة",
+                "notes": "تعليمات / ملاحظات",
+                "enterNotes": "أدخل التعليمات / الملاحظات",
+                "clinicalNotes": "ملاحظات سريرية (اختياري)",
+                "enterClinicalNotes": "أدخل الملاحظات السريرية",
+                "startDate": "تاريخ البدء",
+                "startTime": "وقت البدء",
+                "selectFrequency": "اختر التكرار",
+                "duration": "المدة (ساعات)",
+                "selectDuration": "اختر المدة"
+              },
+              "ivFluids": {
+                "fluidType": "نوع السائل",
+                "selectFluidType": "اختر نوع السائل",
+                "volume": "الحجم (مل)",
+                "selectVolume": "اختر الحجم",
+                "rate": "المعدل (مل/ساعة)",
+                "selectRate": "اختر المعدل",
+                "totalVolume": "الحجم الكلي",
+                "totalBottles": "إجمالي الزجاجات",
+                "injection": "الحقن",
+                "selectInjection": "اختر الحقن",
+                "dose": "الجرعة",
+                "selectDose": "اختر الجرعة",
+                "duration": "المدة (ساعات / أيام)",
+                "selectDuration": "اختر المدة"
+              },
+              "medication": {
+                "medicationName": "اسم الدواء",
+                "selectMedication": "اختر الدواء",
+                "dose": "الجرعة",
+                "selectDose": "اختر الجرعة",
+                "route": "الطريق",
+                "selectRoute": "اختر الطريق",
+                "frequency": "التكرار",
+                "duration": "المدة"
+              },
+              "woundDressing": {
+                "woundLocation": "موقع الجرح",
+                "enterWoundLocation": "أدخل موقع الجرح",
+                "dressingType": "نوع الضمادات",
+                "selectDressingType": "اختر نوع الضمادات",
+                "frequency": "التكرار"
+              },
+              "oxygenTherapy": {
+                "deliveryType": "نوع التوصيل",
+                "selectDeliveryType": "اختر نوع التوصيل",
+                "flowRate": "معدل التدفق",
+                "selectFlowRate": "اختر معدل التدفق",
+                "frequencyMode": "نط التكرار",
+                "selectFrequencyMode": "اختر نط التكرار"
+              },
+              "specialNotes": {
+                "noteType": "نوع الملاحظة",
+                "enterNoteType": "أدخل نوع الملاحظة"
+              },
+              "monitoring": {
+                "parameter": "المعلمة للمراقبة",
+                "enterParameter": "أدخل المعلمة للمراقبة",
+                "frequency": "التكرار"
+              },
+              "catheterCare": {
+                "catheterType": "نوع القسطرة",
+                "selectCatheterType": "اختر نوع القسطرة",
+                "careType": "نوع الرعاية",
+                "selectCareType": "اختر نوع الرعاية",
+                "frequency": "التكرار"
+              }
+            },
+            "viewModal": {
+              "title": "عرض أمر الممرضة",
+              "orderDetails": "تفاصيل الطلب",
+              "notes": "الملاحظات",
+              "orderedBy": "تم الطلب بواسطة",
+              "close": "إغلاق",
+              "fields": {
+                "fluidType": "نوع السائل",
+                "volume": "الحجم (مل)",
+                "rate": "المعدل (مل/ساعة)",
+                "duration": "المدة (ساعات)",
+                "totalVolume": "الحجم الكلي",
+                "totalBottles": "إجمالي الزجاجات",
+                "injection": "الحقن",
+                "dose": "الجرعة",
+                "startDate": "تاريخ البدء",
+                "startTime": "وقت البدء",
+                "medicationName": "اسم الدواء",
+                "route": "الطريق",
+                "frequency": "التكرار",
+                "woundLocation": "موقع الجرح",
+                "dressingType": "نوع الضمادات",
+                "deliveryType": "نوع التوصيل",
+                "flowRate": "معدل التدفق",
+                "frequencyMode": "نط التكرار",
+                "clinicalNotes": "ملاحظات سريرية",
+                "noteType": "نوع الملاحظة",
+                "parameter": "المعلمة للمراقبة",
+                "catheterType": "نوع القسطرة",
+                "careType": "نوع الرعاية"
+              }
+            }
+          },
+          "prescription": {
+            "title": "الوصفة الطبية",
+            "autoSaved": "حفظ تلقائي",
+            "add": "إضافة دواء",
+            "sendPharmacy": "أرسل للصيدلية",
+            "printRx": "طباعة الوصفة",
+            "empty": "لم يتم وصف أي أدوية بعد"
+          },
+          "soapNotes": {
+            "title": "ملاحظات SOAP",
+            "autoSaved": "حفظ تلقائي",
+            "loadTemplate": "تحميل النموذج",
+            "subjective": "ذاتي (قصة المريض)",
+            "objective": "موضوعي (النتائج السريرية)",
+            "assessment": "التقييم (التشخيص)",
+            "plan": "الخطة (العلاج والمتابعة)",
+            "empty": "الرجاء تحديد نموذج لبدء ملاحظات SOAP.",
+            "templateModal": {
+              "title": "اختر نموذج سريري",
+              "subtitle": "اختر نموذج تخصص لملء حقول ملاحظات SOAP تلقائيًا."
+            },
+            "history": {
+              "title": "سجل ملاحظات SOAP السابق",
+              "empty": "لم يتم العثور على ملاحظات SOAP سابقة.",
+              "recordedBy": "تم التسجيل بواسطة",
+              "at": "في"
+            }
+          },
+          "visitPurpose": {
+            "title": "غرض الزيارة",
+            "form": {
+              "chiefComplaint": "الشكوى الرئيسية",
+              "history": "تاريخ المرض الحالي",
+              "onset": "البداية",
+              "duration": "المدة",
+              "severity": "الشدة",
+              "additionalNotes": "ملاحظات إضافية",
+              "enterChiefComplaint": "أدخل الشكوى الرئيسية",
+              "enterHistory": "أدخل تاريخ المرض الحالي",
+              "select": "اختر",
+              "enterNotes": "أدخل ملاحظات إضافية",
+              "viewOnly": "لديك حق العرض فقط.",
+              "noPermission": "ليس لديك صلاحية لعرض غرض الزيارة."
+            },
+            "history": {
+              "title": "سجل غرض الزيارة السابق",
+              "empty": "لم يتم العثور على غرض زيارة سابق.",
+              "recordedBy": "تم التسجيل بواسطة"
+            }
+          },
+          "vitals": {
+            "title": "العلامات الحيوية",
+            "graph": "رسم بياني للعلامات الحيوية",
+            "add": "إضافة علامات حيوية",
+            "modal": {
+              "title": "إضافة علامة حيوية",
+              "cancel": "إلغاء",
+              "save": "حفظ",
+              "saving": "جاري الحفظ..."
+            },
+            "fields": {
+              "bp": "ضغط الدم",
+              "pulse": "معدل النبض",
+              "respiration": "معدل التنفس",
+              "spo2": "تشبع الأكسجين (%)",
+              "systolicL": "الانقباضي (يسار)",
+              "diastolicL": "الانبساطي (يسار)",
+              "systolicR": "الانقباضي (يمين)",
+              "diastolicR": "الانبساطي (يمين)",
+              "temp": "درجة الحرارة",
+              "grbs": "GRBS",
+              "hb": "الهيموجلوبين",
+              "height": "الطول",
+              "weight": "الوزن",
+              "bmi": "مؤشر كتلة الجسم",
+              "ibw": "IBW",
+              "rbs": "RBS",
+              "note": "ملاحظة إضافية"
+            },
+            "placeholders": {
+              "bp": "أدخل ضغط الدم",
+              "pulse": "أدخل معدل النبض",
+              "respiration": "أدخل معدل التنفس",
+              "spo2": "أدخل SpO₂",
+              "systolicL": "أدخل الانقباضي (يسار)",
+              "diastolicL": "أدخل الانبساطي (يسار)",
+              "systolicR": "أدخل الانقباضي (يمين)",
+              "diastolicR": "أدخل الانبساطي (يمين)",
+              "temp": "أدخل درجة الحرارة",
+              "grbs": "أدخل GRBS",
+              "hb": "أدخل الهيموجلوبين",
+              "height": "أدخل الطول",
+              "weight": "أدخل الوزن",
+              "bmi": "أدخل مؤشر كتلة الجسم",
+              "ibw": "أدخل IBW",
+              "rbs": "أدخل RBS",
+              "note": "أدخل ملاحظة إضافية"
+            },
+            "history": {
+              "title": "سجل العلامات الحيوية السابق",
+              "empty": "لم يتم العثور على زيارات سابقة.",
+              "recordedBy": "تم التسجيل بواسطة",
+              "at": "في"
+            },
+            "grid": {
+              "title": "آخر العلامات الحيوية",
+              "on": "في"
+            }
+          }
+        }
+      },
+      "profile": {
+        "soapTemplates": {
+          "title": "نماذج SOAP",
+          "templateName": "اسم النموذج",
+          "enterTemplateName": "أدخل اسم النموذج",
+          "specialty": "التخصص",
+          "selectSpecialty": "اختر التخصص",
+          "dataTitle": "بيانات نماذج SOAP",
+          "subjective": "ذاتي",
+          "enterSubjective": "أدخل ذاتي",
+          "objective": "موضوعي",
+          "enterObjective": "أدخل الملاحظات السريرية",
+          "assessment": "التقييم",
+          "enterAssessment": "أدخل نموذج التقييم",
+          "plan": "الخطة",
+          "enterPlan": "أدخل نموذج الخطة",
+          "save": "حفظ النماذج",
+          "saving": "جاري الحفظ...",
+          "cancel": "إلغاء",
+          "success": "تم إنشاء نموذج SOAP بنجاح",
+          "error": "فشل إنشاء نموذج SOAP",
+          "createTemplate": "إنشاء نموذج",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "deleteTitle": "حذف نموذج SOAP؟",
+          "deleteDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم إزالة نموذج SOAP بشكل دائم.",
+          "deleteSuccess": "تم حذف نموذج SOAP",
+          "deleteError": "فشل حذف نموذج SOAP",
+          "update": "تحديث النماذج",
+          "updating": "جاري التحديث...",
+          "updateSuccess": "تم تحديث نموذج SOAP بنجاح",
+          "updateError": "فشل تحديث نموذج SOAP"
+        },
+        "tabs": {
+          "overview": "نظرة عامة",
+          "soapTemplates": "نماذج SOAP",
+          "allAppointments": "جميع المواعيد",
+          "newPatients": "مرضى جدد",
+          "followUpPatients": "متابعة المرضى"
+        },
+        "components": {
+          "table": {
+            "token": "الرمز",
+            "patient": "المريض",
+            "date": "التاريخ",
+            "diagnosis": "التشخيص",
+            "type": "النوع",
+            "status": "الحالة",
+            "loading": "جاري تحميل المواعيد...",
+            "empty": "لم يتم العثور على مواعيد."
+          },
+          "header": {
+            "licenseNumber": "رقم الترخيص",
+            "email": "البريد الإلكتروني",
+            "opdTimings": "أوقات العيادات الخارجية",
+            "experience": "الخبرة",
+            "contactNumber": "رقم الاتصال",
+            "workingDays": "أيام العمل",
+            "active": "نشط",
+            "specialist": "أخصائي",
+            "years": "سنوات"
+          },
+          "overview": {
+            "totalPatientsTreated": "إجمالي المرضى المعالجين",
+            "todayAppointments": "مواعيد اليوم",
+            "completedAppointments": "المواعيد المكتملة",
+            "followUps": "المتابعة"
+          }
+        }
+      }
+    },
+    "nurse": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "غرض الزيارة",
+          "SOAP Notes": "ملاحظات SOAP",
+          "Vitals": "العلامات الحيوية",
+          "Attachments": "المرفقات",
+          "Nurse Note": "ملاحظات الممرضة",
+          "Nurse Orders": "طلبات الممرضة",
+          "Consumables": "المستهلكات",
+          "Equipment": "المعدات"
+        },
+        "messages": {
+          "noContent": "لا يوجد محتوى",
+          "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
+        }
+      }
     }
   },
   "metadata": {
