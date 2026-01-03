@@ -28,6 +28,30 @@
     "noData": "No data available",
     "Addnew": "Add New"
   },
+  "dashboard": {
+    "todayOverview": "Today's Overview",
+    "totalAppointments": "Total Appointments",
+    "completed": "Completed",
+    "pending": "Pending",
+    "recentPatients": "Recent Patients",
+    "visits": "Visits",
+    "allVisits": "All Visits",
+    "viewAll": "View All",
+    "noAppointments": "No appointments found",
+    "tabs": {
+      "all": "All Appointments",
+      "vip": "VIP Patients",
+      "follow": "Follow Up Patients"
+    }
+  },
+  "table": {
+    "token": "Token",
+    "patient": "Patient",
+    "time": "Time",
+    "diagnosis": "Diagnosis",
+    "types": "Types",
+    "status": "Status"
+  },
   "actions": {
     "add": "Add",
     "edit": "Edit",

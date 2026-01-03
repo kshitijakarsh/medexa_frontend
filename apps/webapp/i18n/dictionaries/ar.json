@@ -28,6 +28,30 @@
     "noData": "لا توجد بيانات",
     "Addnew": "إضافة جديد"
   },
+  "dashboard": {
+    "todayOverview": "نظرة عامة اليوم",
+    "totalAppointments": "إجمالي المواعيد",
+    "completed": "مكتمل",
+    "pending": "قيد الانتظار",
+    "recentPatients": "المرضى المتأخرين",
+    "visits": "الزيارات",
+    "allVisits": "كل الزيارات",
+    "viewAll": "عرض الكل",
+    "noAppointments": "لا توجد مواعيد",
+    "tabs": {
+      "all": "كل المواعيد",
+      "vip": "المرضى VIP",
+      "follow": "متابعة المرضى"
+    }
+  },
+  "table": {
+    "token": "رمز",
+    "patient": "المريض",
+    "time": "الوقت",
+    "diagnosis": "التشخيص",
+    "types": "النوع",
+    "status": "الحالة"
+  },
   "actions": {
     "add": "إضافة",
     "edit": "تعديل",
