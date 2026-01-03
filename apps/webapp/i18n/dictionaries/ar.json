@@ -42,7 +42,18 @@
       "all": "كل المواعيد",
       "vip": "المرضى VIP",
       "follow": "متابعة المرضى"
-    }
+    },
+    "patientTypes": "أنواع المرضى",
+    "newPatients": "مرضى جدد",
+    "followUps": "متابعات",
+    "workloadStats": "إحصائيات عبء العمل",
+    "pendingResults": "نتائج معلقة",
+    "prescriptionsIssued": "وصفات طبية صادرة",
+    "alerts": "تنبيهات",
+    "vipPatients": "المرضى VIP",
+    "noVipFound": "لا يوجد مرضى VIP.",
+    "followUpPatients": "متابعة المرضى",
+    "noFollowUpFound": "لا يوجد متابعة للمرضى."
   },
   "table": {
     "token": "رمز",

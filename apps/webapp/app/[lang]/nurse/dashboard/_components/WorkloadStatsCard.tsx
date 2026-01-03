@@ -79,8 +79,10 @@ import { getWorkloadStats } from "./api";
 import { SkeletonBlock } from "./ui/SkeletonBlock";
 import { SectionTitle } from "./ui/SectionTitle";
 import { DashboardSectionCard } from "./ui/DashboardSectionCard";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function WorkloadStatsCard() {
+    const dict = useDictionary();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any>(null);
 
@@ -91,13 +93,11 @@ export default function WorkloadStatsCard() {
     if (loading) return <SkeletonBlock rows={4} />;
 
     return (
-        // <div className="bg-white p-4 rounded-xl shadow-sm border">
-        //   <div className="text-sm font-semibold mb-3"></div>
         <DashboardSectionCard className="space-y-3">
-            <SectionTitle as="h3">Workload Stats </SectionTitle>
+            <SectionTitle as="h3">{dict.dashboard.workloadStats}</SectionTitle>
             <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><div>Pending Results</div><div className="font-semibold border rounded px-2 py-1 text-xs">{data.pendingResults}</div></div>
-                <div className="flex justify-between"><div>Prescriptions Issued</div><div className="font-semibold border rounded px-2 py-1 text-xs">{data.prescriptionsIssued}</div></div>
+                <div className="flex justify-between"><div>{dict.dashboard.pendingResults}</div><div className="font-semibold border rounded px-2 py-1 text-xs">{data.pendingResults}</div></div>
+                <div className="flex justify-between"><div>{dict.dashboard.prescriptionsIssued}</div><div className="font-semibold border rounded px-2 py-1 text-xs">{data.prescriptionsIssued}</div></div>
             </div>
         </DashboardSectionCard>
     );

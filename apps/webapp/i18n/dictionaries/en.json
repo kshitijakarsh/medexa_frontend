@@ -42,7 +42,18 @@
       "all": "All Appointments",
       "vip": "VIP Patients",
       "follow": "Follow Up Patients"
-    }
+    },
+    "patientTypes": "Patient Types",
+    "newPatients": "New Patients",
+    "followUps": "Follow-ups",
+    "workloadStats": "Workload Stats",
+    "pendingResults": "Pending Results",
+    "prescriptionsIssued": "Prescriptions Issued",
+    "alerts": "Alerts",
+    "vipPatients": "VIP Patients",
+    "noVipFound": "No VIP patients found.",
+    "followUpPatients": "Follow Up Patients",
+    "noFollowUpFound": "No Follow Up patients found."
   },
   "table": {
     "token": "Token",

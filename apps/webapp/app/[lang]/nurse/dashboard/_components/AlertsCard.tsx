@@ -185,8 +185,10 @@ import { DashboardSectionCard } from "./ui/DashboardSectionCard";
 import { AlertItem } from "./Alerts/AlertItem";
 import { SkeletonBlock } from "./ui/SkeletonBlock";
 import { AlertCircle } from "lucide-react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function AlertsCard() {
+  const dict = useDictionary();
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
 
@@ -199,9 +201,9 @@ export default function AlertsCard() {
 
   if (loading)
     return (
-    //   <DashboardSectionCard>
-        <SkeletonBlock rows={4} />
-    //   </DashboardSectionCard>
+      //   <DashboardSectionCard>
+      <SkeletonBlock rows={4} />
+      //   </DashboardSectionCard>
     );
 
   return (
@@ -213,7 +215,7 @@ export default function AlertsCard() {
           strokeWidth={2.5}
           className="text-gray-600"
         />
-        <div className="text-sm font-semibold">Alerts</div>
+        <div className="text-sm font-semibold">{dict.dashboard.alerts}</div>
       </div>
 
       {/* Alerts list */}
