@@ -628,6 +628,16 @@ export const mainModules: MainModule[] = [
         label: "Additional Observations",
         actions: ["view", "viewOne"],
       },
+      {
+        key: "consumables",
+        label: "Consumables",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
+      {
+        key: "equipment",
+        label: "Equipment",
+        actions: ["view", "viewOne", "create", "edit", "delete"],
+      },
     ],
   },
 
