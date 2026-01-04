@@ -120,12 +120,12 @@ export function AppSidebar({ }) {
       ? [
         {
           title: "Dashboard",
-          url: [withLocale(ROUTES.FRONTOFFICE_DASHBOARD)],
+          url: [ROUTES.FRONTOFFICE_DASHBOARD],
           icon: LayoutDashboard,
         },
         {
           title: "Patient Record",
-          url: [withLocale(ROUTES.FRONTOFFICE_PATIENT_REGISTRATION)],
+          url: [ROUTES.FRONTOFFICE_PATIENT_REGISTRATION],
           icon: User2,
         },
         {
@@ -135,15 +135,15 @@ export function AppSidebar({ }) {
           items: [
             {
               title: "Appointment",
-              url: [withLocale("/appointment")],
+              url: [ROUTES.FRONTOFFICE_APPOINTMENT],
             },
             {
               title: "Completed log",
-              url: [withLocale("/appointment?tab=completed")],
+              url: [`${ROUTES.FRONTOFFICE_APPOINTMENT}?tab=completed`],
             },
             {
               title: "Appointment Schedule",
-              url: [withLocale(ROUTES.FRONTOFFICE_SCHEDULE)],
+              url: [ROUTES.FRONTOFFICE_SCHEDULE],
             }
           ]
         },
@@ -154,15 +154,15 @@ export function AppSidebar({ }) {
           items: [
             {
               title: "Patients Que",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=queue`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=queue`],
             },
             {
               title: "Completed",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=completed`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=completed`],
             },
             {
               title: "Doctor Instructions",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=instructions`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=instructions`],
             },
           ]
         },
@@ -173,19 +173,19 @@ export function AppSidebar({ }) {
           items: [
             {
               title: "Admitted Patients",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=admitted`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=admitted`],
             },
             {
               title: "Bed & Ward Management",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`],
             },
             {
               title: "Discharged Patients",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=discharged`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=discharged`],
             },
             {
               title: "Doctor Instructions",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=instructions`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=instructions`],
             },
           ]
         },

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { Button } from "@workspace/ui/components/button"
 import { UserPlus, List, Search, X } from "lucide-react"
 import { useRouter, useParams } from "next/navigation"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 import {
     PatientItem,
     createPatientsApiClient,
@@ -64,6 +65,7 @@ export function PatientSearchPanel({
     const router = useRouter()
     const params = useParams<{ lang?: string }>()
     const lang = params?.lang || "en"
+    const { withLocale } = useLocaleRoute()
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState<Patient[]>([])
     const [loading, setLoading] = useState(false)
@@ -129,11 +131,11 @@ export function PatientSearchPanel({
     }
 
     const handleAddPatient = () => {
-        router.push(`/${lang}/patient/add-patient`)
+        router.push("/patient/add-patient")
     }
 
     const handleViewPatientList = () => {
-        router.push(`/${lang}/patient`)
+        router.push("/patient")
     }
 
     return (
