@@ -127,7 +127,7 @@ export function MultiDoctorBookingModal({
 
             // Add slot_id if available
             if (selectedSlotId) {
-                visitPayload.slot_id = selectedSlotId
+                visitPayload.visits_slot_id_key = selectedSlotId
                 console.log("✅ Added slot_id to payload:", selectedSlotId)
             } else {
                 console.log("❌ No slot_id available - selectedSlotId is:", selectedSlotId)

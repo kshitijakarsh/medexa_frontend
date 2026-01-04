@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { DoctorMultiSelect } from "../../../multi-doctor/_components/DoctorMultiSelect"
-import { MultiDoctorScheduleGrid } from "../../../multi-doctor/_components/MultiDoctorScheduleGrid"
+// import { DoctorMultiSelect } from "../../../multi-doctor/_components/DoctorMultiSelect"
+// import { MultiDoctorScheduleGrid } from "../../../multi-doctor/_components/MultiDoctorScheduleGrid"
 import { AppDatePicker } from "@/components/common/app-date-picker"
 import { MultiDoctorBookingModal } from "../../../multi-doctor/_components/MultiDoctorBookingModal"
 import { createSlotsApiClient } from "@/lib/api/slots"
@@ -177,13 +177,13 @@ export function MultiDoctorAppointmentView({
         <div className="space-y-6">
             <div className="bg-white p-6 rounded-xl shadow-sm space-y-4 border border-gray-100">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <DoctorMultiSelect
+                    {/* <DoctorMultiSelect
                         label="Doctors*"
                         placeholder="Select Doctors"
                         options={doctorOptions}
                         value={selectedDoctors}
                         onChange={setSelectedDoctors}
-                    />
+                    /> */}
                     <AppDatePicker
                         label="Date"
                         value={selectedDate}
@@ -193,7 +193,7 @@ export function MultiDoctorAppointmentView({
                 </div>
             </div>
 
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            {/* <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                 <MultiDoctorScheduleGrid
                     doctors={selectedDoctorObjects}
                     appointments={appointments}
