@@ -57,7 +57,8 @@ export function AppSidebar({ }) {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
     hr: pathname.includes(HR),
-    frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
+    // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
   }
 
   const items = [
@@ -98,25 +99,25 @@ export function AppSidebar({ }) {
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
           icon: LayoutDashboard,
         },
-        {
-          title: "Appointment",
-          icon: Calendar,
-          url: [], // Group header
-          items: [
-            {
-              title: "Appointments",
-              url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
-            },
-            {
-              title: "Completed",
-              url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
-            },
-            {
-              title: "Appointment Schedule",
-              url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
-            }
-          ]
-        },
+        // {
+        //   title: "Appointment",
+        //   icon: Calendar,
+        //   url: [], // Group header
+        //   items: [
+        //     {
+        //       title: "Appointments",
+        //       url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
+        //     },
+        //     {
+        //       title: "Completed",
+        //       url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
+        //     },
+        //     {
+        //       title: "Appointment Schedule",
+        //       url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
+        //     }
+        //   ]
+        // },
       ]
       : []),
     ...(modulesAvailable.frontoffice
