@@ -38,8 +38,16 @@ type RadOrder = {
 };
 
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function DiagnosticOrders() {
     const [activeTab, setActiveTab] = useState("laboratory");
+    const dict = useDictionary();
+
+    const tabs = [
+        { key: "laboratory", label: dict.pages.doctor.appointment.tabsContent.diagnosticOrders.labTests },
+        { key: "radiology", label: dict.pages.doctor.appointment.tabsContent.diagnosticOrders.radiology },
+    ];
 
     const [labHistory, setLabHistory] = useState([
         {
@@ -100,7 +108,7 @@ export function DiagnosticOrders() {
                     />
 
                     <NewButton
-                        name={activeTab === "laboratory" ? "Laboratory Tests" : "Radiology Procedure"}
+                        name={activeTab === "laboratory" ? dict.pages.doctor.appointment.tabsContent.diagnosticOrders.labTests : dict.pages.doctor.appointment.tabsContent.diagnosticOrders.radiologyProcedure}
                         handleClick={() =>
                             activeTab === "laboratory"
                                 ? setShowLabModal(true)
@@ -141,8 +149,8 @@ export function DiagnosticOrders() {
                             <LaboratoryTable data={labOrders} />
                         ) : (
                             <EmptyState
-                                message="No laboratory tests were conducted."
-                                buttonText="Laboratory Tests"
+                                message={dict.pages.doctor.appointment.tabsContent.diagnosticOrders.noLabTests}
+                                buttonText={dict.pages.doctor.appointment.tabsContent.diagnosticOrders.labTests}
                                 onClick={() => setShowLabModal(true)}
                                 icon={<Microscope size={50} />}
                             />
@@ -167,8 +175,8 @@ export function DiagnosticOrders() {
                             <RadiologyTable data={radOrders} />
                         ) : (
                             <EmptyState
-                                message="No radiology or imaging tests were conducted."
-                                buttonText="Radiology Procedure"
+                                message={dict.pages.doctor.appointment.tabsContent.diagnosticOrders.noRadiology}
+                                buttonText={dict.pages.doctor.appointment.tabsContent.diagnosticOrders.radiologyProcedure}
                                 onClick={() => setShowRadModal(true)}
                                 icon={<HeartPulse size={50} />}
                             />

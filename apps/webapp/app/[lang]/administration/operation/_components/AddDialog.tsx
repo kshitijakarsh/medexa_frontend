@@ -242,6 +242,7 @@ import {
 } from "@workspace/ui/components/form";
 import { AppDialog } from "@/components/common/app-dialog";
 import { AppSelect } from "@/components/common/app-select";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const operationSchema = z.object({
   name: z.string().min(1, "Operation name is required"),
@@ -267,7 +268,7 @@ interface AddDialogProps {
 
 export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
   const schema = mode === "operation" ? operationSchema : categorySchema;
-
+  const dict = useDictionary();
   const form = useForm<FormSchema>({
     resolver: zodResolver(schema),
     defaultValues:
@@ -302,7 +303,7 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
     <AppDialog
       open={open}
       onClose={onClose}
-      title={mode === "operation" ? "Add Operation Name" : "Add Operation Category"}
+      title={mode === "operation" ? dict.pages.operation.tabs.operation : dict.pages.operation.tabs.operationCategory}
       maxWidth="md:max-w-sm"
     >
       <Form {...form}>
@@ -314,9 +315,9 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Operation Name</FormLabel>
+                    <FormLabel>{dict.pages.operation.dialogs.Title}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Operation Name" {...field} />
+                      <Input placeholder={dict.pages.operation.dialogs.placeholder1} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -328,10 +329,10 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Operation Category</FormLabel>
+                    <FormLabel>{dict.pages.operation.tabs.operationCategory}</FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder="Select Operation Category"
+                        placeholder={dict.pages.operation.dialogs.placeholder}
                         value={field.value}
                         onChange={field.onChange}
                         options={[
@@ -354,9 +355,9 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Operation Category</FormLabel>
+                    <FormLabel>{dict.pages.operation.tabs.operationCategory}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Operation Category" {...field} />
+                      <Input placeholder={dict.pages.operation.dialogs.placeholder1} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -368,10 +369,10 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                 name="createdOn"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Created On</FormLabel>
+                    <FormLabel>{dict.pages.operation.dialogs.createdOn}</FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder="Select Created On"
+                        placeholder={dict.pages.operation.dialogs.placeholderCreatedOn}
                         value={field.value}
                         onChange={field.onChange}
                         options={[
@@ -388,10 +389,10 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
                 name="addedBy"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Added By</FormLabel>
+                    <FormLabel>{dict.pages.operation.dialogs.addedBy}</FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder="Select Added By"
+                        placeholder={dict.pages.operation.dialogs.placeholderAddedBy}
                         value={field.value}
                         onChange={field.onChange}
                         options={[
@@ -413,10 +414,10 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
               onClick={onClose}
               className="text-blue-600 border-blue-500"
             >
-              Cancel
+              {dict.common.cancel}
             </Button>
             <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white">
-              Save
+              {dict.common.save}
             </Button>
           </div>
         </form>

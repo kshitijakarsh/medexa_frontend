@@ -57,6 +57,7 @@ import { CancelButton } from "@/components/common/buttons/cancel-button";
 import { fetchAllowedModules } from "../_components/fetchAllowedModules";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useUserStore } from "@/store/useUserStore";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 type AllowedModule = { id: number; key: string };
 
@@ -73,6 +74,7 @@ export default function PermissionAddPage() {
   const [modulesLoading, setModulesLoading] = useState(true);
   const [roleInfo, setRoleInfo] = useState<any>(null);
   const queryClient = useQueryClient();
+  const dict = useDictionary();
 
 
   /* ------------------------------------------------------------
@@ -343,7 +345,7 @@ export default function PermissionAddPage() {
   return (
     <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
       <div className="mx-auto rounded-lg shadow p-6 space-y-8">
-        <PageHeader title={`Permissions for Role: ${roleInfo?.name}`} />
+        <PageHeader title={dict.pages.permissions.title + roleInfo?.name} />
 
         <div className="border border-blue-100 rounded-lg p-4 bg-white">
           <PermissionAccordion value={permissionData} onChange={setPermissionData} allowedModules={allowedModules.map(m => ({ ...m, id: String(m.id) }))} />

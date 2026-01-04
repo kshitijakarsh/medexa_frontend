@@ -3,6 +3,7 @@ import { hasPermission, PERMISSIONS } from "@/app/utils/permissions"
 import { RowActionMenu } from "@/components/common/row-action-menu"
 import { Pencil, Trash2 } from "lucide-react"
 import { ReactNode } from "react"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface RowAction {
   label: string
@@ -37,10 +38,11 @@ export function UserRowActions({
   //   },
   // ]
   const rowActions: RowAction[] = [];
+  const dict = useDictionary();
 
   if (hasPermission(userPermissions, PERMISSIONS.USER.EDIT)) {
     rowActions.push({
-      label: "Edit",
+      label: dict.common.edit,
       icon: <Pencil className="w-4 h-4" />,
       onClick: onEdit,
       variant: "success",
@@ -49,7 +51,7 @@ export function UserRowActions({
 
   if (hasPermission(userPermissions, PERMISSIONS.USER.DELETE)) {
     rowActions.push({
-      label: "Delete",
+      label: dict.common.delete,
       icon: <Trash2 className="w-4 h-4" />,
       onClick: onDelete,
       variant: "danger",

@@ -224,8 +224,11 @@ import { FileUp, Printer } from "lucide-react"
 import { SectionWrapper } from "./common/SectionWrapper"
 import { SectionTitle } from "./common/SectionTitle"
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function Prescription() {
   const [showModal, setShowModal] = useState(false)
+  const dict = useDictionary();
 
   const [meds, setMeds] = useState<PrescriptionItem[]>([])
 
@@ -251,23 +254,16 @@ export default function Prescription() {
     <SectionWrapper
       header={
         <div className="flex items-center justify-between">
-          {/* <h3 className="text-lg font-medium">
-            Prescription
-            <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-              Auto-saved
-            </span>
-          </h3> */}
-          
           <div className="flex items-center gap-3">
-            <SectionTitle title="Prescription" />
+            <SectionTitle title={dict.pages.doctor.appointment.tabsContent.prescription.title} />
             <span className="px-2 py-0.5 text-xs bg-green-100 text-green-600 rounded-full border border-green-200">
-              ✓ Auto-saved
+              ✓ {dict.pages.doctor.appointment.tabsContent.prescription.autoSaved}
             </span>
           </div>
 
           <div className="flex items-center gap-3">
             <NewButton
-              name="Add Medication"
+              name={dict.pages.doctor.appointment.tabsContent.prescription.add}
               handleClick={() => setShowModal(true)}
             />
 
@@ -275,13 +271,13 @@ export default function Prescription() {
               <span className="p-2.5 bg-blue-200 rounded-full">
                 <FileUp className="w-4 h-4" />
               </span>
-              <span className="pe-3 py-1 ">Send to Pharmacy</span>
+              <span className="pe-3 py-1 ">{dict.pages.doctor.appointment.tabsContent.prescription.sendPharmacy}</span>
             </button>
             <button className="border border-blue-100 rounded-full text-blue-600 flex items-center gap-2 p-0.5">
               <span className="p-2.5 bg-blue-200 rounded-full">
                 <Printer className="w-4 h-4" />
               </span>
-              <span className="pe-3 py-1 ">Print Rx</span>
+              <span className="pe-3 py-1 ">{dict.pages.doctor.appointment.tabsContent.prescription.printRx}</span>
             </button>
           </div>
         </div>
@@ -294,7 +290,7 @@ export default function Prescription() {
         {meds.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
             {/* <img src="/empty-rx.png" className="w-24 mb-3 opacity-70" /> */}
-            <div>No medications prescribed yet</div>
+            <div>{dict.pages.doctor.appointment.tabsContent.prescription.empty}</div>
             {/* <button
                 className="mt-3 bg-green-500 text-white px-4 py-2 rounded-full"
                 onClick={() => setShowModal(true)}

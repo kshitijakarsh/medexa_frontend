@@ -4,9 +4,100 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
-    "search": "Search",
+    "update": "Update",
+    "status": "Status",
+    "view": "View",
+    "search": "Search...",
     "loading": "Loading...",
-    "back": "Back"
+    "saving": "Saving...",
+    "applying": "Applying...",
+    "back": "Back",
+    "quickActions": "Quick",
+    "appplyfilters": "Apply Filter",
+    "viewProfile": "View Profile",
+    "changePassword": "Change Password",
+    "accountStatus": "Account Status",
+    "lastLogin": "Last Login",
+    "logout": "Logout",
+    "active": "Active",
+    "inactive": "Inactive",
+    "employeeId": "ID",
+    "importExcel": "Import Excel",
+    "exportExcel": "Export Excel",
+    "bulkAddDepartment": "Bulk Add Department",
+    "noData": "No data available",
+    "Addnew": "Add New"
+  },
+  "dashboard": {
+    "todayOverview": "Today's Overview",
+    "totalAppointments": "Total Appointments",
+    "completed": "Completed",
+    "pending": "Pending",
+    "recentPatients": "Recent Patients",
+    "visits": "Visits",
+    "allVisits": "All Visits",
+    "viewAll": "View All",
+    "noAppointments": "No appointments found",
+    "tabs": {
+      "all": "All Appointments",
+      "vip": "VIP Patients",
+      "follow": "Follow Up Patients"
+    },
+    "patientTypes": "Patient Types",
+    "newPatients": "New Patients",
+    "followUps": "Follow-ups",
+    "workloadStats": "Workload Stats",
+    "pendingResults": "Pending Results",
+    "prescriptionsIssued": "Prescriptions Issued",
+    "alerts": "Alerts",
+    "vipPatients": "VIP Patients",
+    "noVipFound": "No VIP patients found.",
+    "followUpPatients": "Follow Up Patients",
+    "noFollowUpFound": "No Follow Up patients found."
+  },
+  "table": {
+    "token": "Token",
+    "patient": "Patient",
+    "time": "Time",
+    "diagnosis": "Diagnosis",
+    "types": "Types",
+    "status": "Status"
+  },
+  "actions": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "permissions": "Permissions",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}",
+    "first": "First",
+    "last": "Last"
+  },
+  "toast": {
+    "created": "Created successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "failed": "Operation failed"
+  },
+  "modules": {
+    "administration": "Administration",
+    "doctor": "Doctor",
+    "nurse": "Nurse",
+    "frontoffice": "Front Office",
+    "appointment": "Appointments",
+    "patient_mgmt": "Patients",
+    "billing": "Billing",
+    "lab": "Laboratory",
+    "pharmacy": "Pharmacy",
+    "inventory": "Inventory",
+    "analytics": "Analytics",
+    "hr": "Human Resources"
   },
   "nav": {
     "organizationSetup": "Organization Setup",
@@ -26,29 +117,972 @@
     "organizationSetup": {
       "title": "Organization Setup"
     },
+    "roles": {
+      "title": "User Roles Configuration",
+      "noResults": "No roles found",
+      "columns": {
+        "role": "Role",
+        "status": "Status",
+        "createdOn": "Created On",
+        "action": "Action",
+        "table": {
+          "sno": "S.No"
+        }
+      },
+      "filters": {
+        "title": "Filter User Roles",
+        "search": "Search roles...",
+        "status": "Select status",
+        "applying": "Applying...",
+        "apply": "Apply Filters"
+      }
+    },
+    "charges": {
+      "title": "Charges",
+      "tabs": {
+        "service": "Service and Charge",
+        "category": "Charge Categories",
+        "tax": "Tax Categories",
+        "unit": "Unit Types"
+      },
+      "columns": {
+        "srNo": "Sr. No",
+        "serviceName": "Service Name",
+        "chargeCategory": "Charge Category",
+        "unit": "Unit",
+        "tax": "Tax",
+        "standardCharge": "Standard Charge",
+        "status": "Status",
+        "action": "Action",
+        "taxName": "Tax Name",
+        "chargeName": "Charge Name",
+        "unitType": "Unit Type",
+        "createdOn": "Created On",
+        "percentage": "Percentage (%)"
+      },
+      "actions": {
+        "add": "Add",
+        "bulk": "Bulk Upload",
+        "clear": "Clear",
+        "apply": "Apply"
+      },
+      "dialogs": {
+        "filterTitle": "Filter Charges",
+        "addSingle": "Add Item",
+        "addBulk": "Bulk Upload"
+      },
+      "filters": {
+        "title": "Filter",
+        "searchPlaceholder": "Search by name",
+        "search": "Search",
+        "category": "Category",
+        "unit": "Unit",
+        "tax": "Tax",
+        "status": "Status",
+        "statusPlaceholder": "Select Status",
+        "createdDate": "Created Date"
+      }
+    },
+    "organizationSetupCards": {
+      "categories": {
+        "organizationSetup": "Organization Setup",
+        "staffRoles": "Staff & Roles",
+        "servicesProcedure": "Services & Procedure",
+        "inventoryPharmacy": "Inventory & Pharmacy Master"
+      },
+      "items": {
+        "departments": {
+          "title": "Departments",
+          "subtitle": "Eg: Cardiology, Neurology, Orthopedics, etc."
+        },
+        "wardsBeds": {
+          "title": "Ward / Beds",
+          "subtitle": "ICU, General Ward, Maternity Ward, etc."
+        },
+        "operationTheatres": {
+          "title": "Operation Theatres / Procedure Rooms",
+          "subtitle": "OT1, OT2, minor procedure rooms, etc."
+        },
+        "users": {
+          "title": "User",
+          "subtitle": "User creation, etc."
+        },
+        "employees": {
+          "title": "Employees",
+          "subtitle": "Employees creation, etc."
+        },
+        "charges": {
+          "title": "Charges",
+          "subtitle": "Adding charges tax units and categories"
+        },
+        "patients": {
+          "title": "Patients",
+          "subtitle": "Eg. VIP, standard"
+        },
+        "operationCategory": {
+          "title": "Operation / Operation Category",
+          "subtitle": "OT1, OT2, minor procedure rooms, etc."
+        },
+        "humanResource": {
+          "title": "Human Resource",
+          "subtitle": "Eg: Doctor, Nurse, Designation, etc."
+        },
+        "roles": {
+          "title": "Roles",
+          "subtitle": "Eg: Roles, etc."
+        },
+        "shiftsAttendance": {
+          "title": "Shifts & Attendance Configuration",
+          "subtitle": "Eg: General Ward, Maternity Ward, etc."
+        },
+        "insurance": {
+          "title": "Insurance",
+          "subtitle": "Health Insurance, Life Insurance, etc."
+        },
+        "medicalProcedure": {
+          "title": "Medical Procedure / Treatment Master",
+          "subtitle": "Cardiology, Neuro, Ortho, etc."
+        },
+        "labTest": {
+          "title": "Lab Test Master",
+          "subtitle": "CBC, Lipid panel, Widal, Maternity etc."
+        },
+        "radiology": {
+          "title": "Radiology / Imaging Test Master",
+          "subtitle": "X-Ray, MRI, CT-Scan, etc."
+        },
+        "packageScheme": {
+          "title": "Package / Scheme / Policy Setup",
+          "subtitle": "OP, IP, minor procedure etc."
+        },
+        "tariffPricing": {
+          "title": "Tariff / Pricing / Service Charges",
+          "subtitle": "Cardiology, Neuro, Ortho, etc."
+        },
+        "inventory": {
+          "title": "Inventory / Consumables Master",
+          "subtitle": "Eg: Syringe, Gauze, Cotton, etc."
+        },
+        "equipment": {
+          "title": "Equipment / Asset Master",
+          "subtitle": "Eg: ECG, MRI, Ventilator, etc."
+        },
+        "medicine": {
+          "title": "Medicine / Drug Master",
+          "subtitle": "Eg: Paracetamol, Aspirin, etc."
+        },
+        "supplier": {
+          "title": "Supplier / Vendor Master",
+          "subtitle": "Eg: Apollo, MedPlus, etc."
+        }
+      }
+    },
+    "permissions": {
+      "title": "Permissions for Role:",
+      "all": "All",
+      "modules": {
+        "administration": "Administration",
+        "patient_management": "Patient Management",
+        "appointment": "Appointment Management",
+        "billing": "Billing",
+        "pharmacy": "Pharmacy",
+        "laboratory": "Laboratory",
+        "hr": "Human Resources",
+        "analytics": "Analytics",
+        "doctor": "Doctor",
+        "frontoffice": "Front Office"
+      },
+      "submodules": {
+        "department": "Department",
+        "ward": "Ward",
+        "wardType": "Ward Type",
+        "bedType": "Bed Type",
+        "floor": "Floor",
+        "role": "User Roles",
+        "user": "Users",
+        "operationTheatres": "Operation Theatres",
+        "insurance": "Insurance",
+        "charges": "Charges",
+        "patientCategory": "Patients",
+        "tax": "Tax",
+        "category": "Category",
+        "unit": "Unit",
+        "operation": "Operation",
+        "operationCategory": "Operation Category",
+        "reception": "Reception",
+        "appointments": "Appointment Management",
+        "appointment": "Appointment Management",
+        "pharmacy": "Pharmacy Management",
+        "lab": "Laboratory",
+        "radiology": "Radiology",
+        "employee": "Employee Management",
+        "designation": "Designation",
+        "specialisation": "Specialisation Management",
+        "visit": "Visit",
+        "visit_purpose": "Visit Purpose",
+        "prescription": "Prescription Management",
+        "patient": "Patient Records",
+        "labReports": "Lab Reports",
+        "analytics": "Analytics"
+      },
+      "children": {
+        "All": "All",
+        "view": "View",
+        "create": "Create",
+        "edit": "Edit",
+        "delete": "Delete",
+        "viewOne": "ViewOne",
+        "export_pdf": "Export PDF",
+        "import_excel": "Import Excel",
+        "approve": "Approve",
+        "cancel": "Cancel",
+        "export": "Export"
+      }
+    },
     "department": {
-      "title": "Department"
+      "title": "Department",
+      "Search departments…": "Search departments…",
+      "table": {
+        "sno": "S.No",
+        "departmentName": "Department Name",
+        "status": "Status",
+        "createdOn": "Created On",
+        "addedBy": "Added By",
+        "action": "Action"
+      },
+      "addDepartment": {
+        "title": "Add Department",
+        "dialogTitle": "Department",
+        "dialogSubtitle": "Enter Department Name",
+        "Status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        }
+      }
     },
     "unitsWardsBeds": {
-      "title": "Units, Wards & Beds"
+      "title": "Units, Wards & Beds",
+      "tabs": {
+        "ward": "Ward",
+        "bedType": "Bed Type",
+        "wardType": "Ward Type",
+        "floor": "Floor"
+      },
+      "columns": {
+        "id": "ID",
+        "wardNumber": "Ward Number",
+        "name": "Name",
+        "wardType": "Ward Type",
+        "floor": "Floor",
+        "status": "Status",
+        "createdOn": "Created On",
+        "action": "Action"
+      },
+      "dialog": {
+        "ward": {
+          "addTitle": "Add Ward",
+          "editTitle": "Edit Ward"
+        },
+        "bed": {
+          "addTitle": "Add Bed Type",
+          "editTitle": "Edit Bed Type"
+        },
+        "wardType": {
+          "addTitle": "Add Ward Type",
+          "editTitle": "Edit Ward Type"
+        },
+        "floor": {
+          "addTitle": "Add Floor",
+          "editTitle": "Edit Floor"
+        },
+        "fields": {
+          "wardNumber": "Ward Number",
+          "wardType": "Ward Type",
+          "bedType": "Bed Type",
+          "wardName": "Ward Name",
+          "floor": "Floor Name",
+          "status": "Status"
+        },
+        "placeholders": {
+          "wardNumber": "Enter ward number",
+          "wardType": "Select Ward Type",
+          "floor": "Enter Floor Name",
+          "bedType": "Select Bed Type",
+          "wardName": "Enter Ward Name"
+        }
+      }
     },
     "operationTheatres": {
-      "title": "Operation Theatres"
+      "title": "Operation Theatres / Procedure Rooms",
+      "table": {
+        "sno": "S.No",
+        "operationroom": "Operation Room",
+        "otRoomName": "OT Room Name",
+        "floor": "Floor",
+        "createdOn": "Created On",
+        "addedBy": "Added By",
+        "action": "Action"
+      },
+      "dialog": {
+        "addTitle": "Operation Theatres",
+        "filterTitle": "Filter Operation Theatres",
+        "fields": {
+          "operationroom": "Operation Room Number",
+          "operationroomName": "Operation Room Name",
+          "floor": "Select Floor",
+          "addedBy": "Added By"
+        },
+        "placeholders": {
+          "operationroom": "Enter Operation Room Number",
+          "operationroomName": "Enter Operation Room Name",
+          "floor": "Select Floor",
+          "addedBy": "Select User"
+        }
+      }
     },
-    "employeeConfiguration": {
-      "title": "Employee Configuration"
+    "patients": {
+      "title": "Patient Category",
+      "patientTypes": "Patient Type",
+      "addPatientType": "Add Patient Type",
+      "table": {
+        "sno": "S.No",
+        "addedBy": "Added By",
+        "status": "Operation Status",
+        "createdOn": "Created On",
+        "action": "Action"
+      }
     },
     "insurance": {
-      "title": "Insurance"
+      "title": "Company List",
+      "table": {
+        "sno": "S.No",
+        "providerName": "Provider Name",
+        "insuranceCompanyName": "Insurance Company Name",
+        "approvalURL": "Approval URL",
+        "address": "Address",
+        "trn": "TRN",
+        "status": "Status",
+        "action": "Action",
+        "placeholderSearch": "Search by Provider Name or Company..."
+      },
+      "filterdialog": {
+        "title": "Filter",
+        "providerName": "Provider Name",
+        "companyName": "Company Name",
+        "trn": "TRN",
+        "status": "Status",
+        "city": "City",
+        "createdDate": "Created Date",
+        "placeholderProviderName": "Select Provider Name",
+        "placeholderInsuranceCompanyName": "Enter Company Name",
+        "placeholderStatus": "Select Status",
+        "placeholderCreatedDate": "Select Created Date",
+        "placeholderTRN": "Enter TRN Number",
+        "placeholderCity": "Select City"
+      }
     },
     "tpaProvider": {
       "title": "TPA Provider"
     },
     "operation": {
-      "title": "Operation"
+      "title": "Operation Management",
+      "table": {
+        "sno": "S.No",
+        "category": "Operation Category",
+        "addedBy": "Added By",
+        "status": "Unit Status",
+        "createdOn": "Created On",
+        "action": "Action",
+        "operationName": "Operation Name",
+        "operationCode": "Operation Category",
+        "operationStatus": "Operation Status"
+      },
+      "tabs": {
+        "operation": "Operation",
+        "operationCategory": "Operation Category"
+      },
+      "dialogs": {
+        "Title": "Operation Name",
+        "placeholder": "Select Operation Category",
+        "placeholder1": "Enter Operation Name",
+        "createdOn": "Created On",
+        "placeholderCreatedOn": "Select Created On",
+        "placeholderStatus": "Select Status",
+        "addedBy": "Added By",
+        "placeholderAddedBy": "Select Added By",
+        "addOperation": "Add Operation",
+        "addOperationCategory": "Add Operation Category",
+        "createdBy": "Created By",
+        "placeholderCreatedBy": "Select Creator",
+        "dateRange": "Date Range",
+        "placeholderDateRange": "Select Date Range"
+      }
+    },
+    "users": {
+      "title": "User Management",
+      "table": {
+        "phone": "Phone",
+        "employeeName": "Employee Name",
+        "username": "Username",
+        "role": "Role",
+        "email": "Email",
+        "status": "Status",
+        "createdOn": "Created On",
+        "action": "Action",
+        "addedBy": "Added By",
+        "placeholderSearch": "Search by Employee Name, Username or Email..."
+      },
+      "filterdialog": {
+        "title": "Filter Users",
+        "role": "Role",
+        "email": "Email",
+        "phone": "Phone",
+        "status": "Status",
+        "createdDate": "Created Date",
+        "placeholderRole": "Select Role",
+        "placeholderEmail": "Enter Email",
+        "placeholderStatus": "Select Status",
+        "placeholderCreatedDate": "Select Created Date",
+        "placeholderAddedBy": "Select Added By",
+        "placeholderPhone": "Enter Phone Number"
+      },
+      "addDialog": {
+        "title": "Add New User",
+        "role": "Role",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Password",
+        "passwordReq": "Password requirements:",
+        "req1": "At least 8 characters long",
+        "req2": "atleast one uppercase letter (A-Z)",
+        "req3": "atleast one special character (!@#$%^&*)",
+        "req4": "atleast one number (0-9)",
+        "alert": "Password must be at least 8 characters with 1 uppercase,1 number, and 1 special character.",
+        "placeholderRole": "Select Role",
+        "placeholderRole1": "Loading Role...",
+        "placeholderName": "Enter Name",
+        "placeholderEmail": "Enter Email",
+        "placeholderPhone": "Enter Phone Number",
+        "placeholderPassword": "Enter Password"
+      }
     },
     "settings": {
       "title": "Settings"
+    },
+    "frontoffice": {
+      "dashboard": {
+        "appointmentBook": "Appointment Book",
+        "bookNewAppointments": "Book new appointments",
+        "patient": "Patient",
+        "managePatients": "Manage patients"
+      },
+      "schedule": {
+        "title": "Schedule",
+        "allDepartments": "All Departments",
+        "allDoctors": "All Doctors",
+        "year": "Year",
+        "month": "Month",
+        "all": "All",
+        "todayAppointments": "Today Appointments",
+        "tomorrow": "Tomorrow",
+        "customDate": "Custom Date",
+        "add": "Add",
+        "dateAndDay": "Date & Day",
+        "session": "Session",
+        "step": "Step",
+        "createdOn": "Created On",
+        "addedBy": "Added By",
+        "action": "Action",
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "searchDepartment": "Search Department",
+        "searchDoctor": "Search Doctor",
+        "to": "To",
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "timeSlots": {
+        "title": "Doctor Appointment Slots",
+        "department": "Department",
+        "doctor": "Doctor",
+        "selectDoctor": "Select Doctor",
+        "selectDateRange": "Select Date Range",
+        "selectDateRangeLabel": "Select Date Range *",
+        "new": "New",
+        "noShiftsAdded": "No shifts added yet. Click \"New\" to add a shift.",
+        "searchDepartment": "Search Department",
+        "searchDoctor": "Search Doctor"
+      }
+    },
+    "doctor": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "Visit purpose",
+          "SOAP Notes": "SOAP Notes",
+          "Vitals": "Vitals",
+          "Prescription": "Prescription",
+          "Diagnostic Orders": "Diagnostic Orders",
+          "Attachments": "Attachments",
+          "Nurse Note": "Nurse Note",
+          "Nurse Orders": "Nurse Orders"
+        },
+        "header": {
+          "startConsultation": "Start Consultation",
+          "starting": "Starting...",
+          "finishConsultation": "Finish Consultation",
+          "finishing": "Finishing...",
+          "viewDetails": "View Details",
+          "referDoctor": "Refer Doctor"
+        },
+        "actions": {
+          "saveDraft": "Save Draft",
+          "saving": "Saving..."
+        },
+        "messages": {
+          "noContent": "No content found",
+          "startConsultationPrompt": "Please start the consultation to access patient details."
+        },
+        "tabsContent": {
+          "attachments": {
+            "title": "Attachments",
+            "add": "Add Attachments",
+            "empty": "There are no files attached.",
+            "modal": {
+              "title": "Add Attachment",
+              "labelTitle": "Attachment Title",
+              "placeholderTitle": "Lab Report",
+              "labelFile": "Upload File",
+              "dropText": "Click to upload or drag & drop",
+              "fileTypes": "PDF, PNG, JPG",
+              "upload": "Upload",
+              "uploading": "Uploading..."
+            },
+            "card": {
+              "view": "View",
+              "delete": "Delete"
+            },
+            "preview": {
+              "download": "Download Document"
+            },
+            "history": {
+              "title": "Previous History of Attachments",
+              "empty": "No attachments found.",
+              "uploadedBy": "Uploaded by",
+              "at": "at"
+            }
+          },
+          "diagnosticOrders": {
+            "labTests": "Laboratory Tests",
+            "radiology": "Radiology & Imaging",
+            "radiologyProcedure": "Radiology Procedure",
+            "noLabTests": "No laboratory tests were conducted.",
+            "noRadiology": "No radiology or imaging tests were conducted."
+          },
+          "nurseNote": {
+            "title": "Nurse Note",
+            "empty": "No nurse notes recorded for this visit.",
+            "card": {
+              "fallbackName": "Nurse"
+            },
+            "history": {
+              "title": "Previous History of Nurse Notes",
+              "empty": "No previous nurse notes found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            }
+          },
+          "nurseOrders": {
+            "title": "Nurse Orders",
+            "add": "Add Nurse Order",
+            "empty": "No nurse orders recorded.",
+            "orderTypes": {
+              "iv_fluids": "IV Fluids",
+              "medication": "Medication",
+              "wound_dressing": "Wound Dressing",
+              "oxygen_therapy": "Oxygen Therapy",
+              "special_notes": "Special Notes",
+              "monitoring": "Monitoring",
+              "catheter_care": "Catheter Care"
+            },
+            "table": {
+              "slNo": "Sl No",
+              "orderType": "Order Type",
+              "details": "Details",
+              "urgency": "Urgency",
+              "frequencyTime": "Frequency/Time",
+              "dateTime": "Date & Time",
+              "doctor": "Doctor",
+              "status": "Status",
+              "actions": "Actions",
+              "view": "View",
+              "edit": "Edit",
+              "delete": "Delete",
+              "action": "Action"
+            },
+            "modal": {
+              "title": "Add Nurse Orders",
+              "orderType": "Order Type",
+              "selectOrderType": "Select Order Type"
+            },
+            "editModal": {
+              "title": "Edit Nurse Order"
+            },
+            "form": {
+              "options": {
+                "urgent": "Urgent",
+                "routine": "Routine",
+                "stat": "STAT",
+                "pending": "Pending",
+                "completed": "Completed",
+                "in_progress": "In Progress",
+                "ordered": "Ordered"
+              },
+              "frequencies": {
+                "onceDaily": "Once daily",
+                "twiceDaily": "Twice daily",
+                "threeTimesDaily": "Three times daily",
+                "every15Minutes": "Every 15 minutes",
+                "every30Minutes": "Every 30 minutes",
+                "everyHour": "Every hour",
+                "every2Hours": "Every 2 hours",
+                "every4Hours": "Every 4 hours",
+                "every6Hours": "Every 6 hours",
+                "every8Hours": "Every 8 hours",
+                "asNeeded": "As needed",
+                "continuous": "Continuous",
+                "intermittent": "Intermittent",
+                "prn": "PRN (As Needed)"
+              },
+              "common": {
+                "cancel": "Cancel",
+                "add": "Add Order",
+                "adding": "Adding...",
+                "update": "Update",
+                "updating": "Updating...",
+                "urgency": "Urgency",
+                "selectUrgency": "Select Urgency",
+                "status": "Status",
+                "notes": "Instructions / Notes",
+                "enterNotes": "Enter Instructions / Notes",
+                "clinicalNotes": "Clinical Notes (Optional)",
+                "enterClinicalNotes": "Enter Clinical Notes",
+                "startDate": "Start Date",
+                "startTime": "Start Time",
+                "selectFrequency": "Select Frequency",
+                "duration": "Duration (hours)",
+                "selectDuration": "Select Duration"
+              },
+              "ivFluids": {
+                "fluidType": "Fluid Type",
+                "selectFluidType": "Select Fluid Type",
+                "volume": "Volume (mL)",
+                "selectVolume": "Select Volume",
+                "rate": "Rate (mL/hr)",
+                "selectRate": "Select Rate",
+                "totalVolume": "Total Volume",
+                "totalBottles": "Total Bottles",
+                "injection": "Injection",
+                "selectInjection": "Select Injection",
+                "dose": "Dose",
+                "selectDose": "Select Dose",
+                "duration": "Duration (hours/days)",
+                "selectDuration": "Select Duration"
+              },
+              "medication": {
+                "medicationName": "Medication Name",
+                "selectMedication": "Select Medication",
+                "dose": "Dose",
+                "selectDose": "Select Dose",
+                "route": "Route",
+                "selectRoute": "Select Route",
+                "frequency": "Frequency",
+                "duration": "Duration"
+              },
+              "woundDressing": {
+                "woundLocation": "Wound Location",
+                "enterWoundLocation": "Enter Wound Location",
+                "dressingType": "Dressing Type",
+                "selectDressingType": "Select Dressing Type",
+                "frequency": "Frequency"
+              },
+              "oxygenTherapy": {
+                "deliveryType": "Oxygen Delivery Type",
+                "selectDeliveryType": "Select Delivery Type",
+                "flowRate": "Flow Rate",
+                "selectFlowRate": "Select Flow Rate",
+                "frequencyMode": "Frequency / Mode",
+                "selectFrequencyMode": "Select Frequency / Mode"
+              },
+              "specialNotes": {
+                "noteType": "Note Type",
+                "enterNoteType": "Enter Note Type"
+              },
+              "monitoring": {
+                "parameter": "Parameter to Monitor",
+                "enterParameter": "Enter Parameter to Monitor",
+                "frequency": "Frequency"
+              },
+              "catheterCare": {
+                "catheterType": "Catheter Type",
+                "selectCatheterType": "Select Catheter Type",
+                "careType": "Care Type",
+                "selectCareType": "Select Care Type",
+                "frequency": "Frequency"
+              }
+            },
+            "viewModal": {
+              "title": "View Nurse Order",
+              "orderDetails": "Order Details",
+              "notes": "Notes",
+              "orderedBy": "Ordered By",
+              "close": "Close",
+              "fields": {
+                "fluidType": "Fluid Type",
+                "volume": "Volume (mL)",
+                "rate": "Rate (mL/hr)",
+                "duration": "Duration (hours)",
+                "totalVolume": "Total Volume",
+                "totalBottles": "Total Bottles",
+                "injection": "Injection",
+                "dose": "Dose",
+                "startDate": "Start Date",
+                "startTime": "Start Time",
+                "medicationName": "Medication Name",
+                "route": "Route",
+                "frequency": "Frequency",
+                "woundLocation": "Wound Location",
+                "dressingType": "Dressing Type",
+                "deliveryType": "Delivery Type",
+                "flowRate": "Flow Rate",
+                "frequencyMode": "Frequency Mode",
+                "clinicalNotes": "Clinical Notes",
+                "noteType": "Note Type",
+                "parameter": "Parameter to Monitor",
+                "catheterType": "Catheter Type",
+                "careType": "Care Type"
+              }
+            }
+          },
+          "prescription": {
+            "title": "Prescription",
+            "autoSaved": "Auto-saved",
+            "add": "Add Medication",
+            "sendPharmacy": "Send to Pharmacy",
+            "printRx": "Print Rx",
+            "empty": "No medications prescribed yet"
+          },
+          "soapNotes": {
+            "title": "SOAP Notes",
+            "autoSaved": "Auto-saved",
+            "loadTemplate": "Load Template",
+            "subjective": "Subjective (Patient's Story)",
+            "objective": "Objective (Clinical Findings)",
+            "assessment": "Assessment (Diagnosis)",
+            "plan": "Plan (Treatment & Follow-up)",
+            "empty": "Please select a template to start SOAP notes.",
+            "templateModal": {
+              "title": "Select Clinical Template",
+              "subtitle": "Choose a specialty template to auto-fill SOAP Note fields."
+            },
+            "history": {
+              "title": "Previous History of SOAP Notes",
+              "empty": "No previous SOAP notes found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            }
+          },
+          "visitPurpose": {
+            "title": "Visit Purpose",
+            "form": {
+              "chiefComplaint": "Chief Complaint",
+              "history": "History of Present Illness",
+              "onset": "Onset",
+              "duration": "Duration",
+              "severity": "Severity",
+              "additionalNotes": "Additional Notes",
+              "enterChiefComplaint": "Enter Chief Complaint",
+              "enterHistory": "Enter History of Present Illness",
+              "select": "Select",
+              "enterNotes": "Enter Additional Notes",
+              "viewOnly": "You have view-only access.",
+              "noPermission": "You do not have permission to view Visit Purpose."
+            },
+            "history": {
+              "title": "Previous History of Visit Purpose",
+              "empty": "No previous visit purpose found.",
+              "recordedBy": "Recorded by"
+            }
+          },
+          "vitals": {
+            "title": "Vitals",
+            "graph": "Vital Graph",
+            "add": "Add Vitals",
+            "modal": {
+              "title": "Add Vital",
+              "cancel": "Cancel",
+              "save": "Save",
+              "saving": "Saving..."
+            },
+            "fields": {
+              "bp": "Blood Pressure",
+              "pulse": "Pulse Rate",
+              "respiration": "Respiration Rate",
+              "spo2": "SpO₂ (%)",
+              "systolicL": "Systolic (L)",
+              "diastolicL": "Diastolic (L)",
+              "systolicR": "Systolic (R)",
+              "diastolicR": "Diastolic (R)",
+              "temp": "Temperature",
+              "grbs": "GRBS",
+              "hb": "HB",
+              "height": "Height",
+              "weight": "Weight",
+              "bmi": "BMI",
+              "ibw": "IBW",
+              "rbs": "RBS",
+              "note": "Additional Note"
+            },
+            "placeholders": {
+              "bp": "Enter BP",
+              "pulse": "Enter Pulse Rate",
+              "respiration": "Enter RR",
+              "spo2": "Enter SpO₂",
+              "systolicL": "Enter Systolic(L)",
+              "diastolicL": "Enter Diastolic(L)",
+              "systolicR": "Enter Systolic(R)",
+              "diastolicR": "Enter Diastolic(R)",
+              "temp": "Enter Temperature",
+              "grbs": "Enter GRBS",
+              "hb": "Enter HB",
+              "height": "Enter Height",
+              "weight": "Enter Weight",
+              "bmi": "Enter BMI",
+              "ibw": "Enter IBW",
+              "rbs": "Enter RBS",
+              "note": "Enter Additional Note"
+            },
+            "history": {
+              "title": "Previous History of Vitals",
+              "empty": "No previous visits found.",
+              "recordedBy": "Recorded by",
+              "at": "at"
+            },
+            "grid": {
+              "title": "Last Vital Signs",
+              "on": "on"
+            }
+          }
+        }
+      },
+      "profile": {
+        "soapTemplates": {
+          "title": "SOAP Templates",
+          "templateName": "Template Name",
+          "enterTemplateName": "Enter Template Name",
+          "specialty": "Specialty",
+          "selectSpecialty": "Select Specialty",
+          "dataTitle": "SOAP Templates Data",
+          "subjective": "Subjective",
+          "enterSubjective": "Enter Subjective",
+          "objective": "Objective",
+          "enterObjective": "Enter Clinical Notes",
+          "assessment": "Assessment",
+          "enterAssessment": "Enter Assessment Template",
+          "plan": "Plan",
+          "enterPlan": "Enter Plan Template",
+          "save": "Save Templates",
+          "saving": "Saving...",
+          "cancel": "Cancel",
+          "success": "SOAP template created successfully",
+          "error": "Failed to create SOAP template",
+          "createTemplate": "Create Template",
+          "edit": "Edit",
+          "delete": "Delete",
+          "deleteTitle": "Delete SOAP Template?",
+          "deleteDesc": "This action cannot be undone. The SOAP template will be permanently removed.",
+          "deleteSuccess": "SOAP template deleted",
+          "deleteError": "Failed to delete SOAP template",
+          "update": "Update Templates",
+          "updating": "Updating...",
+          "updateSuccess": "SOAP template updated successfully",
+          "updateError": "Failed to update SOAP template"
+        },
+        "tabs": {
+          "overview": "Overview",
+          "soapTemplates": "SOAP Templates",
+          "allAppointments": "All Appointments",
+          "newPatients": "New Patients",
+          "followUpPatients": "Follow Up Patients"
+        },
+        "components": {
+          "table": {
+            "token": "Token",
+            "patient": "Patient",
+            "date": "Date",
+            "diagnosis": "Diagnosis",
+            "type": "Type",
+            "status": "Status",
+            "loading": "Loading appointments...",
+            "empty": "No appointments found."
+          },
+          "header": {
+            "licenseNumber": "License Number",
+            "email": "Email",
+            "opdTimings": "OPD Timings",
+            "experience": "Experience",
+            "contactNumber": "Contact Number",
+            "workingDays": "Working Days",
+            "active": "Active",
+            "specialist": "Specialist",
+            "years": "Years"
+          },
+          "overview": {
+            "totalPatientsTreated": "Total Patients Treated",
+            "todayAppointments": "Today Appointments",
+            "completedAppointments": "Completed Appointments",
+            "followUps": "Follow-ups"
+          }
+        }
+      }
+    },
+    "nurse": {
+      "appointment": {
+        "tabs": {
+          "Visit purpose": "Visit purpose",
+          "SOAP Notes": "SOAP Notes",
+          "Vitals": "Vitals",
+          "Attachments": "Attachments",
+          "Nurse Note": "Nurse Note",
+          "Nurse Orders": "Nurse Orders",
+          "Consumables": "Consumables",
+          "Equipment": "Equipment"
+        },
+        "messages": {
+          "noContent": "No content found",
+          "startConsultationPrompt": "Please start the consultation to access patient details."
+        }
+      },
+      "recentPatients": {
+        "title": "All Recent Patients",
+        "subtitle": "View all patient visits",
+        "visits": "Visits",
+        "allVisits": "All Visits",
+        "noPatients": "No Patients Found",
+        "noPatientsDesc": "There are no patient visits to display.",
+        "loading": "Loading..."
+      }
     }
   },
   "metadata": {

@@ -218,11 +218,14 @@ import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { useUserStore } from "@/store/useUserStore";
 import { PERMISSIONS } from "@/app/utils/permissions";
+import { useDictionary } from "@/i18n/use-dictionary";  
 
-const operationTabs = [
-  { key: "operation", label: "Operation" },
-  { key: "operationCategory", label: "Operation Category" },
-];
+function getOperationTabs(trans: any) {
+  return [
+    { key: "operation", label: trans.tabs.operation },
+    { key: "operationCategory", label: trans.tabs.operationCategory },
+  ];
+}
 
 function getMockOperations(mode: string) {
   if (mode === "operation") {
@@ -254,9 +257,13 @@ export default function OperationManagementPage() {
   const [search, setSearch] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+  const dict = useDictionary();
+  const trans = dict.pages.operation;
 
   const permissionStrings =
     (userPermissions?.map((p: any) => typeof p === "string" ? p : p.name) ?? []);
+
+  const operationTabs = getOperationTabs(trans);
 
   const filteredTabs = operationTabs.filter((t) => {
     const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP];
@@ -297,17 +304,17 @@ export default function OperationManagementPage() {
   const getColumns = () => {
     if (activeTab === "operation") {
       return [
-        { key: "sno", label: "S.No", render: (r: any) => r.sno },
-        { key: "name", label: "Operation Name", render: (r: any) => r.name },
-        { key: "category", label: "Operation Category", render: (r: any) => r.category },
+        { key: "sno", label: trans.table.sno, render: (r: any) => r.sno },
+        { key: "name", label: trans.table.operationName, render: (r: any) => r.name },
+        { key: "category", label: trans.table.operationCode, render: (r: any) => r.category },
         {
           key: "status",
-          label: "Operation Status",
+          label: trans.table.operationStatus,
           render: (r: any) => <span className="text-green-600">{r.status}</span>,
         },
         {
           key: "action",
-          label: "Action",
+          label: trans.table.action,
           render: (r: any) => (
             <OperationRowActionMenu
               onEdit={() => console.log("Edit", r.name)}
@@ -323,18 +330,18 @@ export default function OperationManagementPage() {
     }
 
     return [
-      { key: "sno", label: "S.No", render: (r: any) => r.sno },
-      { key: "category", label: "Operation Category", render: (r: any) => r.category },
-      { key: "createdOn", label: "Created On", render: (r: any) => r.createdOn },
-      { key: "addedBy", label: "Added By", render: (r: any) => r.addedBy },
+      { key: "sno", label: trans.table.sno, render: (r: any) => r.sno },
+      { key: "category", label: trans.table.category, render: (r: any) => r.category },
+      { key: "createdOn", label: trans.table.createdOn, render: (r: any) => r.createdOn },
+      { key: "addedBy", label: trans.table.addedBy, render: (r: any) => r.addedBy },
       {
         key: "status",
-        label: "Unit Status",
+        label: trans.table.status,
         render: (r: any) => <span className="text-green-600">{r.status}</span>,
       },
       {
         key: "action",
-        label: "Action",
+        label: trans.table.action,
         render: (r: any) => (
           <OperationRowActionMenu
             onEdit={() => console.log("Edit", r.category)}
@@ -352,7 +359,7 @@ export default function OperationManagementPage() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="Operation Management" />
+        <PageHeader title={trans.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Tabs & Actions */}
@@ -376,11 +383,13 @@ export default function OperationManagementPage() {
                 <SlidersHorizontal className="w-5 h-5" />
                 <span>Filter</span>
               </Button> */}
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
               <SearchInput
                 value={search}
                 onChange={setSearch}
-                placeholder="Search..."
+                placeholder={dict.common.search}
               />
               <QuickActions />
               <NewButton handleClick={() => setIsAddDialogOpen(true)} />

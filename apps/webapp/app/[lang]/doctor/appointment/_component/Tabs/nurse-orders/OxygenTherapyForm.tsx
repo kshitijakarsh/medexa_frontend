@@ -22,6 +22,7 @@ import {
 } from "@workspace/ui/components/select";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const schema = z.object({
   oxygen_delivery_type: z.string().min(1, "Delivery type is required"),
@@ -48,7 +49,11 @@ export default function OxygenTherapyForm({
   initialValues,
   submitLabel,
 }: OxygenTherapyFormProps) {
-  const form = useForm({
+  const dict = useDictionary();
+  const { form } = dict.pages.doctor.appointment.tabsContent.nurseOrders;
+  const { oxygenTherapy, common, options, frequencies } = form;
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       oxygen_delivery_type: initialValues?.oxygen_delivery_type || "",
@@ -77,19 +82,19 @@ export default function OxygenTherapyForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+    <Form {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submit)} className="space-y-4">
         {/* Oxygen Delivery Type */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="oxygen_delivery_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Oxygen Delivery Type</FormLabel>
+              <FormLabel>{oxygenTherapy.deliveryType}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Enter Note Type" />
+                    <SelectValue placeholder={oxygenTherapy.selectDeliveryType} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Nasal Cannula">Nasal Cannula</SelectItem>
@@ -106,15 +111,15 @@ export default function OxygenTherapyForm({
 
         {/* Flow Rate */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="flow_rate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Flow Rate</FormLabel>
+              <FormLabel>{oxygenTherapy.flowRate}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Urgency" />
+                    <SelectValue placeholder={oxygenTherapy.selectFlowRate} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="2 L/min">2 L/min</SelectItem>
@@ -132,11 +137,11 @@ export default function OxygenTherapyForm({
         {/* Start Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{common.startDate}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -146,11 +151,11 @@ export default function OxygenTherapyForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>{common.startTime}</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -163,20 +168,20 @@ export default function OxygenTherapyForm({
         {/* Frequency/Mode and Urgency */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="frequency_mode"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Frequency / Mode</FormLabel>
+                <FormLabel>{oxygenTherapy.frequencyMode}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Frequency" />
+                      <SelectValue placeholder={oxygenTherapy.selectFrequencyMode} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Continuous">Continuous</SelectItem>
-                      <SelectItem value="Intermittent">Intermittent</SelectItem>
-                      <SelectItem value="PRN">PRN (As Needed)</SelectItem>
+                      <SelectItem value="Continuous">{frequencies.continuous}</SelectItem>
+                      <SelectItem value="Intermittent">{frequencies.intermittent}</SelectItem>
+                      <SelectItem value="PRN">{frequencies.prn}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -186,20 +191,20 @@ export default function OxygenTherapyForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="urgency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Urgency</FormLabel>
+                <FormLabel>{common.urgency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="STAT" />
+                      <SelectValue placeholder={common.selectUrgency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="routine">Routine</SelectItem>
-                      <SelectItem value="stat">STAT</SelectItem>
+                      <SelectItem value="urgent">{options.urgent}</SelectItem>
+                      <SelectItem value="routine">{options.routine}</SelectItem>
+                      <SelectItem value="stat">{options.stat}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -211,14 +216,14 @@ export default function OxygenTherapyForm({
 
         {/* Clinical Notes */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="clinical_notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Clinical Notes (Optional)</FormLabel>
+              <FormLabel>{common.clinicalNotes}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter Clinical Notes"
+                  placeholder={common.enterClinicalNotes}
                   rows={3}
                   {...field}
                 />
@@ -230,11 +235,19 @@ export default function OxygenTherapyForm({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
-          <CancelButton onClick={onCancel} />
+          <CancelButton onClick={onCancel} label={common.cancel} />
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            label={isSubmitting ? (submitLabel === "Update" ? "Updating..." : "Adding...") : (submitLabel || "Add Order")} 
+            label={
+              isSubmitting
+                ? submitLabel === "Update"
+                  ? common.updating
+                  : common.adding
+                : submitLabel === "Update"
+                  ? common.update
+                  : common.add
+            }
           />
         </div>
       </form>

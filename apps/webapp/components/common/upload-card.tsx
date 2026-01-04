@@ -49,7 +49,7 @@
 //       );
 //     }
 //   };
-  
+
 //   // CHANGED: Added new useEffect to attach stream AFTER render
 //   useEffect(() => {
 //     if (isCapturing && videoRef.current && stream) {
@@ -217,10 +217,16 @@ interface UploadCardProps {
   title: string;
   onFileSelect?: (file: File | null) => void;
   value?: File | null;
+  previewUrl?: string | null;
 }
 
 
-export function UploadCard({ title, onFileSelect, value }: UploadCardProps) {
+export function UploadCard({
+  title,
+  onFileSelect,
+  value,
+  previewUrl: externalPreviewUrl,
+}: UploadCardProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCapturing, setIsCapturing] = useState(false);
@@ -246,7 +252,7 @@ export function UploadCard({ title, onFileSelect, value }: UploadCardProps) {
   const startCapture = async () => {
     setCameraError(null); // Clear previous errors
     setIsCapturing(true); // Go to capturing view *first*
-    
+
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -318,6 +324,16 @@ export function UploadCard({ title, onFileSelect, value }: UploadCardProps) {
   useEffect(() => {
     return () => stopCapture();
   }, []);
+
+  useEffect(() => {
+  // Only set preview from API when:
+  // - no local file is selected
+  // - and external preview exists
+  if (!value && externalPreviewUrl) {
+    setPreviewUrl(externalPreviewUrl);
+  }
+}, [externalPreviewUrl, value]);
+
 
   return (
     <div className="border border-dashed rounded-md p-4 text-center bg-[#F7FBFF]">
@@ -397,48 +413,48 @@ export function UploadCard({ title, onFileSelect, value }: UploadCardProps) {
       {/* ... (Image Preview and Default Buttons are the same) ... */}
       {previewUrl && !isCapturing && (
         <div /* ... (omitted for brevity) ... */ >
-            <img
-              src={previewUrl}
-              alt="Captured"
-              className="rounded-md border border-gray-300 max-h-48 object-contain mx-auto"
-            />
-            <div className="flex justify-center gap-3 mt-3">
-                <button
-                  type="button"
-                  onClick={handleRemove}
-                  className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md text-sm"
-                >
-                  <X className="w-4 h-4 text-red-500" /> Remove
-                </button>
-                <button
-                  type="button"
-                  onClick={startCapture}
-                  className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md text-sm"
-                >
-                  <RotateCcw className="w-4 h-4" /> Re-capture
-                </button>
-            </div>
+          <img
+            src={previewUrl}
+            alt="Captured"
+            className="rounded-md border border-gray-300 max-h-48 object-contain mx-auto"
+          />
+          <div className="flex justify-center gap-3 mt-3">
+            <button
+              type="button"
+              onClick={handleRemove}
+              className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md text-sm"
+            >
+              <X className="w-4 h-4 text-red-500" /> Remove
+            </button>
+            <button
+              type="button"
+              onClick={startCapture}
+              className="flex items-center gap-1 px-3 py-1 bg-blue-600 text-white rounded-md text-sm"
+            >
+              <RotateCcw className="w-4 h-4" /> Re-capture
+            </button>
+          </div>
         </div>
       )}
 
       {!isCapturing && !previewUrl && (
         <div /* ... (omitted for brevity) ... */ >
-           <div className="flex justify-center gap-3 mt-3">
-             <button
-               type="button"
-               onClick={startCapture}
-               className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md text-sm"
-             >
-               <Camera className="w-4 h-4" /> Capture
-             </button>
-             <button
-               type="button"
-               onClick={handleBrowseClick}
-               className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm"
-             >
-               Upload Document
-             </button>
-           </div>
+          <div className="flex justify-center gap-3 mt-3">
+            <button
+              type="button"
+              onClick={startCapture}
+              className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-md text-sm"
+            >
+              <Camera className="w-4 h-4" /> Capture
+            </button>
+            <button
+              type="button"
+              onClick={handleBrowseClick}
+              className="px-3 py-1 bg-blue-600 text-white rounded-md text-sm"
+            >
+              Upload Document
+            </button>
+          </div>
         </div>
       )}
     </div>

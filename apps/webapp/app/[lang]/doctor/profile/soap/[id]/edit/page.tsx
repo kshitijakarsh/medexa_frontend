@@ -29,10 +29,13 @@ import {
     soapTemplateSchema,
     SoapTemplateFormSchema,
 } from "../../_components/soap-template-schema";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export default function SoapEditTemplate() {
     const router = useRouter();
     const { id } = useParams<{ id: string }>();
+    const dict = useDictionary();
+    const { soapTemplates } = dict.pages.doctor.profile;
 
     /* ---------------- Auth ---------------- */
     const [authToken, setAuthToken] = useState("");
@@ -93,21 +96,21 @@ export default function SoapEditTemplate() {
         mutationFn: (values: SoapTemplateFormSchema) =>
             api!.updateSoapTemplate(id, values),
         onSuccess: () => {
-            toast.success("SOAP template updated successfully");
+            toast.success(soapTemplates.updateSuccess);
             router.back();
         },
         onError: (err: any) =>
-            toast.error(err.message || "Failed to update SOAP template"),
+            toast.error(err.message || soapTemplates.updateError),
     });
 
-    /* ---------------- UI (UNCHANGED) ---------------- */
+    /* ---------------- UI ---------------- */
     return (
         <div className="p-6 bg-white border rounded-xl shadow-sm space-y-6">
-            <h2 className="text-lg font-semibold">SOAP Templates</h2>
+            <h2 className="text-lg font-semibold">{soapTemplates.title}</h2>
 
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit((values) =>(
+                    onSubmit={form.handleSubmit((values) => (
                         // console.log(values),
                         updateMutation.mutate(values)
                     )
@@ -121,10 +124,10 @@ export default function SoapEditTemplate() {
                             name="template_name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Template Name</FormLabel>
+                                    <FormLabel>{soapTemplates.templateName}</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Enter Template Name"
+                                            placeholder={soapTemplates.enterTemplateName}
                                             {...field}
                                             disabled={isFetching}
                                         />
@@ -139,10 +142,10 @@ export default function SoapEditTemplate() {
                             name="specialty"
                             render={({ field, fieldState }) => (
                                 <FormItem>
-                                    <FormLabel>Specialty</FormLabel>
+                                    <FormLabel>{soapTemplates.specialty}</FormLabel>
                                     <FormControl>
                                         <AppSelect
-                                            placeholder="Select Specialty"
+                                            placeholder={soapTemplates.selectSpecialty}
                                             value={field.value}
                                             onChange={field.onChange}
                                             options={SOAP_SPECIALTIES}
@@ -158,29 +161,29 @@ export default function SoapEditTemplate() {
 
                     {/* SOAP Data */}
                     <div className="bg-blue-50 border rounded-xl p-5 space-y-4">
-                        <h3 className="font-semibold">SOAP Templates Data</h3>
+                        <h3 className="font-semibold">{soapTemplates.dataTitle}</h3>
 
                         <div className="grid grid-cols-2 gap-6">
                             {[
                                 {
                                     key: "subjective",
-                                    label: "Subjective",
-                                    placeholder: "Enter Subjective",
+                                    label: soapTemplates.subjective,
+                                    placeholder: soapTemplates.enterSubjective,
                                 },
                                 {
                                     key: "objective",
-                                    label: "Objective",
-                                    placeholder: "Enter Clinical Notes",
+                                    label: soapTemplates.objective,
+                                    placeholder: soapTemplates.enterObjective,
                                 },
                                 {
                                     key: "assessment",
-                                    label: "Assessment",
-                                    placeholder: "Enter Objective Template",
+                                    label: soapTemplates.assessment,
+                                    placeholder: soapTemplates.enterAssessment,
                                 },
                                 {
                                     key: "plan",
-                                    label: "Plan",
-                                    placeholder: "Enter Plan Template",
+                                    label: soapTemplates.plan,
+                                    placeholder: soapTemplates.enterPlan,
                                 },
                             ].map(({ key, label, placeholder }) => (
                                 <FormField
@@ -215,7 +218,7 @@ export default function SoapEditTemplate() {
                             onClick={() => router.back()}
                             disabled={updateMutation.isPending}
                         >
-                            Cancel
+                            {soapTemplates.cancel}
                         </Button>
 
                         <Button
@@ -223,7 +226,7 @@ export default function SoapEditTemplate() {
                             className="bg-green-600 hover:bg-green-700 text-white"
                             disabled={updateMutation.isPending || isFetching}
                         >
-                            {updateMutation.isPending ? "Updating..." : "Update Templates"}
+                            {updateMutation.isPending ? soapTemplates.updating : soapTemplates.update}
                         </Button>
                     </div>
                 </form>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
+import Image from "next/image"
 import { Header } from "@/components/header"
 import { PageHeader } from "@/components/common/page-header"
 import { FormInput } from "@/components/ui/form-input"
@@ -15,6 +16,8 @@ import { useCreatePatient } from "../_hooks/usePatient"
 import { useCountries } from "../_hooks/useCountries"
 import { usePatientCategories } from "../_hooks/usePatientCategories"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
+import { LinkFamilyModal } from "./_components/link-family-modal"
+
 
 export default function AddPatientPage() {
   const router = useRouter()
@@ -25,8 +28,7 @@ export default function AddPatientPage() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [createdPatientId, setCreatedPatientId] = useState<string>("")
   const [mrn, setMrn] = useState<string>("")
-  
-  const createMutation = useCreatePatient()
+  const [showLinkFamilyModal, setShowLinkFamilyModal] = useState(false)
 
   // Form state
   const [formData, setFormData] = useState({
@@ -81,6 +83,9 @@ export default function AddPatientPage() {
       setFormData((prev) => ({ ...prev, [field]: file }))
     }
 
+  const createMutation = useCreatePatient()
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -113,7 +118,7 @@ export default function AddPatientPage() {
       }
 
       const response = await createMutation.mutateAsync(payload)
-      
+
       if (response.success && response.data) {
         setCreatedPatientId(response.data.id)
         setMrn(response.data.civil_id || response.data.id)
@@ -239,9 +244,9 @@ export default function AddPatientPage() {
   ]
 
   const insuranceProviders = [
-    { value: "provider1", label: "Insurance Company 1" },
-    { value: "provider2", label: "Insurance Company 2" },
-    { value: "provider3", label: "Insurance Company 3" },
+    { value: "12312", label: "Insurance Company 1" },
+    { value: "123123", label: "Insurance Company 2" },
+    { value: "123123123", label: "Insurance Company 3" },
   ]
 
   const planTypes = [
@@ -259,22 +264,26 @@ export default function AddPatientPage() {
 
   if (isSuccess) {
     return (
-      <main className="min-h-svh w-full">
+      <main className="min-h-svh w-full bg-white">
         <Header />
-        <div className="p-2 py-6 space-y-8 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
+        <div className="p-2 py-6 space-y-8 bg-white min-h-screen">
           <PageHeader title="Register New Patient" />
           <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="bg-white p-8 rounded-md shadow-sm max-w-md w-full text-center space-y-6">
+            <div className="max-w-lg w-full text-center space-y-8 py-12">
               {/* Success Icon */}
               <div className="flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-green-500" />
-                </div>
+                <Image
+                  src="/images/tick.svg"
+                  alt="Success"
+                  width={80}
+                  height={80}
+                  className="w-20 h-20"
+                />
               </div>
 
               {/* Success Message */}
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-2xl font-bold text-gray-900">
                   Registration Successful!
                 </h2>
                 <p className="text-gray-600">
@@ -283,34 +292,61 @@ export default function AddPatientPage() {
               </div>
 
               {/* MRN Display */}
-              <div className="bg-[#ECF3FF] rounded-lg p-6 border border-blue-200">
-                <p className="text-sm text-gray-600 mb-2">
+              <div className="bg-[#EFF6FF] rounded-lg py-6 px-8 mx-auto max-w-xs">
+                <p className="text-sm text-gray-700 mb-2 font-medium">
                   Medical Record Number
                 </p>
-                <p className="text-3xl font-bold text-gray-800">{mrn}</p>
+                <p className="text-3xl font-bold text-gray-900">{mrn}</p>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button
-                  variant="outline"
-                  onClick={handlePrintIdCard}
-                  className="flex items-center gap-2 text-blue-600 border-blue-500 hover:bg-blue-50"
-                >
-                  <Printer className="w-4 h-4" />
-                  Print ID Card
-                </Button>
+              <div className="flex flex-col gap-3 max-w-sm mx-auto px-4">
+                {/* Row 1: Print Hospital ID and Link Family */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrintIdCard}
+                    className="flex items-center justify-start gap-3 px-6 py-4 rounded-full border-2 border-blue-500 text-blue-600 font-medium hover:bg-blue-50"
+                  >
+                    <Printer className="w-5 h-5" />
+                    Print Hospital ID
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowLinkFamilyModal(true)}
+                    className="flex items-center justify-start gap-3 px-2 py-4 rounded-full bg-blue-500 text-white font-medium hover:bg-blue-600"
+                  >
+                    <Image
+                      src="/images/linkfam.svg"
+                      alt="Link Family"
+                      width={24}
+                      height={24}
+                      className="w-8 h-8"
+                    />
+                    Link Family
+                  </Button>
+                </div>
+
+                {/* Row 2: Add Visit (Full Width) */}
                 <Button
                   onClick={handleBookAppointment}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-full bg-[#44B678] text-white font-medium hover:bg-[#3a9d66]"
                 >
-                  <Calendar className="w-4 h-4" />
-                  Book Appointment
+                  <Calendar className="w-5 h-5" />
+                  Add Visit
                 </Button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Link Family Modal */}
+        <LinkFamilyModal
+          open={showLinkFamilyModal}
+          onClose={() => setShowLinkFamilyModal(false)}
+          currentPatientId={createdPatientId}
+          currentPatientMrn={mrn}
+        />
       </main>
     )
   }

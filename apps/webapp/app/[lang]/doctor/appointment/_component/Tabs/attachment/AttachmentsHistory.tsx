@@ -7,10 +7,12 @@ import { ROUTES } from "@/lib/routes";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 import { useAttachmentsHistoryByPatient } from "../_hooks/useAttachments";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function AttachmentsHistory({ patientId }: { patientId: string }) {
   const router = useRouter();
   const { withLocale } = useLocaleRoute();
+  const dict = useDictionary();
 
   const { data, isLoading } = useAttachmentsHistoryByPatient(patientId);
   const history = data || [];
@@ -18,14 +20,14 @@ export function AttachmentsHistory({ patientId }: { patientId: string }) {
   return (
     <div className="mt-4">
       <h3 className="text-sm font-semibold mb-2">
-        Previous History of Attachments
+        {dict.pages.doctor.appointment.tabsContent.attachments.history.title}
       </h3>
 
       {isLoading ? (
         <HistorySkeleton />
       ) : history.length === 0 ? (
         <p className="text-gray-500 text-sm">
-          No attachments found.
+          {dict.pages.doctor.appointment.tabsContent.attachments.history.empty}
         </p>
       ) : (
         <div className="flex flex-col gap-4">
@@ -43,7 +45,7 @@ export function AttachmentsHistory({ patientId }: { patientId: string }) {
               <HistoryCard
                 key={item.id}
                 title={item.title || "Attachment"}
-                subtitle={`Uploaded by ${recorderName} at ${createdAt ? format(createdAt, "hh:mm a") : "--"
+                subtitle={`${dict.pages.doctor.appointment.tabsContent.attachments.history.uploadedBy} ${recorderName} ${dict.pages.doctor.appointment.tabsContent.attachments.history.at} ${createdAt ? format(createdAt, "hh:mm a") : "--"
                   }`}
                 onClick={() =>
                   router.push(

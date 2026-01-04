@@ -32,6 +32,8 @@ export const ROUTES = {
   DOCTOR_SCREENING_ATTACHMENT_HISTORY_VIEW: `/attachment/history/`,
   DOCTOR_SCREENING_CONSUMABLE_HISTORY_VIEW: `/consumable/history/`,
   DOCTOR_SCREENING_EQUIPMENT_HISTORY_VIEW: `/equipment/history/`,
+  DOCTOR_SCHEDULE: `${DOCTOR_BASE}/schedule`,
+  DOCTOR_TIME_SLOTS: `${DOCTOR_BASE}/time-slots`,
 
   DOCTOR_PROFILE: `${DOCTOR_BASE}/profile`,
   DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${DOCTOR_BASE}/profile/soap/create`,
@@ -53,8 +55,15 @@ export const ROUTES = {
   NURSE_PROFILE_SOAP_NOTE_TEMPLATE_CREATE: `${NURSE_BASE}/profile/soap/create`,
   NURSE_PROFILE_SOAP_NOTE_TEMPLATE: `${NURSE_BASE}/profile/soap/`,
   NURSE_PROFILE_SOAP_NOTE_TEMPLATE_EDIT: `/edit`,
+  NURSE_RECENT_PATIENTS: `${NURSE_BASE}/dashboard/recent-patients`,
 
   FRONTOFFICE_DASHBOARD: `${FRONTOFFICE_BASE}/dashboard`,
+  FRONTOFFICE_SCHEDULE: `${FRONTOFFICE_BASE}/schedule`,
+  FRONTOFFICE_TIME_SLOTS: `${FRONTOFFICE_BASE}/time-slots`,
+  FRONTOFFICE_PATIENT_REGISTRATION: `${FRONTOFFICE_BASE}/patient-registration`,
+  FRONTOFFICE_OPD: `${FRONTOFFICE_BASE}/OPD`,
+  FRONTOFFICE_IPD: `${FRONTOFFICE_BASE}/IPD`,
+
 
   // HR
   HR: `${HR}/employee-configuration`,
@@ -64,9 +73,9 @@ export const ROUTES = {
   SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
   SURGERY_OT_TEAMS: `${SURGERY_BASE}/teams`,
   SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/teams/new`,
-  SURGERY_OT_TEMPLATES : `${SURGERY_BASE}/templates`,
-  SURGERY_OT_TEMPLATES_NEW : `${SURGERY_BASE}/templates/new`,
-  SURGERY_WARD_STORE : `${SURGERY_BASE}/ward-store`,
+  SURGERY_OT_TEMPLATES: `${SURGERY_BASE}/templates`,
+  SURGERY_OT_TEMPLATES_NEW: `${SURGERY_BASE}/templates/new`,
+  SURGERY_WARD_STORE: `${SURGERY_BASE}/ward-store`,
 }
 
 // Build URL with query parameters

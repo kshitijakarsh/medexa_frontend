@@ -1,102 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import NewButton from "@/components/common/new-button";
-// import AddAttachmentModal from "./attachment/AddAttachmentModal";
-// import AttachmentCard from "./attachment/AttachmentCard";
-// import AttachmentPreviewModal from "./attachment/AttachmentPreviewModal";
-// import { SectionWrapper } from "./common/SectionWrapper";
-// import { FileStack } from "lucide-react";
-
-// export default function Attachments() {
-//   const [showAddModal, setShowAddModal] = useState(false);
-//   const [previewItem, setPreviewItem] = useState(null);
-
-//   const [attachments, setAttachments] = useState([
-//     // Example:
-//     // {
-//     //   id: 1,
-//     //   title: "Lab Report",
-//     //   fileUrl: "/reports/lab.png",
-//     //   preview: "/reports/lab.png"
-//     // }
-//   ]);
-
-//   const addAttachment = (fileData) => {
-//     setAttachments((prev) => [
-//       ...prev,
-//       { id: prev.length + 1, ...fileData },
-//     ]);
-//   };
-
-//   return (
-//     <SectionWrapper
-//       header={
-//         <div className="flex justify-between items-center">
-//           {/* Header */}
-//           <h2 className="text-lg font-semibold">Attachments</h2>
-
-//           <NewButton
-//             name="Add Attachments"
-//             handleClick={() => setShowAddModal(true)}
-//           />
-//         </div>
-//       }
-//     >
-//       {/* CONTENT */}
-//       <div className="min-h-[240px]">
-
-//         {/* Body */}
-//         {attachments.length === 0 ? (
-//           <EmptyAttachments onAdd={() => setShowAddModal(true)} />
-//         ) : (
-//           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-//             {attachments.map((a) => (
-//               <AttachmentCard
-//                 key={a.id}
-//                 data={a}
-//                 onView={() => setPreviewItem(a)}
-//               />
-//             ))}
-//           </div>
-//         )}
-//       </div>
-//       {/* Modals */}
-//       <AddAttachmentModal
-//         open={showAddModal}
-//         onClose={() => setShowAddModal(false)}
-//         onSubmit={addAttachment}
-//       />
-
-//       {previewItem && (
-//         <AttachmentPreviewModal
-//           open={true}
-//           onClose={() => setPreviewItem(null)}
-//           attachment={previewItem}
-//         />
-//       )}
-//     </SectionWrapper>
-//   );
-// }
-
-// function EmptyAttachments({ onAdd }) {
-//   return (
-//     <div className="flex flex-col justify-center items-center h-72 text-gray-500">
-//       <FileStack size={50} />
-//       <p>There are no files attached.</p>
-
-//       <button
-//         onClick={onAdd}
-//         className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
-//       >
-//         Add Attachments
-//       </button>
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
 import { useParams } from "next/navigation";
@@ -113,11 +14,19 @@ import AttachmentCard from "./attachment/AttachmentCard";
 import AddAttachmentModal from "./attachment/AddAttachmentModal";
 import AttachmentPreviewModal from "./attachment/AttachmentPreviewModal";
 import { AttachmentGridSkeleton } from "./attachment/AttachmentGridSkeleton";
-import { FileStack } from "lucide-react";
 import { AttachmentsHistory } from "./attachment/AttachmentsHistory";
+import { usePermissionGuard } from "@/app/hooks/usePermissionGuard";
+import { FileStack } from "lucide-react";
+import { PERMISSIONS, hasPermission, normalizePermissionList } from "@/app/utils/permissions";
+import { Can } from "@/components/common/app-can";
+import { useUserStore } from "@/store/useUserStore";
+
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export default function Attachments({ patientId }: { patientId: string }) {
   const { id: visitId } = useParams() as { id: string };
+  const userPermissions = useUserStore((s) => s.user?.role.permissions);
+  const dict = useDictionary();
 
   const { data, isLoading } = useAttachmentsByVisitId(visitId);
   const deleteAttachment = useDeleteAttachment(visitId);
@@ -127,16 +36,29 @@ export default function Attachments({ patientId }: { patientId: string }) {
 
   const attachments = data ?? [];
 
+  // PERMISSIONS
+  // const { can } = usePermissionGuard();
+  const rawPermissions = useUserStore((s) => s.user?.role.permissions);
+  const normalizedPermissions = normalizePermissionList(rawPermissions);
+
+  const canCreate = hasPermission(normalizedPermissions, PERMISSIONS.DOCTOR.ATTACHMENTS.CREATE);
+  const canDelete = hasPermission(normalizedPermissions, PERMISSIONS.DOCTOR.ATTACHMENTS.DELETE);
+
   return (
-    <>  
+    <>
       <SectionWrapper
         header={
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Attachments</h2>
-            <NewButton
-              name="Add Attachments"
-              handleClick={() => setShowAddModal(true)}
-            />
+            <h2 className="text-lg font-semibold">{dict.pages.doctor.appointment.tabsContent.attachments.title}</h2>
+            <Can
+              permission={PERMISSIONS.DOCTOR.ATTACHMENTS.CREATE}
+              userPermissions={userPermissions}
+            >
+              <NewButton
+                name={dict.pages.doctor.appointment.tabsContent.attachments.add}
+                handleClick={() => setShowAddModal(true)}
+              />
+            </Can>
           </div>
         }
       >
@@ -144,7 +66,10 @@ export default function Attachments({ patientId }: { patientId: string }) {
           {isLoading ? (
             <AttachmentGridSkeleton />
           ) : attachments.length === 0 ? (
-            <EmptyAttachments onAdd={() => setShowAddModal(true)} />
+            <EmptyAttachments
+              onAdd={() => setShowAddModal(true)}
+              canCreate={canCreate}
+            />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {attachments.map((a) => (
@@ -156,18 +81,21 @@ export default function Attachments({ patientId }: { patientId: string }) {
                   }}
                   onView={() => setPreviewItem(a)}
                   onDelete={() => deleteAttachment.mutate(a.id)}
+                  canDelete={canDelete}
                 />
               ))}
             </div>
           )}
         </div>
 
-        <AddAttachmentModal
-          open={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          visitId={visitId}
-          patientId={patientId}
-        />
+        {canCreate && (
+          <AddAttachmentModal
+            open={showAddModal}
+            onClose={() => setShowAddModal(false)}
+            visitId={visitId}
+            patientId={patientId}
+          />
+        )}
 
         {previewItem && (
           <AttachmentPreviewModal
@@ -186,17 +114,27 @@ export default function Attachments({ patientId }: { patientId: string }) {
   );
 }
 
-function EmptyAttachments({ onAdd }: { onAdd: () => void }) {
+function EmptyAttachments({
+  onAdd,
+  canCreate,
+}: {
+  onAdd: () => void;
+  canCreate?: boolean;
+}) {
+  const dict = useDictionary();
   return (
     <div className="flex flex-col justify-center items-center h-72 text-gray-500">
       <FileStack size={50} />
-      <p>There are no files attached.</p>
-      <button
-        onClick={onAdd}
-        className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
-      >
-        Add Attachments
-      </button>
+      <p>{dict.pages.doctor.appointment.tabsContent.attachments.empty}</p>
+      {canCreate && (
+        <button
+          onClick={onAdd}
+          className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
+        >
+          {dict.pages.doctor.appointment.tabsContent.attachments.add}
+        </button>
+      )}
     </div>
   );
 }
+

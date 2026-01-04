@@ -43,6 +43,7 @@ import SpecialNotesForm from "./SpecialNotesForm";
 import MonitoringForm from "./MonitoringForm";
 // Catheter Care Form
 import CatheterCareForm from "./CatheterCareForm";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 interface AddNurseOrderModalProps {
   visitId: string;
@@ -57,6 +58,7 @@ export default function AddNurseOrderModal({
   open,
   onClose,
 }: AddNurseOrderModalProps) {
+  const dict = useDictionary();
   const [selectedOrderType, setSelectedOrderType] = useState<OrderType>("iv_fluids");
   const createNurseOrder = useCreateNurseOrder(visitId);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -111,25 +113,25 @@ export default function AddNurseOrderModal({
         setSelectedOrderType("iv_fluids");
         onClose();
       }}
-      title="Add Nurse Orders"
+      title={dict.pages.doctor.appointment.tabsContent.nurseOrders.modal.title}
     >
       <div className="space-y-4 max-h-[80vh] overflow-y-auto">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Order Type</label>
+          <label className="text-sm font-medium">{dict.pages.doctor.appointment.tabsContent.nurseOrders.modal.orderType}</label>
           <Select value={selectedOrderType} onValueChange={(value) => setSelectedOrderType(value as OrderType)}>
             <SelectTrigger>
-              <SelectValue />
+              <SelectValue placeholder={dict.pages.doctor.appointment.tabsContent.nurseOrders.modal.selectOrderType} />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(ORDER_TYPE_LABELS).map(([key, label]) => (
+              {Object.keys(ORDER_TYPE_LABELS).map((key) => (
                 <SelectItem key={key} value={key}>
-                  {label}
+                  {(dict.pages.doctor.appointment.tabsContent.nurseOrders.orderTypes as any)[key]}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        
+
         {renderOrderForm()}
       </div>
     </AppDialog>

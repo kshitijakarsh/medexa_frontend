@@ -231,9 +231,12 @@ interface SOAPNotesProps {
   setDirty: (dirty: boolean) => void;
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps) {
   const [selectedCard, setSelectedCard] = useState("");
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const dict = useDictionary();
 
   const applyTemplate = (template: any) => {
     setData({
@@ -250,17 +253,15 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
     setDirty(true);
   };
 
-
-
   return (
     <>
       <SectionWrapper
         header={
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <SectionTitle title="SOAP Notes" />
+              <SectionTitle title={dict.pages.doctor.appointment.tabsContent.soapNotes.title} />
               <span className="px-2 py-0.5 text-xs bg-green-100 text-green-600 rounded-full border">
-                ✓ Auto-saved
+                ✓ {dict.pages.doctor.appointment.tabsContent.soapNotes.autoSaved}
               </span>
             </div>
 
@@ -269,7 +270,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
               size="sm"
               onClick={() => setShowTemplateModal(true)}
             >
-              Load Template <ChevronDown className="w-4 h-4 ml-1" />
+              {dict.pages.doctor.appointment.tabsContent.soapNotes.loadTemplate} <ChevronDown className="w-4 h-4 ml-1" />
             </Button>
           </div>
         }
@@ -277,7 +278,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
         {data.subjective || data.objective || data.assessment || data.plan ? (
           <div className="grid grid-cols-2 gap-4">
             <SOAPCard
-              title="Subjective (Patient's Story)"
+              title={dict.pages.doctor.appointment.tabsContent.soapNotes.subjective}
               text={data.subjective}
               selected={selectedCard === "subjective"}
               onClick={() => setSelectedCard("subjective")}
@@ -285,7 +286,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
             />
 
             <SOAPCard
-              title="Objective (Clinical Findings)"
+              title={dict.pages.doctor.appointment.tabsContent.soapNotes.objective}
               text={data.objective}
               selected={selectedCard === "objective"}
               onClick={() => setSelectedCard("objective")}
@@ -293,7 +294,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
             />
 
             <SOAPCard
-              title="Assessment (Diagnosis)"
+              title={dict.pages.doctor.appointment.tabsContent.soapNotes.assessment}
               text={data.assessment}
               selected={selectedCard === "assessment"}
               onClick={() => setSelectedCard("assessment")}
@@ -301,7 +302,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
             />
 
             <SOAPCard
-              title="Plan (Treatment & Follow-up)"
+              title={dict.pages.doctor.appointment.tabsContent.soapNotes.plan}
               text={data.plan}
               selected={selectedCard === "plan"}
               onClick={() => setSelectedCard("plan")}
@@ -310,7 +311,7 @@ export function SOAPNotes({ patientId, data, setData, setDirty }: SOAPNotesProps
           </div>
         ) : (
           <p className="text-gray-600 italic">
-            Please select a template to start SOAP notes.
+            {dict.pages.doctor.appointment.tabsContent.soapNotes.empty}
           </p>
         )}
       </SectionWrapper>

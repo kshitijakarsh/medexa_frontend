@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/button";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface PaginationProps {
   page: number;
@@ -15,6 +16,8 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
   const maxToShow = 5;
   const start = Math.max(1, page - 2);
   const end = Math.min(totalPages, start + maxToShow - 1);
+  const dict = useDictionary();
+  const t = dict.pagination;
 
   for (let i = start; i <= end; i++) pages.push(i);
 
@@ -28,7 +31,7 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
         disabled={page === 1}
         onClick={() => onPageChange(1)}
       >
-        First
+        {t.first}
       </Button>
 
       {/* Prev */}
@@ -39,7 +42,7 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
         className={`cursor-pointer`}
         onClick={() => onPageChange(page - 1)}
       >
-        Prev
+        {t.previous}
       </Button>
 
       {/* Pages numbered */}
@@ -64,7 +67,7 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
         className={`cursor-pointer`}
         onClick={() => onPageChange(page + 1)}
       >
-        Next
+        {t.next}
       </Button>
 
       {/* Last */}
@@ -75,7 +78,7 @@ export function PaginationControls({ page, totalPages, onPageChange }: Paginatio
         className={`cursor-pointer`}
         onClick={() => onPageChange(totalPages)}
       >
-        Last
+        {t.last}
       </Button>
     </div >
   );

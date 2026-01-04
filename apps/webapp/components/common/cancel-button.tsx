@@ -2,6 +2,7 @@
 
 import { Button } from "@workspace/ui/components/button";
 import { XCircle } from "lucide-react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface CancelButtonProps {
   label?: string;
@@ -18,6 +19,9 @@ export function CancelButton({
   className = "",
   icon = false,
 }: CancelButtonProps) {
+
+  const dict = useDictionary();
+
   return (
     <Button
       type="button"
@@ -27,7 +31,7 @@ export function CancelButton({
       className={`text-blue-600 border-blue-500 hover:bg-blue-50 ${className}`}
     >
       {icon && <XCircle className="w-4 h-4 mr-2" />}
-      {label}
+      {dict.common.cancel}
     </Button>
   );
 }

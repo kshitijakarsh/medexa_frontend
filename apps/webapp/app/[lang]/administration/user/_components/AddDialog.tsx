@@ -23,7 +23,8 @@ import { toast } from "@workspace/ui/lib/sonner"
 import { createUserApiClient } from "@/lib/api/administration/users"
 import { createRoleApiClient } from "@/lib/api/administration/roles"
 import type { RoleItem } from "@/lib/api/administration/roles"
-import { Check, X } from "lucide-react"
+import { Check, X, Eye, EyeOff } from "lucide-react"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 /* Password validation schema */
 const passwordSchema = z
@@ -66,6 +67,9 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
   const userApi = createUserApiClient({})
   const roleApi = createRoleApiClient({})
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const dict = useDictionary();
+  const trans = dict.pages.users.addDialog
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -190,7 +194,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Add New User"
+      title={trans.title}
       maxWidth="md:max-w-1xl"
     >
       <Form {...form}>
@@ -202,14 +206,14 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>{trans.role}</FormLabel>
                     <FormControl>
                       <DynamicSelect
                         options={roleOptions}
                         value={field.value}
                         onChange={(v) => field.onChange(v as string)}
                         placeholder={
-                          loadingRoles ? "Loading roles..." : "Select role"
+                          loadingRoles ? trans.placeholderRole1 : trans.placeholderRole
                         }
                       />
                     </FormControl>
@@ -223,9 +227,9 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{trans.name}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter name" {...field} />
+                      <Input placeholder={trans.placeholderName} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -237,9 +241,9 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{trans.email}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter email" {...field} />
+                      <Input placeholder={trans.placeholderEmail} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -251,9 +255,9 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>{trans.phone}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter phone" {...field} />
+                      <Input placeholder={trans.placeholderPhone} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -265,23 +269,37 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{trans.password}</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter password"
-                        type="password"
-                        {...field}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          setPassword(e.target.value)
-                        }}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder={trans.placeholderPassword}
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setPassword(e.target.value)
+                          }}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                     {password && (
                       <div className="mt-2 space-y-1.5">
                         <p className="text-xs font-medium text-gray-700 mb-2">
-                          Password requirements:
+                          {trans.passwordReq}
                         </p>
                         <div className="space-y-1.5">
                           <div
@@ -292,7 +310,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                             ) : (
                               <X className="w-3.5 h-3.5" />
                             )}
-                            <span>At least 8 characters</span>
+                            <span>{trans.req1}</span>
                           </div>
                           <div
                             className={`flex items-center gap-2 text-xs ${passwordChecks.hasUppercase ? "text-green-600" : "text-gray-500"}`}
@@ -302,7 +320,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                             ) : (
                               <X className="w-3.5 h-3.5" />
                             )}
-                            <span>At least 1 uppercase letter</span>
+                            <span>{trans.req2}</span>
                           </div>
                           <div
                             className={`flex items-center gap-2 text-xs ${passwordChecks.hasNumber ? "text-green-600" : "text-gray-500"}`}
@@ -312,7 +330,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                             ) : (
                               <X className="w-3.5 h-3.5" />
                             )}
-                            <span>At least 1 number</span>
+                            <span>{trans.req4}</span>
                           </div>
                           <div
                             className={`flex items-center gap-2 text-xs ${passwordChecks.hasSpecialChar ? "text-green-600" : "text-gray-500"}`}
@@ -322,15 +340,14 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                             ) : (
                               <X className="w-3.5 h-3.5" />
                             )}
-                            <span>At least 1 special character</span>
+                            <span>{trans.req3}</span>
                           </div>
                         </div>
                       </div>
                     )}
                     {!password && (
                       <p className="text-xs text-gray-500 mt-1">
-                        Password must be at least 8 characters with 1 uppercase,
-                        1 number, and 1 special character.
+                        {trans.alert}
                       </p>
                     )}
                   </FormItem>
@@ -342,11 +359,11 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                 name="items.0.status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>{dict.common.status}</FormLabel>
                     <div
                       className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"} h-9 px-2 rounded-md`}
                     >
-                      <span className="text-sm text-red-500">Inactive</span>
+                      <span className="text-sm text-red-500">{dict.common.inactive}</span>
                       <FormControl>
                         <StatusSwitch
                           checked={field.value}
@@ -356,7 +373,7 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
                       <span
                         className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"}`}
                       >
-                        Active
+                        {dict.common.active}
                       </span>
                     </div>
                     <FormMessage />
@@ -373,14 +390,14 @@ export function AddDialog({ open, onClose, onSave }: AddDialogProps) {
               onClick={onClose}
               className="text-blue-600 border-blue-500"
             >
-              Cancel
+              {dict.common.cancel}
             </Button>
             <Button
               type="submit"
               disabled={createUserMutation.isPending}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
-              {createUserMutation.isPending ? "Saving..." : "Save"}
+              {createUserMutation.isPending ? dict.common.saving : dict.common.save}
             </Button>
           </div>
         </form>
