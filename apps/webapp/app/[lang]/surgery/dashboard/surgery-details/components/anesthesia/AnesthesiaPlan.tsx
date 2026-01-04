@@ -10,6 +10,11 @@ import { NewVitals } from "./NewVitals";
 import { PlanDetails } from "./PlanDetails";
 import NewButton from "@/components/common/new-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { AnesthesiaPlan as AnesthesiaPlanType, createAnesthesiaApiClient } from "@/lib/api/surgery/anesthesia";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { toast } from "@workspace/ui/lib/sonner";
+import { Info } from "lucide-react";
 
 const TABS = [
   "Medical History",
@@ -30,8 +35,38 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   activeTab: propActiveTab,
   onTabChange,
   isEditing,
-  setIsEditing
+  setIsEditing,
 }) => {
+  const { id: surgeryId } = useParams();
+  const anesthesiaApi = createAnesthesiaApiClient();
+
+  const { data: anesthesiaResponse, isLoading } = useQuery({
+    queryKey: ["surgery-anesthesia", surgeryId],
+    queryFn: async () => {
+      const response = await anesthesiaApi.getAnesthesiaPlans(surgeryId as string);
+      return response.data;
+    },
+    enabled: !!surgeryId,
+  });
+
+  const queryClient = useQueryClient();
+
+  const saveMutation = useMutation({
+    mutationFn: async (payload: Partial<AnesthesiaPlanType>) => {
+      const response = await anesthesiaApi.saveAnesthesiaPlan(surgeryId as string, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["surgery-anesthesia", surgeryId] });
+      toast.success("Anesthesia plan saved successfully");
+      setIsEditing(false);
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || error?.message || "Failed to save anesthesia plan");
+    },
+  });
+
+  const data = anesthesiaResponse?.data;
   const [internalActiveTab, setInternalActiveTab] = React.useState("Medical History");
 
   const activeTab = propActiveTab || internalActiveTab;
@@ -94,19 +129,65 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
         </div>
       </div>
 
+      
+
       <div className="w-full bg-slate-200 h-px"></div>
 
+      <div className="py-2">
+          <div className="flex justify-end items-center gap-1">
+            <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
+              {/* {updatedAt ? (
+                <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
+              ) : */}
+              
+              {/* ( */}
+                <>Last Edited by Anesthesia Sarah on November 14, 2024, at 8:45 AM.</>
+              {/* )} */}
+            </div>
+            <Info size={18} className="text-blue-400" />
+          </div>
+        </div>
+
       <div className="px-3 pb-6 pt-1">
-        {activeTab === "Medical History" ? (
-          <MedicalHistory />
+        {isLoading ? (
+          <div className="p-8 text-center text-slate-500">Loading anesthesia plan...</div>
+        ) : activeTab === "Medical History" ? (
+          <MedicalHistory/>
         ) : activeTab === "Airway Assessment" ? (
-          <AirwayAssessment isEditing={isEditing} />
+          <AirwayAssessment
+            isEditing={isEditing}
+            mallampatiGrade={data?.mallampati_grade}
+            mouthOpening={data?.mouth_opening}
+            neckMobility={data?.neck_mobility}
+            difficultAirwayRisk={data?.diffult_airway_risk}
+            airwayManagementPlan={data?.airway_management_plan}
+            onSave={(payload) => saveMutation.mutate(payload)}
+            isSaving={saveMutation.isPending}
+          />
         ) : activeTab === "Vitals Examination" ? (
-          <VitalsExamination isEditing={isEditing} />
+          <VitalsExamination
+            isEditing={isEditing}
+          />
         ) : activeTab === "ASA & Risk" ? (
-          <ASARisk isEditing={isEditing} />
+          <ASARisk
+            isEditing={isEditing}
+            asaStatusClassification={data?.asa_status_classification}
+            surgeryRiskLevel={data?.surgery_risk_level}
+            asaAndRiskAdditionalNote={data?.asa_and_risk_additional_note}
+            onSave={(payload) => saveMutation.mutate(payload)}
+            isSaving={saveMutation.isPending}
+          />
         ) : activeTab === "Anesthesia Plan" ? (
-          <PlanDetails isEditing={isEditing} />
+          <PlanDetails
+            isEditing={isEditing}
+            // anaesthesiaType={data?.anaesthesia_type}
+            // monitoringRequired={data?.monitoring_required}
+            // postOperativeVentilationRequired={data?.post_operative_ventilation_required}
+            // icuRequired={data?.icu_required}
+            // airwayManagementPlan={data?.airway_management_plan}
+            // onSave={(payload) => saveMutation.mutate(payload)}
+            // isSaving={saveMutation.isPending}
+          />
         ) : (
           <div className="flex w-full h-48 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">
             <p className="text-slate-400 font-medium">To be implemented</p>

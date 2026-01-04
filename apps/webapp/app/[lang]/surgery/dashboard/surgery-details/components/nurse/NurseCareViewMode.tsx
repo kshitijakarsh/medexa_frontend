@@ -15,21 +15,12 @@ const ChecklistViewItem = ({ label, checked }: { label: string; checked: boolean
     </div>
 );
 
-export const NurseCareViewMode = () => {
-    const { id: surgeryId } = useParams();
-    const nurseNotesApi = createNurseNotesApiClient();
+interface NurseCareViewModeProps {
+    data: any;
+    isLoading: boolean;
+}
 
-    const { data: nurseNotesResponse, isLoading } = useQuery({
-        queryKey: ["surgery-nurse-notes", surgeryId],
-        queryFn: async () => {
-            const response = await nurseNotesApi.getNurseNotes(surgeryId as string);
-            return response.data;
-        },
-        enabled: !!surgeryId,
-    });
-
-    const data = nurseNotesResponse?.data;
-
+export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) => {
     if (isLoading) {
         return <div className="p-8 text-center text-slate-500">Loading nursing notes...</div>;
     }

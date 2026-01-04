@@ -19,6 +19,7 @@ interface SelectFieldProps {
     placeholder: string;
     options?: SelectOption[];
     value?: string;
+    defaultValue?: string;
     onChange?: (value: string) => void;
     showAddButton?: boolean;
     onAddClick?: () => void;
@@ -30,6 +31,7 @@ export const SelectField = ({
     placeholder,
     options = [],
     value,
+    defaultValue,
     onChange,
     showAddButton = false,
     onAddClick,
@@ -39,7 +41,7 @@ export const SelectField = ({
         <div className={`space-y-1.5 ${className || ""}`}>
             <label className="text-sm">{label}</label>
             <div className={showAddButton ? "flex gap-2" : ""}>
-                <Select value={value} onValueChange={onChange}>
+                <Select value={value} onValueChange={onChange} defaultValue={defaultValue}>
                     <SelectTrigger className="w-full bg-white border-slate-200 text-slate-500 text-sm h-10">
                         <SelectValue placeholder={placeholder} />
                     </SelectTrigger>

@@ -58,10 +58,11 @@ const ChecklistItem = ({
 );
 
 type NurseCareEditModeProps = {
+    initialData?: any;
     onSaveDraft?: () => void;
 };
 
-export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
+export const NurseCareEditMode = ({ initialData, onSaveDraft }: NurseCareEditModeProps) => {
     return (
         <>
             {/* Patient Reception in OT */}
@@ -72,7 +73,7 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 <CardContent className="space-y-4">
                     <div className="space-y-1.5">
                         <Label className="text-sm font-medium">Patient Received Time</Label>
-                        <Select defaultValue="08:00">
+                        <Select defaultValue={initialData?.patient_reception?.time || "08:00"}>
                             <SelectTrigger className={cn("w-full md:w-1/2 h-10")}>
                                 <div className="flex-1 text-left">
                                     <SelectValue placeholder="Select Time" />
@@ -89,10 +90,10 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                         </Select>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <ChecklistItem id="reception-identity" label="Patient Identity Verified" />
-                        <ChecklistItem id="reception-consent" label="Consent Form Verified" />
-                        <ChecklistItem id="reception-site" label="Surgical Site Marked" />
-                        <ChecklistItem id="reception-npo" label="Fasting Status Confirmed (NPO)" />
+                        <ChecklistItem id="reception-identity" label="Patient Identity Verified" defaultChecked={!!initialData?.patient_reception?.identity_verified} />
+                        <ChecklistItem id="reception-consent" label="Consent Form Verified" defaultChecked={!!initialData?.patient_reception?.consent_verified} />
+                        <ChecklistItem id="reception-site" label="Surgical Site Marked" defaultChecked={!!initialData?.patient_reception?.site_marked} />
+                        <ChecklistItem id="reception-npo" label="Fasting Status Confirmed (NPO)" defaultChecked={!!initialData?.patient_reception?.fasting_confirmed} />
                     </div>
                 </CardContent>
             </Card>
@@ -101,7 +102,7 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-lg font-medium">Surgical Safety Checklist</CardTitle>
-                    <Select defaultValue="08:15">
+                    <Select defaultValue={initialData?.safety_checklist?.time || "08:15"}>
                         <SelectTrigger className="w-32 h-9">
                             <div className="flex-1 text-left">
                                 <SelectValue placeholder="Select Time" />
@@ -119,17 +120,17 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 gap-3">
-                        <ChecklistItem id="safety-identity" label="Patient confirms identity, site, procedure, consent" />
-                        <ChecklistItem id="safety-site" label="Site marked / Not applicable" />
-                        <ChecklistItem id="safety-consent" label="Consent form complete" />
-                        <ChecklistItem id="safety-pulse" label="Pulse oximeter on patient and functioning" />
-                        <ChecklistItem id="safety-allergies" label="Known allergies confirmed" />
-                        <ChecklistItem id="safety-airway" label="Difficult airway/aspiration risk assessed" />
-                        <ChecklistItem id="safety-blood" label="Risk of >500ml blood loss assessed" />
+                        <ChecklistItem id="safety-identity" label="Patient confirms identity, site, procedure, consent" defaultChecked={!!initialData?.safety_checklist?.identity_confirmed} />
+                        <ChecklistItem id="safety-site" label="Site marked / Not applicable" defaultChecked={!!initialData?.safety_checklist?.site_marked} />
+                        <ChecklistItem id="safety-consent" label="Consent form complete" defaultChecked={!!initialData?.safety_checklist?.consent_complete} />
+                        <ChecklistItem id="safety-pulse" label="Pulse oximeter on patient and functioning" defaultChecked={!!initialData?.safety_checklist?.pulse_oximeter} />
+                        <ChecklistItem id="safety-allergies" label="Known allergies confirmed" defaultChecked={!!initialData?.safety_checklist?.allergies} />
+                        <ChecklistItem id="safety-airway" label="Difficult airway/aspiration risk assessed" defaultChecked={!!initialData?.safety_checklist?.airway} />
+                        <ChecklistItem id="safety-blood" label="Risk of >500ml blood loss assessed" defaultChecked={!!initialData?.safety_checklist?.blood_loss} />
                     </div>
                     <div className="space-y-1.5 pt-2">
                         <Label className="text-xs font-medium text-slate-800">Additional Notes</Label>
-                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" />
+                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" defaultValue={initialData?.safety_checklist?.notes} />
                     </div>
                 </CardContent>
             </Card>
@@ -142,9 +143,9 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 <CardContent className="space-y-4">
                     <div className="space-y-1.5">
                         <Label className="text-xs font-medium text-slate-800">Patient Position</Label>
-                        <Input type="text" placeholder="Enter Patient Position" className="h-10" />
+                        <Input type="text" placeholder="Enter Patient Position" className="h-10" defaultValue={initialData?.positioning?.position} />
                     </div>
-                    <ChecklistItem id="pos-pressure" label="All pressure points adequately padded" />
+                    <ChecklistItem id="pos-pressure" label="All pressure points adequately padded" defaultChecked={!!initialData?.positioning?.pressure_points} />
                 </CardContent>
             </Card>
 
@@ -152,7 +153,7 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-lg font-medium">Time Out (Before Skin Incision)</CardTitle>
-                    <Select defaultValue="08:45">
+                    <Select defaultValue={initialData?.time_out?.time || "08:45"}>
                         <SelectTrigger className="w-32 h-9">
                             <div className="flex-1 text-left">
                                 <SelectValue placeholder="Select Time" />
@@ -170,15 +171,15 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 gap-3">
-                        <ChecklistItem id="timeout-team" label="All team members introduced by name and role" />
-                        <ChecklistItem id="timeout-confirm" label="Surgeon, Anaesthetist, Nurse confirm patient, site, procedure" />
-                        <ChecklistItem id="timeout-antibiotic" label="Antibiotic prophylaxis given within 60 min" />
-                        <ChecklistItem id="timeout-imaging" label="Essential imaging displayed" />
-                        <ChecklistItem id="timeout-sterility" label="Sterility confirmed (including indicator results)" />
+                        <ChecklistItem id="timeout-team" label="All team members introduced by name and role" defaultChecked={!!initialData?.time_out?.team_introduced} />
+                        <ChecklistItem id="timeout-confirm" label="Surgeon, Anaesthetist, Nurse confirm patient, site, procedure" defaultChecked={!!initialData?.time_out?.confirmed} />
+                        <ChecklistItem id="timeout-antibiotic" label="Antibiotic prophylaxis given within 60 min" defaultChecked={!!initialData?.time_out?.antibiotic} />
+                        <ChecklistItem id="timeout-imaging" label="Essential imaging displayed" defaultChecked={!!initialData?.time_out?.imaging} />
+                        <ChecklistItem id="timeout-sterility" label="Sterility confirmed (including indicator results)" defaultChecked={!!initialData?.time_out?.sterility} />
                     </div>
                     <div className="space-y-1.5 pt-2">
                         <Label className="text-xs font-medium text-slate-800">Additional Notes</Label>
-                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" />
+                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" defaultValue={initialData?.time_out?.notes} />
                     </div>
                 </CardContent>
             </Card>
@@ -187,7 +188,7 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-lg font-medium">Sign Out (Before Patient Leaves OT)</CardTitle>
-                    <Select defaultValue="10:30">
+                    <Select defaultValue={initialData?.sign_out?.time || "10:30"}>
                         <SelectTrigger className="w-32 h-9">
                             <div className="flex-1 text-left">
                                 <SelectValue placeholder="Select Time" />
@@ -205,14 +206,14 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 gap-3">
-                        <ChecklistItem id="signout-procedure" label="Procedure name recorded correctly" />
-                        <ChecklistItem id="signout-counts" label="Instrument, sponge, needle counts correct" />
-                        <ChecklistItem id="signout-specimen" label="Specimen labeled (including patient name)" />
-                        <ChecklistItem id="signout-equipment" label="Equipment problems addressed" />
+                        <ChecklistItem id="signout-procedure" label="Procedure name recorded correctly" defaultChecked={!!initialData?.sign_out?.procedure} />
+                        <ChecklistItem id="signout-counts" label="Instrument, sponge, needle counts correct" defaultChecked={!!initialData?.sign_out?.counts} />
+                        <ChecklistItem id="signout-specimen" label="Specimen labeled (including patient name)" defaultChecked={!!initialData?.sign_out?.specimen} />
+                        <ChecklistItem id="signout-equipment" label="Equipment problems addressed" defaultChecked={!!initialData?.sign_out?.equipment} />
                     </div>
                     <div className="space-y-1.5 pt-2">
                         <Label className="text-xs font-medium text-slate-800">Additional Notes</Label>
-                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" />
+                        <Textarea placeholder="Enter Additional notes" className="min-h-[80px] resize-none" defaultValue={initialData?.sign_out?.notes} />
                     </div>
                 </CardContent>
             </Card>
@@ -279,7 +280,7 @@ export const NurseCareEditMode = ({ onSaveDraft }: NurseCareEditModeProps) => {
                 <CardContent>
                     <div className="space-y-1.5">
                         <Label className="text-xs font-medium text-slate-800">Nursing Notes</Label>
-                        <Textarea placeholder="Enter Nursing Notes" className="min-h-[100px] resize-none" />
+                        <Textarea placeholder="Enter Nursing Notes" className="min-h-[100px] resize-none" defaultValue={initialData?.nursing_notes} />
                     </div>
                 </CardContent>
             </Card>

@@ -48,6 +48,22 @@ export interface SurgeryResponse {
     data: Surgery;
 }
 
+export interface CreateSurgeryParams {
+    procedure_id: string;
+    patient_id: string;
+    department_id: string;
+    urgency: "elective" | "urgent" | "emergency";
+    duration: number;
+    date: string;
+    ot_room_id: string;
+    surgeon_id: string;
+    assistant_surgeon_id?: string;
+    anaesthetist_id?: string;
+    scrub_nurse_id?: string;
+    circulating_nurse_id?: string;
+    ot_technician_id?: string;
+}
+
 class SurgeryApiClient {
     private baseUrl: string;
     private authToken?: string;
@@ -82,6 +98,16 @@ class SurgeryApiClient {
         return axios.get(`${this.baseUrl}/api/v1/surgeries`, {
             ...config,
             params,
+        });
+    }
+
+    /* ---------------------------------------------------
+       POST: Create Surgery
+    --------------------------------------------------- */
+    async create(payload: CreateSurgeryParams) {
+        const config = await this.getConfig();
+        return axios.post(`${this.baseUrl}/api/v1/surgeries`, payload, {
+            ...config,
         });
     }
 }

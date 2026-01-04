@@ -19,6 +19,8 @@ import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeTogg
 import { useState, useMemo } from "react";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
+import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
+import { DateRange } from "react-day-picker";
 import { Column } from "@/components/common/data-table/ResponsiveDataTable";
 
 interface TemplateData {
@@ -97,7 +99,7 @@ export default function TemplatesList() {
     const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
     // Filter States
-    const [dateRange, setDateRange] = useState("");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const [selectedDept, setSelectedDept] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
@@ -221,10 +223,8 @@ export default function TemplatesList() {
                 {/* Filters + Calendar toggle */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
-                        <FilterDropdown
-                            icon={<Calendar size={16} />}
+                        <DateRangeDropdown
                             label="Date Range"
-                            options={["Today", "Yesterday", "Last 7 Days", "Last 30 Days"]}
                             value={dateRange}
                             onSelect={setDateRange}
                         />

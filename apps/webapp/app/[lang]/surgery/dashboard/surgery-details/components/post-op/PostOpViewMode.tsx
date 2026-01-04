@@ -161,92 +161,102 @@ const NURSE_ORDER_COLUMNS: TableColumn<any>[] = [
     },
 ];
 
-// Mock data for view mode
-const MOCK_POSTOP_DATA = {
-    disposition: {
-        transferTo: "Surgical Ward",
-        floor: "2nd Floor",
-        wardUnit: "Ward A",
-        bedNumber: "Bed 12",
-        transferTime: "10:30",
-        nurse: "Nurse John",
-    },
-    monitoring: {
-        frequency: "Every 30 minutes",
-        duration: "24 hours",
-        special: "ECG",
-    },
-    activity: {
-        level: "Mobilize with assistance",
-        plan: "Encourage early mobilization with help from nursing staff. Monitor for dizziness.",
-    },
-    diet: {
-        orders: "Soft diet",
-        time: "4 hours",
-        fluidRestriction: "Yes",
-        instructions: "Maximum intake 1500mL/day. Monitor intake/output strictly.",
-    },
-    pain: {
-        frequency: "Every 4 hours",
-        targetScore: "2",
-    },
-    drains: {
-        catheterInSitu: "Yes",
-        catheterPlan: "Remove catheter once urine output is stable and patient is mobilizing.",
-        ngtInSitu: "No",
-        ngtManagement: "Monitor NGT site for any leakage if removed.",
-    },
-    specialInstructions: "Keep surgical site clean and dry. Watch for signs of excessive bleeding.",
-    followUp: {
-        doctor: "Dr. Vinay",
-        date: "2025-10-05",
-        time: "08:30",
-    },
-};
+interface PostOpViewModeProps {
+    data: any;
+    isLoading: boolean;
+}
 
-export const PostOpViewMode = () => {
+export const PostOpViewMode = ({ data, isLoading }: PostOpViewModeProps) => {
+    if (isLoading) {
+        return <div className="p-8 text-center text-slate-500">Loading post-op details...</div>;
+    }
+
+    const displayData = {
+        disposition: {
+            transferTo: data?.disposition?.transfer_to || "-",
+            floor: data?.disposition?.floor || "-",
+            wardUnit: data?.disposition?.ward_unit || "-",
+            bedNumber: data?.disposition?.bed_number || "-",
+            transferTime: data?.disposition?.transfer_time || "-",
+            nurse: data?.disposition?.nurse || "-",
+        },
+        monitoring: {
+            frequency: data?.monitoring?.frequency || "-",
+            duration: data?.monitoring?.duration || "-",
+            special: data?.monitoring?.special || "-",
+        },
+        activity: {
+            level: data?.activity?.level || "-",
+            plan: data?.activity?.plan || "-",
+        },
+        diet: {
+            orders: data?.diet?.orders || "-",
+            time: data?.diet?.time || "-",
+            fluidRestriction: data?.diet?.fluid_restriction ? "Yes" : "No",
+            instructions: data?.diet?.instructions || "-",
+        },
+        pain: {
+            frequency: data?.pain?.frequency || "-",
+            targetScore: data?.pain?.target_score || "-",
+        },
+        drains: {
+            catheterInSitu: data?.drains?.catheter_in_situ ? "Yes" : "No",
+            catheterPlan: data?.drains?.catheter_plan || "-",
+            ngtInSitu: data?.drains?.ngt_in_situ ? "Yes" : "No",
+            ngtManagement: data?.drains?.ngt_management || "-",
+        },
+        specialInstructions: data?.special_instructions || "-",
+        followUp: {
+            doctor: data?.follow_up?.doctor || "-",
+            date: data?.follow_up?.date || "-",
+            time: data?.follow_up?.time || "-",
+        },
+    };
+
+    const nurseOrders = data?.nurse_orders || [];
+
     return (
         <div className="space-y-4">
             {/* Disposition / Transfer */}
             <DetailSection title="Disposition / Transfer">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <InfoField label="Transfer To" value={MOCK_POSTOP_DATA.disposition.transferTo} />
-                    <InfoField label="Floor" value={MOCK_POSTOP_DATA.disposition.floor} />
-                    <InfoField label="Ward / Unit" value={MOCK_POSTOP_DATA.disposition.wardUnit} />
+                    <InfoField label="Transfer To" value={displayData.disposition.transferTo} />
+                    <InfoField label="Floor" value={displayData.disposition.floor} />
+                    <InfoField label="Ward / Unit" value={displayData.disposition.wardUnit} />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Bed Number" value={MOCK_POSTOP_DATA.disposition.bedNumber} />
-                    <InfoField label="Transfer Time" value={MOCK_POSTOP_DATA.disposition.transferTime} />
-                    <InfoField label="Nurse" value={MOCK_POSTOP_DATA.disposition.nurse} />
+                    <InfoField label="Bed Number" value={displayData.disposition.bedNumber} />
+                    <InfoField label="Transfer Time" value={displayData.disposition.transferTime} />
+                    <InfoField label="Nurse" value={displayData.disposition.nurse} />
                 </div>
             </DetailSection>
 
             {/* Vital Signs Monitoring */}
             <DetailSection title="Vital Signs Monitoring">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Monitoring Frequency" value={MOCK_POSTOP_DATA.monitoring.frequency} />
-                    <InfoField label="Duration" value={MOCK_POSTOP_DATA.monitoring.duration} />
-                    <InfoField label="Special Monitoring" value={MOCK_POSTOP_DATA.monitoring.special} />
+                    <InfoField label="Monitoring Frequency" value={displayData.monitoring.frequency} />
+                    <InfoField label="Duration" value={displayData.monitoring.duration} />
+                    <InfoField label="Special Monitoring" value={displayData.monitoring.special} />
                 </div>
             </DetailSection>
 
             {/* Activity & Mobilization */}
             <DetailSection title="Activity & Mobilization">
                 <div className="space-y-4">
-                    <InfoField label="Activity Level" value={MOCK_POSTOP_DATA.activity.level} />
-                    <InfoField label="Mobilization Plan" value={MOCK_POSTOP_DATA.activity.plan} />
+                    <InfoField label="Activity Level" value={displayData.activity.level} />
+                    <InfoField label="Mobilization Plan" value={displayData.activity.plan} />
                 </div>
             </DetailSection>
 
             {/* Diet & Oral Fluids */}
             <DetailSection title="Diet & Oral Fluids">
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    <InfoField label="Diet Orders" value={MOCK_POSTOP_DATA.diet.orders} />
-                    <InfoField label="Time (Hour)" value={MOCK_POSTOP_DATA.diet.time} />
+                    <InfoField label="Diet Orders" value={displayData.diet.orders} />
+                    <InfoField label="Time (Hour)" value={displayData.diet.time} />
                 </div>
                 <div className="space-y-4">
-                    <InfoField label="Fluid Restriction" value={MOCK_POSTOP_DATA.diet.fluidRestriction} />
-                    <InfoField label="Instructions" value={MOCK_POSTOP_DATA.diet.instructions} />
+                    <InfoField label="Fluid Restriction" value={displayData.diet.fluidRestriction} />
+                    <InfoField label="Instructions" value={displayData.diet.instructions} />
                 </div>
             </DetailSection>
 
@@ -254,38 +264,38 @@ export const PostOpViewMode = () => {
             <SurgeryDataTable
                 title="Nurse Order"
                 columns={NURSE_ORDER_COLUMNS}
-                data={MOCK_NURSE_ORDER_DATA}
+                data={nurseOrders}
             />
 
             {/* Pain Management */}
             <DetailSection title="Pain Management">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InfoField label="Pain Assessment Frequency" value={MOCK_POSTOP_DATA.pain.frequency} />
-                    <InfoField label="Target Pain Score (0-10)" value={MOCK_POSTOP_DATA.pain.targetScore} />
+                    <InfoField label="Pain Assessment Frequency" value={displayData.pain.frequency} />
+                    <InfoField label="Target Pain Score (0-10)" value={displayData.pain.targetScore} />
                 </div>
             </DetailSection>
 
             {/* Drains, Tubes & Catheters */}
             <DetailSection title="Drains, Tubes & Catheters">
                 <div className="space-y-4">
-                    <InfoField label="Urinary Catheter in situ" value={MOCK_POSTOP_DATA.drains.catheterInSitu} />
-                    <InfoField label="Catheter Removal Plan" value={MOCK_POSTOP_DATA.drains.catheterPlan} />
-                    <InfoField label="NGT (Nasogastric Tube) in situ" value={MOCK_POSTOP_DATA.drains.ngtInSitu} />
-                    <InfoField label="NGT Management" value={MOCK_POSTOP_DATA.drains.ngtManagement} />
+                    <InfoField label="Urinary Catheter in situ" value={displayData.drains.catheterInSitu} />
+                    <InfoField label="Catheter Removal Plan" value={displayData.drains.catheterPlan} />
+                    <InfoField label="NGT (Nasogastric Tube) in situ" value={displayData.drains.ngtInSitu} />
+                    <InfoField label="NGT Management" value={displayData.drains.ngtManagement} />
                 </div>
             </DetailSection>
 
             {/* Special Instructions */}
             <DetailSection title="Special Instructions">
-                <InfoField label="Additional Special Instructions" value={MOCK_POSTOP_DATA.specialInstructions} />
+                <InfoField label="Additional Special Instructions" value={displayData.specialInstructions} />
             </DetailSection>
 
             {/* Follow-Up & Reviews */}
             <DetailSection title="Follow-Up & Reviews">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Doctor" value={MOCK_POSTOP_DATA.followUp.doctor} />
-                    <InfoField label="Date" value={MOCK_POSTOP_DATA.followUp.date} />
-                    <InfoField label="Time" value={MOCK_POSTOP_DATA.followUp.time} />
+                    <InfoField label="Doctor" value={displayData.followUp.doctor} />
+                    <InfoField label="Date" value={displayData.followUp.date} />
+                    <InfoField label="Time" value={displayData.followUp.time} />
                 </div>
             </DetailSection>
         </div>

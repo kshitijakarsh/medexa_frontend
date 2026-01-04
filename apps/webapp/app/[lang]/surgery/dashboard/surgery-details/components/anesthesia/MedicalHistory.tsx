@@ -1,6 +1,5 @@
 "use client";
 
-import { Info } from "lucide-react";
 import Button from "@/components/ui/button";
 import { DataTable } from "@/components/common/data-table";
 import { Column } from "@/components/common/data-table/ResponsiveDataTable";
@@ -54,15 +53,14 @@ const columns: Column<typeof MEDICATIONS[number]>[] = [
   },
 ];
 
-export const MedicalHistory = () => {
+interface MedicalHistoryProps {
+  updatedBy?: string;
+  updatedAt?: string;
+}
+
+export const MedicalHistory = ({ updatedBy, updatedAt }: MedicalHistoryProps) => {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-end items-center gap-1">
-        <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200">
-          Last Edited by Anesthesia Sarah on November 14, 2024, at 8:45 AM.
-        </div>
-        <Info size={18} className="text-blue-400" />
-      </div>
 
       <div className="rounded-xl border border-blue-100 p-4">
         <label className="block text-sm text-slate-500 tracking-tight">

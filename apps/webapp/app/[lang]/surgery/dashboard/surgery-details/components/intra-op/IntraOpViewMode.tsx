@@ -4,25 +4,12 @@ import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { DetailSection } from "../surgery-details/DetailsSection";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
-import { createIntraopApiClient } from "@/lib/api/surgery/intraop";
+interface IntraOpViewModeProps {
+    data: any;
+    isLoading: boolean;
+}
 
-export const IntraOpViewMode = () => {
-    const { id: surgeryId } = useParams();
-    const intraopApi = createIntraopApiClient();
-
-    const { data: intraopResponse, isLoading } = useQuery({
-        queryKey: ["surgery-intraop", surgeryId],
-        queryFn: async () => {
-            const response = await intraopApi.getIntraopDetails(surgeryId as string);
-            return response.data;
-        },
-        enabled: !!surgeryId,
-    });
-
-    const data = intraopResponse?.data;
-
+export const IntraOpViewMode = ({ data, isLoading }: IntraOpViewModeProps) => {
     if (isLoading) {
         return <div className="p-8 text-center text-slate-500">Loading intra-operative details...</div>;
     }

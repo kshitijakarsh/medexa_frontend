@@ -18,6 +18,8 @@ import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeTogg
 import { useState, useMemo } from "react";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
+import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
+import { DateRange } from "react-day-picker";
 
 interface Column<T> {
     key: keyof T | string;
@@ -126,7 +128,7 @@ export default function SurgeryList() {
     }, []);
 
     // Filter states
-    const [dateRange, setDateRange] = useState("");
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const [selectedDept, setSelectedDept] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
@@ -239,7 +241,7 @@ export default function SurgeryList() {
                         //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
                         // }
                     }
-                ]} className="bg-transparent hover:bg-transparent text-blue-500"/>
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             )
         }
     ];
@@ -253,10 +255,8 @@ export default function SurgeryList() {
                 {/* Filters + Calendar toggle */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
-                        <FilterDropdown
-                            icon={<Calendar size={16} />}
+                        <DateRangeDropdown
                             label="Date Range"
-                            options={["Today", "Yesterday", "Last 7 Days", "Last 30 Days"]}
                             value={dateRange}
                             onSelect={setDateRange}
                         />
@@ -343,7 +343,7 @@ export default function SurgeryList() {
                 data={SURGERIES_DATA}
                 onRowClick={(row) => {
                     if (row.surgeryScheduled) {
-                        router.push(`/surgery/dashboard/surgery-details/${row.patient.mrn}`);
+                        router.push(`/surgery/dashboard/surgery-details/${row.id}`);
                     } else {
                         router.push(`/surgery/dashboard/surgery-details/new`);
                     }

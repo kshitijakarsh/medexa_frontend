@@ -175,16 +175,11 @@ interface VitalsExaminationProps {
   isEditing?: boolean;
 }
 
-export const VitalsExamination = ({ isEditing = false }: VitalsExaminationProps) => {
+export const VitalsExamination = ({
+  isEditing = false,
+}: VitalsExaminationProps) => {
   return (
     <div className="flex flex-col gap-6">
-      {/* Header Info */}
-      <div className="flex justify-end">
-        <div className="flex items-center gap-2 rounded-full bg-slate-50 px-4 py-1.5 text-xs text-slate-500 border border-slate-100">
-          Recorded by Nurse Sarah on November 14, 2024, at 8:45 AM.
-          <Info size={14} className="text-blue-400" />
-        </div>
-      </div>
 
       {isEditing ? (
         <>
