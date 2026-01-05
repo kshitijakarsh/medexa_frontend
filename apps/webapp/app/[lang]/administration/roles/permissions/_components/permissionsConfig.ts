@@ -698,6 +698,11 @@ export const mainModules: MainModule[] = [
         label: "Storage",
         actions: ["create"],
       },
+      {
+        key: "users",
+        label: "Users",
+        actions: ["view"],
+      },
 
     ],
   },
