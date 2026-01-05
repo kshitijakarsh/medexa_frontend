@@ -279,7 +279,7 @@ export default function PermissionAddPage() {
       UI
   ------------------------------------------------------------ */
 
-  if (loading && modulesLoading) {
+  if (loading || modulesLoading) {
     return (
       <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF]">
         <div className="mx-auto rounded-lg shadow p-6 space-y-8">
