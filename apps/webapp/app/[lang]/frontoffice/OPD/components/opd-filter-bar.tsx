@@ -17,6 +17,7 @@ const getStatusOptions = (dict: any) => [
 ];
 
 interface OPDFilterBarProps {
+    dict: any;
     filters: OPDFilterState;
     onFilterChange: (key: keyof OPDFilterState, value: string) => void;
     doctorOptions: { label: string; value: string }[];
@@ -24,13 +25,13 @@ interface OPDFilterBarProps {
     setDepartmentSearchQuery: (query: string) => void;
     setDoctorSearchQuery: (query: string) => void;
     isAdvancedView: boolean;
-    setIsAdvancedView: (v: boolean) => void;
-    hideStatus?: boolean; // Optional
-    toggleLabel?: string; // New prop for dynamic label
-    currentView?: string; // Current view to conditionally show/hide elements
+    setIsAdvancedView: (value: boolean) => void;
+    toggleLabel: string;
+    currentView: string;
 }
 
 export function OPDFilterBar({
+    dict,
     filters,
     onFilterChange,
     doctorOptions,
@@ -39,14 +40,12 @@ export function OPDFilterBar({
     setDoctorSearchQuery,
     isAdvancedView,
     setIsAdvancedView,
-    hideStatus = false,
-    toggleLabel = "Advanced View", // Default fallback
+    toggleLabel,
     currentView,
 }: OPDFilterBarProps) {
-    const dict = useDictionary() as any;
     const t = dict.pages?.frontoffice;
     const statusOptions = getStatusOptions(dict);
-    
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
@@ -59,7 +58,7 @@ export function OPDFilterBar({
                                 placeholder={currentView === "instructions" ? (t?.schedule?.todayAppointments || "Today's Instructions") : (t?.schedule?.todayAppointments || "Today's OPD QUE")}
                                 value={filters.dateRange}
                                 onChange={(val) => onFilterChange("dateRange", val)}
-                                options={currentView === "instructions" 
+                                options={currentView === "instructions"
                                     ? [
                                         { label: t?.schedule?.todayAppointments || "Today's Instructions", value: "today" },
                                     ]
@@ -117,27 +116,26 @@ export function OPDFilterBar({
                         />
                     </div>
 
+
                     {/* Status */}
-                    {!hideStatus && (
-                        <div className="w-full sm:w-[200px]">
-                            <AppSelect
-                                placeholder={dict.table?.status || dict.common?.status || "All Status"}
-                                value={filters.status}
-                                onChange={(val) => onFilterChange("status", val)}
-                                options={statusOptions}
-                                icon={
-                                    <Image
-                                        src="/images/donut_large.svg"
-                                        alt="Status"
-                                        width={20}
-                                        height={20}
-                                        className="w-5 h-5"
-                                    />
-                                }
-                                triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
-                            />
-                        </div>
-                    )}
+                    <div className="w-full sm:w-[200px]">
+                        <AppSelect
+                            placeholder={dict.table?.status || dict.common?.status || "All Status"}
+                            value={filters.status}
+                            onChange={(val) => onFilterChange("status", val)}
+                            options={statusOptions}
+                            icon={
+                                <Image
+                                    src="/images/donut_large.svg"
+                                    alt="Status"
+                                    width={20}
+                                    height={20}
+                                    className="w-5 h-5"
+                                />
+                            }
+                            triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
+                        />
+                    </div>
                 </div>
 
                 {/* Right Side: Toggle - Hide when label is "Overview Today" or in completed view */}

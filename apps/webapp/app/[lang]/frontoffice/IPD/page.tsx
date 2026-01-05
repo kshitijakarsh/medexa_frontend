@@ -3,6 +3,7 @@
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { IPDQueueView } from "./components/ipd-queue-view";
 import { DoctorInstructionsView } from "../OPD/components/doctor-instructions-view"; // Reuse from OPD
 import {
@@ -19,10 +20,12 @@ import { AdmissionView } from "./components/admission/admission-view";
 import { BedManagementView } from "./components/bed-management/bed-management-view";
 
 export default function IPDPage() {
+    const dict = useDictionary();
     const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
     const view = searchParams.get("view") || "admitted"; // Default view
+
 
     // State for Filter Bar
     const [filters, setFilters] = useState<IPDFilterState>({
@@ -85,7 +88,7 @@ export default function IPDPage() {
                 }
 
                 const response = await apiClient.getIPDs(params);
-                
+
                 if (response.data.success) {
                     const mappedData = response.data.data.map(mapIPDToEntry);
                     setAdmittedData(mappedData);
@@ -150,6 +153,7 @@ export default function IPDPage() {
         return (
             <div className="space-y-4">
                 <IPDQueueView
+                    dict={dict}
                     data={displayData}
                     loading={loading}
                     viewMode={filters.viewMode}

@@ -19,6 +19,7 @@ import { OPDEntry, OPDFilterState } from "../types";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 
 interface OPDQueueViewProps {
+    dict: any;
     data: OPDEntry[];
     loading: boolean;
     viewMode: "list" | "grid";
@@ -30,6 +31,7 @@ interface OPDQueueViewProps {
 }
 
 export function OPDQueueView({
+    dict,
     data,
     loading,
     viewMode,

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { useDictionary } from "@/i18n/dictionary-context";
 import { OPDEntry, OPDFilterState } from "./types";
 import { useDoctors } from "@/hooks/use-doctors";
 import { useDepartments } from "@/hooks/use-departments";
@@ -14,9 +15,11 @@ import { getIdToken } from "@/app/utils/auth";
 import axios from "axios";
 
 export default function OPDPage() {
+    const dict = useDictionary();
     const router = useRouter();
     const searchParams = useSearchParams();
     const { withLocale } = useLocaleRoute();
+
 
     // "queue", "completed", "instructions" (from sidebar: ?view=instructions)
     const currentView = searchParams.get("view") || "queue";
@@ -87,7 +90,7 @@ export default function OPDPage() {
                         try {
                             const token = await getIdToken();
                             const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URI || "";
-                            
+
                             const doctorsResponse = await axios.get(
                                 `${baseUrl}/api/v1/doctor/users/soap-notes-creators`,
                                 {
@@ -99,7 +102,7 @@ export default function OPDPage() {
                                     params: { limit: 1000 }, // Get all doctors
                                 }
                             );
-                            
+
                             if (doctorsResponse.data.success) {
                                 doctorsResponse.data.data.forEach((doctor: any) => {
                                     doctorMap.set(doctor.id.toString(), doctor.name);
@@ -114,7 +117,7 @@ export default function OPDPage() {
                             // Get doctor name
                             let doctorName = "Unknown Doctor";
                             let specialty = "General";
-                            
+
                             if (visit.doctor_ids && visit.doctor_ids.length > 0) {
                                 const firstDoctor = visit.doctor_ids[0];
                                 if (firstDoctor?.name) {
@@ -134,23 +137,23 @@ export default function OPDPage() {
 
                             // Format date and time
                             const visitDate = visit.time_slot_start ? new Date(visit.time_slot_start) : new Date();
-                            const formattedDate = visitDate.toLocaleDateString("en-GB", { 
-                                day: "2-digit", 
-                                month: "2-digit", 
-                                year: "numeric" 
+                            const formattedDate = visitDate.toLocaleDateString("en-GB", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric"
                             }).replace(/\//g, "-");
-                            const formattedTime = visitDate.toLocaleTimeString("en-US", { 
-                                hour: "2-digit", 
+                            const formattedTime = visitDate.toLocaleTimeString("en-US", {
+                                hour: "2-digit",
                                 minute: "2-digit",
-                                hour12: true 
+                                hour12: true
                             });
 
                             // Get patient name
-                            const patientName = visit.full_name || 
+                            const patientName = visit.full_name ||
                                 (visit.patient ? `${visit.patient.first_name || ""} ${visit.patient.last_name || ""}`.trim() : "Unknown Patient");
 
                             // Get MRN
-                            const mrn = visit.emergency_guardian_mrn || 
+                            const mrn = visit.emergency_guardian_mrn ||
                                 (visit.patient_id ? `MRN-${visit.patient_id}` : "N/A");
 
                             return {
@@ -215,6 +218,7 @@ export default function OPDPage() {
             <div className="w-full max-w-[1700px] mx-auto space-y-4">
 
                 <OPDFilterBar
+                    dict={dict}
                     filters={filters}
                     onFilterChange={handleFilterChange}
                     doctorOptions={doctorOptions}
@@ -241,6 +245,7 @@ export default function OPDPage() {
                     />
                 ) : (
                     <OPDQueueView
+                        dict={dict}
                         data={data}
                         loading={loading}
                         viewMode={viewMode}
