@@ -762,6 +762,11 @@ export const mainModules: MainModule[] = [
         label: "Anesthesia Plans",
         actions: ["view", "create", "edit", "delete"],
       },
+      {
+        key: "users",
+        label: "Users",
+        actions: ["view"],
+      },
     ],
   },
   // {
