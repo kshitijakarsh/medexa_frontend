@@ -525,7 +525,7 @@ export const mainModules: MainModule[] = [
         actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
-        key: "nurseOrders",
+        key: "nurse_orders",
         label: "Nurse Orders",
         actions: ["view", "viewOne", "create", "edit", "delete"],
       },
@@ -594,7 +594,7 @@ export const mainModules: MainModule[] = [
         actions: ["view", "viewOne"],
       },
       {
-        key: "nurseOrders",
+        key: "nurse_orders",
         label: "Nurse Orders",
         actions: ["view", "viewOne"],
       },
