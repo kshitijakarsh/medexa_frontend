@@ -2,7 +2,6 @@
 import {
   Hospital,
   Handshake,
-  Activity,
   LayoutDashboard,
   Monitor,
   User2,
@@ -12,7 +11,6 @@ import {
   IdCard,
   BriefcaseMedical,
   Calendar,
-  BedDouble,
 } from "lucide-react"
 
 import {
@@ -130,7 +128,7 @@ export function AppSidebar({ }) {
         },
         {
           title: "Appointment",
-          icon: Calendar,
+          icon: "/images/appoint.svg",
           url: [],
           items: [
             {
@@ -150,7 +148,7 @@ export function AppSidebar({ }) {
         {
           title: "OPD",
           url: [],
-          icon: Activity, // Using Activity as a placeholder for OPD since it relates to ongoing patient activity
+          icon: "/images/opd.svg",
           items: [
             {
               title: "Patients Que",
@@ -169,7 +167,7 @@ export function AppSidebar({ }) {
         {
           title: "IPD",
           url: [],
-          icon: BedDouble,
+          icon: "/images/ipd.svg",
           items: [
             {
               title: "Admitted Patients",
@@ -229,9 +227,12 @@ export function AppSidebar({ }) {
   // }
   const searchParams = useSearchParams()
   const isActive = (urls: string[] | string) => {
-    // const pathWithoutLocale = pathname.replace(/^\//, "")
-    const pathWithoutLocale = pathname
-    const fullPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+    // Remove locale prefix from pathname for comparison if present
+    // Pathname might be /en/frontoffice/... (though en is default and usually not in URL),
+    // /ar/frontoffice/... (with locale prefix), or /frontoffice/... (default locale, no prefix)
+    // We need to normalize to /frontoffice/... for comparison
+    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/)/, "")
+    const fullPath = pathWithoutLocale + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
 
     const checkUrl = (url: string) => {
       if (url.includes("?")) {
@@ -406,7 +407,7 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
           onClick={() => setIsOpen(!isOpen)}
           isActive={isGroupActive}
           className={`text-sm p-3 w-full justify-between ${isGreenItem && isGroupActive
-            ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
+            ? "!bg-[#34D399] hover:!bg-[#2EB886] !text-white"
             : isGreenItem
               ? "bg-transparent hover:bg-[#34D399]/20 text-white"
               : ""
@@ -414,13 +415,29 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
         >
           <div className="flex items-center gap-2">
             {item.icon && (
-              <item.icon
-                className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
-              />
+              typeof item.icon === 'string' ? (
+                <Image
+                  src={item.icon}
+                  alt={item.title}
+                  width={item.icon === "/images/appoint.svg"
+                    ? (sidebarState === "expanded" ? 20 : 24)
+                    : (sidebarState === "expanded" ? 28 : 32)
+                  }
+                  height={item.icon === "/images/appoint.svg"
+                    ? (sidebarState === "expanded" ? 20 : 24)
+                    : (sidebarState === "expanded" ? 28 : 32)
+                  }
+                  className="transition-all duration-300"
+                />
+              ) : (
+                <item.icon
+                  className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+                />
+              )
             )}
-            <span className="text-base font-medium">{item.title}</span>
+            {sidebarState === "expanded" && <span className="text-base font-medium">{item.title}</span>}
           </div>
-          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+          {sidebarState === "expanded" && <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />}
         </SidebarMenuButton>
         {isOpen && (
           <SidebarMenuSub className="mx-0 px-0 ml-5 border-l border-blue-900/40 space-y-0 mt-3">
@@ -431,10 +448,11 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
                 <SidebarMenuButton
                   asChild
                   isActive={isActive(subItem.url)}
-                  className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none"
+                  className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none flex items-center justify-between"
                 >
-                  <LocaleLink href={subItem.url[0] || ""}>
+                  <LocaleLink href={subItem.url[0] || ""} className="flex items-center justify-between w-full">
                     <span>{subItem.title}</span>
+                    {isActive(subItem.url) && <ChevronRight className="w-4 h-4 text-[#34D399] -rotate-45" />}
                   </LocaleLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -461,11 +479,27 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
       >
         <LocaleLink href={item.url[0] || ""}>
           {item.icon && (
-            <item.icon
-              className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
-            />
+            typeof item.icon === 'string' ? (
+              <Image
+                src={item.icon}
+                alt={item.title}
+                width={item.icon === "/images/appoint.svg"
+                  ? (sidebarState === "expanded" ? 20 : 24)
+                  : (sidebarState === "expanded" ? 28 : 32)
+                }
+                height={item.icon === "/images/appoint.svg"
+                  ? (sidebarState === "expanded" ? 20 : 24)
+                  : (sidebarState === "expanded" ? 28 : 32)
+                }
+                className="transition-all duration-300"
+              />
+            ) : (
+              <item.icon
+                className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+              />
+            )
           )}
-          <span className="text-base">{item.title}</span>
+          {sidebarState === "expanded" && <span className="text-base">{item.title}</span>}
         </LocaleLink>
       </SidebarMenuButton>
     </SidebarMenuItem>

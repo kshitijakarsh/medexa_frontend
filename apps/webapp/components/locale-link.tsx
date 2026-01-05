@@ -19,15 +19,10 @@ export function LocaleLink({
   const params = useParams<{ lang?: string }>()
   const lang = params?.lang || defaultLocale
 
-  // Construct URL with lang: /[lang]/[path] or just /[path] for default locale
-  const localizedHref =
-    lang === defaultLocale
-      ? href.startsWith("/")
-        ? href
-        : `/${href}`
-      : href.startsWith("/")
-        ? `/${lang}${href}`
-        : `/${lang}/${href}`
+  // Construct URL with lang: /[lang]/[path] for ALL locales (including default)
+  const localizedHref = href.startsWith("/")
+    ? `/${lang}${href}`
+    : `/${lang}/${href}`
 
   return (
     <Link href={localizedHref} className={className} {...props}>
