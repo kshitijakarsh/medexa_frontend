@@ -618,7 +618,7 @@ export function SectionDropdown() {
 
   const moduleKeys = Array.from(
     new Set(permissionStrings.map((p) => p.split(":")[0]))
-  ).filter((k): k is ModuleKey => k in moduleLandingPath)
+  ).filter((k): k is ModuleKey => k in moduleLandingPath && k!=="common")
 
 
   // Build dropdown sections dynamically

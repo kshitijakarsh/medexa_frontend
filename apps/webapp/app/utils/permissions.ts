@@ -235,6 +235,11 @@ export const PERMISSIONS = {
         },
     },
     NURSE: {
+        VISIT: {
+            VIEW: "nurse:visit:view",
+            EDIT: "nurse:visit:edit",
+        },
+
         USERS: {
             VIEW: "nurse:users:view",
         },

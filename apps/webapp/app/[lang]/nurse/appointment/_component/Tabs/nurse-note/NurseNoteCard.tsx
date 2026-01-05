@@ -55,7 +55,7 @@
 "use client";
 
 import { format } from "@workspace/ui/hooks/use-date-fns";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Eye } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { NurseNote } from "./NurseNote";
 
@@ -63,10 +63,12 @@ export default function NurseNoteCard({
   data,
   onEdit,
   onDelete,
+  onView,
 }: {
   data: NurseNote;
   onEdit: () => void;
   onDelete: () => void;
+  onView: () => void;
 }) {
   const name = data.createdBy?.name ?? "Nurse";
   const time = format(new Date(data.created_at), "dd MMM yyyy, hh:mm a");
@@ -98,10 +100,13 @@ export default function NurseNoteCard({
             </div>
 
             <div className="flex gap-2">
-              <Button size="icon" variant="ghost" onClick={onEdit} className="cursor-pointer">
+              <Button size="icon" variant="ghost" onClick={onView} className="cursor-pointer" title="View">
+                <Eye className="w-4 h-4 text-blue-500" />
+              </Button>
+              <Button size="icon" variant="ghost" onClick={onEdit} className="cursor-pointer" title="Edit">
                 <Pencil className="w-4 h-4 text-green-500" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={onDelete} className="cursor-pointer">
+              <Button size="icon" variant="ghost" onClick={onDelete} className="cursor-pointer" title="Delete">
                 <Trash2 className="w-4 h-4 text-red-500" />
               </Button>
             </div>
