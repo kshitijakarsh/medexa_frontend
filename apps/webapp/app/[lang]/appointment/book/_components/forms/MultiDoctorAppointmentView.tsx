@@ -202,7 +202,7 @@ export function MultiDoctorAppointmentView({
                     onAddAppointment={handleSlotClick}
                     selectedSlot={selectedSlot}
                 />
-            </div>
+            </div> */}
 
             <MultiDoctorBookingModal
                 isOpen={isModalOpen}
