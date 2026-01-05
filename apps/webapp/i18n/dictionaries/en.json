@@ -97,7 +97,8 @@
     "pharmacy": "Pharmacy",
     "inventory": "Inventory",
     "analytics": "Analytics",
-    "hr": "Human Resources"
+    "hr": "Human Resources",
+    "surgery": "Surgery"
   },
   "nav": {
     "organizationSetup": "Organization Setup",
@@ -1256,6 +1257,12 @@
         "noPatients": "No Patients Found",
         "noPatientsDesc": "There are no patient visits to display.",
         "loading": "Loading..."
+      }
+    },
+    "surgery": {
+      "tabs": {
+        "surgery": "Surgery",
+        "Surgeries Today" : "Surgeries Today"
       }
     }
   },

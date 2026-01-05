@@ -336,6 +336,77 @@ export const PERMISSIONS = {
         VIEW: "administration:tenantModule:view",
         VIEW_ONE: "administration:tenantModule:viewOne",
     },
+
+    SURGERY: {
+        SURGERIES: {
+            CREATE: "surgery:surgeries:create",
+            EDIT: "surgery:surgeries:edit",
+            DELETE: "surgery:surgeries:delete",
+            VIEW: "surgery:surgeries:view",
+            VIEW_ONE: "surgery:surgeries:viewOne",
+        },
+        CONSENTS: {
+            CREATE: "surgery:consents:create",
+            EDIT: "surgery:consents:edit",
+            DELETE: "surgery:consents:delete",
+            VIEW: "surgery:consents:view",
+            VIEW_ONE: "surgery:consents:viewOne",
+        },
+        TEAMS: {
+            CREATE: "surgery:surgeryTeams:create",
+            EDIT: "surgery:surgeryTeams:edit",
+            DELETE: "surgery:surgeryTeams:delete",
+            VIEW: "surgery:surgeryTeams:view",
+            VIEW_ONE: "surgery:surgeryTeams:viewOne",
+        },
+        NURSE_NOTES: {
+            CREATE: "surgery:surgeryNurseNotes:create",
+            EDIT: "surgery:surgeryNurseNotes:edit",
+            DELETE: "surgery:surgeryNurseNotes:delete",
+            VIEW: "surgery:surgeryNurseNotes:view",
+            VIEW_ONE: "surgery:surgeryNurseNotes:viewOne",
+        },
+        CONSUMPTION_LOGS: {
+            CREATE: "surgery:consumptionLogs:create",
+            EDIT: "surgery:consumptionLogs:edit",
+            DELETE: "surgery:consumptionLogs:delete",
+            VIEW: "surgery:consumptionLogs:view",
+            VIEW_ONE: "surgery:consumptionLogs:viewOne",
+        },
+        INTRAOPS: {
+            CREATE: "surgery:intraops:create",
+            EDIT: "surgery:intraops:edit",
+            DELETE: "surgery:intraops:delete",
+            VIEW: "surgery:intraops:view",
+        },
+        PROCEDURES: {
+            CREATE: "surgery:procedures:create",
+            EDIT: "surgery:procedures:edit",
+            DELETE: "surgery:procedures:delete",
+            VIEW: "surgery:procedures:view",
+            VIEW_ONE: "surgery:procedures:viewOne",
+        },
+        EQUIPMENT_LOGS: {
+            CREATE: "surgery:equipmentUsageLogs:create",
+            EDIT: "surgery:equipmentUsageLogs:edit",
+            DELETE: "surgery:equipmentUsageLogs:delete",
+            VIEW: "surgery:equipmentUsageLogs:view",
+            VIEW_ONE: "surgery:equipmentUsageLogs:viewOne",
+        },
+        CLEARANCES: {
+            CREATE: "surgery:clearances:create",
+            EDIT: "surgery:clearances:edit",
+            DELETE: "surgery:clearances:delete",
+            VIEW: "surgery:clearances:view",
+            VIEW_ONE: "surgery:clearances:viewOne",
+        },
+        ANESTHESIA_PLANS: {
+            CREATE: "surgery:anesthesiaPlans:create",
+            EDIT: "surgery:anesthesiaPlans:edit",
+            DELETE: "surgery:anesthesiaPlans:delete",
+            VIEW: "surgery:anesthesiaPlans:view",
+        },
+    },
 } as const;
 
 

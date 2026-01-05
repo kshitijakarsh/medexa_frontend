@@ -550,8 +550,8 @@ const moduleLandingPath: Record<string, string> = {
   inventory: "/inventory",
   analytics: "/analytics",
   hr: "/hr/employee-configuration",
-  surgery: "/surgery",
-  laboratory: "/laboratory",
+  surgery: "/surgery/dashboard",
+  laboratory: "/laboratory/dashboard",
   // hr_payroll: "/hr-payroll",
   // add more when developed…
 }
@@ -624,6 +624,7 @@ export function SectionDropdown() {
   ).filter((k): k is ModuleKey => k in moduleLandingPath && k !== "common")
 
 
+
   // Build dropdown sections dynamically
   // const sections = moduleKeys.map((moduleKey) => ({
   //   label: moduleKey
@@ -640,125 +641,131 @@ export function SectionDropdown() {
     moduleKey,
     icon: moduleIconMap[moduleKey] || DefaultIcon,
   }))
+  label:
+  t?.[moduleKey] ??
+    moduleKey.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+    moduleKey,
+    icon: moduleIconMap[moduleKey] || DefaultIcon,
+  }))
 
 
-  // console.log(user)
+// console.log(user)
 
-  // React.useEffect(() => {
-  //   if (!pathname || moduleKeys.length === 0) return
+// React.useEffect(() => {
+//   if (!pathname || moduleKeys.length === 0) return
 
-  //   // Get first segment from URL → "/administration/users" → "administration"
-  //   const firstSegment = pathname.split("/")[1] ?? ""
+//   // Get first segment from URL → "/administration/users" → "administration"
+//   const firstSegment = pathname.split("/")[1] ?? ""
 
-  //   // Match with moduleKeys
-  //   const matched = moduleKeys.find(
-  //     (m) => m.toLowerCase() === firstSegment.toLowerCase()
-  //   )
+//   // Match with moduleKeys
+//   const matched = moduleKeys.find(
+//     (m) => m.toLowerCase() === firstSegment.toLowerCase()
+//   )
 
-  //   if (matched) {
-  //     setSelected(
-  //       matched.replace(/_/g, " ").replace(/\b\w/g, (c: any) => c.toUpperCase())
-  //     )
-  //   } else {
-  //     // If nothing matches, fallback to first module
-  //     setSelected(sections[0]?.label ?? "Administration")
-  //   }
-  // }, [pathname, moduleKeys, sections])
+//   if (matched) {
+//     setSelected(
+//       matched.replace(/_/g, " ").replace(/\b\w/g, (c: any) => c.toUpperCase())
+//     )
+//   } else {
+//     // If nothing matches, fallback to first module
+//     setSelected(sections[0]?.label ?? "Administration")
+//   }
+// }, [pathname, moduleKeys, sections])
 
-  React.useEffect(() => {
-    if (!pathname || moduleKeys.length === 0) return
+React.useEffect(() => {
+  if (!pathname || moduleKeys.length === 0) return
 
-    const segments = pathname.split("/").filter(Boolean)
-    if (segments.length === 0) return
+  const segments = pathname.split("/").filter(Boolean)
+  if (segments.length === 0) return
 
-    const firstSegment = segments[0]
+  const firstSegment = segments[0]
 
-    const hasLocale = locales.includes(firstSegment as Locale)
-    const moduleSegment = hasLocale ? segments[1] : segments[0]
+  const hasLocale = locales.includes(firstSegment as Locale)
+  const moduleSegment = hasLocale ? segments[1] : segments[0]
 
-    if (!moduleSegment) return
+  if (!moduleSegment) return
 
-    const matched = moduleKeys.find(
-      (m) => m.toLowerCase() === moduleSegment.toLowerCase()
+  const matched = moduleKeys.find(
+    (m) => m.toLowerCase() === moduleSegment.toLowerCase()
+  )
+
+  if (matched) {
+    setSelected(
+      matched
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c: string) => c.toUpperCase())
     )
-
-    if (matched) {
-      setSelected(
-        matched
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (c: string) => c.toUpperCase())
-      )
-    } else {
-      setSelected(sections[0]?.label ?? "Administration")
-    }
-  }, [pathname, moduleKeys, sections])
-
-
-  // const [selected, setSelected] = React.useState(sections[0].label)
-  const [selected, setSelected] = React.useState(
-    sections[0]?.label ?? "Administration"
-  )
-  const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
-
-  // ⭐ NEW — Handle navigation
-  const handleSelect = (section: any) => {
-    setSelected(section.label)
-
-    const path = moduleLandingPath[section.moduleKey]
-    console.log(path)
-    if (path) {
-      router.push(withLocale(path))
-    } else {
-      // fallback if no path defined
-      router.push(`${withLocale(`/${section.moduleKey}`)}`)
-    }
+  } else {
+    setSelected(sections[0]?.label ?? "Administration")
   }
+}, [pathname, moduleKeys, sections])
 
-  return (
-    <div className="flex flex-col items-center">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="default"
-            className="bg-[#062e65] text-white flex items-center gap-2 px-4 py-2 rounded-full"
-          >
-            <SelectedIcon className="h-4 w-4 text-green-300" />
-            <span>{selected}</span>
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          align="start"
-          className="w-56 mt-2 rounded-2xl p-1 bg-white shadow-lg"
+// const [selected, setSelected] = React.useState(sections[0].label)
+const [selected, setSelected] = React.useState(
+  sections[0]?.label ?? "Administration"
+)
+const SelectedIcon = sections.find((s) => s.label === selected)?.icon || Cog
+
+// ⭐ NEW — Handle navigation
+const handleSelect = (section: any) => {
+  setSelected(section.label)
+
+  const path = moduleLandingPath[section.moduleKey]
+  console.log(path)
+  if (path) {
+    router.push(withLocale(path))
+  } else {
+    // fallback if no path defined
+    router.push(`${withLocale(`/${section.moduleKey}`)}`)
+  }
+}
+
+return (
+  <div className="flex flex-col items-center">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="default"
+          className="bg-[#062e65] text-white flex items-center gap-2 px-4 py-2 rounded-full"
         >
-          {sections.map((section) => {
-            const Icon = section.icon
-            const active = selected === section.label
-            return (
-              <DropdownMenuItem
-                key={section.moduleKey}
-                // onClick={() => setSelected(section.label)}
-                onClick={() => handleSelect(section)}
+          <SelectedIcon className="h-4 w-4 text-green-300" />
+          <span>{selected}</span>
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent
+        align="start"
+        className="w-56 mt-2 rounded-2xl p-1 bg-white shadow-lg"
+      >
+        {sections.map((section) => {
+          const Icon = section.icon
+          const active = selected === section.label
+          return (
+            <DropdownMenuItem
+              key={section.moduleKey}
+              // onClick={() => setSelected(section.label)}
+              onClick={() => handleSelect(section)}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer",
+                active
+                  ? "bg-green-500 text-white font-medium"
+                  : "hover:bg-green-50 text-gray-700"
+              )}
+            >
+              <Icon
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2 cursor-pointer",
-                  active
-                    ? "bg-green-500 text-white font-medium"
-                    : "hover:bg-green-50 text-gray-700"
+                  "h-4 w-4",
+                  active ? "text-white" : "text-gray-600"
                 )}
-              >
-                <Icon
-                  className={cn(
-                    "h-4 w-4",
-                    active ? "text-white" : "text-gray-600"
-                  )}
-                />
-                {section.label}
-              </DropdownMenuItem>
-            )
-          })}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  )
+              />
+              {section.label}
+            </DropdownMenuItem>
+          )
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </div>
+)
 }
