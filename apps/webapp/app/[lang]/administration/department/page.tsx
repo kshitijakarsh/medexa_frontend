@@ -356,6 +356,7 @@ import { QuickActions } from "./_components/QuickActions";
 import { DepartmentRowActionMenu } from "./_components/DepartmentRowActionMenu";
 import FilterDialog from "./_components/FilterDialog";
 import AddDepartmentModal from "./_components/AddDepartmentModal";
+import { PermissionGuard } from "@/components/auth/PermissionGuard";
 
 import { PageHeader } from "@/components/common/page-header";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
@@ -370,6 +371,7 @@ import { getIdToken } from "@/app/utils/auth";
 import { useUserStore } from "@/store/useUserStore";
 import { Can } from "@/components/common/app-can";
 import { PERMISSIONS } from "@/app/utils/permissions";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const limit = 10;
 
@@ -379,6 +381,8 @@ function DepartmentsContent() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
+  const dict = useDictionary();
+  const trans = dict.pages.department;
 
   /* -------------------- URL Sync -------------------- */
   const initialPage = parseInt(searchParams.get("page") || "1");
@@ -484,7 +488,7 @@ function DepartmentsContent() {
   const columns = [
     {
       key: "sno",
-      label: "S.No",
+      label: trans.table.sno,
       render: (_: any, index?: number) =>
         typeof index === "number"
           ? index + 1 + (page - 1) * limit
@@ -493,14 +497,14 @@ function DepartmentsContent() {
     },
     {
       key: "department_name",
-      label: "Department Name",
+      label: trans.table.departmentName,
       render: (row: any) => (
         <span className="font-medium text-gray-700">{row.department_name}</span>
       ),
     },
     {
       key: "status",
-      label: "Status",
+      label: trans.table.status,
       render: (row: any) => (
         <span
           className={
@@ -513,7 +517,7 @@ function DepartmentsContent() {
     },
     {
       key: "created_at",
-      label: "Created On",
+      label: trans.table.createdOn,
       render: (row: any) =>
         row.created_at !== "—"
           ? format(row.created_at, "dd MMM yyyy, hh:mm a")
@@ -521,12 +525,12 @@ function DepartmentsContent() {
     },
     {
       key: "addedBy",
-      label: "Added By",
+      label: trans.table.addedBy,
       render: (row: any) => row.createdBy.name || "—",
     },
     {
       key: "action",
-      label: "Action",
+      label: trans.table.action,
       render: (row: any) => (
         <DepartmentRowActionMenu
           onEdit={() => {
@@ -546,7 +550,7 @@ function DepartmentsContent() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="Departments" />
+        <PageHeader title= {trans.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Header Controls */}
@@ -555,13 +559,14 @@ function DepartmentsContent() {
               filters={filters}
               onClick={() => setIsFilterOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <SearchInput
               value={search}
               onChange={setSearch}
               onSearch={setSearchQuery}
-              placeholder="Search departments…"
+              placeholder={trans["Search departments…"]}
             />
 
             <QuickActions />
@@ -642,7 +647,9 @@ function DepartmentsContent() {
 export default function DepartmentsPage() {
   return (
     <Suspense fallback={<div>Loading…</div>}>
-      <DepartmentsContent />
+      <PermissionGuard permission={PERMISSIONS.DEPARTMENT.VIEW}>
+        <DepartmentsContent />
+      </PermissionGuard>
     </Suspense>
   );
 }

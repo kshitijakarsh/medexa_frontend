@@ -1,17 +1,32 @@
-import { Header } from "@/components/header"
-import { ReactNode } from "react"
+"use client";
 
-export default async function SurgeryLayout({
+import { Header } from "@/components/header";
+import { useUserStore } from "@/store/useUserStore";
+import { PERMISSIONS, hasPermission, normalizePermissionList } from "@/app/utils/permissions";
+import { NoPermission } from "@/components/common/no-permission-page";
+import { ReactNode } from "react";
+
+export default function SurgeryLayout({
     children,
-}: Readonly<{
-    children: ReactNode
-}>) {
+}: {
+    children: ReactNode;
+}) {
+    const userPermissions = useUserStore((s) => s.user?.role.permissions);
+
+    // Normalize permissions for checking
+    const permissionKeys = normalizePermissionList(userPermissions);
+
+    const allowed = hasPermission(
+        permissionKeys,
+        PERMISSIONS.SURGERY.SURGERIES.VIEW
+    );
+
     return (
         <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] overflow-x-hidden">
             <Header />
             <div className="w-full p-3">
-                {children}
+                {allowed ? children : <NoPermission />}
             </div>
         </main>
-    )
+    );
 }

@@ -6,7 +6,19 @@
     "delete": "Delete",
     "search": "Search",
     "loading": "Loading...",
-    "back": "Back"
+    "back": "Back",
+    "skip": "Skip",
+    "error": "Error",
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "inactive": "Inactive",
+    "updating": "Updating...",
+    "adding": "Adding...",
+    "update": "Update",
+    "add": "Add",
+    "pending": "Pending",
+    "suspended": "Suspended"
   },
   "nav": {
     "overview": "Overview",
@@ -28,19 +40,45 @@
       "location": "Location",
       "status": "Status",
       "actions": "Actions",
+      "create": {
+        "title": "Create Tenant / Hospital",
+        "submit": "Save & Continue",
+        "submitting": "Saving..."
+      },
       "table": {
         "activeHospitals": "Active Hospitals",
         "onboardNew": "Onboard New",
         "searchPlaceholder": "Search by hospital name",
         "id": "ID",
         "hospitalName": "Hospital Name",
+        "adminName": "Admin Name",
         "email": "H.Email",
         "phone": "H.Phone",
+        "domainUrl": "Domain URL",
         "modules": "Modules",
         "subscriptionPlan": "Subscription Plan",
         "billingStatus": "Billing Status",
         "lastLogin": "Last Login",
-        "action": "Action"
+        "action": "Action",
+        "status": "Status",
+        "statusValues": {
+          "pending": "Pending",
+          "active": "Active",
+          "inactive": "Inactive",
+          "suspended": "Suspended"
+        },
+        "rowActions": {
+          "getOnboarded": "Get Onboarded",
+          "editHospital": "Edit Hospital",
+          "editOnboarding": "Edit Onboarding"
+        },
+        "pagination": {
+          "showing": "Showing {{count}} of {{total}} hospitals",
+          "previous": "Previous",
+          "next": "Next",
+          "page": "Page",
+          "of": "of"
+        }
       },
       "information": {
         "title": "Hospital Information",
@@ -50,6 +88,297 @@
         "adminDetails": "Admin Details",
         "modulesAssigned": "Modules Assigned",
         "credentials": "Credentials/Access"
+      }
+    },
+    "onboarding": {
+      "hospitalInfo": {
+        "sectionTitle": "Hospital / Tenant Information",
+        "tenantKey": {
+          "label": "Tenant Key *",
+          "placeholder": "e.g., hospital-abc"
+        },
+        "externalId": {
+          "label": "External ID *",
+          "placeholder": "External identifier"
+        },
+        "hospitalNameEn": {
+          "label": "Hospital Name (English) *",
+          "placeholder": "Enter hospital name in English"
+        },
+        "hospitalNameLocal": {
+          "label": "Hospital Name (Local) *",
+          "placeholder": "Enter hospital name in local language"
+        },
+        "country": {
+          "label": "Country *",
+          "placeholder": "Select Country",
+          "loading": "Loading..."
+        },
+        "authority": {
+          "label": "Regulatory Authority *",
+          "placeholder": "Select Authority",
+          "loading": "Loading..."
+        },
+        "licenseNumber": {
+          "label": "License Number *",
+          "placeholder": "Enter license number"
+        },
+        "licenseExpiry": {
+          "label": "License Expiry *"
+        },
+        "licenseType": {
+          "label": "License Type *",
+          "placeholder": "e.g., Medical Center"
+        },
+        "commercialReg": {
+          "label": "Commercial Registration Number *",
+          "placeholder": "Enter CR number"
+        },
+        "currency": {
+          "label": "Currency *",
+          "placeholder": "Select Currency"
+        },
+        "vatNumber": {
+          "label": "VAT Number *",
+          "placeholder": "Enter VAT number"
+        },
+        "logoHelp": "Recommended: 300x300 px, PNG/JPG. Maximum 2MB."
+      },
+
+      "modulesAssignment": {
+        "sectionTitle": "Modules Assignment",
+        "selectPlaceholder": "Select Modules",
+        "selectedCount": "{{count}} selected",
+        "searchPlaceholder": "Search modules...",
+        "emptyState": "No modules found.",
+        "fallbackModule": "Module {{id}}"
+      },
+
+      "onboardingTitle": "Hospital Onboarding",
+      "editOnboardingTitle": "Edit Hospital Onboarding",
+
+      "stepLabel": "Step {{current}} of {{total}}: {{step}}",
+
+      "steps": {
+        "modulesAssignment": "Module Assignment",
+        "paymentDetails": "Payment Details",
+        "licenceHistory": "Licence History",
+        "regulatoryDocuments": "Regulatory Documents"
+      },
+
+      "payment": {
+        "title": "Payment Details",
+        "subtitle": "Configure payment gateways and banking details",
+        "addPaymentConfig": "Add Payment Config",
+        "emptyState": "No payment configurations added yet. Click \"Add Payment Config\" to get started.",
+
+        "gateway": {
+          "label": "Payment Gateway *",
+          "placeholder": "Select gateway"
+        },
+        "merchantId": {
+          "label": "Merchant ID",
+          "placeholder": "Enter merchant ID"
+        },
+        "terminalKey": {
+          "label": "Terminal Key",
+          "placeholder": "Enter terminal key"
+        },
+        "vaultPath": {
+          "label": "Vault Path",
+          "placeholder": "Enter vault path"
+        },
+        "bankName": {
+          "label": "Bank Name",
+          "placeholder": "Enter bank name"
+        },
+        "bankAccount": {
+          "label": "Bank Account Number",
+          "placeholder": "Enter account number"
+        },
+        "vatRegistered": "VAT Registered",
+        "vatNumber": {
+          "label": "VAT Number",
+          "placeholder": "Enter VAT number"
+        },
+        "currency": {
+          "label": "Currency *",
+          "placeholder": "Select Currency"
+        },
+        "status": "Active Status",
+        "addDialogTitle": "Add Payment Config",
+        "editDialogTitle": "Edit Payment Config",
+        "dialogDescription": "Configure payment gateway and banking details",
+        "deleteConfirm": "Are you sure you want to delete this payment config?"
+      },
+
+      "paymentDetails": {
+        "sectionTitle": "Payment Details",
+        "fields": {
+          "gatewayId": {
+            "label": "Gateway ID",
+            "placeholder": "Enter gateway ID"
+          },
+          "merchantId": {
+            "label": "Merchant ID",
+            "placeholder": "Enter merchant ID"
+          },
+          "terminalKey": {
+            "label": "Terminal Key",
+            "placeholder": "Enter terminal key"
+          },
+          "vaultPath": {
+            "label": "Vault Path",
+            "placeholder": "Enter vault path"
+          },
+          "bankName": {
+            "label": "Bank Name",
+            "placeholder": "Enter bank name"
+          },
+          "bankAccountNumber": {
+            "label": "Bank Account Number",
+            "placeholder": "Enter account number"
+          },
+          "vatRegistered": {
+            "label": "VAT Registered",
+            "yes": "Yes",
+            "no": "No"
+          },
+          "vatNumber": {
+            "label": "VAT Number",
+            "placeholder": "Enter VAT number"
+          },
+          "currencyCode": {
+            "label": "Currency Code",
+            "placeholder": "USD"
+          }
+        }
+      },
+      
+      "licenceHistory": {
+  "title": "Licence History",
+  "subtitle": "Manage licence history and subscription details",
+
+  "add": "Add Licence History",
+  "emptyState": "No licence history added yet. Click \"Add Licence History\" to get started.",
+  "deleteConfirm": "Are you sure you want to delete this licence?",
+
+  "addDialogTitle": "Add Licence History",
+  "editDialogTitle": "Edit Licence History",
+  "dialogDescription": "Configure licence plan and subscription details",
+
+  "list": {
+    "seats": "Seats",
+    "startDate": "Start Date",
+    "status": "Status"
+  },
+
+  "form": {
+    "planKey": {
+      "label": "Plan Key *",
+      "placeholder": "Enter plan key"
+    },
+    "seats": {
+      "label": "Seats *",
+      "placeholder": "Number of seats"
+    },
+    "storageQuota": {
+      "label": "Storage Quota (MB) *",
+      "placeholder": "Storage in MB"
+    },
+    "startDate": {
+      "label": "Start Date *"
+    },
+    "endDate": {
+      "label": "End Date *"
+    },
+    "autoRenew": {
+      "label": "Auto Renew",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "status": {
+      "label": "Status",
+      "placeholder": "Select status",
+      "values": {
+        "pending": "Pending",
+        "active": "Active",
+        "inactive": "Inactive",
+        "suspended": "Suspended"
+      }
+    }
+  }
+},
+
+"regulatoryDocs": {
+  "title": "Regulatory Documents",
+  "subtitle": "Upload and manage regulatory compliance documents",
+
+  "addDocument": "Add Regulatory Document",
+  "emptyState": "No regulatory documents added yet. Click \"Add Regulatory Document\" to get started.",
+
+  "completeOnboarding": "Complete Onboarding",
+
+  "addDialogTitle": "Add Regulatory Document",
+  "editDialogTitle": "Edit Regulatory Document",
+  "dialogDescription": "Upload regulatory and compliance documentation",
+
+  "deleteConfirm": "Are you sure you want to delete this regulatory document?",
+  "activationError": "Failed to activate tenant",
+
+  "fields": {
+    "authority": "Authority ID",
+    "documentNumber": "Document Number",
+    "issueDate": "Issue Date",
+    "expiryDate": "Expiry Date",
+    "status": "Status",
+    "file": "File"
+  },
+
+  "form": {
+    "docType": {
+      "label": "Document Type *",
+      "placeholder": "e.g., License, Certificate, Permit"
+    },
+    "authority": {
+      "label": "Authority *",
+      "placeholder": "Select Authority"
+    },
+    "documentNumber": {
+      "label": "Document Number *",
+      "placeholder": "Document number"
+    },
+    "issueDate": "Issue Date *",
+    "expiryDate": "Expiry Date *",
+    "file": "Document File *",
+    "status": {
+      "label": "Status",
+      "placeholder": "Select status"
+    },
+    "notes": {
+      "label": "Notes",
+      "placeholder": "Additional notes or comments"
+    }
+  }
+},
+      "adminAccount": {
+        "sectionTitle": "Primary Admin Account",
+        "fullName": {
+          "label": "Full Name *",
+          "placeholder": "Primary admin full name"
+        },
+        "email": {
+          "label": "Email *",
+          "placeholder": "admin@example.com"
+        },
+        "password": {
+          "label": "Primary Admin Password",
+          "placeholder": "Enter password"
+        },
+        "idNumber": {
+          "label": "ID Number *",
+          "placeholder": "Admin ID number"
+        }
       }
     },
     "support": {

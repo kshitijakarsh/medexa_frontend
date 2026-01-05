@@ -55,14 +55,18 @@
 "use client"
 
 import QuickActionsMenu from "@/components/common/quick-actions-menu"
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export function QuickActions() {
+  const dict = useDictionary()
+  const t = dict.common
+
   return (
     <QuickActionsMenu
       actions={[
-        { label: "Import Excel", onClick: () => console.log("Import Excel") },
-        { label: "Export Excel", onClick: () => console.log("Export Excel") },
-        { label: "Bulk Add Department", onClick: () => console.log("Bulk Add") },
+        { label: t.importExcel, onClick: () => console.log("Import Excel") },
+        { label: t.exportExcel, onClick: () => console.log("Export Excel") },
+        { label: t.bulkAddDepartment, onClick: () => console.log("Bulk Add") },
       ]}
     />
   )

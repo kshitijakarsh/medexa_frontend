@@ -3,57 +3,9 @@
 import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { DetailSection } from "../surgery-details/DetailsSection";
 import { Checkbox } from "@workspace/ui/components/checkbox";
-
-// Mock data for view mode
-const MOCK_NURSE_DATA = {
-    patientReception: {
-        time: "08:00 AM",
-        identityVerified: true,
-        consentVerified: true,
-        siteMarked: true,
-        fastingConfirmed: true,
-    },
-    safetyChecklist: {
-        time: "08:15 AM",
-        identityConfirmed: true,
-        siteMarked: true,
-        consentComplete: true,
-        pulseOximeter: true,
-        allergies: true,
-        airway: true,
-        bloodLoss: true,
-        notes: "All safety checks completed satisfactorily.",
-    },
-    positioning: {
-        position: "Supine",
-        pressurePoints: true,
-    },
-    timeOut: {
-        time: "08:45 AM",
-        teamIntroduced: true,
-        confirmed: true,
-        antibiotic: true,
-        imaging: true,
-        sterility: true,
-        notes: "Team timeout completed before incision.",
-    },
-    signOut: {
-        time: "10:30 AM",
-        procedure: true,
-        counts: true,
-        specimen: true,
-        equipment: true,
-        notes: "All counts correct. No equipment issues.",
-    },
-    implants: [
-        { type: "Mesh", size: "15x10cm", batch: "LOT123", manufacturer: "MedCorp", qty: "1" },
-    ],
-    consumables: [
-        { name: "Gauze Pads", qty: "10", note: "Standard 4x4" },
-        { name: "Sutures", qty: "3", note: "3-0 Vicryl" },
-    ],
-    nursingNotes: "Patient tolerated procedure well. Vital signs stable throughout.",
-};
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { createNurseNotesApiClient } from "@/lib/api/surgery/nurse-notes";
 
 // View mode checkbox display
 const ChecklistViewItem = ({ label, checked }: { label: string; checked: boolean }) => (
@@ -63,71 +15,136 @@ const ChecklistViewItem = ({ label, checked }: { label: string; checked: boolean
     </div>
 );
 
-export const NurseCareViewMode = () => {
+interface NurseCareViewModeProps {
+    data: any;
+    isLoading: boolean;
+}
+
+export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) => {
+    if (isLoading) {
+        return <div className="p-8 text-center text-slate-500">Loading nursing notes...</div>;
+    }
+
+    // Map API data (assuming snake_case) to UI with fallbacks to mock structure or defaults
+    const displayData = {
+        patientReception: {
+            time: data?.patient_reception?.time || "-",
+            identityVerified: !!data?.patient_reception?.identity_verified,
+            consentVerified: !!data?.patient_reception?.consent_verified,
+            siteMarked: !!data?.patient_reception?.site_marked,
+            fastingConfirmed: !!data?.patient_reception?.fasting_confirmed,
+        },
+        safetyChecklist: {
+            time: data?.safety_checklist?.time || "-",
+            identityConfirmed: !!data?.safety_checklist?.identity_confirmed,
+            siteMarked: !!data?.safety_checklist?.site_marked,
+            consentComplete: !!data?.safety_checklist?.consent_complete,
+            pulseOximeter: !!data?.safety_checklist?.pulse_oximeter,
+            allergies: !!data?.safety_checklist?.allergies,
+            airway: !!data?.safety_checklist?.airway,
+            bloodLoss: !!data?.safety_checklist?.blood_loss,
+            notes: data?.safety_checklist?.notes || "-",
+        },
+        positioning: {
+            position: data?.positioning?.position || "-",
+            pressurePoints: !!data?.positioning?.pressure_points,
+        },
+        timeOut: {
+            time: data?.time_out?.time || "-",
+            teamIntroduced: !!data?.time_out?.team_introduced,
+            confirmed: !!data?.time_out?.confirmed,
+            antibiotic: !!data?.time_out?.antibiotic,
+            imaging: !!data?.time_out?.imaging,
+            sterility: !!data?.time_out?.sterility,
+            notes: data?.time_out?.notes || "-",
+        },
+        signOut: {
+            time: data?.sign_out?.time || "-",
+            procedure: !!data?.sign_out?.procedure,
+            counts: !!data?.sign_out?.counts,
+            specimen: !!data?.sign_out?.specimen,
+            equipment: !!data?.sign_out?.equipment,
+            notes: data?.sign_out?.notes || "-",
+        },
+        implants: (data?.implants || []).map((item: any) => ({
+            type: item.type || "-",
+            size: item.size || "-",
+            batch: item.batch_no || "-",
+            manufacturer: item.manufacturer || "-",
+            qty: item.quantity || "0",
+        })),
+        consumables: (data?.consumables || []).map((item: any) => ({
+            name: item.item_name || "-",
+            qty: item.quantity || "0",
+            note: item.note || "-",
+        })),
+        nursingNotes: data?.nursing_notes || "-",
+    };
+
     return (
         <>
             {/* View Mode - Patient Reception */}
             <DetailSection title="Patient Reception in OT">
-                <InfoField label="Patient Received Time" value={MOCK_NURSE_DATA.patientReception.time} />
+                <InfoField label="Patient Received Time" value={displayData.patientReception.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Patient Identity Verified" checked={MOCK_NURSE_DATA.patientReception.identityVerified} />
-                    <ChecklistViewItem label="Consent Form Verified" checked={MOCK_NURSE_DATA.patientReception.consentVerified} />
-                    <ChecklistViewItem label="Surgical Site Marked" checked={MOCK_NURSE_DATA.patientReception.siteMarked} />
-                    <ChecklistViewItem label="Fasting Status Confirmed (NPO)" checked={MOCK_NURSE_DATA.patientReception.fastingConfirmed} />
+                    <ChecklistViewItem label="Patient Identity Verified" checked={displayData.patientReception.identityVerified} />
+                    <ChecklistViewItem label="Consent Form Verified" checked={displayData.patientReception.consentVerified} />
+                    <ChecklistViewItem label="Surgical Site Marked" checked={displayData.patientReception.siteMarked} />
+                    <ChecklistViewItem label="Fasting Status Confirmed (NPO)" checked={displayData.patientReception.fastingConfirmed} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Safety Checklist */}
             <DetailSection title="Surgical Safety Checklist">
-                <InfoField label="Time" value={MOCK_NURSE_DATA.safetyChecklist.time} />
+                <InfoField label="Time" value={displayData.safetyChecklist.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Patient confirms identity, site, procedure, consent" checked={MOCK_NURSE_DATA.safetyChecklist.identityConfirmed} />
-                    <ChecklistViewItem label="Site marked / Not applicable" checked={MOCK_NURSE_DATA.safetyChecklist.siteMarked} />
-                    <ChecklistViewItem label="Consent form complete" checked={MOCK_NURSE_DATA.safetyChecklist.consentComplete} />
-                    <ChecklistViewItem label="Pulse oximeter on patient and functioning" checked={MOCK_NURSE_DATA.safetyChecklist.pulseOximeter} />
-                    <ChecklistViewItem label="Known allergies confirmed" checked={MOCK_NURSE_DATA.safetyChecklist.allergies} />
-                    <ChecklistViewItem label="Difficult airway/aspiration risk assessed" checked={MOCK_NURSE_DATA.safetyChecklist.airway} />
-                    <ChecklistViewItem label="Risk of >500ml blood loss assessed" checked={MOCK_NURSE_DATA.safetyChecklist.bloodLoss} />
+                    <ChecklistViewItem label="Patient confirms identity, site, procedure, consent" checked={displayData.safetyChecklist.identityConfirmed} />
+                    <ChecklistViewItem label="Site marked / Not applicable" checked={displayData.safetyChecklist.siteMarked} />
+                    <ChecklistViewItem label="Consent form complete" checked={displayData.safetyChecklist.consentComplete} />
+                    <ChecklistViewItem label="Pulse oximeter on patient and functioning" checked={displayData.safetyChecklist.pulseOximeter} />
+                    <ChecklistViewItem label="Known allergies confirmed" checked={displayData.safetyChecklist.allergies} />
+                    <ChecklistViewItem label="Difficult airway/aspiration risk assessed" checked={displayData.safetyChecklist.airway} />
+                    <ChecklistViewItem label="Risk of >500ml blood loss assessed" checked={displayData.safetyChecklist.bloodLoss} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={MOCK_NURSE_DATA.safetyChecklist.notes} />
+                    <InfoField label="Additional Notes" value={displayData.safetyChecklist.notes} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Positioning */}
             <DetailSection title="Patient Positioning & Preparation">
-                <InfoField label="Patient Position" value={MOCK_NURSE_DATA.positioning.position} />
+                <InfoField label="Patient Position" value={displayData.positioning.position} />
                 <div className="mt-4">
-                    <ChecklistViewItem label="All pressure points adequately padded" checked={MOCK_NURSE_DATA.positioning.pressurePoints} />
+                    <ChecklistViewItem label="All pressure points adequately padded" checked={displayData.positioning.pressurePoints} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Time Out */}
             <DetailSection title="Time Out (Before Skin Incision)">
-                <InfoField label="Time" value={MOCK_NURSE_DATA.timeOut.time} />
+                <InfoField label="Time" value={displayData.timeOut.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="All team members introduced by name and role" checked={MOCK_NURSE_DATA.timeOut.teamIntroduced} />
-                    <ChecklistViewItem label="Surgeon, Anaesthetist, Nurse confirm patient, site, procedure" checked={MOCK_NURSE_DATA.timeOut.confirmed} />
-                    <ChecklistViewItem label="Antibiotic prophylaxis given within 60 min" checked={MOCK_NURSE_DATA.timeOut.antibiotic} />
-                    <ChecklistViewItem label="Essential imaging displayed" checked={MOCK_NURSE_DATA.timeOut.imaging} />
-                    <ChecklistViewItem label="Sterility confirmed (including indicator results)" checked={MOCK_NURSE_DATA.timeOut.sterility} />
+                    <ChecklistViewItem label="All team members introduced by name and role" checked={displayData.timeOut.teamIntroduced} />
+                    <ChecklistViewItem label="Surgeon, Anaesthetist, Nurse confirm patient, site, procedure" checked={displayData.timeOut.confirmed} />
+                    <ChecklistViewItem label="Antibiotic prophylaxis given within 60 min" checked={displayData.timeOut.antibiotic} />
+                    <ChecklistViewItem label="Essential imaging displayed" checked={displayData.timeOut.imaging} />
+                    <ChecklistViewItem label="Sterility confirmed (including indicator results)" checked={displayData.timeOut.sterility} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={MOCK_NURSE_DATA.timeOut.notes} />
+                    <InfoField label="Additional Notes" value={displayData.timeOut.notes} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Sign Out */}
             <DetailSection title="Sign Out (Before Patient Leaves OT)">
-                <InfoField label="Time" value={MOCK_NURSE_DATA.signOut.time} />
+                <InfoField label="Time" value={displayData.signOut.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Procedure name recorded correctly" checked={MOCK_NURSE_DATA.signOut.procedure} />
-                    <ChecklistViewItem label="Instrument, sponge, needle counts correct" checked={MOCK_NURSE_DATA.signOut.counts} />
-                    <ChecklistViewItem label="Specimen labeled (including patient name)" checked={MOCK_NURSE_DATA.signOut.specimen} />
-                    <ChecklistViewItem label="Equipment problems addressed" checked={MOCK_NURSE_DATA.signOut.equipment} />
+                    <ChecklistViewItem label="Procedure name recorded correctly" checked={displayData.signOut.procedure} />
+                    <ChecklistViewItem label="Instrument, sponge, needle counts correct" checked={displayData.signOut.counts} />
+                    <ChecklistViewItem label="Specimen labeled (including patient name)" checked={displayData.signOut.specimen} />
+                    <ChecklistViewItem label="Equipment problems addressed" checked={displayData.signOut.equipment} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={MOCK_NURSE_DATA.signOut.notes} />
+                    <InfoField label="Additional Notes" value={displayData.signOut.notes} />
                 </div>
             </DetailSection>
 
@@ -145,7 +162,7 @@ export const NurseCareViewMode = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {MOCK_NURSE_DATA.implants.map((item, idx) => (
+                            {displayData.implants.map((item: any, idx: number) => (
                                 <tr key={idx} className="border-t">
                                     <td className="py-2">{item.type}</td>
                                     <td className="py-2">{item.size}</td>
@@ -171,7 +188,7 @@ export const NurseCareViewMode = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {MOCK_NURSE_DATA.consumables.map((item, idx) => (
+                            {displayData.consumables.map((item: any, idx: number) => (
                                 <tr key={idx} className="border-t">
                                     <td className="py-2">{item.name}</td>
                                     <td className="py-2">{item.qty}</td>
@@ -185,7 +202,7 @@ export const NurseCareViewMode = () => {
 
             {/* View Mode - Nursing Notes */}
             <DetailSection title="Additional Nursing Notes">
-                <InfoField label="Nursing Notes" value={MOCK_NURSE_DATA.nursingNotes} />
+                <InfoField label="Nursing Notes" value={displayData.nursingNotes} />
             </DetailSection>
         </>
     );

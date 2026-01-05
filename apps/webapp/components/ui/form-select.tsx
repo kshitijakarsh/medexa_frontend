@@ -18,6 +18,7 @@ interface FormSelectProps {
   required?: boolean
   id?: string
   disabled?: boolean
+  triggerClassName?: string
 }
 
 export const FormSelect = ({
@@ -30,17 +31,18 @@ export const FormSelect = ({
   required,
   id,
   disabled,
+  triggerClassName,
 }: FormSelectProps) => {
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="text-sm font-medium">
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-black ml-1">*</span>}
       </label>
       <Select value={value} onValueChange={onValueChange} disabled={disabled}>
         <SelectTrigger
           id={id}
-          className="w-full"
+          className={`w-full ${triggerClassName || ""}`}
           aria-invalid={error ? "true" : "false"}
           aria-describedby={error ? `${id}-error` : undefined}
         >

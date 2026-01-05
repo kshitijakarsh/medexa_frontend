@@ -99,10 +99,9 @@ export const DynamicSection = ({
                                             </SelectItem>
                                         ))
                                     ) : (
-                                        <>
-                                            <SelectItem value="option1">Option 1</SelectItem>
-                                            <SelectItem value="option2">Example Option</SelectItem>
-                                        </>
+                                        <SelectItem value="none" disabled>
+                                            No options available
+                                        </SelectItem>
                                     )}
                                 </SelectContent>
                             </Select>

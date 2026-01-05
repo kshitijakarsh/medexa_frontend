@@ -19,6 +19,7 @@ import { useUserStore } from "@/store/useUserStore";
 import FilterButton from "@/components/common/filter-button";
 import { Can } from "@/components/common/app-can";
 import { PERMISSIONS } from "@/app/utils/permissions";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function OperationTheatresPage() {
   const userPermissions = useUserStore((s) => s.user?.role.permissions);
@@ -28,6 +29,8 @@ export default function OperationTheatresPage() {
   const [data, setData] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+  const dict = useDictionary();
+  const trans = dict.pages.operationTheatres;
 
   // Simulated API data fetching
   useEffect(() => {
@@ -40,15 +43,15 @@ export default function OperationTheatresPage() {
   }, []);
 
   const columns = [
-    { key: "id", label: "Sr.No", render: (row: any) => row.id, className: "w-[60px] text-center" },
-    { key: "operationRoom", label: "Operation Room", render: (row: any) => row.operationRoom },
-    { key: "roomName", label: "OT Room Name", render: (row: any) => row.roomName },
-    { key: "floor", label: "Floor", render: (row: any) => row.floor },
-    { key: "createdOn", label: "Created On", render: (row: any) => row.createdOn },
-    { key: "addedBy", label: "Added By", render: (row: any) => row.addedBy },
+    { key: "id", label: trans.table.sno, render: (row: any) => row.id, className: "w-[60px] text-center" },
+    { key: "operationRoom", label: trans.table.operationroom, render: (row: any) => row.operationRoom },
+    { key: "roomName", label: trans.table.otRoomName, render: (row: any) => row.roomName },
+    { key: "floor", label: trans.table.floor, render: (row: any) => row.floor },
+    { key: "createdOn", label: trans.table.createdOn, render: (row: any) => row.createdOn },
+    { key: "addedBy", label: trans.table.addedBy, render: (row: any) => row.addedBy },
     {
       key: "action",
-      label: "Action",
+      label: trans.table.action,
       render: (row: any) => <OperationTheatresRowActionMenu onEdit={() => { }} onDelete={() => { }} userPermissions={userPermissions} />,
       className: "text-center w-[80px]",
     },
@@ -57,7 +60,7 @@ export default function OperationTheatresPage() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="Operation Theatres / Procedure Rooms" />
+        <PageHeader title={trans.title} />
 
         {/* Table Card */}
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
@@ -73,8 +76,10 @@ export default function OperationTheatresPage() {
                 Filter
                 <SlidersHorizontal className="w-5 h-5" />
               </Button> */}
-              <FilterButton onClick={() => setIsFilterDialogOpen(true)} />
-              <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
+              <FilterButton onClick={() => setIsFilterDialogOpen(true)}
+                inverted={true}
+              />
+              <SearchInput value={search} onChange={setSearch} placeholder= {dict.common.search} />
               <QuickActions />
               <Can
                 permission={PERMISSIONS.OPERATION_THEATRES.CREATE}

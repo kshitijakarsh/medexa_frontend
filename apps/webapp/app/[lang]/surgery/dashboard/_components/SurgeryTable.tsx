@@ -3,14 +3,16 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { SurgeryStatus } from "../../lib/types";
+import { SurgeryStatus } from "../../_lib/types";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
-import { MoreVertical } from "lucide-react";
 import Image from "next/image";
 
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { VipCrownBadge } from "@/components/common/pasient-card/vip-crown-badge";
 import { Button } from "@workspace/ui/components/button";
+import { useRouter, useParams } from "next/navigation";
+import { ROUTES } from "@/lib/routes";
+import ActionMenu from "@/components/common/action-menu";
 
 // Table row interface for display
 interface SurgeryRow {
@@ -30,8 +32,9 @@ interface SurgeryRow {
 }
 
 const SurgeryTable: React.FC = () => {
+  const router = useRouter();
+  const { lang } = useParams();
   const [activeTab, setActiveTab] = React.useState("Surgeries");
-
   // API Client
   const surgeryApi = createSurgeryApiClient({});
 
@@ -117,7 +120,7 @@ const SurgeryTable: React.FC = () => {
     }
   };
 
-  const columns: Column<SurgeryRow>[] = [
+  const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
       key: "otRoom",
       label: "OT Room",
@@ -187,13 +190,30 @@ const SurgeryTable: React.FC = () => {
       key: "action",
       label: "Action",
       className: "text-right",
-      render: () => (
-        <button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100">
-          <MoreVertical size={16} />
-        </button>
+      render: (row) => (
+        <ActionMenu actions={[
+          {
+            label: "View",
+            onClick: () => {
+              router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+            }
+          },
+          {
+            label: "Edit",
+            // onClick: () => {
+            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+            // }
+          },
+          {
+            label: "Delete",
+            // onClick: () => {
+            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+            // }
+          }
+        ]} className="bg-transparent hover:bg-transparent text-blue-500" />
       ),
     },
-  ];
+  ], []);
 
   return (
     <div className="mb-8 overflow-hidden rounded-3xl bg-background shadow-soft">
@@ -212,7 +232,13 @@ const SurgeryTable: React.FC = () => {
           />
         </div>
 
-        <Button variant="link" className="text-blue-500 text-sm">Advanced Filters</Button>
+        <Button
+          variant="link"
+          className="text-blue-500 text-sm"
+          onClick={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
+        >
+          View All
+        </Button>
       </div>
 
       {error ? (

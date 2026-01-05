@@ -19,6 +19,7 @@ import { DynamicSelect } from "@/components/common/dynamic-select"
 import { AppSelect } from "@/components/common/app-select"
 import { useQuery } from "@tanstack/react-query"
 import { createRoleApiClient } from "@/lib/api/administration/roles"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 const filterSchema = z.object({
   role: z.string().optional(),
@@ -49,6 +50,8 @@ export function FilterDialog({
   })
 
   const roleApi = createRoleApiClient({})
+  const dict = useDictionary();
+  const trans = dict.pages.users.filterdialog
 
   /* Fetch roles for filter dropdown */
   const { data: rolesData } = useQuery({
@@ -80,7 +83,7 @@ export function FilterDialog({
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Filter Users"
+      title={trans.title}
       maxWidth="md:max-w-3xl"
     >
       <Form {...form}>
@@ -94,13 +97,13 @@ export function FilterDialog({
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{trans.role}</FormLabel>
                   <FormControl>
                     <DynamicSelect
                       options={roleOptions}
                       value={field.value}
                       onChange={(v) => field.onChange(v as string)}
-                      placeholder="Select role"
+                      placeholder={trans.placeholderRole}
                     />
                   </FormControl>
                 </FormItem>
@@ -112,9 +115,9 @@ export function FilterDialog({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{trans.email}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Email" {...field} />
+                    <Input placeholder={trans.placeholderEmail} {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -125,9 +128,9 @@ export function FilterDialog({
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>{trans.phone}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Phone" {...field} />
+                    <Input placeholder={trans.placeholderPhone} {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -138,7 +141,7 @@ export function FilterDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{dict.common.status}</FormLabel>
                   <FormControl>
                     {/* <select value={field.value || ""} onChange={(e) => field.onChange(e.target.value)} className="w-full rounded border px-3 py-2">
                       <option value="">Any</option>
@@ -146,13 +149,13 @@ export function FilterDialog({
                       <option value="Inactive">Inactive</option>
                     </select> */}
                     <AppSelect
-                      placeholder="Select Stats"
+                      placeholder={trans.placeholderStatus}
                       value={field.value}
                       onChange={field.onChange}
                       options={[
                         // { label: "", value: "Any" },
-                        { label: "Active", value: "Active" },
-                        { label: "Inactive", value: "Inactive" },
+                        { label: dict.common.active, value: "Active" },
+                        { label: dict.common.inactive, value: "Inactive" },
                       ]}
                       error={form.formState.errors.status}
                     />
@@ -166,9 +169,9 @@ export function FilterDialog({
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Created Date</FormLabel>
+                  <FormLabel>{trans.createdDate}</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type={trans.placeholderCreatedDate} {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -185,14 +188,14 @@ export function FilterDialog({
               }}
               className="text-blue-600 border-blue-500"
             >
-              Cancel
+              {dict.common.cancel}
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
-              {isLoading ? "Applying..." : "Apply Filters"}
+              {isLoading ? dict.common.applying : dict.common.appplyfilters}
             </Button>
           </div>
         </form>

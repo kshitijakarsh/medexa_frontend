@@ -327,7 +327,7 @@ import { zodResolver } from "@workspace/ui/lib/zod";
 import { StatusSwitch } from "@/components/common/switch-green";
 import { AppDialog } from "@/components/common/app-dialog";
 import { AppSelect } from "@/components/common/app-select";
-
+import { useDictionary } from "@/i18n/use-dictionary";
 import { AsyncSelect } from "@/components/common/async-select/AsyncSelect";
 import { usePagedOptions } from "@/components/common/async-select/usePagedOptions";
 
@@ -384,6 +384,8 @@ export function AddWardDialog({
         },
     });
 
+    const dict = useDictionary();
+    const trans = dict.pages.unitsWardsBeds.dialog
     // 💥 Load existing data when editing
     useEffect(() => {
         if (initialData) {
@@ -407,7 +409,7 @@ export function AddWardDialog({
         <AppDialog
             open={open}
             onClose={onClose}
-            title={mode === "add" ? "Add Ward" : "Edit Ward"}   // 💥 Dynamic title
+            title={mode === "add" ? trans.ward.addTitle : trans.ward.editTitle}   // 💥 Dynamic title
             maxWidth="md:max-w-lg"
         >
             <Form {...form}>
@@ -423,7 +425,7 @@ export function AddWardDialog({
                             <FormItem>
                                 <FormLabel>Ward Number</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Enter ward number" {...field} />
+                                    <Input placeholder= {trans.placeholders.wardNumber} {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
@@ -438,7 +440,7 @@ export function AddWardDialog({
                                 <FormLabel>Ward Type</FormLabel>
                                 <FormControl>
                                     <AppSelect
-                                        placeholder="Select Ward Type"
+                                        placeholder= {trans.placeholders.wardType}
                                         value={field.value}
                                         onChange={field.onChange}
                                         error={fieldState.error}
@@ -482,7 +484,7 @@ export function AddWardDialog({
                                 <FormLabel>Floor</FormLabel>
                                 <FormControl>
                                     <AppSelect
-                                        placeholder="Select Floor"
+                                        placeholder= {trans.placeholders.floor}
                                         value={field.value}
                                         onChange={field.onChange}
                                         error={fieldState.error}
@@ -523,16 +525,16 @@ export function AddWardDialog({
                         name="active"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Status</FormLabel>
+                                <FormLabel>{dict.common.status}</FormLabel>
                                 <div
                                     className={`flex items-center gap-3 rounded-md px-3 py-2 ${field.value ? "bg-green-50" : "bg-gray-50"
                                         }`}
                                 >
-                                    <span className="text-sm text-red-500">Inactive</span>
+                                    <span className="text-sm text-red-500">{dict.common.inactive}</span>
                                     <FormControl>
                                         <StatusSwitch checked={field.value} onCheckedChange={field.onChange} />
                                     </FormControl>
-                                    <span className="text-sm text-green-600">Active</span>
+                                    <span className="text-sm text-green-600">{dict.common.active}</span>
                                 </div>
                             </FormItem>
                         )}
@@ -541,10 +543,10 @@ export function AddWardDialog({
                     {/* Footer */}
                     <div className="flex justify-end gap-3 pt-4">
                         <Button variant="outline" onClick={onClose}>
-                            Cancel
+                            {dict.common.cancel}
                         </Button>
                         <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                            {mode === "add" ? "Save" : "Update"} {/* 💥 Dynamic */}
+                            {mode === "add" ? dict.common.save : dict.common.update} {/* 💥 Dynamic */}
                         </Button>
                     </div>
                 </form>

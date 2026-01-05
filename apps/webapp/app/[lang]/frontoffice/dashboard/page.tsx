@@ -3,10 +3,13 @@
 import Link from "next/link"
 import { Calendar, Users } from "lucide-react"
 import { useParams } from "next/navigation"
+import { useDictionary } from "@/i18n/dictionary-context"
 
 export default function FrontOfficeDashboardPage() {
   const params = useParams<{ lang?: string }>()
   const lang = params?.lang || "en"
+  const dict = useDictionary()
+  const t = dict.pages.frontoffice.dashboard
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-[#F3F9FF] to-[#E3F6FE] p-6 flex justify-center">
@@ -21,10 +24,10 @@ export default function FrontOfficeDashboardPage() {
               <div className="border border-[#CFE9FF] bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col items-center justify-center min-h-[200px]">
                 <Calendar className="w-12 h-12 text-[#2CB470] mb-4" />
                 <h3 className="text-xl font-semibold text-gray-800">
-                  Appointment Book
+                  {t.appointmentBook}
                 </h3>
                 <p className="text-sm text-gray-500 mt-2">
-                  Book new appointments
+                  {t.bookNewAppointments}
                 </p>
               </div>
             </Link>
@@ -33,8 +36,8 @@ export default function FrontOfficeDashboardPage() {
             <Link href={`/${lang}/patient`}>
               <div className="border border-[#CFE9FF] bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col items-center justify-center min-h-[200px]">
                 <Users className="w-12 h-12 text-[#2CB470] mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800">Patient</h3>
-                <p className="text-sm text-gray-500 mt-2">Manage patients</p>
+                <h3 className="text-xl font-semibold text-gray-800">{t.patient}</h3>
+                <p className="text-sm text-gray-500 mt-2">{t.managePatients}</p>
               </div>
             </Link>
           </div>

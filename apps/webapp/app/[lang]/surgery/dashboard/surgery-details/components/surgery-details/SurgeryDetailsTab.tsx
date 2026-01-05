@@ -1,7 +1,10 @@
 "use client";
 
 import React from "react";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Send } from "lucide-react";
+import { createSurgeryApiClient } from "@/lib/api/surgery/surgeries";
 import { MOCK_DATA } from "@/app/[lang]/surgery/_lib/constants";
 import SurgeryFormSection from "./SurgeryFormSection";
 import SurgicalTeamSection from "./SurgicalTeamSection";
@@ -12,14 +15,30 @@ import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 interface SurgeryDetailsTabProps {
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  patientId?: string;
 }
 
-export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTabProps) => {
-  // Prepare clinical data from MOCK_DATA
+export const SurgeryDetailsTab = ({ isEditing, setIsEditing, patientId }: SurgeryDetailsTabProps) => {
+  const { id } = useParams();
+  const surgeryApi = createSurgeryApiClient({});
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["surgery-details", id],
+    queryFn: async () => {
+      if (!id || id === "new") return null;
+      const resp = await surgeryApi.getById(id as string);
+      return resp.data;
+    },
+    enabled: !!id && id !== "new",
+  });
+
+  const surgeryData = response?.data;
+
+  // Prepare clinical data (keeping MOCK_DATA for these as they aren't in the provided sample)
   const clinicalData = {
     problems: MOCK_DATA.activeProblems,
     allergies: MOCK_DATA.allergies,
-    medications: MOCK_DATA.medications.map((m) => ({
+    medications: MOCK_DATA.medications.map((m: any) => ({
       id: String(m.slNo),
       name: m.name,
       detail: `${m.dose} - ${m.frequency}`,
@@ -55,6 +74,7 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
               problems={clinicalData.problems}
               allergies={clinicalData.allergies}
               medications={clinicalData.medications}
+              patientId={patientId}
             />
           </div>
         </div>
@@ -65,29 +85,29 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
               <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                 <InfoField
                   label="Procedure"
-                  value={MOCK_DATA.surgery.procedure}
+                  value={surgeryData?.procedure?.name || MOCK_DATA.surgery.procedure}
                 />
                 <InfoField
                   label="Department"
-                  value={MOCK_DATA.surgery.department}
+                  value={surgeryData?.department_id || MOCK_DATA.surgery.department}
                 />
 
-                <InfoField label="Urgency" value={MOCK_DATA.surgery.urgency} />
+                <InfoField label="Urgency" value={surgeryData?.urgency || MOCK_DATA.surgery.urgency} />
                 <InfoField
                   label="Estimated Duration (hours)"
-                  value={MOCK_DATA.surgery.estimatedDuration}
+                  value={surgeryData?.duration?.toString() || MOCK_DATA.surgery.estimatedDuration}
                 />
 
                 <InfoField
                   label="Surgery Date"
-                  value={MOCK_DATA.surgery.date}
+                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleDateString() : MOCK_DATA.surgery.date}
                 />
                 <InfoField
                   label="Surgery Time"
-                  value={MOCK_DATA.surgery.time}
+                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : MOCK_DATA.surgery.time}
                 />
 
-                <InfoField label="OT Room" value={MOCK_DATA.surgery.otRoom} />
+                <InfoField label="OT Room" value={surgeryData?.ot_room_id || MOCK_DATA.surgery.otRoom} />
               </div>
             </DetailSection>
 
@@ -97,29 +117,29 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
                   label="Select Surgeon Team"
                   value={MOCK_DATA.team.teamName}
                 />
-                <InfoField label="Surgeon" value={MOCK_DATA.team.surgeon.name} />
+                <InfoField label="Surgeon" value={surgeryData?.surgeon_id || MOCK_DATA.team.surgeon.name} />
 
                 <InfoField
                   label="Assistant Surgeons"
-                  value={MOCK_DATA.team.assistants.map((d) => d.name).join(", ")}
+                  value={surgeryData?.assistant_surgeon_id || MOCK_DATA.team.assistants.map((d) => d.name).join(", ")}
                 />
                 <InfoField
                   label="Anaesthetist"
-                  value={MOCK_DATA.team.anaesthetist.name}
+                  value={surgeryData?.anaesthetist_id || MOCK_DATA.team.anaesthetist.name}
                 />
 
                 <InfoField
                   label="Scrub Nurse"
-                  value={MOCK_DATA.team.scrubNurse}
+                  value={surgeryData?.scrub_nurse_id || MOCK_DATA.team.scrubNurse}
                 />
                 <InfoField
                   label="Circulating Nurse"
-                  value={MOCK_DATA.team.circulatingNurse}
+                  value={surgeryData?.circulating_nurse_id || MOCK_DATA.team.circulatingNurse}
                 />
 
                 <InfoField
                   label="OT Technician"
-                  value={MOCK_DATA.team.otTechnician}
+                  value={surgeryData?.ot_technician_id || MOCK_DATA.team.otTechnician}
                 />
               </div>
             </DetailSection>
@@ -130,6 +150,7 @@ export const SurgeryDetailsTab = ({ isEditing, setIsEditing }: SurgeryDetailsTab
               problems={clinicalData.problems}
               allergies={clinicalData.allergies}
               medications={clinicalData.medications}
+              patientId={patientId}
             />
           </div>
         </div>

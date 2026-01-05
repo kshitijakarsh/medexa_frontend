@@ -22,7 +22,7 @@ import {
   createUserApiClient,
   type UserItem,
 } from "@/lib/api/administration/users"
-import { Check, X } from "lucide-react"
+import { Check, X, Eye, EyeOff } from "lucide-react"
 
 /* Password validation schema - same as AddDialog */
 const passwordSchema = z
@@ -71,6 +71,7 @@ export function EditDialog({ open, onClose, user }: EditDialogProps) {
   const queryClient = useQueryClient()
   const userApi = createUserApiClient({})
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -170,16 +171,30 @@ export function EditDialog({ open, onClose, user }: EditDialogProps) {
                   <FormItem>
                     <FormLabel>Password (Optional)</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Leave empty to keep current password"
-                        type="password"
-                        {...field}
-                        value={field.value || ""}
-                        onChange={(e) => {
-                          field.onChange(e)
-                          setPassword(e.target.value)
-                        }}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Leave empty to keep current password"
+                          type={showPassword ? "text" : "password"}
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) => {
+                            field.onChange(e)
+                            setPassword(e.target.value)
+                          }}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                     {password && (

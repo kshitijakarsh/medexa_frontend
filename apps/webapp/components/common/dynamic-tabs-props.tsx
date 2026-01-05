@@ -104,7 +104,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@workspace/ui/components/button";
 
 interface DynamicTabsProps {
-  tabs: { key: string; label: string }[];
+  tabs: { key: string; label: string; count?: number }[];
   defaultTab?: string;
   onChange?: (key: string) => void;
   variant?: "scroll" | "wrap";
@@ -117,6 +117,12 @@ export function DynamicTabs({
   variant = "wrap",
 }: DynamicTabsProps) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.key);
+
+  useEffect(() => {
+    if (defaultTab) {
+      setActiveTab(defaultTab);
+    }
+  }, [defaultTab]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -155,14 +161,18 @@ export function DynamicTabs({
             }}
             type="button"
             onClick={() => handleClick(tab.key)}
-            className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer
-            ${
-              activeTab === tab.key
+            className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer flex items-center gap-2
+            ${activeTab === tab.key
                 ? "bg-[#0086F8] text-white hover:bg-[#0086F8]"
                 : "bg-white text-gray-600 hover:bg-blue-100"
-            }`}
+              }`}
           >
-            {tab.label}
+            <span>{tab.label}</span>
+            {tab.count !== undefined && (
+              <span className={`px-2 py-1 rounded-full text-[10px] transition-colors bg-red-400 text-white`}>
+                {tab.count}
+              </span>
+            )}
           </Button>
         ))}
       </div>

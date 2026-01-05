@@ -22,6 +22,7 @@ import {
 } from "@workspace/ui/components/select";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const schema = z.object({
   wound_location: z.string().min(1, "Wound location is required"),
@@ -48,7 +49,11 @@ export default function WoundDressingForm({
   initialValues,
   submitLabel,
 }: WoundDressingFormProps) {
-  const form = useForm({
+  const dict = useDictionary();
+  const { form } = dict.pages.doctor.appointment.tabsContent.nurseOrders;
+  const { woundDressing, common, options, frequencies } = form;
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       wound_location: initialValues?.wound_location || "",
@@ -77,17 +82,17 @@ export default function WoundDressingForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+    <Form {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submit)} className="space-y-4">
         {/* Wound Location */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="wound_location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Wound Location</FormLabel>
+              <FormLabel>{woundDressing.woundLocation}</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="Enter Wound Location" {...field} />
+                <Input type="text" placeholder={woundDressing.enterWoundLocation} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -96,15 +101,15 @@ export default function WoundDressingForm({
 
         {/* Dressing Type */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="dressing_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Dressing Type</FormLabel>
+              <FormLabel>{woundDressing.dressingType}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Dressing Type" />
+                    <SelectValue placeholder={woundDressing.selectDressingType} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Sterile">Sterile</SelectItem>
@@ -122,21 +127,21 @@ export default function WoundDressingForm({
         {/* Frequency and Urgency */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="frequency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Frequency</FormLabel>
+                <FormLabel>{woundDressing.frequency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Frequency" />
+                      <SelectValue placeholder={common.selectFrequency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Once daily">Once daily</SelectItem>
-                      <SelectItem value="Twice daily">Twice daily</SelectItem>
-                      <SelectItem value="Every 8 hours">Every 8 hours</SelectItem>
-                      <SelectItem value="As needed">As needed</SelectItem>
+                      <SelectItem value="Once daily">{frequencies.onceDaily}</SelectItem>
+                      <SelectItem value="Twice daily">{frequencies.twiceDaily}</SelectItem>
+                      <SelectItem value="Every 8 hours">{frequencies.every8Hours}</SelectItem>
+                      <SelectItem value="As needed">{frequencies.asNeeded}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -146,20 +151,20 @@ export default function WoundDressingForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="urgency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Urgency</FormLabel>
+                <FormLabel>{common.urgency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Urgency" />
+                      <SelectValue placeholder={common.selectUrgency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="routine">Routine</SelectItem>
-                      <SelectItem value="stat">STAT</SelectItem>
+                      <SelectItem value="urgent">{options.urgent}</SelectItem>
+                      <SelectItem value="routine">{options.routine}</SelectItem>
+                      <SelectItem value="stat">{options.stat}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -172,11 +177,11 @@ export default function WoundDressingForm({
         {/* Start Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{common.startDate}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -186,11 +191,11 @@ export default function WoundDressingForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>{common.startTime}</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -202,14 +207,14 @@ export default function WoundDressingForm({
 
         {/* Instructions/Notes */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instructions / Notes</FormLabel>
+              <FormLabel>{common.notes}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter Instructions / Notes"
+                  placeholder={common.enterNotes}
                   rows={3}
                   {...field}
                 />
@@ -221,11 +226,19 @@ export default function WoundDressingForm({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
-          <CancelButton onClick={onCancel} />
+          <CancelButton onClick={onCancel} label={common.cancel} />
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            label={isSubmitting ? (submitLabel === "Update" ? "Updating..." : "Adding...") : (submitLabel || "Add Order")} 
+            label={
+              isSubmitting
+                ? submitLabel === "Update"
+                  ? common.updating
+                  : common.adding
+                : submitLabel === "Update"
+                  ? common.update
+                  : common.add
+            }
           />
         </div>
       </form>

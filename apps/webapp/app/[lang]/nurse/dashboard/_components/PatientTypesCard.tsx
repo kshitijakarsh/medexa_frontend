@@ -83,8 +83,10 @@ import { getPatientTypes } from "./api";
 import { SkeletonBlock } from "./ui/SkeletonBlock";
 import { SectionTitle } from "./ui/SectionTitle";
 import { DashboardSectionCard } from "./ui/DashboardSectionCard";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function PatientTypesCard() {
+    const dict = useDictionary();
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState<any>(null);
 
@@ -95,18 +97,16 @@ export default function PatientTypesCard() {
     if (loading) return <SkeletonBlock rows={4} />;
 
     return (
-        // <div className="bg-white p-4 rounded-xl shadow-sm border">
-        //   <div className="text-sm font-semibold mb-3"></div>
         <DashboardSectionCard className="space-y-3">
-            <SectionTitle as="h3">Patient Types </SectionTitle>
+            <SectionTitle as="h3">{dict.dashboard.patientTypes}</SectionTitle>
             <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                    <div>New Patients</div>
+                    <div>{dict.dashboard.newPatients}</div>
                     <div className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[#EAF3FF] text-[#1167D5] font-semibold">{data.newCount}</div>
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <div>Follow-ups</div>
+                    <div>{dict.dashboard.followUps}</div>
                     <div className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-[#F3E6FF] text-[#7B3BE6] font-semibold">{data.followUpCount}</div>
                 </div>
             </div>

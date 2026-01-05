@@ -49,6 +49,62 @@
     },
     "settings": {
       "title": "Instellingen"
+    },
+    "frontoffice": {
+      "dashboard": {
+        "appointmentBook": "Afsprakenboek",
+        "bookNewAppointments": "Nieuwe afspraken boeken",
+        "patient": "Patiënt",
+        "managePatients": "Patiënten beheren"
+      },
+      "schedule": {
+        "title": "Rooster",
+        "allDepartments": "Alle Afdelingen",
+        "allDoctors": "Alle Artsen",
+        "year": "Jaar",
+        "month": "Maand",
+        "all": "Alles",
+        "todayAppointments": "Afspraken Vandaag",
+        "tomorrow": "Morgen",
+        "customDate": "Aangepaste Datum",
+        "add": "Toevoegen",
+        "dateAndDay": "Datum & Dag",
+        "session": "Sessie",
+        "step": "Stap",
+        "createdOn": "Aangemaakt Op",
+        "addedBy": "Toegevoegd Door",
+        "action": "Actie",
+        "view": "Bekijken",
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "searchDepartment": "Zoek Afdeling",
+        "searchDoctor": "Zoek Arts",
+        "to": "Tot",
+        "january": "Januari",
+        "february": "Februari",
+        "march": "Maart",
+        "april": "April",
+        "may": "Mei",
+        "june": "Juni",
+        "july": "Juli",
+        "august": "Augustus",
+        "september": "September",
+        "october": "Oktober",
+        "november": "November",
+        "december": "December"
+      },
+      "timeSlots": {
+        "title": "Arts Afspraak Tijdslots",
+        "department": "Afdeling",
+        "doctor": "Arts",
+        "selectDoctor": "Selecteer Arts",
+        "selectDateRange": "Selecteer Datumbereik",
+        "selectDateRangeLabel": "Selecteer Datumbereik *",
+        "new": "Nieuw",
+        "noShiftsAdded": "Nog geen diensten toegevoegd. Klik op \"Nieuw\" om een dienst toe te voegen.",
+        "searchDepartment": "Zoek Afdeling",
+        "searchDoctor": "Zoek Arts"
+      }
     }
   },
   "metadata": {

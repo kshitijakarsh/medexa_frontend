@@ -181,6 +181,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { AppDialog } from "@/components/common/app-dialog";
 import { AppSelect } from "@/components/common/app-select";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface FilterDialogProps {
   open: boolean;
@@ -218,11 +219,13 @@ export function FilterDialog({
     onClose();
   };
 
+  const dict = useDictionary();
+
   return (
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Filter User Roles"
+      title={dict.pages.roles.filters.title}
       maxWidth="md:max-w-lg"
     >
       <Form {...form}>
@@ -237,15 +240,15 @@ export function FilterDialog({
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{dict.pages.roles.filters.status}</FormLabel>
                   <FormControl>
                     <AppSelect
                       value={field.value || ""}
                       onChange={field.onChange}
-                      placeholder="Select status"
+                      placeholder={dict.pages.roles.filters.status}
                       options={[
-                        { label: "Active", value: "active" },
-                        { label: "Inactive", value: "inactive" },
+                        { label: dict.common.active, value: "active" },
+                        { label: dict.common.inactive, value: "inactive" },
                       ]}
                     />
                   </FormControl>
@@ -265,7 +268,7 @@ export function FilterDialog({
               }}
               className="text-blue-600 border-blue-500"
             >
-              Cancel
+              {dict.common.cancel}
             </Button>
 
             <Button
@@ -273,7 +276,7 @@ export function FilterDialog({
               disabled={isLoading}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
-              {isLoading ? "Applying..." : "Apply Filters"}
+              {isLoading ? dict.pages.roles.filters.applying : dict.pages.roles.filters.apply}
             </Button>
           </div>
         </form>

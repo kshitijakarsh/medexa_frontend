@@ -74,10 +74,14 @@ import { useDoctorVisitsQuery } from "../../dashboard/_components/api";
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TypeBadge } from "@/components/common/pasient-card/type-badge";
 import { PatientCell } from "../../dashboard/_components/Appointment/PatientCell";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function AppointmentTable({ activeTab }: { activeTab: string }) {
   // Map tab → API status
   const status = activeTab === "all" ? undefined : activeTab;
+
+  const dict = useDictionary();
+  const { table } = dict.pages.doctor.profile.components;
 
   const { data, isLoading } = useDoctorVisitsQuery({
     status,
@@ -90,14 +94,14 @@ export function AppointmentTable({ activeTab }: { activeTab: string }) {
   const columns = [
     {
       key: "token",
-      label: "Token",
+      label: table.token,
       render: (row: any) => (
         <span className="font-medium">{row.id}</span>
       ),
     },
     {
       key: "patient",
-      label: "Patient",
+      label: table.patient,
       render: (row: any) => {
         const patient = row.patient;
         const fullName = `${patient.first_name} ${patient.last_name}`;
@@ -123,23 +127,23 @@ export function AppointmentTable({ activeTab }: { activeTab: string }) {
     },
     {
       key: "date",
-      label: "Date",
+      label: table.date,
       render: (row: any) => row.visit_date || "-",
     },
     {
       key: "diagnosis",
-      label: "Diagnosis",
+      label: table.diagnosis,
       render: (row: any) =>
         row.department?.department_name || "-",
     },
     {
       key: "type",
-      label: "Type",
+      label: table.type,
       render: (row: any) => <TypeBadge type={row.visit_type} />
     },
     {
       key: "status",
-      label: "Status",
+      label: table.status,
       render: (row: any) => (
         // <span
         //   className={`px-3 py-1 text-xs rounded-full ${
@@ -159,7 +163,7 @@ export function AppointmentTable({ activeTab }: { activeTab: string }) {
   // if (isLoading) {
   //   return (
   //     <div className="p-6 text-sm text-gray-500">
-  //       Loading appointments…
+  //       {table.loading}
   //     </div>
   //   );
   // }
@@ -168,7 +172,7 @@ export function AppointmentTable({ activeTab }: { activeTab: string }) {
   if (!rows.length && !isLoading) {
     return (
       <div className="p-6 text-center text-gray-500">
-        No appointments found.
+        {table.empty}
       </div>
     );
   }

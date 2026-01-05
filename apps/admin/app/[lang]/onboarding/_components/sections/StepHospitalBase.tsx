@@ -1,10 +1,8 @@
-// Step 1: Hospital Base Information (wraps existing sections)
-"use client"
-
 import React from "react"
 import { HospitalInfoSection } from "./HospitalInfoSection"
 import { AdminAccountSection } from "./AdminAccountSection"
 import { UserCredentialSection } from "./UserCredentialSection"
+import type { Dictionary } from "@/i18n/get-dictionary"
 
 interface StepHospitalBaseProps {
   form: any // react-hook-form instance
@@ -13,6 +11,7 @@ interface StepHospitalBaseProps {
   logoFile: File | null
   setLogoFile: (file: File | null) => void
   onLogoSelected: (file?: File | null) => void
+  dict: Dictionary
 }
 
 export const StepHospitalBase = ({
@@ -22,7 +21,9 @@ export const StepHospitalBase = ({
   logoFile,
   setLogoFile,
   onLogoSelected,
+  dict,
 }: StepHospitalBaseProps) => {
+
   return (
     <div className="space-y-4">
       {/* Hospital Information */}
@@ -33,13 +34,17 @@ export const StepHospitalBase = ({
         logoFile={logoFile}
         setLogoFile={setLogoFile}
         onLogoSelected={onLogoSelected}
+        dict={dict}
       />
 
       {/* Admin Account */}
-      <AdminAccountSection form={form} />
+      <AdminAccountSection
+        form={form}
+        dict={dict}
+      />
 
-      {/* User Credential */}
-      {/* <UserCredentialSection form={form} /> */}
+      {/* User Credential (optional) */}
+      {/* <UserCredentialSection form={form} dict={dict} /> */}
     </div>
   )
 }

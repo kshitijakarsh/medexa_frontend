@@ -102,7 +102,7 @@ export function SearchableSelect({
       {label && (
         <label className="text-sm font-medium">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-black ml-1">*</span>}
         </label>
       )}
 

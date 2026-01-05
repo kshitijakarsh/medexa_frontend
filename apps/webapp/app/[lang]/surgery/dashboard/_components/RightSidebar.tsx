@@ -2,14 +2,16 @@
 
 import React from "react";
 import { AlertCircle, Zap, ShieldCheck, Clock } from "lucide-react";
-import { EMERGENCY_SURGERIES } from "../../lib/constants";
 import PatientCard from "./UI/PatientCard";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
+import { ROUTES } from "@/lib/routes";
+import { useQuery } from "@tanstack/react-query";
+import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
 
 const RightSidebar: React.FC = () => {
   const router = useRouter();
+  const { lang } = useParams();
 
   const alerts = [
     {
@@ -43,13 +45,13 @@ const RightSidebar: React.FC = () => {
     onViewAll: () => void;
     children: React.ReactNode;
   }) => (
-    <Card className="shadow-soft bg-background border-none">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-2">
+    <div className="bg-white rounded-3xl p-4 shadow-soft">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Icon size={18} className="text-blue-500" />
-          <CardTitle className="text-sm text-gray-700 font-normal">
+          <h3 className="text-sm font-medium text-gray-700">
             {title}
-          </CardTitle>
+          </h3>
         </div>
         <Button
           variant="link"
@@ -58,54 +60,88 @@ const RightSidebar: React.FC = () => {
         >
           View All
         </Button>
-      </CardHeader>
-      <CardContent className="p-2 pt-0 flex flex-col items-center gap-3">
+      </div>
+      <div className="flex flex-col gap-3">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 
+  const surgeryApi = createSurgeryApiClient({});
+
+  const { data: surgeriesResponse, isLoading } = useQuery({
+    queryKey: ["surgeries-sidebar"],
+    queryFn: async () => {
+      const res = await surgeryApi.getAll({ limit: 50 });
+      return res.data;
+    },
+  });
+
+  const allSurgeries: Surgery[] = Array.isArray(surgeriesResponse?.data)
+    ? surgeriesResponse.data
+    : (Array.isArray(surgeriesResponse) ? surgeriesResponse : []);
+
+  // Upcoming: status is scheduled, sort by scheduled_date ASC
+  const upcomingSurgeries = allSurgeries
+    .filter(s => s.status?.toLowerCase() === "scheduled")
+    .sort((a, b) => {
+      if (!a.scheduled_date) return 1;
+      if (!b.scheduled_date) return -1;
+      return new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+    })
+    .slice(0, 5);
+
+  // Surgery Requests: statuses that are not scheduled or in_progress (e.g. pre_op, pending)
+  const surgeryRequests = allSurgeries
+    .filter(s => s.status?.toLowerCase() !== "scheduled" && s.status?.toLowerCase() !== "in_progress")
+    .slice(0, 5);
+
+
   return (
-    <aside className="flex w-full flex-col gap-3 lg:w-96">
+    <aside className="flex w-full flex-col gap-3">
       {/* Critical Alerts */}
-      <Card className="shadow-soft bg-background border-none">
-        <CardHeader className="flex flex-row items-center gap-2 space-y-0 p-3 pt-3 pb-4">
+      <div className="bg-white rounded-3xl p-4 shadow-soft">
+        <div className="flex items-center gap-2 mb-4">
           <AlertCircle size={18} className="text-gray-500" />
-          <CardTitle className="text-sm font-bold uppercase tracking-wider text-gray-700">
+          <h3 className="text-sm font-medium text-gray-700">
             OT Critical Alerts & Actions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-3 pt-0 space-y-2">
+          </h3>
+        </div>
+        <div className="space-y-4">
           {alerts.map((alert) => (
-            <div key={alert.id} className="flex gap-2 p-1">
-              <div className="h-fit rounded-xl p-2">{alert.icon}</div>
-              <div>
-                <h4 className="text-[13px] font-medium text-gray-900">
+            <div key={alert.id} className="flex gap-3">
+              <div className="shrink-0">{alert.icon}</div>
+              <div className="min-w-0">
+                <h4 className="text-sm font-medium text-gray-900 truncate">
                   {alert.title}
                 </h4>
-                <p className="text-xs font-normal text-gray-700">{alert.sub}</p>
+                <p className="text-xs text-gray-500 truncate">{alert.sub}</p>
               </div>
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Upcoming Surgeries */}
       <SidebarSection
         title="Upcoming Surgeries"
         icon={Clock}
-        onViewAll={() => router.push(`/surgery/dashboard/surgery-list`)}
+        onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
-        {EMERGENCY_SURGERIES.map((item, index) => (
+        {isLoading ? (
+          <div className="py-4 text-center text-xs text-gray-500">Loading...</div>
+        ) : upcomingSurgeries.length === 0 ? (
+          <div className="py-4 text-center text-xs text-gray-500">No upcoming surgeries</div>
+        ) : upcomingSurgeries.map((item) => (
           <PatientCard
-            key={index}
-            avatar={item.avatar}
-            name={item.name}
-            mrn={item.mrn}
-            procedure={item.procedure}
-            time={item.time}
-            room={item.room}
-            status="Emergency"
+            key={item.id}
+            avatar="/images/avatars/1.png"
+            name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
+            mrn={item.id} // or mrn if available
+            procedure={item.surgery_type || "N/A"}
+            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
+            room={(item as any).ot_room || "N/A"}
+            status={item.status}
           />
         ))}
       </SidebarSection>
@@ -114,18 +150,22 @@ const RightSidebar: React.FC = () => {
       <SidebarSection
         title="Surgery Requests"
         icon={Clock}
-        onViewAll={() => router.push(`/dashboard/surgery-list`)}
+        onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
-        {EMERGENCY_SURGERIES.map((item, index) => (
+        {isLoading ? (
+          <div className="py-4 text-center text-xs text-gray-500">Loading...</div>
+        ) : surgeryRequests.length === 0 ? (
+          <div className="py-4 text-center text-xs text-gray-500">No surgery requests</div>
+        ) : surgeryRequests.map((item) => (
           <PatientCard
-            key={index}
-            avatar={item.avatar}
-            name={item.name}
-            mrn={item.mrn}
-            procedure={item.procedure}
-            time={item.time}
-            room={item.room}
-            status="Scheduled"
+            key={item.id}
+            avatar="/images/avatars/1.png"
+            name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
+            mrn={item.id}
+            procedure={item.surgery_type || "N/A"}
+            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
+            room={(item as any).ot_room || "N/A"}
+            status={item.status}
           />
         ))}
       </SidebarSection>

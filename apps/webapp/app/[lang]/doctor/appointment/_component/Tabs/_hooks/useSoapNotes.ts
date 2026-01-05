@@ -7,28 +7,32 @@ const api = createSoapNotesApiClient({});
 
 /* ---------------- GET SOAP NOTE BY VISIT (Doctor) ---------------- */
 
-export function useSoapNoteByVisitId(visitId: string) {
-    return useQuery({
-        queryKey: ["soap-note", visitId],
-        queryFn: async () => {
-            const res = await api.getByVisitForDoctor(visitId);
-            return res.data?.data ?? null;
-        },
-        enabled: !!visitId,
-    });
+export function useSoapNoteByVisitId(
+  visitId: string,
+  options?: { enabled?: boolean }
+) {
+  return useQuery({
+    retry: false,
+    queryKey: ["soap-note", visitId],
+    enabled: options?.enabled ?? !!visitId,
+    queryFn: async () => {
+      const res = await api.getByVisitForDoctor(visitId);
+      return res.data?.data ?? null;
+    },
+  });
 }
 
 /* ---------------- CREATE / UPDATE SOAP NOTE ---------------- */
 
 export function useSaveSoapNote(soapNoteId?: string) {
-    return useMutation({
-        mutationFn: async (payload: any) => {
-            if (soapNoteId) {
-                return api.update(soapNoteId, payload);
-            }
-            return api.create(payload);
-        },
-    });
+  return useMutation({
+    mutationFn: async (payload: any) => {
+      if (soapNoteId) {
+        return api.update(soapNoteId, payload);
+      }
+      return api.create(payload);
+    },
+  });
 }
 
 

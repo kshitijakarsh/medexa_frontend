@@ -15,6 +15,7 @@ import { AppDialog } from "@/components/common/app-dialog";
 import { CancelButton } from "@/components/common/cancel-button";
 import { ActionButton } from "@/components/common/action-button";
 import { AppSelect } from "@/components/common/app-select";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const filterSchema = z.object({
   operationCategory: z.string().optional(),
@@ -56,6 +57,8 @@ export function FilterDialog({
     onClose();
   };
 
+  const dict = useDictionary();
+
   return (
     <AppDialog
       open={open}
@@ -76,10 +79,10 @@ export function FilterDialog({
                 name="operationCategory"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel>Operation Category</FormLabel>
+                    <FormLabel>{dict.pages.operation.tabs.operationCategory}</FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder="Select Category"
+                        placeholder={dict.pages.operation.dialogs.placeholder}
                         value={field.value}
                         onChange={field.onChange}
                         error={fieldState.error}
@@ -103,16 +106,16 @@ export function FilterDialog({
             name="status"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{dict.common.status}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Status"
+                    placeholder={dict.pages.operation.dialogs.placeholderStatus}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error}
                     options={[
-                      { label: "Active", value: "Active" },
-                      { label: "Inactive", value: "Inactive" },
+                      { label: dict.common.active, value: "Active" },
+                      { label: dict.common.inactive, value: "Inactive" },
                     ]}
                   />
                 </FormControl>
@@ -126,10 +129,10 @@ export function FilterDialog({
             name="createdBy"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Created By</FormLabel>
+                <FormLabel>{dict.pages.operation.dialogs.createdBy}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Creator"
+                    placeholder={dict.pages.operation.dialogs.placeholderCreatedBy}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error}
@@ -150,10 +153,10 @@ export function FilterDialog({
             name="dateRange"
             render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>Date Range</FormLabel>
+                <FormLabel>{dict.pages.operation.dialogs.dateRange}</FormLabel>
                 <FormControl>
                   <AppSelect
-                    placeholder="Select Date Range"
+                    placeholder={dict.pages.operation.dialogs.placeholderDateRange}
                     value={field.value}
                     onChange={field.onChange}
                     error={fieldState.error}
@@ -171,7 +174,7 @@ export function FilterDialog({
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-4">
             <CancelButton onClick={onClose} />
-            <ActionButton loading={isLoading} label="Apply Filter" />
+            <ActionButton loading={isLoading} label= {dict.common.appplyfilters} />
           </div>
         </form>
       </Form>

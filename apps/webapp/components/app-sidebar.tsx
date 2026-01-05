@@ -11,6 +11,11 @@ import {
   Settings,
   IdCard,
   BriefcaseMedical,
+  Calendar,
+  BedDouble,
+  Users,
+  Scissors,
+  Wrench,
 } from "lucide-react"
 
 import {
@@ -22,10 +27,15 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarHeader,
   SidebarFooter,
 } from "@workspace/ui/components/sidebar"
-import { usePathname } from "next/navigation"
+import { ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
+import { usePathname, useSearchParams } from "next/navigation"
 import { LOGOS } from "@/lib/logos"
 import Image from "next/image"
 import { useSidebar } from "@workspace/ui/components/sidebar"
@@ -39,25 +49,27 @@ import {
   SURGERY_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
-import { title } from "process"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 export function AppSidebar({ }) {
   const pathname = usePathname()
   const { withLocale } = useLocaleRoute()
+  const dict = useDictionary()
 
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
     hr: pathname.includes(HR),
-    frontoffice: pathname.includes(FRONTOFFICE_BASE),
+    // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
     surgery: pathname.includes(SURGERY_BASE),
   }
 
   const items = [
-    ...(!modulesAvailable.hr && !modulesAvailable.doctor
+    ...(!modulesAvailable.hr && !modulesAvailable.doctor && !modulesAvailable.frontoffice
       ? [
         {
-          title: "Organization Setup",
+          title: dict.nav.organizationSetup,
           url: [
             withLocale(ROUTES.ORGANIZATION),
             withLocale(ROUTES.ADMINISTRATION_CHARGES),
@@ -87,18 +99,103 @@ export function AppSidebar({ }) {
     ...(modulesAvailable.doctor
       ? [
         {
-          title: "Doctor",
+          title: "Dashboard",
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
-          icon: BriefcaseMedical,
+          icon: LayoutDashboard,
         },
+        // {
+        //   title: "Appointment",
+        //   icon: Calendar,
+        //   url: [], // Group header
+        //   items: [
+        //     {
+        //       title: "Appointments",
+        //       url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
+        //     },
+        //     {
+        //       title: "Completed",
+        //       url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
+        //     },
+        //     {
+        //       title: "Appointment Schedule",
+        //       url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
+        //     }
+        //   ]
+        // },
       ]
       : []),
     ...(modulesAvailable.frontoffice
       ? [
         {
-          title: "Frontoffice",
-          url: [ROUTES.FRONTOFFICE_DASHBOARD],
-          icon: BriefcaseMedical,
+          title: "Dashboard",
+          url: [withLocale(ROUTES.FRONTOFFICE_DASHBOARD)],
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Patient Record",
+          url: [withLocale(ROUTES.FRONTOFFICE_PATIENT_REGISTRATION)],
+          icon: User2,
+        },
+        {
+          title: "Appointment",
+          icon: Calendar,
+          url: [],
+          items: [
+            {
+              title: "Appointment",
+              url: [withLocale("/appointment")],
+            },
+            {
+              title: "Completed log",
+              url: [withLocale("/appointment?tab=completed")],
+            },
+            {
+              title: "Appointment Schedule",
+              url: [withLocale(ROUTES.FRONTOFFICE_SCHEDULE)],
+            }
+          ]
+        },
+        {
+          title: "OPD",
+          url: [],
+          icon: Activity, // Using Activity as a placeholder for OPD since it relates to ongoing patient activity
+          items: [
+            {
+              title: "Patients Que",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=queue`)],
+            },
+            {
+              title: "Completed",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=completed`)],
+            },
+            {
+              title: "Doctor Instructions",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=instructions`)],
+            },
+          ]
+        },
+        {
+          title: "IPD",
+          url: [],
+          icon: BedDouble,
+          items: [
+            {
+              title: "Admitted Patients",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=admitted`)],
+            },
+            {
+              title: "Bed & Ward Management",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`)],
+            },
+            {
+              title: "Discharged Patients",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=discharged`)],
+            },
+            {
+              title: "Doctor Instructions",
+              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=instructions`)],
+            },
+          ]
         },
       ]
       : []),
@@ -107,49 +204,51 @@ export function AppSidebar({ }) {
         {
           title: "Dashboard",
           url: [withLocale(ROUTES.SURGERY_DASHBOARD)],
-          icon: BriefcaseMedical,
-        },
-        // {
-        //   title: "Surgery",
-        //   url: [withLocale(ROUTES.SURGERY_LIST)],
-        //   icon: BriefcaseMedical,
-        // },
-        // {
-        //   title: "OT Schedule",
-        //   url: [withLocale(ROUTES.SURGERY_SCHEDULE)],
-        //   icon: BriefcaseMedical,
-        // },
-        // {
-        //   title: "Pre-Op Checklist",
-        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_PRE_OP)],
-        //   icon: BriefcaseMedical,
-        // },
-        // {
-        //   title: "Intra-Op Checklist",
-        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_INTRA_OP)],
-        //   icon: BriefcaseMedical,
-        // },
-        // {
-        //   title: "Post-Op Checklist",
-        //   url: [withLocale(ROUTES.SURGERY_CHECKLIST_POST_OP)],
-        //   icon: BriefcaseMedical,
-        // },
-        {
-          title: "OT Settings - Teams",
-          url: [
-            withLocale(ROUTES.SURGERY_OT_TEAMS),
-            
-          ],
-          icon: BriefcaseMedical,
+          icon: LayoutDashboard,
         },
         {
-          title: "OT Settings - Templates",
-          url: [
-            withLocale(ROUTES.SURGERY_OT_TEMPLATES),
-            
-          ],
-          icon: BriefcaseMedical,
+          title: "Surgery",
+          icon: Scissors,
+          url: [],
+          items: [
+            {
+              title: "OT Schedule",
+              url: [withLocale(ROUTES.SURGERY_OT_SCHEDULE)],
+            },
+            {
+              title: "Pre-Op Checklist",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            },
+            {
+              title: "Intra-Op Notes",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            },
+            {
+              title: "Post-Op Notes",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            }
+          ]
         },
+        {
+          title: "OT Setting",
+          icon: Wrench,
+          url: [],
+          items: [
+            {
+              title: "Teams",
+              url: [withLocale(ROUTES.SURGERY_OT_TEAMS)],
+            },
+            {
+              title: "Templates",
+              url: [withLocale(ROUTES.SURGERY_OT_TEMPLATES)],
+            },
+          ]
+        },
+        {
+          title: "Ward Store",
+          url: [withLocale(ROUTES.SURGERY_WARD_STORE)],
+          icon: BriefcaseMedical,
+        }
       ]
       : []),
     // {
@@ -188,21 +287,43 @@ export function AppSidebar({ }) {
   //     ? pathWithoutLocale === "" || pathWithoutLocale === "/"
   //     : pathWithoutLocale.startsWith(url)
   // }
+  const searchParams = useSearchParams()
   const isActive = (urls: string[] | string) => {
     // const pathWithoutLocale = pathname.replace(/^\//, "")
     const pathWithoutLocale = pathname
+    const fullPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
 
-    if (Array.isArray(urls)) {
-      return urls.some((url) =>
-        url === "/"
-          ? pathWithoutLocale === "" || pathWithoutLocale === "/"
-          : pathWithoutLocale.startsWith(url)
-      )
+    const checkUrl = (url: string) => {
+      if (url.includes("?")) {
+        return fullPath === url
+      }
+      // If we are on /appointment?tab=completed, and checking /appointment, 
+      // strictly speaking startsWith works, but we want mutually exclusive highlighting?
+      // User wants "Appointment" (default) NOT to highlight when "Completed" is active?
+      // "no need to highlight the completed also just highlight appointemnt"
+      // If I am on ...?tab=completed, "Appointment" (/appointment) check returns true.
+      // So both highlight.
+      // I need to ensure "Appointment" only highlights if NO specific tab query is causing conflict?
+      // Or simply: if current path has query params, and target url doesn't, maybe we shouldn't match?
+      // But standard "Appointment" might view standard page.
+      // Let's rely on exact match for query params items.
+      // And for the base item "/appointment", explicit check?
+
+      // Simple fix: If current URL has `tab=completed`, then `/appointment` should NOT be active?
+      if (url.endsWith("/appointment") && searchParams?.has("tab")) {
+        return false
+      }
+
+      return url === "/"
+        ? pathWithoutLocale === "" || pathWithoutLocale === "/"
+        : pathWithoutLocale.startsWith(url)
     }
 
-    return urls === "/"
-      ? pathWithoutLocale === "" || pathWithoutLocale === "/"
-      : pathWithoutLocale.startsWith(urls)
+    if (Array.isArray(urls)) {
+      return urls.some(checkUrl)
+    }
+
+    return checkUrl(urls)
   }
 
   const sidebarState = useSidebar().state
@@ -214,8 +335,7 @@ export function AppSidebar({ }) {
 
   const groups = [
     items.slice(0, 1), // first group
-    items.slice(1, 3), // second group
-    items.slice(3, 5), // second group
+    items.slice(1), // remaining items
   ]
 
   return (
@@ -271,37 +391,10 @@ export function AppSidebar({ }) {
       <SidebarContent className="gap-0">
         {groups.map((group, index) => (
           <SidebarGroup key={index} className="mb-0">
-            {/* <SidebarGroupLabel>
-              {index === 0
-                ? "application"
-                // : index === 1
-                //   ? "Management"
-                //   : "Monitor"}
-                : ""}
-            </SidebarGroupLabel> */}
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.map((item) => (
-                  <SidebarMenuItem
-                    key={item.title}
-                    className={`bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)] rounded  ${sidebarState === "collapsed" && "ms-2"}`}
-                  >
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      className="text-sm p-3"
-                    >
-                      <LocaleLink
-                        href={item.url[0] || "" /* main URL for link */}
-                      >
-                        <item.icon
-                          className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"
-                            }`}
-                        />
-                        <span className="text-base">{item.title}</span>
-                      </LocaleLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <SidebarNavItem key={item.title} item={item} isActive={isActive} sidebarState={sidebarState} />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -335,6 +428,8 @@ export function AppSidebar({ }) {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu> */}
+
+
             {/* <SidebarMenuButton
               onClick={handleLogout}
               className="cursor-pointer"
@@ -346,5 +441,93 @@ export function AppSidebar({ }) {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
+  )
+}
+
+function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive: (url: string | string[]) => boolean; sidebarState: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const isGroupActive = item.items?.some((sub: any) => isActive(sub.url))
+
+  useEffect(() => {
+    if (isGroupActive) {
+      setIsOpen(true)
+    }
+  }, [isGroupActive])
+
+  // Check if this item should have green styling
+  const isGreenItem = item.title === "Appointment" || item.title === "Patient Record" || item.title === "OPD" || item.title === "IPD"
+
+  if (item.items) {
+    return (
+      <SidebarMenuItem
+        className={`rounded mb-1 ${!isGreenItem ? "bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)]" : ""} ${sidebarState === "collapsed" && "ms-2"}`}
+      >
+        <SidebarMenuButton
+          onClick={() => setIsOpen(!isOpen)}
+          isActive={isGroupActive}
+          className={`text-sm p-3 w-full justify-between ${isGreenItem && isGroupActive
+            ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
+            : isGreenItem
+              ? "bg-transparent hover:bg-[#34D399]/20 text-white"
+              : ""
+            }`}
+        >
+          <div className="flex items-center gap-2">
+            {item.icon && (
+              <item.icon
+                className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+              />
+            )}
+            <span className="text-base font-medium">{item.title}</span>
+          </div>
+          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+        </SidebarMenuButton>
+        {isOpen && (
+          <SidebarMenuSub className="mx-0 px-0 ml-5 border-l border-blue-900/40 space-y-0 mt-3">
+            {item.items.map((subItem: any) => (
+              <SidebarMenuItem key={subItem.title} className="relative">
+                {/* Horizontal connector */}
+                <div className="absolute left-0 top-1/2 w-4 h-[1px] bg-blue-900/40 -translate-y-1/2 -translate-x-[1px]" />
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive(subItem.url)}
+                  className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none"
+                >
+                  <LocaleLink href={subItem.url[0] || ""}>
+                    <span>{subItem.title}</span>
+                  </LocaleLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
+          </SidebarMenuSub>
+        )}
+      </SidebarMenuItem>
+    )
+  }
+
+  return (
+    <SidebarMenuItem
+      className={`rounded mb-1 ${!isGreenItem ? "bg-[linear-gradient(90deg,_#07235B_0%,_#001A4D_100%)]" : ""} ${sidebarState === "collapsed" && "ms-2"}`}
+    >
+      <SidebarMenuButton
+        asChild
+        isActive={isActive(item.url)}
+        className={`text-sm p-3 ${isGreenItem && isActive(item.url)
+          ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
+          : isGreenItem
+            ? "bg-transparent hover:bg-[#34D399]/20 text-white"
+            : ""
+          }`}
+      >
+        <LocaleLink href={item.url[0] || ""}>
+          {item.icon && (
+            <item.icon
+              className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+            />
+          )}
+          <span className="text-base">{item.title}</span>
+        </LocaleLink>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   )
 }

@@ -34,8 +34,12 @@ import {
     Award,
     Briefcase,
 } from "lucide-react";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function DoctorHeader() {
+    const dict = useDictionary();
+    const { header } = dict.pages.doctor.profile.components;
+
     return (
         <div className=" bg-white p-0 rounded-2xl">
             <div className=" rounded-xl border p-6 flex flex-col gap-3">
@@ -50,7 +54,7 @@ export function DoctorHeader() {
                     <div className="flex-1">
                         {/* Name + specialist */}
                         <h2 className="text-xl font-semibold">Dr. Michael Chen</h2>
-                        <p className="text-gray-600 text-sm">Cardiology Specialist</p>
+                        <p className="text-gray-600 text-sm">Cardiology {header.specialist}</p>
 
                         {/* Degree + status badge */}
                         <div className="flex items-center gap-2 mt-2">
@@ -60,7 +64,7 @@ export function DoctorHeader() {
 
                             <span className="bg-green-100 text-green-700 px-3 py-1 text-xs rounded-full flex items-center gap-1">
                                 <BadgeCheck size={14} />
-                                Active
+                                {header.active}
                             </span>
                         </div>
                     </div>
@@ -73,7 +77,7 @@ export function DoctorHeader() {
                     <InfoItem
                         icon={<Award size={18} />}
                         iconColor="bg-blue-100 text-blue-700"
-                        label="License Number"
+                        label={header.licenseNumber}
                         value="MED-2015-45678"
                     />
 
@@ -81,7 +85,7 @@ export function DoctorHeader() {
                     <InfoItem
                         icon={<Mail size={18} />}
                         iconColor="bg-purple-100 text-purple-700"
-                        label="Email"
+                        label={header.email}
                         value="m.chen@medexa.com"
                     />
 
@@ -89,7 +93,7 @@ export function DoctorHeader() {
                     <InfoItem
                         icon={<Clock size={18} />}
                         iconColor="bg-green-100 text-green-700"
-                        label="OPD Timings"
+                        label={header.opdTimings}
                         value="9:00 AM - 2:00 PM"
                     />
 
@@ -97,15 +101,15 @@ export function DoctorHeader() {
                     <InfoItem
                         icon={<Briefcase size={18} />}
                         iconColor="bg-orange-100 text-orange-700"
-                        label="Experience"
-                        value="12 Years"
+                        label={header.experience}
+                        value={`12 ${header.years}`}
                     />
 
                     {/* Contact Number */}
                     <InfoItem
                         icon={<Phone size={18} />}
                         iconColor="bg-yellow-100 text-yellow-700"
-                        label="Contact Number"
+                        label={header.contactNumber}
                         value="+1 (555) 123-4567"
                     />
 
@@ -113,7 +117,7 @@ export function DoctorHeader() {
                     <InfoItem
                         icon={<Calendar size={18} />}
                         iconColor="bg-red-100 text-red-700"
-                        label="Working Days"
+                        label={header.workingDays}
                         value="Monday, Wednesday, Friday"
                     />
                 </div>

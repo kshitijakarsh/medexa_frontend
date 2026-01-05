@@ -37,8 +37,11 @@ interface NurseNotesProps {
     patientId: string,
 }
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function NurseNotesSection({ patientId }: NurseNotesProps) {
     const { id: visitId } = useParams() as { id: string };
+    const dict = useDictionary();
 
     const { data, isLoading } = useNurseNoteByVisitId(visitId);
 
@@ -47,7 +50,7 @@ export default function NurseNotesSection({ patientId }: NurseNotesProps) {
             <SectionWrapper
                 header={
                     <div className="flex items-center gap-3">
-                        <SectionTitle title="Nurse Note" />
+                        <SectionTitle title={dict.pages.doctor.appointment.tabsContent.nurseNote.title} />
                     </div>
                 }
             >
@@ -62,7 +65,7 @@ export default function NurseNotesSection({ patientId }: NurseNotesProps) {
                 {/* Empty state */}
                 {!isLoading && !data && (
                     <p className="text-gray-600 italic">
-                        No nurse notes recorded for this visit.
+                        {dict.pages.doctor.appointment.tabsContent.nurseNote.empty}
                     </p>
                 )}
 

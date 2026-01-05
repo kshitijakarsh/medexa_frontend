@@ -223,8 +223,8 @@ export const newItemUrgencyStyle = (urgency: string) => {
   }
 };
 
-import { PreOpViewMode } from "./PreOpViewMode";
-import { PreOpEditMode } from "./PreOpEditMode";
+import { PreOpViewMode } from "./views/PreOpViewMode";
+import { PreOpEditMode } from "./views/PreOpEditMode";
 
 const MOCK_METRICS: PreOpMetric[] = [
   { title: "Clinical Readiness", completed: 6, total: 7 },

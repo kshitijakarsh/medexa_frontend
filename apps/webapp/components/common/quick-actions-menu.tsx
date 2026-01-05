@@ -83,6 +83,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { ChevronsUpDown } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export interface QuickAction {
   label: string;
@@ -92,7 +93,7 @@ export interface QuickAction {
 
 export default function QuickActionsMenu({
   actions,
-  buttonLabel = "Quick",
+  buttonLabel = useDictionary().common.quickActions,
   className,
 }: {
   actions: QuickAction[];

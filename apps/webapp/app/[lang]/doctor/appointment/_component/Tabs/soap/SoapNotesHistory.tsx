@@ -7,11 +7,13 @@ import { ROUTES } from "@/lib/routes";
 import { useSoapNotesHistoryByPatient } from "../_hooks/useSoapNotes";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function SoapNotesHistory({ patientId }: { patientId: string }) {
   const router = useRouter();
   const { id: visitId } = useParams() as { id: string };
-  const { withLocale } = useLocaleRoute()
+  const { withLocale } = useLocaleRoute();
+  const dict = useDictionary();
 
   // 🔥 SOAP notes history API
   const { data, isLoading } = useSoapNotesHistoryByPatient(patientId);
@@ -21,13 +23,13 @@ export function SoapNotesHistory({ patientId }: { patientId: string }) {
   return (
     <div className="mt-4">
       <h3 className="text-sm font-semibold mb-2">
-        Previous History of SOAP Notes
+        {dict.pages.doctor.appointment.tabsContent.soapNotes.history.title}
       </h3>
 
       {isLoading ? (
         <HistorySkeleton />
       ) : history.length === 0 ? (
-        <p className="text-gray-500 text-sm">No previous SOAP notes found.</p>
+        <p className="text-gray-500 text-sm">{dict.pages.doctor.appointment.tabsContent.soapNotes.history.empty}</p>
       ) : (
         <div className="flex flex-col gap-4">
           {history.map((item: any) => {
@@ -36,7 +38,7 @@ export function SoapNotesHistory({ patientId }: { patientId: string }) {
               : null;
 
             const recorderName = `${item.createdBy?.name ?? ""} (${item.createdBy?.role?.name ?? ""
-              })`.trim(); 
+              })`.trim();
 
             return (
               <HistoryCard
@@ -46,8 +48,8 @@ export function SoapNotesHistory({ patientId }: { patientId: string }) {
                     ? format(createdAt, "MMMM dd, yyyy")
                     : "Unknown Date"
                 }
-                subtitle={`Recorded by ${recorderName || "Unknown"
-                  } at ${createdAt ? format(createdAt, "hh:mm a") : "--"
+                subtitle={`${dict.pages.doctor.appointment.tabsContent.soapNotes.history.recordedBy} ${recorderName || "Unknown"
+                  } ${dict.pages.doctor.appointment.tabsContent.soapNotes.history.at} ${createdAt ? format(createdAt, "hh:mm a") : "--"
                   }`}
                 onClick={() =>
                   router.push(

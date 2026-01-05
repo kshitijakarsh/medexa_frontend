@@ -1,7 +1,7 @@
-import EmergencySurgeries from "../components/dashboard/EmergencySurgeries";
-import StatsCards from "../components/dashboard/MetricCards";
-import RightSidebar from "../components/dashboard/RightSidebar";
-import SurgeryTable from "../components/dashboard/SurgeryTable";
+import EmergencySurgeries from "./_components/EmergencySurgeries";
+import StatsCards from "./_components/MetricCards";
+import RightSidebar from "./_components/RightSidebar";
+import SurgeryTable from "./_components/SurgeryTable";
 
 const dashboard = () => {
   return (
@@ -12,7 +12,7 @@ const dashboard = () => {
         <SurgeryTable />
       </div>
 
-      <div className="shrink-0 hidden lg:block">
+      <div className="shrink-0 hidden lg:block lg:w-80">
         <RightSidebar />
       </div>
     </div>

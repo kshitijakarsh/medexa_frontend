@@ -22,6 +22,7 @@ import {
 } from "@workspace/ui/components/select";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const schema = z.object({
   fluid_type: z.string().min(1, "Fluid type is required"),
@@ -53,7 +54,11 @@ export default function IVFluidsForm({
   initialValues,
   submitLabel,
 }: IVFluidsFormProps) {
-  const form = useForm({
+  const dict = useDictionary();
+  const { form } = dict.pages.doctor.appointment.tabsContent.nurseOrders;
+  const { ivFluids, common, options } = form;
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       fluid_type: initialValues?.fluid_type || "",
@@ -92,19 +97,19 @@ export default function IVFluidsForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+    <Form {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submit)} className="space-y-4">
         {/* Fluid Type */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="fluid_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fluid Type</FormLabel>
+              <FormLabel>{ivFluids.fluidType}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Fluid Type" />
+                    <SelectValue placeholder={ivFluids.selectFluidType} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="IV FLUIDS">IV FLUIDS</SelectItem>
@@ -122,15 +127,15 @@ export default function IVFluidsForm({
         {/* Volume and Rate */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="volume_ml"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Volume (mL)</FormLabel>
+                <FormLabel>{ivFluids.volume}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Volume" />
+                      <SelectValue placeholder={ivFluids.selectVolume} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="500">500 mL</SelectItem>
@@ -145,15 +150,15 @@ export default function IVFluidsForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="rate_ml_hr"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Rate (mL/hr)</FormLabel>
+                <FormLabel>{ivFluids.rate}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Rate" />
+                      <SelectValue placeholder={ivFluids.selectRate} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="50">50 mL/hr</SelectItem>
@@ -171,20 +176,20 @@ export default function IVFluidsForm({
         {/* Duration and Urgency */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="duration_hours"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Duration (hours/days)</FormLabel>
+                <FormLabel>{ivFluids.duration}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Duration" />
+                      <SelectValue placeholder={ivFluids.selectDuration} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="2 hours">2 hours</SelectItem>
-                      <SelectItem value="4 hours">4 hours</SelectItem>
-                      <SelectItem value="8 hours">8 hours</SelectItem>
+                      <SelectItem value="2 hours">2 {common.duration?.includes("hour") ? "hours" : "hours"}</SelectItem>
+                      <SelectItem value="4 hours">4 {common.duration?.includes("hour") ? "hours" : "hours"}</SelectItem>
+                      <SelectItem value="8 hours">8 {common.duration?.includes("hour") ? "hours" : "hours"}</SelectItem>
                       <SelectItem value="1 day">1 day</SelectItem>
                     </SelectContent>
                   </Select>
@@ -195,20 +200,20 @@ export default function IVFluidsForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="urgency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Urgency</FormLabel>
+                <FormLabel>{common.urgency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Urgency" />
+                      <SelectValue placeholder={common.selectUrgency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="routine">Routine</SelectItem>
-                      <SelectItem value="stat">STAT</SelectItem>
+                      <SelectItem value="urgent">{options.urgent}</SelectItem>
+                      <SelectItem value="routine">{options.routine}</SelectItem>
+                      <SelectItem value="stat">{options.stat}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -221,11 +226,11 @@ export default function IVFluidsForm({
         {/* Total Volume and Bottles */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="total_volume"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Volume</FormLabel>
+                <FormLabel>{ivFluids.totalVolume}</FormLabel>
                 <FormControl>
                   <Input type="text" placeholder="200" {...field} />
                 </FormControl>
@@ -235,11 +240,11 @@ export default function IVFluidsForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="total_bottles"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Total Bottles</FormLabel>
+                <FormLabel>{ivFluids.totalBottles}</FormLabel>
                 <FormControl>
                   <Input type="number" placeholder="3" {...field} />
                 </FormControl>
@@ -252,11 +257,11 @@ export default function IVFluidsForm({
         {/* Start Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{common.startDate}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -266,11 +271,11 @@ export default function IVFluidsForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>{common.startTime}</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -283,15 +288,15 @@ export default function IVFluidsForm({
         {/* Injection and Dose */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="injection"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Injection</FormLabel>
+                <FormLabel>{ivFluids.injection}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Injection" />
+                      <SelectValue placeholder={ivFluids.selectInjection} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="None">None</SelectItem>
@@ -306,15 +311,15 @@ export default function IVFluidsForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="dose"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dose</FormLabel>
+                <FormLabel>{ivFluids.dose}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Volume" />
+                      <SelectValue placeholder={ivFluids.selectDose} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="5ml">5 mL</SelectItem>
@@ -331,14 +336,14 @@ export default function IVFluidsForm({
 
         {/* Instructions/Notes */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instructions / Notes</FormLabel>
+              <FormLabel>{common.notes}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter Instructions / Notes"
+                  placeholder={common.enterNotes}
                   rows={3}
                   {...field}
                 />
@@ -350,11 +355,19 @@ export default function IVFluidsForm({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
-          <CancelButton onClick={onCancel} />
+          <CancelButton onClick={onCancel} label={common.cancel} />
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            label={isSubmitting ? (submitLabel === "Update" ? "Updating..." : "Adding...") : (submitLabel || "Add Order")} 
+            label={
+              isSubmitting
+                ? submitLabel === "Update"
+                  ? common.updating
+                  : common.adding
+                : submitLabel === "Update"
+                  ? common.update
+                  : common.add
+            }
           />
         </div>
       </form>
