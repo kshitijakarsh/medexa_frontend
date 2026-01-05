@@ -29,6 +29,7 @@ interface AnesthesiaPlanProps {
   onTabChange?: (tab: string) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  patientId?: string;
 }
 
 export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
@@ -36,6 +37,7 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   onTabChange,
   isEditing,
   setIsEditing,
+  patientId,
 }) => {
   const { id: surgeryId } = useParams();
   const anesthesiaApi = createAnesthesiaApiClient();
@@ -129,30 +131,30 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
         </div>
       </div>
 
-      
+
 
       <div className="w-full bg-slate-200 h-px"></div>
 
       <div className="py-2">
-          <div className="flex justify-end items-center gap-1">
-            <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
-              {/* {updatedAt ? (
+        <div className="flex justify-end items-center gap-1">
+          <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
+            {/* {updatedAt ? (
                 <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
               ) : */}
-              
-              {/* ( */}
-                <>Last Edited by Anesthesia Sarah on November 14, 2024, at 8:45 AM.</>
-              {/* )} */}
-            </div>
-            <Info size={18} className="text-blue-400" />
+
+            {/* ( */}
+            <>Last Edited by Anesthesia Sarah on November 14, 2024, at 8:45 AM.</>
+            {/* )} */}
           </div>
+          <Info size={18} className="text-blue-400" />
         </div>
+      </div>
 
       <div className="px-3 pb-6 pt-1">
         {isLoading ? (
           <div className="p-8 text-center text-slate-500">Loading anesthesia plan...</div>
         ) : activeTab === "Medical History" ? (
-          <MedicalHistory/>
+          <MedicalHistory patientId={patientId} />
         ) : activeTab === "Airway Assessment" ? (
           <AirwayAssessment
             isEditing={isEditing}
@@ -167,6 +169,7 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
         ) : activeTab === "Vitals Examination" ? (
           <VitalsExamination
             isEditing={isEditing}
+            patientId={patientId}
           />
         ) : activeTab === "ASA & Risk" ? (
           <ASARisk
@@ -180,13 +183,13 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
         ) : activeTab === "Anesthesia Plan" ? (
           <PlanDetails
             isEditing={isEditing}
-            // anaesthesiaType={data?.anaesthesia_type}
-            // monitoringRequired={data?.monitoring_required}
-            // postOperativeVentilationRequired={data?.post_operative_ventilation_required}
-            // icuRequired={data?.icu_required}
-            // airwayManagementPlan={data?.airway_management_plan}
-            // onSave={(payload) => saveMutation.mutate(payload)}
-            // isSaving={saveMutation.isPending}
+          // anaesthesiaType={data?.anaesthesia_type}
+          // monitoringRequired={data?.monitoring_required}
+          // postOperativeVentilationRequired={data?.post_operative_ventilation_required}
+          // icuRequired={data?.icu_required}
+          // airwayManagementPlan={data?.airway_management_plan}
+          // onSave={(payload) => saveMutation.mutate(payload)}
+          // isSaving={saveMutation.isPending}
           />
         ) : (
           <div className="flex w-full h-48 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">

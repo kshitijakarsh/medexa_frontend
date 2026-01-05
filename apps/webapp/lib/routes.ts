@@ -71,10 +71,12 @@ export const ROUTES = {
 
   // Surgery
   SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
-  SURGERY_OT_TEAMS: `${SURGERY_BASE}/teams`,
-  SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/teams/new`,
-  SURGERY_OT_TEMPLATES: `${SURGERY_BASE}/templates`,
-  SURGERY_OT_TEMPLATES_NEW: `${SURGERY_BASE}/templates/new`,
+  SURGERY_OT_SCHEDULE: `${SURGERY_BASE}/ot-schedule`,
+  SURGERY_PRE_OP: `${SURGERY_BASE}/pre-op`,
+  SURGERY_OT_TEAMS: `${SURGERY_BASE}/ot-setting/teams`,
+  SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/ot-setting/teams/new`,
+  SURGERY_OT_TEMPLATES: `${SURGERY_BASE}/ot-setting/templates`,
+  SURGERY_OT_TEMPLATES_NEW: `${SURGERY_BASE}/ot-setting/templates/new`,
   SURGERY_WARD_STORE: `${SURGERY_BASE}/ward-store`,
 }
 

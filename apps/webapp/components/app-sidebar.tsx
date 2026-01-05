@@ -13,6 +13,9 @@ import {
   BriefcaseMedical,
   Calendar,
   BedDouble,
+  Users,
+  Scissors,
+  Wrench,
 } from "lucide-react"
 
 import {
@@ -59,6 +62,7 @@ export function AppSidebar({ }) {
     hr: pathname.includes(HR),
     // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
     frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
+    surgery: pathname.includes(SURGERY_BASE),
   }
 
   const items = [
@@ -193,12 +197,57 @@ export function AppSidebar({ }) {
             },
           ]
         },
+      ]
+      : []),
+    ...(modulesAvailable.surgery
+      ? [
+        {
+          title: "Dashboard",
+          url: [withLocale(ROUTES.SURGERY_DASHBOARD)],
+          icon: LayoutDashboard,
+        },
+        {
+          title: "Surgery",
+          icon: Scissors,
+          url: [],
+          items: [
+            {
+              title: "OT Schedule",
+              url: [withLocale(ROUTES.SURGERY_OT_SCHEDULE)],
+            },
+            {
+              title: "Pre-Op Checklist",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            },
+            {
+              title: "Intra-Op Notes",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            },
+            {
+              title: "Post-Op Notes",
+              url: [withLocale(ROUTES.SURGERY_PRE_OP)],
+            }
+          ]
+        },
+        {
+          title: "OT Setting",
+          icon: Wrench,
+          url: [],
+          items: [
+            {
+              title: "Teams",
+              url: [withLocale(ROUTES.SURGERY_OT_TEAMS)],
+            },
+            {
+              title: "Templates",
+              url: [withLocale(ROUTES.SURGERY_OT_TEMPLATES)],
+            },
+          ]
+        },
         {
           title: "Ward Store",
-          url: [
-            withLocale(ROUTES.SURGERY_WARD_STORE)
-          ],
-          icon: BriefcaseMedical
+          url: [withLocale(ROUTES.SURGERY_WARD_STORE)],
+          icon: BriefcaseMedical,
         }
       ]
       : []),

@@ -7,13 +7,10 @@ import {
   Search,
   ChevronDown,
   SlidersHorizontal,
-  Plus,
   LayoutList,
 } from "lucide-react";
-import TabSwitcher from "@/components/common/TabSwitcher";
-import { useRouter } from "next/navigation";
-
-import { FilterDropdown } from "../dashboard/_components/UI/FilterDropdown";
+import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { useRouter, useParams } from "next/navigation";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 // import type { Column } from "@/components/common/data-table";
 
@@ -28,6 +25,7 @@ import { AppointmentPatientCell } from "@/components/common/pasient-card/appoint
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 import NewButton from "@/components/common/new-button";
+import ActionMenu from "@/components/common/action-menu";
 
 type PreOpRow = {
   id: string;
@@ -41,7 +39,7 @@ type PreOpRow = {
   doctor: string;
   time: string;
   room: string;
-  status: string;
+  status: "PreOp" | "IntraOp" | "PostOp";
 };
 
 const PRE_OP_DATA: PreOpRow[] = [
@@ -57,7 +55,7 @@ const PRE_OP_DATA: PreOpRow[] = [
     doctor: "Dr. Ahmed Khan",
     time: "10:30 AM",
     room: "OT-12",
-    status: "pending",
+    status: "PreOp",
   },
   {
     id: "2",
@@ -70,60 +68,100 @@ const PRE_OP_DATA: PreOpRow[] = [
     doctor: "Dr. Sarah Lee",
     time: "11:15 AM",
     room: "OT-08",
-    status: "in_progress",
+    status: "IntraOp",
   },
 ];
 
-const columns: Column<PreOpRow>[] = [
-  {
-    key: "room",
-    label: "OT Room",
-  },
-  {
-    key: "patient",
-    label: "Patient",
-    render: (row) => (
-      <AppointmentPatientCell
-        name={row.patient.name}
-        mrn={row.patient.mrn}
-        avatar={row.patient.avatar}
-        vip={row.patient.vip}
-      />
-    ),
-  },
-  {
-    key: "time",
-    label: "Date and Time",
-    render: (row) => <TimeRoomInfo time={row.time} room={row.room} />,
-  },
-  {
-    key: "procedure",
-    label: "Procedure",
-  },
-  {
-    key: "doctor",
-    label: "Surgeon",
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (row) => <StatusPill status={row.status} />,
-  },
-  {
-    key: "action",
-    label: "Action",
-    className: "text-right",
-    render: () => (
-      <button className="rounded-lg p-2 text-gray-500 hover:bg-gray-100">
-        <ChevronDown size={16} />
-      </button>
-    ),
-  },
-];
+
 
 export default function PreOpList() {
   const [activeTab, setActiveTab] = React.useState("All Surgeries");
   const router = useRouter();
+  const { lang } = useParams();
+
+  const columns = React.useMemo<Column<PreOpRow>[]>(() => [
+    {
+      key: "room",
+      label: "OT Room",
+    },
+    {
+      key: "patient",
+      label: "Patient",
+      render: (row) => (
+        <AppointmentPatientCell
+          name={row.patient.name}
+          mrn={row.patient.mrn}
+          avatar={row.patient.avatar}
+          vip={row.patient.vip}
+        />
+      ),
+    },
+    {
+      key: "time",
+      label: "Date and Time",
+      render: (row) => <TimeRoomInfo time={row.time}/>,
+    },
+    {
+      key: "procedure",
+      label: "Procedure",
+    },
+    {
+      key: "doctor",
+      label: "Surgeon",
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (row) => <StatusPill status={row.status} />,
+    },
+    {
+      key: "action",
+      label: "Action",
+      className: "text-right",
+      render: (row) => (
+        <ActionMenu actions={[
+          {
+            label: "View",
+            onClick: () => {
+              router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+            }
+          },
+          {
+            label: "Edit",
+            // onClick: () => {
+            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+            // }
+          },
+          {
+            label: "Delete",
+            // onClick: () => {
+            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+            // }
+          }
+        ]} className="bg-transparent hover:bg-transparent text-blue-500" />
+      ),
+    },
+  ], []);
+
+  const counts = React.useMemo(() => ({
+    all: PRE_OP_DATA.length,
+    preOp: PRE_OP_DATA.filter((d) => d.status === "PreOp").length,
+    intraOp: PRE_OP_DATA.filter((d) => d.status === "IntraOp").length,
+    postOp: PRE_OP_DATA.filter((d) => d.status === "PostOp").length,
+  }), []);
+
+  const filteredData = React.useMemo(() => {
+    switch (activeTab) {
+      case "Pre-op":
+        return PRE_OP_DATA.filter((d) => d.status === "PreOp");
+      case "Intra Op":
+        return PRE_OP_DATA.filter((d) => d.status === "IntraOp");
+      case "Post-op":
+        return PRE_OP_DATA.filter((d) => d.status === "PostOp");
+      default:
+        return PRE_OP_DATA;
+    }
+  }, [activeTab]);
 
   return (
     <div>
@@ -135,16 +173,17 @@ export default function PreOpList() {
         {/* Filters */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
-            <TabSwitcher
-              active={activeTab}
-              items={["All Surgeries", "Pre-op", "Intra Op", "Post-op"].map(
-                (tab) => ({ label: tab, value: tab })
-              )}
-              onChange={(v) => setActiveTab(v)}
-              className="w-full sm:w-auto"
+            <DynamicTabs
+              tabs={[
+                { key: "All Surgeries", label: "All Surgeries"},
+                { key: "Pre-op", label: "Pre-op", count: counts.preOp },
+                { key: "Intra Op", label: "Intra Op", count: counts.intraOp },
+                { key: "Post-op", label: "Post-op", count: counts.postOp },
+              ]}
+              defaultTab={activeTab}
+              onChange={(key) => setActiveTab(key)}
             />
           </div>
-
           <div className="flex shrink-0 items-center gap-3">
             <span className="flex items-center gap-1 text-sm font-medium text-gray-700">
               <CalendarDays size={18} className="text-blue-500" />
@@ -199,7 +238,7 @@ export default function PreOpList() {
           <NewButton
             name="Add Surgeries"
             handleClick={() => {
-              router.push("/surgery/dashboard/surgery-details");
+              router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
             }}
           ></NewButton>
 
@@ -216,7 +255,11 @@ export default function PreOpList() {
 
       {/* Data Table */}
       <div className="mt-4">
-        <ResponsiveDataTable columns={columns} data={PRE_OP_DATA} striped />
+        <ResponsiveDataTable
+          columns={columns}
+          data={filteredData}
+          striped
+        />
       </div>
     </div>
   );

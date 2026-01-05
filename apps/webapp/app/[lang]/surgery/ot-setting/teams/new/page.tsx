@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "@workspace/ui/lib/sonner";
 import { ArrowLeft, Send, Loader2 } from "lucide-react";
@@ -13,12 +13,6 @@ import { createSurgeryTeamApiClient, CreateSurgeryTeamParams } from "@/lib/api/s
 import { createDoctorApiClient } from "@/lib/api/surgery/doctor";
 import { createNurseApiClient } from "@/lib/api/nurse-api";
 import { getAuthToken } from "@/app/utils/onboarding";
-
-const MOCK_ANAESTHETISTS = [
-    { id: "201", name: "Dr. Alan Grant" },
-    { id: "202", name: "Dr. Ellie Sattler" },
-    { id: "203", name: "Dr. Ian Malcolm" }
-];
 
 const MOCK_TECHNICIANS = [
     { id: "401", name: "Tech Support" },
@@ -31,6 +25,7 @@ const toOptions = (items: { id: string; name: string }[]) =>
 
 export default function CreateTeamPage() {
     const router = useRouter();
+    const { lang } = useParams();
 
     // API Clients
     const teamsApi = createSurgeryTeamApiClient({});
@@ -87,7 +82,7 @@ export default function CreateTeamPage() {
         },
         onSuccess: () => {
             toast.success("Team created successfully");
-            router.push("/surgery/teams");
+            router.push(`/${lang}/surgery/ot-setting/teams`);
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || error?.message || "Failed to create team");

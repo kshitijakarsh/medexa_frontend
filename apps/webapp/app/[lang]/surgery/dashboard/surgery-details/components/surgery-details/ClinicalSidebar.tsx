@@ -6,6 +6,16 @@ import { MOCK_DATA } from "@/app/[lang]/surgery/_lib/constants";
 import { ClinicalItem } from "@/app/[lang]/surgery/_lib/types";
 import { cn } from "@workspace/ui/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import { useQuery } from "@tanstack/react-query";
+import { createMedicalHistoryApiClient } from "@/lib/api/surgery/medical-history";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+
+interface ClinicalSidebarProps {
+  problems?: ClinicalItem[];
+  allergies?: ClinicalItem[];
+  medications?: ClinicalItem[];
+  patientId?: string;
+}
 
 type ClinicalType = "problem" | "allergy" | "medication";
 
@@ -81,36 +91,90 @@ const ClinicalListSection = ({
   );
 };
 
-interface ClinicalSidebarProps {
-  problems?: ClinicalItem[];
-  allergies?: ClinicalItem[];
-  medications?: ClinicalItem[];
-}
+
 
 const ClinicalSidebar: React.FC<ClinicalSidebarProps> = ({
-  problems = MOCK_DATA.activeProblems,
-  allergies = MOCK_DATA.allergies,
-  medications = MOCK_DATA.medications.map((m) => ({
-    id: String(m.slNo),
-    name: m.name,
-    detail: `${m.dose} - ${m.frequency}`,
-  })),
+  problems: propProblems,
+  allergies: propAllergies,
+  medications: propMedications,
+  patientId,
 }) => {
+  const medicalHistoryApi = createMedicalHistoryApiClient({});
+
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["medical-history", patientId],
+    queryFn: async () => {
+      if (!patientId) return null;
+      const resp = await medicalHistoryApi.getByPatientId(patientId);
+      return resp.data;
+    },
+    enabled: !!patientId,
+  });
+
+  const historyItem = response?.data?.[0]?.history;
+
+  // Map API data to ClinicalItem or use props/mock as fallback
+  const mappedProblems = React.useMemo(() => {
+    if (propProblems) return propProblems;
+    if (!historyItem) return MOCK_DATA.activeProblems;
+
+    return [
+      ...historyItem.conditions.map((c, i) => ({
+        id: `cond-${i}`,
+        name: c,
+        detail: "Active Condition",
+      })),
+      ...historyItem.surgeries.map((s, i) => ({
+        id: `surg-${i}`,
+        name: s.name,
+        detail: `Surgery in ${s.date} at ${s.hospital}`,
+      })),
+    ];
+  }, [historyItem, propProblems]);
+
+  const mappedAllergies = propAllergies || MOCK_DATA.allergies;
+
+  const mappedMedications = React.useMemo(() => {
+    if (propMedications) return propMedications;
+    if (!historyItem) {
+      return MOCK_DATA.medications.map((m) => ({
+        id: String(m.slNo),
+        name: m.name,
+        detail: `${m.dose} - ${m.frequency}`,
+      }));
+    }
+
+    return historyItem.medications.map((m, i) => ({
+      id: `med-${i}`,
+      name: m,
+      detail: "Ongoing Medication",
+    }));
+  }, [historyItem, propMedications]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
+  }
   return (
     <div className="space-y-4">
       <ClinicalListSection
         title="Active Problems"
-        items={problems}
+        items={mappedProblems}
         type="problem"
       />
       <ClinicalListSection
         title="Allergies"
-        items={allergies}
+        items={mappedAllergies}
         type="allergy"
       />
       <ClinicalListSection
         title="Ongoing Medications"
-        items={medications}
+        items={mappedMedications}
         type="medication"
       />
     </div>

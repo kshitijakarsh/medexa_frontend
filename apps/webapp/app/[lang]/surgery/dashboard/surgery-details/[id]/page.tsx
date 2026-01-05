@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, List, Save, FilePlus2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ArrowLeft, Save, FilePlus2Icon } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Patient } from "../../../_lib/types";
 import PatientBanner from "../components/shared/PatientBanner";
 import PostOpCare from "../components/post-op/PostOpCare";
@@ -12,6 +13,8 @@ import PreOpChecklist from "../components/pre-op/PreOpChecklist";
 import { AnesthesiaPlan } from "../components/anesthesia/AnesthesiaPlan";
 import { SurgeryDetailsTab } from "../components/surgery-details/SurgeryDetailsTab";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { createSurgeryApiClient } from "@/lib/api/surgery/surgeries";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 
 const PATIENT_DATA: Patient = {
   id: "2",
@@ -21,7 +24,7 @@ const PATIENT_DATA: Patient = {
   gender: "Male",
   phone: "284-104123567",
   email: "sarah.williams@example.com",
-  randomNumber: "APP-0539-17", // Using ID field for this
+  randomNumber: "APP-0539-17",
   insuranceProvider: "Gulf Insurance",
   insuranceStatus: "Active",
   imageUrl: "/images/avatars/1.png",
@@ -30,45 +33,68 @@ const PATIENT_DATA: Patient = {
 
 export default function SurgeryDetailsPage() {
   const router = useRouter();
+  const { id } = useParams();
+  const surgeryApi = createSurgeryApiClient({});
+
   const [activeTab, setActiveTab] = React.useState("Surgery Details");
   const [isEditing, setIsEditing] = React.useState(false);
-
-  // Reset editing when tab changes
-  // React.useEffect(() => {
-  //   setIsEditing(false);
-  // }, [activeTab]);
-
   const [anesthesiaActiveTab, setAnesthesiaActiveTab] = React.useState("Medical History");
 
-  const getBannerAction = () => {
-    if (activeTab === "Anesthesia Plan") {
-      if (anesthesiaActiveTab === "Anesthesia Plan") {
-        return (
-          <div className="flex gap-3 shrink-0 mb-1">
-            <button className="flex items-center gap-2 border border-blue-500 text-blue-500 rounded-lg px-3 py-1.5 bg-white hover:bg-blue-50 font-medium text-sm">
-              <Save size={16} />
-              Save Assessment
-            </button>
-            <div className="relative group">
-              <button className="flex items-center gap-1 bg-blue-500 text-white rounded-lg px-3 py-1.5 text-sm">
-                <div className="bg-blue-400 p-1 rounded-md">
-                  <FilePlus2Icon size={16} />
-                </div>
-                Submit Clearances
-              </button>
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["surgery-details", id],
+    queryFn: async () => {
+      if (!id || id === "new") return null;
+      const resp = await surgeryApi.getById(id as string);
+      return resp.data;
+    },
+    enabled: !!id && id !== "new",
+  });
 
-              <div className="absolute right-0 top-full hidden flex-col gap-1 rounded-lg bg-blue-50 p-1 shadow-lg group-hover:flex z-50">
-                <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                  Fit For Anesthesia
-                </button>
-                <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                  Not fit for anesthesia
-                </button>
+  const surgeryData = response?.data;
+
+  // Map surgeryData to Patient interface for common banner
+  const patientData: Patient | undefined = surgeryData?.patient ? {
+    id: surgeryData.patient.id,
+    name: `${surgeryData.patient.first_name} ${surgeryData.patient.last_name}`,
+    mrn: surgeryData.patient.civil_id || "N/A",
+    age: 0,
+    gender: "Male",
+    phone: surgeryData.patient.mobile_number || "",
+    email: "",
+    randomNumber: surgeryData.id,
+    insuranceProvider: "N/A",
+    insuranceStatus: "Active",
+    imageUrl: "/images/avatars/1.png",
+    avatarUrl: "/images/avatars/1.png",
+  } : undefined;
+
+  const getBannerAction = () => {
+    if (activeTab === "Anesthesia Plan" && anesthesiaActiveTab === "Anesthesia Plan") {
+      return (
+        <div className="flex gap-3 shrink-0 mb-1">
+          <button className="flex items-center gap-2 border border-blue-500 text-blue-500 rounded-lg px-3 py-1.5 bg-white hover:bg-blue-50 font-medium text-sm">
+            <Save size={16} />
+            Save Assessment
+          </button>
+          <div className="relative group">
+            <button className="flex items-center gap-1 bg-blue-500 text-white rounded-lg px-3 py-1.5 text-sm">
+              <div className="bg-blue-400 p-1 rounded-md">
+                <FilePlus2Icon size={16} />
               </div>
+              Submit Clearances
+            </button>
+
+            <div className="absolute right-0 top-full hidden flex-col gap-1 rounded-lg bg-blue-50 p-1 shadow-lg group-hover:flex z-50">
+              <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
+                Fit For Anesthesia
+              </button>
+              <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
+                Not fit for anesthesia
+              </button>
             </div>
           </div>
-        );
-      }
+        </div>
+      );
     }
   };
 
@@ -85,7 +111,7 @@ export default function SurgeryDetailsPage() {
       </div>
 
       <PatientBanner
-        patient={PATIENT_DATA}
+        patient={patientData || PATIENT_DATA}
         customAction={getBannerAction()}
         onViewDetails={!getBannerAction() ? () => setIsEditing(true) : undefined}
         isEditing={isEditing}
@@ -119,13 +145,13 @@ export default function SurgeryDetailsPage() {
           onTabChange={setAnesthesiaActiveTab}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          patientId={surgeryData?.patient_id}
         />
       ) : activeTab === "Pre-Op Checklist" ? (
         <PreOpChecklist isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} onEdit={() => setIsEditing(true)} />
       ) : (
-        <SurgeryDetailsTab isEditing={isEditing} setIsEditing={setIsEditing} />
+        <SurgeryDetailsTab isEditing={isEditing} setIsEditing={setIsEditing} patientId={surgeryData?.patient_id} />
       )}
     </div>
   );
 }
-

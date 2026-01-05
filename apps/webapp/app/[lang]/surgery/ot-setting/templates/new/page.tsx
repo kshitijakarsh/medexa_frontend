@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Trash2, Send } from "lucide-react";
-import { DynamicSection } from "../../_components/common/DynamicSection";
+import { DynamicSection } from "@/app/[lang]/surgery/_components/common/DynamicSection";
 import { FormInput } from "@/components/ui/form-input";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import { createSurgeryTemplateApiClient } from "@/lib/api/surgery/templates";

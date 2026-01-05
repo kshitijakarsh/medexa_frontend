@@ -12,7 +12,7 @@ const dashboard = () => {
         <SurgeryTable />
       </div>
 
-      <div className="shrink-0 hidden lg:block">
+      <div className="shrink-0 hidden lg:block lg:w-80">
         <RightSidebar />
       </div>
     </div>

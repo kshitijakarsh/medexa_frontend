@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { DataTable } from "@/components/common/data-table";
 
 import {
@@ -90,6 +90,7 @@ const MOCK_TEMPLATES: TemplateData[] = [
 
 export default function TemplatesList() {
     const router = useRouter();
+    const { lang } = useParams();
 
     // State
     const [searchType, setSearchType] = useState({ label: "Template Name", value: "templateName" });
@@ -297,7 +298,7 @@ export default function TemplatesList() {
                         name="Create Template"
                         className="h-9 text-sm"
                         handleClick={() => {
-                            router.push("/surgery/templates/new");
+                            router.push(`/${lang}/surgery/ot-setting/templates/new`);
                         }}
                     ></NewButton>
 

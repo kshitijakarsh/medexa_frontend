@@ -1,11 +1,9 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { DataTable } from "@/components/common/data-table";
 interface Column<T> {
     key: keyof T | string;
     label: string;
-    render?: (row: T) => React.ReactNode;
+    render?: (row: T, index?: number) => React.ReactNode;
     className?: string;
 }
 import { SurgeryRequest } from "./../../_lib/types";
@@ -44,6 +42,7 @@ export const DashboardEntityList = ({
     searchPlaceholder = "Search MRN",
 }: DashboardEntityListProps) => {
     const router = useRouter();
+    const { lang } = useParams();
 
     const columns: Column<SurgeryRequest>[] = [
         {
@@ -273,7 +272,7 @@ export const DashboardEntityList = ({
             <DataTable
                 columns={columns}
                 data={data}
-                onRowClick={() => router.push(`/surgery/dashboard/surgery-details`)}
+                onRowClick={(row) => router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`)}
             />
         </div>
     );

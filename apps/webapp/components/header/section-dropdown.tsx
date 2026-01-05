@@ -618,7 +618,7 @@ export function SectionDropdown() {
   type ModuleKey = keyof typeof moduleLandingPath
 
   const moduleKeys = Array.from(
-    new Set(permissionStrings.map((p) => p.split(":")[0]))
+    new Set([...permissionStrings.map((p: any) => p.split(":")[0]), "surgery"])
   ).filter((k): k is ModuleKey => k in moduleLandingPath)
 
 
@@ -633,12 +633,12 @@ export function SectionDropdown() {
   // }))
 
   const sections = moduleKeys.map((moduleKey) => ({
-  label:
-    t?.[moduleKey] ??
-    moduleKey.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
-  moduleKey,
-  icon: moduleIconMap[moduleKey] || DefaultIcon,
-}))
+    label:
+      t?.[moduleKey] ??
+      moduleKey.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+    moduleKey,
+    icon: moduleIconMap[moduleKey] || DefaultIcon,
+  }))
 
 
   // console.log(user)

@@ -1,18 +1,19 @@
 "use client";
 
-import { useEffect, useState, useMemo, Suspense } from "react";
-import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useState, useMemo } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
-import ActionMenu from "@/components/common/action-menu";
-import { createSurgeryTeamApiClient, SurgeryTeam } from "@/lib/api/surgery/teams";
+import NewButton from "@/components/common/new-button";
+import FilterButton from "@/components/common/filter-button";
+import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
+import { DateRange } from "react-day-picker";
 import {
-    Calendar,
     BriefcaseMedical,
     Stethoscope,
     CalendarDays,
-    MoreVertical,
     Ellipsis
 } from "lucide-react";
 import { FilterDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/FilterDropdown";
@@ -20,12 +21,7 @@ import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWi
 import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
-import NewButton from "@/components/common/new-button";
-import FilterButton from "@/components/common/filter-button";
-import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
-import { DateRange } from "react-day-picker";
-
-const limit = 10;
+import ActionMenu from "@/components/common/action-menu";
 
 interface Column<T> {
     key: keyof T | string;
@@ -34,193 +30,146 @@ interface Column<T> {
     className?: string;
 }
 
-interface TeamTableRow {
-    id: string;
-    teamName: string;
-    leadSurgeon: {
-        name: string;
-        // department: string;
-    };
-    membersCount: number;
-    speciality: string;
-    createdOn: string;
-    createdBy: {
-        name: string;
-        // department: string;
-    };
-    status: "Active" | "Inactive";
-}
-
-function TeamsListContent() {
+export default function SurgeryList() {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const { lang } = useParams();
-
-    const initialPage = parseInt(searchParams.get("page") || "1");
-    const [page, setPage] = useState(initialPage);
-
-    /* Search */
+    const [selectedTeam, setSelectedTeam] = useState("");
     const [searchType, setSearchType] = useState({ label: "MRN", value: "mrn" });
     const [searchValue, setSearchValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
-
-    /* View toggles */
     const [sortOrder, setSortOrder] = useState<"nearest" | "farthest">("nearest");
     const [isCalendarView, setIsCalendarView] = useState(false);
     const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
-    /* Filter states */
+    const [page, setPage] = useState(1);
+    const limit = 10;
+
+    // Filter states
     const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
     const [selectedDept, setSelectedDept] = useState("");
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
 
-    /* API Client */
-    const teamsApi = createSurgeryTeamApiClient({});
-
-    /* Update URL on page change */
-    useEffect(() => {
-        const params = new URLSearchParams();
-        params.set("page", page.toString());
-        router.replace(`?${params.toString()}`);
-    }, [page, router]);
+    const surgeryApi = createSurgeryApiClient({});
 
     const {
-        data: teamsData,
+        data: responseData,
         isLoading,
-        error: teamsError,
+        error,
     } = useQuery({
-        queryKey: ["surgery-teams", searchQuery, selectedStatus, selectedDept],
+        queryKey: ["surgeries", page, searchQuery, selectedStatus, selectedDept, selectedDoctor],
         queryFn: async () => {
-            const response = await teamsApi.getAll({
-                search: searchQuery.length >= 2 ? searchQuery : undefined,
+            const resp = await surgeryApi.getAll({
+                page,
+                limit,
+                search: searchQuery || undefined,
                 status: selectedStatus || undefined,
+                department: selectedDept || undefined,
+                // doctor_id: selectedDoctor || undefined, // API client doesn't have doctor_id param yet but we can pass it if needed
             });
-            console.log("API Response:", response.data);
-            return response.data;
+            return resp.data;
         },
     });
 
-    const extractTeams = () => {
-        if (!teamsData) return [];
-        if (Array.isArray(teamsData)) return teamsData;
-        if (Array.isArray(teamsData.data)) return teamsData.data;
-        return [];
-    };
-    const allTeams = extractTeams();
-    console.log("Extracted teams:", allTeams);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedTeams = allTeams.slice(startIndex, endIndex);
-    const totalPages = Math.ceil(allTeams.length / limit);
+    const surgeries = useMemo(() => {
+        if (!responseData?.data) return [];
+        return responseData.data;
+    }, [responseData]);
 
-    /* Extract unique values for filters */
+    const totalPages = responseData?.pagination?.totalPages || 0;
+
     const departments = useMemo(() => {
-        const uniqueValues = new Set(allTeams.map((t: any) => t.speciality || t.department || "Unknown"));
-        return Array.from(uniqueValues) as string[];
-    }, [allTeams]);
+        // Ideally these should come from separate master APIs, but we can extract from data if needed
+        return [];
+    }, []);
 
     const doctors = useMemo(() => {
-        const uniqueValues = new Set(allTeams.map((t: any) => t.lead_surgeon?.name || t.name || "Unknown"));
-        return Array.from(uniqueValues) as string[];
-    }, [allTeams]);
-
-    /* Map API response to table format */
-    const tableData: TeamTableRow[] = paginatedTeams.map((team: SurgeryTeam) => ({
-        id: team.id.toString(),
-        teamName: team.name || "Unknown Team",
-        leadSurgeon: {
-            name: team.lead_surgeon?.name || "Not Assigned",
-            // department: team.speciality || "—",
-        },
-        membersCount: team.members?.length || 0,
-        speciality: team.speciality || "General",
-        createdOn: team.created_at
-            ? new Date(team.created_at).toLocaleString()
-            : "—",
-        createdBy: {
-            name: team.createdBy?.name || "System",
-            // department: "Administration",
-        },
-        status: team.status === "active" ? "Active" : "Inactive",
-    }));
+        return [];
+    }, []);
 
     const searchOptions = [
         { label: "MRN", value: "mrn" },
         { label: "Name", value: "name" },
-        { label: "Team", value: "team" },
+        { label: "Surgery", value: "surgery" },
     ];
 
-    const columns: Column<TeamTableRow>[] = [
+    const columns: Column<Surgery>[] = [
         {
-            key: "teamName",
-            label: "Team Name",
-        },
-        {
-            key: "leadSurgeon",
-            label: "Lead Surgeon",
-            render: (row) => (
-                <div className="flex items-center gap-2">
-                    <div className="flex flex-col">
-                        <span className="text-sm font-medium text-slate-700">
-                            {row.leadSurgeon.name}
-                        </span>
-                        {/* <span className="text-xs text-slate-500">
-                            {row.leadSurgeon.department}
-                        </span> */}
-                    </div>
-                </div>
-            )
-        },
-        {
-            key: "membersCount",
-            label: "Members Count",
-            render: (row) => (
-                <div className="flex items-center gap-1">
-                    <span>{row.membersCount}</span>
-                </div>
-            )
-        },
-        {
-            key: "speciality",
-            label: "Speciality",
-        },
-        {
-            key: "createdOn",
-            label: "Created On",
-            render: (row) => (
-                <div className="flex flex-col">
-                    <span className="text-sm text-slate-700">{row.createdOn}</span>
-                </div>
-            )
-        },
-        {
-            key: "createdBy",
-            label: "Created By",
+            key: "patient",
+            label: "Patient",
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
-                        {row.createdBy.name}
+                        {row.patient?.first_name} {row.patient?.last_name}
                     </span>
-                    {/* <span className="text-xs text-slate-500">
-                        {row.createdBy.department}
-                    </span> */}
+                    <span className="text-xs text-slate-500">
+                        {/* {row.patient?.mrn} • {row.patient?.age}y • {row.patient?.gender} */}
+                        ID: {row.patient_id}
+                    </span>
                 </div>
             )
         },
         {
-            key: "status",
-            label: "Status",
+            key: "requestedDoctor",
+            label: "Requested Doctor",
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-700">
+                        {row.doctor?.first_name} {row.doctor?.last_name}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                        {row.department}
+                    </span>
+                </div>
+            )
+        },
+        {
+            key: "procedure",
+            label: "Procedure",
+            render: (row) => (
+                <span className="text-sm text-slate-700 font-medium">
+                    {row.surgery_type || "N/A"}
+                </span>
+            )
+        },
+        {
+            key: "surgeon",
+            label: "Surgeon",
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="text-sm font-medium text-slate-700">
+                        {row.doctor?.first_name} {row.doctor?.last_name}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                        {row.department}
+                    </span>
+                </div>
+            )
+        },
+        {
+            key: "requestedFor",
+            label: "Requested For",
+            render: (row) => (
+                <span className="text-sm text-slate-700">
+                    {row.scheduled_date ? new Date(row.scheduled_date).toLocaleDateString() : "—"}
+                </span>
+            )
+        },
+        {
+            key: "urgency",
+            label: "Urgency",
             render: (row) => (
                 <span
                     className={`
-                  ${row.status === 'Active'
-                            ? 'text-emerald-600'
-                            : 'text-rose-600'}
-                  font-medium
+                  ${row.urgency === 'emergency'
+                            ? 'text-rose-600'
+                            : row.urgency === 'urgent'
+                                ? 'text-orange-600'
+                                : 'text-emerald-600'}
+                  text-xs capitalize
                 `}
                 >
-                    {row.status}
+                    {row.urgency}
                 </span>
             )
         },
@@ -232,20 +181,18 @@ function TeamsListContent() {
                     {
                         label: "View",
                         onClick: () => {
-                            router.push(`/${lang}/surgery/teams/${row.id}`);
+                            router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
                         label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        onClick: () => {
+                            router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+                        }
                     },
                     {
                         label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        // onClick: () => { }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             )
@@ -256,7 +203,7 @@ function TeamsListContent() {
     return (
         <div>
             <div className="flex flex-col gap-4">
-                <h1 className="font-medium text-base">Teams</h1>
+                <h1 className="font-medium text-base">Surgery List</h1>
 
                 {/* Filters + Calendar toggle */}
                 <div className="flex items-center justify-between gap-4">
@@ -269,14 +216,14 @@ function TeamsListContent() {
                         <FilterDropdown
                             icon={<BriefcaseMedical size={16} />}
                             label="Department"
-                            options={departments.length > 0 ? departments : ["No Departments"]}
+                            options={departments}
                             value={selectedDept}
                             onSelect={setSelectedDept}
                         />
                         <FilterDropdown
                             icon={<Stethoscope size={16} />}
                             label="Doctor"
-                            options={doctors.length > 0 ? doctors : ["No Doctors"]}
+                            options={doctors}
                             value={selectedDoctor}
                             onSelect={setSelectedDoctor}
                         />
@@ -319,7 +266,7 @@ function TeamsListContent() {
                             selectedOption={searchType}
                             onOptionSelect={setSearchType}
                             searchValue={searchValue}
-                            onSearchChange={(val) => {
+                            onSearchChange={(val: string) => {
                                 setSearchValue(val);
                                 if (val.length >= 2) {
                                     setSearchQuery(val);
@@ -327,7 +274,7 @@ function TeamsListContent() {
                                     setSearchQuery("");
                                 }
                             }}
-                            placeholder="Search Teams"
+                            placeholder="Search Surgeries"
                         />
                     </div>
 
@@ -339,10 +286,10 @@ function TeamsListContent() {
 
                     {/* Add Button */}
                     <NewButton
-                        name="Add Team"
+                        name="Add Surgery"
                         className="h-9 text-sm"
                         handleClick={() => {
-                            router.push(`${lang}/surgery/teams/new`);
+                            router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
                         }}
                     ></NewButton>
 
@@ -351,16 +298,15 @@ function TeamsListContent() {
                 </div>
             </div>
 
-            {teamsError ? (
+            {error ? (
                 <div className="text-center py-8 text-red-600">
-                    <p>Failed to load teams. Please try again.</p>
+                    <p>Failed to load surgeries. Please try again.</p>
                 </div>
             ) : (
                 <ResponsiveDataTable
                     columns={columns}
-                    data={tableData}
+                    data={surgeries}
                     loading={isLoading}
-                    striped
                     pagination={
                         totalPages > 1 ? (
                             <PaginationControls
@@ -373,13 +319,5 @@ function TeamsListContent() {
                 />
             )}
         </div>
-    );
-}
-
-export default function TeamsList() {
-    return (
-        <Suspense fallback={<div className="p-5">Loading...</div>}>
-            <TeamsListContent />
-        </Suspense>
     );
 }

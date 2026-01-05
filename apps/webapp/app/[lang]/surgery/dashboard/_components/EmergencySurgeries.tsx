@@ -3,11 +3,14 @@
 import React from "react";
 import { EMERGENCY_SURGERIES } from "../../_lib/constants";
 import PatientCard from "./UI/PatientCard";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button"
+import { ROUTES } from "@/lib/routes";
 
 const EmergencySurgeries: React.FC = () => {
   const router = useRouter();
+  const { lang } = useParams();
+
   return (
     <div className="flex flex-col rounded-xl pt-6 shadow-soft bg-background mb-4">
       <div className="flex flex-row items-center justify-between pl-4">
@@ -18,7 +21,7 @@ const EmergencySurgeries: React.FC = () => {
           variant="link"
           className="text-sm  text-blue-500 h-auto"
           onClick={() => {
-            router.push(`/surgery/surgery-list`);
+            router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`);
           }}
         >
           View All
