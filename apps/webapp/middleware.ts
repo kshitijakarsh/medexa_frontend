@@ -179,19 +179,16 @@ export async function middleware(request: NextRequest) {
 
   // Check if pathname has locale in format: /{locale}/path or /{locale}
   const localeMatch = pathname.match(/^\/(en|ar)(\/.*)?$/)
-  const localeMatch = pathname.match(/^\/(en|ar)(\/.*)?$/)
   const pathnameHasLocale = !!localeMatch
   const pathnameLocale = localeMatch
     ? (localeMatch[1] as typeof defaultLocale | "ar")
-      ? (localeMatch[1] as typeof defaultLocale | "ar")
-      : null
+    : null
   const pathAfterLocale = localeMatch ? localeMatch[2] || "/" : pathname
 
   // Handle old /t/[tenant]/[lang]/path format - redirect to clean URL
   if (pathname.startsWith(`/t/${tenant}/`)) {
     const parts = pathname.split("/")
     if (parts.length >= 4 && locales.includes(parts[3] as any)) {
-      const locale = parts[3] as typeof defaultLocale | "ar"
       const locale = parts[3] as typeof defaultLocale | "ar"
       const restOfPath = "/" + parts.slice(4).join("/") || "/"
       const url = request.nextUrl.clone()
@@ -203,13 +200,9 @@ export async function middleware(request: NextRequest) {
   // 🔹 FORCE locale in URL for all routes (including default locale)
   if (!pathnameHasLocale) {
     const locale = getLocale(request)
-    // Oary redirect non-default locales to show locale in URL
-    if (locale !== defaultLocale) {
-      const url = request.nextUrl.clone()
-      url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`
-      return NextResponse.redirect(url)
-    }
-    // For default locale, continue to rewrite logic below (no redirect)
+    const url = request.nextUrl.clone()
+    url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`
+    return NextResponse.redirect(url)
   }
 
   // Extract actual path for checking login/onboarding
