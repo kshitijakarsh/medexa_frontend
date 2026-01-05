@@ -244,8 +244,8 @@ export default function FrontofficeSchedulePage() {
     const day = dateObj.getDate();
     // Get month name from dictionary
     const monthIndex = dateObj.getMonth();
-    const monthNames = [t.january, t.february, t.march, t.april, t.may, t.june, 
-      t.july, t.august, t.september, t.october, t.november, t.december];
+    const monthNames = [t.january, t.february, t.march, t.april, t.may, t.june,
+    t.july, t.august, t.september, t.october, t.november, t.december];
     const month = monthNames[monthIndex] || dateObj.toLocaleString("en-US", { month: "long" });
     return `${day} ${month} (${dayOfWeek})`;
   };
@@ -286,7 +286,7 @@ export default function FrontofficeSchedulePage() {
   const { withLocale } = useLocaleRoute();
 
   const handleAddSchedule = () => {
-    router.push(withLocale(ROUTES.FRONTOFFICE_TIME_SLOTS));
+    router.push(ROUTES.FRONTOFFICE_TIME_SLOTS);
   };
 
   // Handle row actions

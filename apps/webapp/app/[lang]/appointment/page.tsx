@@ -37,10 +37,11 @@ import { ContactPopover } from "./_components/contact-popover";
 import { Badge } from "@workspace/ui/components/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import { useDictionary } from "@/i18n/dictionary-context";
 
-// Options
-const STATUS_OPTIONS = [
-  { label: "All Status", value: "all" },
+// Options - will be populated with translations
+const getStatusOptions = (dict: any) => [
+  { label: (dict.table?.status || dict.common?.status) || "All Status", value: "all" },
   { label: "Booked", value: "Booked" },
   { label: "Confirmed", value: "Confirmed" },
   { label: "Checked-In", value: "Checked-In" },
@@ -74,6 +75,9 @@ export default function AppointmentPage() {
 
   const router = useRouter();
   const { withLocale } = useLocaleRoute();
+  const dict = useDictionary() as any;
+  const t = dict.pages?.frontoffice;
+  const statusOptions = getStatusOptions(dict);
 
   // Update status filter when tab parameter changes
   useEffect(() => {
@@ -231,7 +235,7 @@ export default function AppointmentPage() {
   const columns = [
     {
       key: "patient",
-      label: "Patient",
+      label: dict.table?.patient || "Patient",
       render: (row: AppointmentEntry) => (
         <div className="flex items-center gap-3 relative">
           {/* VIP Crown Icon - Absolute Top Left */}
@@ -263,7 +267,7 @@ export default function AppointmentPage() {
     },
     {
       key: "doctor",
-      label: "Consultant Doctor",
+      label: t?.schedule?.doctor || "Consultant Doctor",
       render: (row: AppointmentEntry) => (
         <div>
           <div className="font-medium text-sm text-gray-900">{row.consultantDoctor}</div>
@@ -273,28 +277,28 @@ export default function AppointmentPage() {
     },
     {
       key: "date",
-      label: "Appointments Date",
+      label: dict.table?.time || "Appointments Date",
       render: (row: AppointmentEntry) => (
         <div className="text-sm text-gray-700">{row.appointmentDate}</div>
       )
     },
     {
       key: "slot",
-      label: "Booked Slot",
+      label: dict.table?.slot || "Booked Slot",
       render: (row: AppointmentEntry) => (
         <div className="text-sm text-gray-700">{row.bookedSlot}</div>
       )
     },
     {
       key: "service",
-      label: "Service Type",
+      label: dict.table?.serviceType || "Service Type",
       render: (row: AppointmentEntry) => (
         <div className="text-sm text-gray-700">{row.serviceType}</div>
       )
     },
     {
       key: "visit",
-      label: "Visit Type",
+      label: dict.table?.visitType || "Visit Type",
       render: (row: AppointmentEntry) => (
         <div className={`text-sm ${row.visitType === 'ER' ? 'text-red-500' : row.visitType === 'Appointment' ? 'text-green-500' : 'text-orange-500'}`}>
           {row.visitType}
@@ -303,7 +307,7 @@ export default function AppointmentPage() {
     },
     {
       key: "payment",
-      label: "Payment",
+      label: dict.table?.payment || "Payment",
       render: (row: AppointmentEntry) => (
         <span className="text-xs font-medium text-red-500">
           {row.paymentStatus}
@@ -312,7 +316,7 @@ export default function AppointmentPage() {
     },
     {
       key: "status",
-      label: "Status",
+      label: dict.table?.status || dict.common?.status || "Status",
       render: (row: AppointmentEntry) => (
         <span className={`text-xs font-medium 
               ${(row.status === 'Booked' || row.status === 'Pending') ? 'text-[#AF5A62]' :
@@ -324,17 +328,17 @@ export default function AppointmentPage() {
     },
     {
       key: "contact",
-      label: "Contact",
+      label: dict.table?.contact || "Contact",
       render: (row: AppointmentEntry) => (
         <ContactPopover phoneNumber={row.contactNumber} />
       )
     },
     {
       key: "action",
-      label: "Action",
+      label: dict.actions?.add || "Action",
       render: (row: AppointmentEntry) => (
         <div className="flex items-center gap-1 text-blue-500 text-sm font-medium cursor-pointer hover:text-blue-700">
-          Action
+          {dict.actions?.add || "Action"}
           <span className="flex items-center">
             <MoreVertical className="w-4 h-4" />
           </span>
@@ -350,7 +354,7 @@ export default function AppointmentPage() {
         {/* --- Top Header Row: Title & Dropdowns --- */}
         <div className="flex flex-col gap-4">
           {/* Section Title */}
-          <h1 className="text-md font-semibold text-gray-800">Appointment</h1>
+          <h1 className="text-md font-semibold text-gray-800">{dict.modules?.appointment || "Appointment"}</h1>
 
           <div className="flex flex-col xl:flex-row gap-4 justify-between items-start xl:items-center">
             {/* Filter Dropdowns Row - Transparent Background */}
@@ -358,12 +362,12 @@ export default function AppointmentPage() {
               {/* Date */}
               <div className="w-full sm:w-[200px]">
                 <AppSelect
-                  placeholder="Today's"
+                  placeholder={t?.schedule?.todayAppointments || "Today's"}
                   value={filters.dateFilter}
                   onChange={(val) => handleFilterChange("dateFilter", val)}
                   options={[
-                    { label: "Today's", value: "today" },
-                    { label: "Tomorrow", value: "tomorrow" },
+                    { label: t?.schedule?.todayAppointments || "Today's", value: "today" },
+                    { label: t?.schedule?.tomorrow || "Tomorrow", value: "tomorrow" },
                   ]}
                   icon={<CalendarDays className="w-5 h-5 text-gray-700" />}
                   triggerClassName="h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm"
@@ -373,13 +377,13 @@ export default function AppointmentPage() {
               {/* Department */}
               <div className="w-full sm:w-[200px]">
                 <AppSelect
-                  placeholder="All Department"
+                  placeholder={t?.schedule?.allDepartments || "All Department"}
                   value={filters.department}
                   onChange={(val) => handleFilterChange("department", val)}
                   options={departmentOptions}
-                  icon={<Image src="/images/folder_supervised.png" alt="Department" width={18} height={18} />}
+                  icon={<Image src="/images/folder_supervised.png" alt={t?.schedule?.department || "Department"} width={18} height={18} />}
                   searchable={true}
-                  searchPlaceholder="Search Department"
+                  searchPlaceholder={t?.schedule?.searchDepartment || "Search Department"}
                   onSearchChange={setDepartmentSearchQuery}
                   triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full text-gray-900 pl-2 hover:border-blue-300 transition-colors shadow-sm"
                 />
@@ -388,13 +392,13 @@ export default function AppointmentPage() {
               {/* Doctor */}
               <div className="w-full sm:w-[200px]">
                 <AppSelect
-                  placeholder="All Doctor"
+                  placeholder={t?.schedule?.allDoctors || "All Doctor"}
                   value={filters.doctor}
                   onChange={(val) => handleFilterChange("doctor", val)}
                   options={doctorOptions}
-                  icon={<Image src="/images/stethoscope.svg" alt="Doctor" width={18} height={18} />}
+                  icon={<Image src="/images/stethoscope.svg" alt={t?.schedule?.doctor || "Doctor"} width={18} height={18} />}
                   searchable={true}
-                  searchPlaceholder="Search Doctor"
+                  searchPlaceholder={t?.schedule?.searchDoctor || "Search Doctor"}
                   onSearchChange={setDoctorSearchQuery}
                   triggerClassName="min-w-[180px] h-10 border-gray-300 bg-white rounded-full text-gray-900 pl-2 hover:border-blue-300 transition-colors shadow-sm"
                 />
@@ -403,12 +407,12 @@ export default function AppointmentPage() {
               {/* Status */}
               <div className="w-full sm:w-[200px]">
                 <AppSelect
-                  placeholder="All Status"
+                  placeholder={dict.table?.status || dict.common?.status || "All Status"}
                   value={filters.status}
                   onChange={(val) => handleFilterChange("status", val)}
-                  options={STATUS_OPTIONS}
+                  options={statusOptions}
                   disabled={tabParam === "completed"} // Disable status filter on completed tab
-                  icon={<Image src="/images/donut_large.svg" alt="Status" width={20} height={20} className="w-5 h-5" />}
+                  icon={<Image src="/images/donut_large.svg" alt={dict.table?.status || dict.common?.status || "Status"} width={20} height={20} className="w-5 h-5" />}
                   triggerClassName={`h-11 rounded-full border-blue-100 bg-white text-gray-900 font-medium pl-2 hover:border-blue-300 transition-colors shadow-sm ${tabParam === "completed" ? "opacity-60 cursor-not-allowed" : ""}`}
                 />
               </div>
@@ -418,7 +422,7 @@ export default function AppointmentPage() {
             {tabParam !== "completed" && (
               <div className="flex items-center gap-3 ml-auto">
                 <CalendarDays className="w-5 h-5 text-blue-500" />
-                <span className="text-sm font-semibold text-gray-800">Calendar View</span>
+                <span className="text-sm font-semibold text-gray-800">{t?.schedule?.title || "Calendar View"}</span>
                 <Switch
                   checked={isCalendarView}
                   onCheckedChange={setIsCalendarView}

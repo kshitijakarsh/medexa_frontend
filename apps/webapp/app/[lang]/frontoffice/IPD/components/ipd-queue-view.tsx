@@ -26,6 +26,7 @@ import {
 } from "@workspace/ui/components/select";
 
 interface IPDQueueViewProps {
+    dict: any;
     data: IPDEntry[];
     loading: boolean;
     viewMode: "list" | "grid";
@@ -38,6 +39,7 @@ interface IPDQueueViewProps {
 }
 
 export function IPDQueueView({
+    dict,
     data,
     loading,
     viewMode,
@@ -48,6 +50,7 @@ export function IPDQueueView({
     isDischargedView = false,
     onBookAdmission,
 }: IPDQueueViewProps) {
+    const t = dict.pages.frontoffice.ipd;
 
     // Status Badge Logic
     const getStatusStyle = (status: string) => {
@@ -73,7 +76,7 @@ export function IPDQueueView({
     const admittedColumns = [
         {
             key: "bedNo",
-            label: "Bed No",
+            label: t.bedNo,
             render: (row: IPDEntry) => (
                 <div className="flex items-center">
                     <div className="h-10 w-12 bg-[#0095FF] text-white rounded flex items-center justify-center font-medium shadow-sm">
@@ -84,7 +87,7 @@ export function IPDQueueView({
         },
         {
             key: "patientName",
-            label: "Patient Name",
+            label: t.patientName,
             render: (row: IPDEntry) => (
                 <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border border-gray-100">
@@ -109,7 +112,7 @@ export function IPDQueueView({
         },
         {
             key: "doctorName",
-            label: "Admission Provider",
+            label: t.admissionProvider,
             render: (row: IPDEntry) => (
                 <div>
                     <div className="text-sm font-medium text-gray-900">{row.doctorName}</div>
@@ -119,35 +122,35 @@ export function IPDQueueView({
         },
         {
             key: "admissionDate",
-            label: "Admission Date",
+            label: t.admissionDate,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.admissionDate}</div>
             )
         },
         {
             key: "time",
-            label: "Time",
+            label: t.time,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.time}</div>
             )
         },
         {
             key: "location",
-            label: "Location",
+            label: t.location,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.location}</div>
             )
         },
         {
             key: "bill",
-            label: "Bill",
+            label: t.bill,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.bill}</div>
             )
         },
         {
             key: "status",
-            label: "Status",
+            label: t.status,
             render: (row: IPDEntry) => (
                 <span className={`text-xs px-3 py-1 rounded-full font-medium ${getStatusStyle(row.status)}`}>
                     {row.status}
@@ -156,7 +159,7 @@ export function IPDQueueView({
         },
         {
             key: "action",
-            label: "Action",
+            label: t.action,
             render: (row: IPDEntry) => (
                 <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
                     <MoreVertical className="w-4 h-4" />
@@ -175,7 +178,7 @@ export function IPDQueueView({
         },
         {
             key: "patientName",
-            label: "Patient",
+            label: t.patient,
             render: (row: IPDEntry) => {
                 // Determine colors based on patient (simulating the specific look from screenshot 2)
                 const isGanguli = row.patientName.includes("Ganguli");
@@ -196,7 +199,7 @@ export function IPDQueueView({
                         <div>
                             <div className="font-bold text-sm text-gray-900">{row.patientName}</div>
                             <div className="text-xs text-blue-500 font-medium mt-0.5">
-                                MRN {row.mrn} <span className="text-gray-300 mx-1">|</span> {row.visitType || "OPD"}
+                                MRN {row.mrn} <span className="text-gray-300 mx-1">|</span> {row.visitType || t.opd}
                             </div>
                         </div>
                     </div>
@@ -205,14 +208,14 @@ export function IPDQueueView({
         },
         {
             key: "visit",
-            label: "Visit",
+            label: t.visit,
             render: (row: IPDEntry) => (
-                <div className="text-sm text-gray-700">{row.visitType || "IPD"}</div>
+                <div className="text-sm text-gray-700">{row.visitType || t.ipd}</div>
             )
         },
         {
             key: "doctor",
-            label: "Doctor",
+            label: t.doctor,
             render: (row: IPDEntry) => (
                 <div>
                     <div className="text-sm font-medium text-gray-900">{row.doctorName}</div>
@@ -222,28 +225,28 @@ export function IPDQueueView({
         },
         {
             key: "reason",
-            label: "Reason",
+            label: t.reason,
             render: (row: IPDEntry) => (
-                <div className="text-sm text-gray-700">{row.reason || "Review reports"}</div>
+                <div className="text-sm text-gray-700">{row.reason || t.reviewReports}</div>
             )
         },
         {
             key: "type",
-            label: "Type",
+            label: t.type,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.appointmentType || "In-person"}</div>
             )
         },
         {
             key: "createdOn",
-            label: "Created On",
+            label: t.createdOn,
             render: (row: IPDEntry) => (
                 <div className="text-sm text-gray-700">{row.createdOn || "27-09-2025"}</div>
             )
         },
         {
             key: "status",
-            label: "Status",
+            label: t.status,
             render: (row: IPDEntry) => {
                 let colorClass = "bg-gray-100 text-gray-600";
                 if (row.status === "Critical" || row.status === "Pre-Operative") colorClass = "bg-orange-100 text-white bg-orange-400"; // Mapping 'Pending' look
@@ -252,19 +255,19 @@ export function IPDQueueView({
                 // Override for demo match if status is mapped differently
                 return (
                     <span className={`text-xs px-3 py-1 rounded-full font-medium ${colorClass}`}>
-                        {row.status === "Discharged" ? "Completed" : row.status}
+                        {row.status === "Discharged" ? t.completed : row.status}
                     </span>
                 )
             }
         },
         {
             key: "action",
-            label: "Action",
+            label: t.action,
             headerClass: "text-right",
             cellClass: "text-right",
             render: (row: IPDEntry) => (
                 <div className="flex items-center justify-end gap-2">
-                    <span className="text-blue-500 text-sm font-medium cursor-pointer hover:underline">Action</span>
+                    <span className="text-blue-500 text-sm font-medium cursor-pointer hover:underline">{t.action}</span>
                     <MoreVertical className="w-4 h-4 text-gray-400" />
                 </div>
             )
@@ -362,7 +365,7 @@ export function IPDQueueView({
                                     <div className="flex items-center gap-2">
                                         <Building2 className="w-4 h-4 text-slate-500" strokeWidth={1.5} />
                                         <span className={`text-sm font-normal ${!filters.floor ? 'text-gray-600' : 'text-gray-900'}`}>
-                                            {filters.floor || "Floor"}
+                                            {filters.floor || t.floor}
                                         </span>
                                     </div>
                                 </SelectTrigger>
@@ -384,14 +387,14 @@ export function IPDQueueView({
                                     <div className="flex items-center gap-2">
                                         <BedDouble className="w-4 h-4 text-slate-500" strokeWidth={1.5} />
                                         <span className={`text-sm font-normal ${!filters.ward ? 'text-gray-600' : 'text-gray-900'}`}>
-                                            {filters.ward || "Ward"}
+                                            {filters.ward || t.ward}
                                         </span>
                                     </div>
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Ward 1">Ward 1</SelectItem>
                                     <SelectItem value="Ward 2">Ward 2</SelectItem>
-                                    <SelectItem value="ICU">ICU</SelectItem>
+                                    <SelectItem value="ICU">{t.icu}</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -413,7 +416,7 @@ export function IPDQueueView({
                                             </svg>
                                         </div>
                                         <span className={`text-sm font-normal ${!filters.status ? 'text-gray-600' : 'text-gray-900'}`}>
-                                            {filters.status || "All Status"}
+                                            {filters.status || t.allStatus}
                                         </span>
                                     </div>
                                 </SelectTrigger>
@@ -471,7 +474,7 @@ export function IPDQueueView({
                             <span className="text-[10px] text-blue-500">▼</span>
                         </div>
                         <input
-                            placeholder="Search MRN"
+                            placeholder={t.searchMRN}
                             className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder:text-gray-400"
                             value={filters.search}
                             onChange={(e) => onFilterChange("search", e.target.value)}
@@ -496,7 +499,7 @@ export function IPDQueueView({
                                 onClick={onBookAdmission}
                                 className="rounded-full h-10 bg-[#2CB470] hover:bg-[#28a063] text-white font-medium pl-5 pr-1 gap-3 shadow-sm shrink-0 ml-2 border-none"
                             >
-                                <span className="text-sm">Book New Admission</span>
+                                <span className="text-sm">{t.bookNewAdmission}</span>
                                 <div className="h-8 w-8 bg-[#52C58C] rounded-full flex items-center justify-center">
                                     <div className="h-5 w-5 bg-white rounded-full flex items-center justify-center">
                                         <Plus className="w-3.5 h-3.5 text-[#2CB470]" strokeWidth={2.5} />
