@@ -666,7 +666,7 @@ export const mainModules: MainModule[] = [
     key: "frontoffice",
     id: 10,
     label: "Front Office",
-    icon: UserRound, // you can swap with Users / UserCog if preferred
+    icon: UserRound, 
     subModules: [
       {
         key: "patient",
@@ -699,11 +699,15 @@ export const mainModules: MainModule[] = [
         actions: ["create"],
       },
       {
-        key: "users",
-        label: "Users",
+        key: "user",
+        label: "User",
         actions: ["view"],
       },
-
+      {
+        key: "department",
+        label: "Department",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
     ],
   },
   {
