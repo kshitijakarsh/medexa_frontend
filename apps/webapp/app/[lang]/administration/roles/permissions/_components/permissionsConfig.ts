@@ -366,6 +366,11 @@ export const mainModules: MainModule[] = [
         label: "Operation Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
+      },
     ],
   },
 
@@ -385,6 +390,7 @@ export const mainModules: MainModule[] = [
         label: "Appointment Management",
         actions: ["view", "create", "edit", "delete", "cancel"],
       },
+
     ],
   },
   {
@@ -415,6 +421,11 @@ export const mainModules: MainModule[] = [
         key: "billing",
         label: "Billing",
         actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
       },
     ],
   },
@@ -502,7 +513,7 @@ export const mainModules: MainModule[] = [
       {
         key: "visit",
         label: "Visits",
-        actions: ["view"],
+        actions: ["view","viewOne"],
       },
       {
         key: "vitals",
@@ -532,7 +543,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view",],
+        actions: ["view","viewOne"],
       },
       {
         key: "medications",
@@ -559,6 +570,11 @@ export const mainModules: MainModule[] = [
         label: "Additional Observations",
         actions: ["view", "viewOne", "create", "edit", "delete"],
       },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
+      },
     ],
   },
 
@@ -568,6 +584,11 @@ export const mainModules: MainModule[] = [
     label: "Nurse",
     icon: Syringe,
     subModules: [
+      {
+        key: "visit",
+        label: "Visits",
+        actions: ["view","viewOne","edit"],
+      },
       {
         key: "users",
         label: "Users",
@@ -601,7 +622,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view", "viewOne"],
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
         key: "medications",
@@ -677,6 +698,12 @@ export const mainModules: MainModule[] = [
         label: "Storage",
         actions: ["create"],
       },
+      {
+        key: "users",
+        label: "Users",
+        actions: ["view"],
+      },
+
     ],
   },
   {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RecentPatientCard } from "./RecentPatient/RecentPatientCard";
 import { RecentPatientSkeleton } from "./RecentPatient/RecentPatientSkeleton";
@@ -8,11 +8,28 @@ import { useNurseVisitsQuery, useNurseAllVisitsQuery } from "./api";
 import { useDictionary } from "@/i18n/use-dictionary";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 import { ROUTES } from "@/lib/routes";
+import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils/permissions";
+import { useUserStore } from "@/store/useUserStore";
 
 export default function RecentPatients() {
+  const [canEditVisits, setCanEditVisits] = useState(false);
   const dict = useDictionary();
   const { withLocale } = useLocaleRoute();
   const [activeTab, setActiveTab] = useState<"visits" | "all">("visits");
+
+  // Get user permissions from store
+  const user = useUserStore((s) => s.user);
+  const userPermissions = user?.role?.permissions;
+  
+  // Check if user has permission to edit visits
+  useEffect(() => {
+    const permissionKeys = normalizePermissionList(userPermissions);
+    const hasPermissions = hasPermission(
+      permissionKeys,
+      PERMISSIONS.NURSE.VISIT.EDIT
+    );
+    setCanEditVisits(hasPermissions);
+  }, [userPermissions]);
 
   const { data: visitsData, isLoading: visitsLoading } = useNurseVisitsQuery({
     page: 1,
@@ -70,7 +87,7 @@ export default function RecentPatients() {
         {isLoading
           ? [...Array(4)].map((_, i) => <RecentPatientSkeleton key={i} />)
           : (activeTab === "visits" ? visits : allVisits).map((patient: any) => (
-            <RecentPatientCard key={patient.id} patient={patient} showNurseMenu={true} />
+            <RecentPatientCard key={patient.id} patient={patient} showNurseMenu={canEditVisits} />
           ))}
       </div>
     </div>

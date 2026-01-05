@@ -1,4 +1,5 @@
 // lib/api/auditLogsApi.ts
+import { getIdToken } from "@/lib/api"
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios"
 
 export interface AuditLog {
@@ -40,12 +41,14 @@ export class AuditLogsApiClient {
     this.authToken = config.authToken
   }
 
-  private getJsonRequestConfig(): AxiosRequestConfig {
+  private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
+    const token = await getIdToken()
+
     return {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Authorization: `Bearer ${this.authToken}`,
+        Authorization: token ? `Bearer ${token}` : "",
       },
     }
   }
@@ -53,7 +56,7 @@ export class AuditLogsApiClient {
   async getAuditLogs(): Promise<AxiosResponse<AuditLogsListResponse>> {
     return axios.get<AuditLogsListResponse>(
       `${this.baseUrl}/api/v1/audit-logs`,
-      this.getJsonRequestConfig()
+      await this.getJsonRequestConfig()
     )
   }
 
