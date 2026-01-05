@@ -760,7 +760,7 @@ export const PermissionAccordion = ({
     });
 
     setPermissions(initialPermissions);
-  }, []);
+  }, [value]);
 
   const updatePermissions = (updated: Record<string, any>) => {
     setPermissions(updated);
@@ -933,7 +933,7 @@ export const PermissionAccordion = ({
                   onChange={(checked) => handleActionChange(mainModuleKey, node, action, checked)}
                 />
                 <span className="text-sm text-gray-600 capitalize">
-                    {actionDict[action as keyof typeof actionDict] || action.replace(/_/g, " ")}
+                  {actionDict[action as keyof typeof actionDict] || action.replace(/_/g, " ")}
                 </span>
               </div>
             );
