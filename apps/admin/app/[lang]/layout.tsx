@@ -1,12 +1,10 @@
+export const dynamic = "force-dynamic" // temporary fix for suspense
+
 import type { ReactNode } from "react"
 import { Providers } from "@/components/providers"
 import { getDictionary } from "@/i18n/get-dictionary"
-import { locales, type Locale } from "@/i18n/locales"
+import type { Locale } from "@/i18n/locales"
 import AuthGuard from "@/components/AuthGuard/AuthGuard"
-
-export async function generateStaticParams() {
-  return locales.map((lang) => ({ lang }))
-}
 
 export async function generateMetadata({
   params,
