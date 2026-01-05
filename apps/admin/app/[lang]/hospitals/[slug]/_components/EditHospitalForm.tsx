@@ -12,12 +12,15 @@ import { StepHospitalBase } from "@/app/[lang]/onboarding/_components/sections/S
 import { FormActionsSection } from "@/app/[lang]/onboarding/_components/sections/FormActionsSection"
 import { editHospitalSchema, type EditHospitalValues } from "./schemas"
 import { createTenantApiClient, type Tenant } from "@/lib/api/tenant"
+import type { Dictionary } from "@/i18n/get-dictionary"
+
 
 interface EditHospitalFormProps {
   tenantId: string
+  dict: Dictionary
 }
 
-export function EditHospitalForm({ tenantId }: EditHospitalFormProps) {
+export function EditHospitalForm({ tenantId, dict }: EditHospitalFormProps) {
   const router = useRouter()
   const params = useParams<{ lang: string }>()
   const lang = params?.lang ?? "en"
@@ -211,6 +214,7 @@ export function EditHospitalForm({ tenantId }: EditHospitalFormProps) {
                 logoFile={logoFile}
                 setLogoFile={setLogoFile}
                 onLogoSelected={onLogoSelected}
+                dict={dict}
               />
 
               <FormActionsSection

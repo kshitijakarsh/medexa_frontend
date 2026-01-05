@@ -226,122 +226,135 @@
 //   )
 // }
 
-"use client"
+"use client";
 
-import { Button } from "@workspace/ui/components/button"
-import { Badge } from "@workspace/ui/components/badge"
-import { LocaleLink } from "@/components/locale-link"
-import { FilterInput } from "@/components/filter-input"
+import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
+import { LocaleLink } from "@/components/locale-link";
+import { FilterInput } from "@/components/filter-input";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { EllipsisVertical } from "lucide-react"
-import { useParams } from "next/navigation"
-import { useEffect, useState } from "react"
-import { createTenantApiClient, type Tenant } from "@/lib/api/tenant"
-import { DataTable } from "@/components/common/data-table"
-import { Dictionary as DictionaryType } from "@/i18n/get-dictionary"
-import Link from "next/link"
+} from "@workspace/ui/components/dropdown-menu";
+import { EllipsisVertical } from "lucide-react";
+import { useEffect, useState } from "react";
+import { createTenantApiClient, type Tenant } from "@/lib/api/tenant";
+import { DataTable } from "@/components/common/data-table";
+import { Dictionary as DictionaryType } from "@/i18n/get-dictionary";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
+/* ------------------------------------------
+   STATUS BADGE STYLES (NON-TRANSLATABLE)
+------------------------------------------- */
 const getStatusBadgeVariant = (status: string) => {
-  const statusLower = status.toLowerCase()
-  switch (statusLower) {
+  switch (status.toLowerCase()) {
     case "pending":
-      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
+      return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
     case "active":
-      return "bg-green-100 text-green-800 hover:bg-green-100"
+      return "bg-green-100 text-green-800 hover:bg-green-100";
     case "inactive":
-      return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+      return "bg-gray-100 text-gray-800 hover:bg-gray-100";
     case "suspended":
-      return "bg-red-100 text-red-800 hover:bg-red-100"
+      return "bg-red-100 text-red-800 hover:bg-red-100";
     default:
-      return "bg-gray-100 text-gray-800 hover:bg-gray-100"
+      return "bg-gray-100 text-gray-800 hover:bg-gray-100";
   }
-}
+};
 
 export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
-  const t = dict.pages.hospitals.table
-  const params = useParams<{ lang: string }>()
-  const lang = params?.lang ?? "en"
+  const t = dict.pages.hospitals.table;
+  const params = useParams<{ lang: string }>();
+  const lang = params?.lang ?? "en";
 
-  const [tenants, setTenants] = useState<Tenant[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalData, setTotalData] = useState(0)
+  const [tenants, setTenants] = useState<Tenant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalData, setTotalData] = useState(0);
 
-  const fetchTenants = async (page: number = 1, search: string = "") => {
-    setLoading(true)
-    setError(null)
+  /* ------------------------------------------
+     FETCH DATA
+  ------------------------------------------- */
+  const fetchTenants = async (page = 1, search = "") => {
+    setLoading(true);
+    setError(null);
 
     try {
-      const tenantApiClient = createTenantApiClient({ authToken: "" })
-      const response = await tenantApiClient.getTenants({
+      const api = createTenantApiClient({ authToken: "" });
+      const response = await api.getTenants({
         page,
         limit: 10,
         search: search || undefined,
-      })
+      });
 
-      setTenants(response.data.data)
-      setTotalPages(response.data.pagination.totalPages)
-      setTotalData(response.data.pagination.totalData)
-      setCurrentPage(response.data.pagination.page)
+      setTenants(response.data.data);
+      setTotalPages(response.data.pagination.totalPages);
+      setTotalData(response.data.pagination.totalData);
+      setCurrentPage(response.data.pagination.page);
     } catch (err) {
-      const message =
+      setError(
         err instanceof Error ? err.message : "Failed to fetch hospitals"
-      setError(message)
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchTenants(currentPage, searchQuery)
-  }, [currentPage])
+    fetchTenants(currentPage, searchQuery);
+  }, [currentPage]);
 
   const handleSearch = (value: string) => {
-    setSearchQuery(value)
-    setCurrentPage(1)
-    fetchTenants(1, value)
-  }
+    setSearchQuery(value);
+    setCurrentPage(1);
+    fetchTenants(1, value);
+  };
+
+  /* ------------------------------------------
+     TABLE COLUMNS (TRANSLATED)
+  ------------------------------------------- */
   const columns = [
-    { key: "tenant_key", label: "ID" },
-    { key: "name_en", label: "Hospital Name" },
-    { key: "primary_admin_name", label: "Admin Name" },
-    { key: "primary_admin_email", label: "Email" },
+    { key: "tenant_key", label: t.id },
+    { key: "name_en", label: t.hospitalName },
+    { key: "primary_admin_name", label: t.adminName },
+    { key: "primary_admin_email", label: t.email },
     {
       key: "domain_url",
-      label: "Domain URL",
+      label: t.domainUrl,
       render: (r: any) => {
         const domainUrl =
           process.env.NEXT_PUBLIC_ENV === "development"
             ? `http://${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}:3001`
-            : `https://${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`
+            : `https://${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`;
+
         return (
           <Link href={domainUrl} target="_blank" rel="noopener noreferrer">
             {`${r.id}.${process.env.NEXT_PUBLIC_BASE_DOMAIN}`}
           </Link>
-        )
+        );
       },
     },
     {
       key: "status",
-      label: "Status",
+      label: t.status,
       render: (tenant: Tenant) => (
         <Badge className={getStatusBadgeVariant(tenant.status)}>
-          {tenant.status.charAt(0).toUpperCase() +
-            tenant.status.slice(1).toLowerCase()}
+          {
+            t.statusValues[
+              tenant.status.toLowerCase() as keyof typeof t.statusValues
+            ]
+          }
         </Badge>
       ),
     },
     {
       key: "actions",
-      label: "Action",
+      label: t.action,
       className: "text-right",
       render: (tenant: Tenant) => (
         <DropdownMenu>
@@ -356,14 +369,14 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
                 <LocaleLink
                   href={`/onboarding/modules?hospitalId=${tenant.id}`}
                 >
-                  Get Onboarded
+                  {dict.pages.hospitals.table.rowActions.getOnboarded}
                 </LocaleLink>
               </DropdownMenuItem>
             )}
             {tenant.status.toLowerCase() === "active" && (
               <DropdownMenuItem asChild>
                 <LocaleLink href={`/hospitals/${tenant.id}/edit`}>
-                  Edit Hospital
+                  {t.rowActions.editHospital}
                 </LocaleLink>
               </DropdownMenuItem>
             )}
@@ -372,7 +385,7 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
                 <LocaleLink
                   href={`/onboarding/modules?hospitalId=${tenant.id}&type=edit`}
                 >
-                  Edit Onboarding
+                  {t.rowActions.editOnboarding}
                 </LocaleLink>
               </DropdownMenuItem>
             )}
@@ -380,18 +393,21 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
         </DropdownMenu>
       ),
     },
-  ]
+  ];
 
+  /* ------------------------------------------
+     RENDER
+  ------------------------------------------- */
   return (
     <DataTable
-      title={dict.pages.hospitals.table.activeHospitals}
+      title={t.activeHospitals}
       columns={columns}
       data={tenants}
       loading={loading}
       error={error}
       searchComponent={
         <FilterInput
-          placeholder={dict.pages.hospitals.table.searchPlaceholder}
+          placeholder={t.searchPlaceholder}
           onValueChange={handleSearch}
         />
       }
@@ -401,7 +417,7 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
           asChild
         >
           <LocaleLink href="/create-hospital">
-            {dict.pages.hospitals.table.onboardNew}
+            {t.onboardNew}
           </LocaleLink>
         </Button>
       }
@@ -410,7 +426,9 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
         tenants.length > 0 && (
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground">
-              Showing {tenants.length} of {totalData} hospitals
+              {t.pagination.showing
+                .replace("{{count}}", tenants.length.toString())
+                .replace("{{total}}", totalData.toString())}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -419,10 +437,10 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
               >
-                Previous
+                {t.pagination.previous}
               </Button>
               <div className="text-sm">
-                Page {currentPage} of {totalPages}
+                {t.pagination.page} {currentPage} {t.pagination.of} {totalPages}
               </div>
               <Button
                 variant="outline"
@@ -432,12 +450,12 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
                 }
                 disabled={currentPage === totalPages}
               >
-                Next
+                {t.pagination.next}
               </Button>
             </div>
           </div>
         )
       }
     />
-  )
+  );
 }

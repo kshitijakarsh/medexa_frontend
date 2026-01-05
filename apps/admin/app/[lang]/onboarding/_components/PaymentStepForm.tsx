@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { Label } from "@workspace/ui/components/label"
+import type { Dictionary } from "@/i18n/get-dictionary"
 import { Input } from "@workspace/ui/components/input"
 import { ArrowLeft, Edit, Plus, Trash2 } from "lucide-react"
 import {
@@ -61,11 +62,14 @@ const defaultValues: Step3Values = {
   active: true,
 }
 
-export function PaymentStepForm() {
+export function PaymentStepForm({ dict }: { dict: Dictionary }){
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
   const queryClient = useQueryClient()
+  const t = dict.pages.onboarding.payment
+  const common = dict.common
+
 
   const lang = params?.lang ?? "en"
   const onboardingBase = `/${lang}/onboarding`
@@ -253,7 +257,7 @@ export function PaymentStepForm() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this payment config?")) {
+    if (confirm(t.deleteConfirm)) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
           const updatedItems = paymentState.items.filter(
@@ -309,10 +313,10 @@ export function PaymentStepForm() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
-              Payment Details
+              {t.title}
             </h2>
             <p className="text-sm text-slate-600 mt-1">
-              Configure payment gateways and banking details
+              {t.subtitle}
             </p>
           </div>
           <Button
@@ -321,14 +325,13 @@ export function PaymentStepForm() {
             className="flex items-center gap-2"
           >
             <Plus className="size-4" />
-            Add Payment Config
+            {t.addPaymentConfig}
           </Button>
         </div>
 
         {paymentState.items.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
-            No payment configurations added yet. Click &quot;Add Payment
-            Config&quot; to get started.
+            {t.emptyState}
           </div>
         ) : (
           <div className="space-y-3">
@@ -396,7 +399,7 @@ export function PaymentStepForm() {
                 ? createMutation.error.message
                 : updateMutation.error instanceof Error
                   ? updateMutation.error.message
-                  : "An error occurred"}
+                  : common.error}
           </div>
         )}
 
@@ -410,7 +413,7 @@ export function PaymentStepForm() {
             >
               <Link href={`${modulesPath}?hospitalId=${hospitalId}`}>
                 <ArrowLeft className="size-4" />
-                Back
+                {common.back}
               </Link>
             </Button>
           </div>
@@ -431,14 +434,14 @@ export function PaymentStepForm() {
             }}
             className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
-            Skip
+            {common.skip}
           </Button>
           <Button
             type="button"
             onClick={handleSaveAndContinue}
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
           >
-            Save & Continue
+            {dict.pages.hospitals.create.submit}
           </Button>
         </div>
       </div>
@@ -447,10 +450,10 @@ export function PaymentStepForm() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Edit Payment Config" : "Add Payment Config"}
+              {editingItem ? t.editDialogTitle : t.addDialogTitle}
             </DialogTitle>
             <DialogDescription>
-              Configure payment gateway and banking details
+              {t.dialogDescription}
             </DialogDescription>
           </DialogHeader>
 
@@ -464,7 +467,7 @@ export function PaymentStepForm() {
                 name="gateway_id"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Payment Gateway *</Label>
+                    <Label>{t.gateway.label}</Label>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
                       value={
@@ -475,7 +478,7 @@ export function PaymentStepForm() {
                     >
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select gateway" />
+                          <SelectValue placeholder={t.gateway.placeholder} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -500,9 +503,9 @@ export function PaymentStepForm() {
                   name="merchant_id"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Merchant ID</Label>
+                      <Label>{t.merchantId.label}</Label>
                       <FormControl>
-                        <Input placeholder="Enter merchant ID" {...field} />
+                        <Input placeholder={t.merchantId.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -514,9 +517,9 @@ export function PaymentStepForm() {
                   name="terminal_key"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Terminal Key</Label>
+                      <Label>{t.terminalKey.label}</Label>
                       <FormControl>
-                        <Input placeholder="Enter terminal key" {...field} />
+                        <Input placeholder={t.terminalKey.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -530,9 +533,9 @@ export function PaymentStepForm() {
                   name="vault_path"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Vault Path</Label>
+                      <Label>{t.vaultPath.label}</Label>
                       <FormControl>
-                        <Input placeholder="Enter vault path" {...field} />
+                        <Input placeholder={t.vaultPath.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -544,9 +547,9 @@ export function PaymentStepForm() {
                   name="bank_name"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Bank Name</Label>
+                      <Label>{t.bankName.label}</Label>
                       <FormControl>
-                        <Input placeholder="Enter bank name" {...field} />
+                        <Input placeholder={t.bankName.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -559,9 +562,9 @@ export function PaymentStepForm() {
                 name="bank_account_no"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Bank Account Number</Label>
+                    <Label>{t.bankAccount.label}</Label>
                     <FormControl>
-                      <Input placeholder="Enter account number" {...field} />
+                      <Input placeholder={t.bankAccount.placeholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -574,7 +577,7 @@ export function PaymentStepForm() {
                   name="vat_registered"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>VAT Registered</Label>
+                      <Label>{t.vatRegistered}</Label>
                       <FormControl>
                         <div className="flex items-center gap-2 h-10">
                           <input
@@ -584,7 +587,7 @@ export function PaymentStepForm() {
                             className="w-4 h-4 cursor-pointer"
                           />
                           <span className="text-sm text-slate-600">
-                            {field.value ? "Yes" : "No"}
+                            {field.value ? common.yes : common.no}
                           </span>
                         </div>
                       </FormControl>
@@ -598,9 +601,9 @@ export function PaymentStepForm() {
                   name="vat_number"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>VAT Number</Label>
+                      <Label>{t.vatNumber.label}</Label>
                       <FormControl>
-                        <Input placeholder="Enter VAT number" {...field} />
+                        <Input placeholder={t.vatNumber.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -613,7 +616,7 @@ export function PaymentStepForm() {
                 name="currency_code"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Currency Code *</Label>
+                    <Label>{t.currency.label}</Label>
                     <FormControl>
                       <Select
                         onValueChange={(value) => {
@@ -629,12 +632,12 @@ export function PaymentStepForm() {
                         value={field.value}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select Currency" />
+                          <SelectValue placeholder={t.currency.placeholder} />
                         </SelectTrigger>
                         <SelectContent>
                           {isLoadingCountries ? (
                             <div className="py-2 px-3 text-sm text-muted-foreground">
-                              Loading...
+                              {common.loading}
                             </div>
                           ) : (
                             countries.map((c) => (
@@ -656,7 +659,7 @@ export function PaymentStepForm() {
                 name="active"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Active Status</Label>
+                    <Label>{t.status}</Label>
                     <FormControl>
                       <div className="flex items-center gap-2 h-10">
                         <input
@@ -666,7 +669,7 @@ export function PaymentStepForm() {
                           className="w-4 h-4 cursor-pointer"
                         />
                         <span className="text-sm text-slate-600">
-                          {field.value ? "Active" : "Inactive"}
+                          {field.value ? common.active : common.inactive}
                         </span>
                       </div>
                     </FormControl>
@@ -685,7 +688,7 @@ export function PaymentStepForm() {
                     form.reset(defaultValues)
                   }}
                 >
-                  Cancel
+                  {common.cancel}
                 </Button>
                 <Button
                   type="submit"
@@ -694,11 +697,11 @@ export function PaymentStepForm() {
                 >
                   {isPending
                     ? editingItem
-                      ? "Updating..."
-                      : "Adding..."
+                      ? common.updating
+                      : common.adding
                     : editingItem
-                      ? "Update"
-                      : "Add"}
+                      ? common.update
+                      : common.add}
                 </Button>
               </DialogFooter>
             </form>

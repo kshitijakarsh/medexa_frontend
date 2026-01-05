@@ -46,6 +46,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
+import type { Dictionary } from "@/i18n/get-dictionary"
+
 
 const defaultValues: Step5Values = {
   doc_type: "",
@@ -58,7 +60,7 @@ const defaultValues: Step5Values = {
   notes: "",
 }
 
-export function RegulatoryDocsStepForm() {
+export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
@@ -70,6 +72,8 @@ export function RegulatoryDocsStepForm() {
   const hospitalId = searchParams.get("hospitalId") || "dev-hospital-1"
   const type = searchParams.get("type")
   const isEditMode = type === "edit"
+  const t = dict.pages.onboarding.regulatoryDocs
+  const common = dict.common
 
   const {
     regulatory: regulatoryState,
@@ -330,10 +334,10 @@ export function RegulatoryDocsStepForm() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
-              Regulatory Documents
+              {t.title}
             </h2>
             <p className="text-sm text-slate-600 mt-1">
-              Upload and manage regulatory compliance documents
+              {t.subtitle}
             </p>
           </div>
           <Button
@@ -342,14 +346,13 @@ export function RegulatoryDocsStepForm() {
             className="flex items-center gap-2"
           >
             <Plus className="size-4" />
-            Add Regulatory Document
+            {t.addDocument}
           </Button>
         </div>
 
         {regulatoryState.items.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
-            No regulatory documents added yet. Click &quot;Add Regulatory
-            Document&quot; to get started.
+            {t.emptyState}
           </div>
         ) : (
           <div className="space-y-3">
@@ -365,18 +368,18 @@ export function RegulatoryDocsStepForm() {
                   </div>
                   <div className="text-sm text-slate-600 mt-1 space-y-1">
                     {item.authority_id && (
-                      <div>Authority ID: {item.authority_id}</div>
+                      <div>{t.fields.authority}: {item.authority_id}</div>
                     )}
                     {item.doc_number && (
-                      <div>Document Number: {item.doc_number}</div>
+                      <div>{t.fields.documentNumber}: {item.doc_number}</div>
                     )}
                     {item.issue_date && (
-                      <div>Issue Date: {item.issue_date}</div>
+                      <div>{t.fields.issueDate}: {item.issue_date}</div>
                     )}
-                    {item.status && <div>Status: {item.status}</div>}
+                    {item.status && <div>{t.fields.status}: {item.status}</div>}
                     {item.file_url && (
                       <div className="text-xs text-blue-600">
-                        File: {item.file_url}
+                        {t.fields.file} {item.file_url}
                       </div>
                     )}
                   </div>
@@ -423,7 +426,7 @@ export function RegulatoryDocsStepForm() {
                   ? createMutation.error.message
                   : updateMutation.error instanceof Error
                     ? updateMutation.error.message
-                    : "An error occurred")}
+                    : common.error)}
           </div>
         )}
 
@@ -437,7 +440,7 @@ export function RegulatoryDocsStepForm() {
             >
               <Link href={`${licenceHistoryPath}?hospitalId=${hospitalId}`}>
                 <ArrowLeft className="size-4" />
-                Back
+               {common.back}
               </Link>
             </Button>
           </div>
@@ -451,10 +454,10 @@ export function RegulatoryDocsStepForm() {
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isActivating
-              ? "Saving..."
+              ? dict.pages.hospitals.create.submitting
               : isEditMode
-                ? "Save"
-                : "Complete Onboarding"}
+                ? common.save
+                : t.completeOnboarding}
           </Button>
         </div>
       </div>
@@ -464,11 +467,11 @@ export function RegulatoryDocsStepForm() {
           <DialogHeader>
             <DialogTitle>
               {editingItem
-                ? "Edit Regulatory Document"
-                : "Add Regulatory Document"}
+                ? t.editDialogTitle
+                : t.addDialogTitle}
             </DialogTitle>
             <DialogDescription>
-              Upload regulatory and compliance documentation
+              {t.dialogDescription}
             </DialogDescription>
           </DialogHeader>
 
@@ -482,10 +485,10 @@ export function RegulatoryDocsStepForm() {
                 name="doc_type"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Document Type *</Label>
+                    <Label>{t.form.docType.label}</Label>
                     <FormControl>
                       <Input
-                        placeholder="e.g., License, Certificate, Permit"
+                        placeholder={t.form.docType.placeholder}
                         {...field}
                       />
                     </FormControl>
@@ -520,7 +523,7 @@ export function RegulatoryDocsStepForm() {
                   name="authority_id"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Authority ID *</Label>
+                      <Label>{t.form.authority.label}</Label>
                       <FormControl>
                         <Select
                           onValueChange={(value) =>
@@ -533,12 +536,12 @@ export function RegulatoryDocsStepForm() {
                           }
                         >
                           <SelectTrigger className="w-full max-w-full truncate">
-                            <SelectValue placeholder="Select Authority" />
+                            <SelectValue placeholder={t.form.authority.placeholder}/>
                           </SelectTrigger>
                           <SelectContent className="w-[var(--radix-select-trigger-width)]">
                             {isLoadingAuthorites ? (
                               <div className="py-2 px-3 text-sm text-muted-foreground">
-                                Loading...
+                                {common.loading}...
                               </div>
                             ) : (
                               authorities.map((a) => (
@@ -560,9 +563,9 @@ export function RegulatoryDocsStepForm() {
                   name="doc_number"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Document Number *</Label>
+                      <Label>{t.form.documentNumber.label}</Label>
                       <FormControl>
-                        <Input placeholder="Document number" {...field} />
+                        <Input placeholder={t.form.documentNumber.placeholder} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -576,7 +579,7 @@ export function RegulatoryDocsStepForm() {
                   name="issue_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Issue Date *</Label>
+                      <Label>{t.form.issueDate}</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -594,7 +597,7 @@ export function RegulatoryDocsStepForm() {
                   name="expiry_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Expiry Date *</Label>
+                      <Label>{t.form.expiryDate}</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -613,7 +616,7 @@ export function RegulatoryDocsStepForm() {
                 name="file_url"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Document File *</Label>
+                    <Label>{t.form.file}</Label>
                     <FormControl>
                       <div className="space-y-2">
                         <Input
@@ -674,20 +677,20 @@ export function RegulatoryDocsStepForm() {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Status</Label>
+                    <Label>{t.form.status.label}</Label>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <SelectTrigger className="w-full ">
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder={t.form.status.placeholder} />
                         </SelectTrigger>
                         <SelectContent className="w-[var(--radix-select-trigger-width)]">
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                          <SelectItem value="suspended">Suspended</SelectItem>
+                          <SelectItem value="pending">{common.pending}</SelectItem>
+                          <SelectItem value="active">{common.active}</SelectItem>
+                          <SelectItem value="inactive">{common.inactive}</SelectItem>
+                          <SelectItem value="suspended">{common.suspended}</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -703,10 +706,10 @@ export function RegulatoryDocsStepForm() {
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Notes</Label>
+                    <Label>{t.form.notes.label}</Label>
                     <FormControl>
                       <Textarea
-                        placeholder="Additional notes or comments"
+                        placeholder={t.form.notes.placeholder}
                         rows={3}
                         {...field}
                       />
@@ -737,11 +740,11 @@ export function RegulatoryDocsStepForm() {
                 >
                   {isPending
                     ? editingItem
-                      ? "Updating..."
-                      : "Adding..."
+                      ? common.updating
+                      : common.adding
                     : editingItem
-                      ? "Update"
-                      : "Add"}
+                      ? common.update
+                      : common.add}
                 </Button>
               </DialogFooter>
             </form>

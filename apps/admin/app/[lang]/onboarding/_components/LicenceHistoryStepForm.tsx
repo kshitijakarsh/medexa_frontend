@@ -41,6 +41,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
+import type { Dictionary } from "@/i18n/get-dictionary"
 
 const defaultValues: Step4Values = {
   plan_key: "",
@@ -67,11 +68,14 @@ function isoDateTimeToDate(isoString: string): string {
   return isoString?.split("T")[0] ?? ""
 }
 
-export function LicenceHistoryStepForm() {
+export function LicenceHistoryStepForm({ dict }: { dict: Dictionary }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
   const queryClient = useQueryClient()
+  const t = dict.pages.onboarding.licenceHistory
+  const common = dict.common
+
 
   const lang = params?.lang ?? "en"
   const onboardingBase = `/${lang}/onboarding`
@@ -209,7 +213,7 @@ export function LicenceHistoryStepForm() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this license?")) {
+    if (confirm(t.deleteConfirm)) {
       deleteMutation.mutate(id, {
         onSuccess: () => {
           const updatedItems = licenceState.items.filter(
@@ -260,10 +264,10 @@ export function LicenceHistoryStepForm() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-xl font-semibold text-slate-900">
-              Licence History
+              {t.title}
             </h2>
             <p className="text-sm text-slate-600 mt-1">
-              Manage licence history and subscription details
+              {t.subtitle}
             </p>
           </div>
           <Button
@@ -272,14 +276,13 @@ export function LicenceHistoryStepForm() {
             className="flex items-center gap-2"
           >
             <Plus className="size-4" />
-            Add Licence History
+            {t.addDialogTitle}
           </Button>
         </div>
 
         {licenceState.items.length === 0 ? (
           <div className="text-center py-8 text-slate-500">
-            No licence history added yet. Click &quot;Add Licence History&quot;
-            to get started.
+           {t.emptyState}
           </div>
         ) : (
           <div className="space-y-3">
@@ -293,9 +296,9 @@ export function LicenceHistoryStepForm() {
                     {item.plan_key}
                   </div>
                   <div className="text-sm text-slate-600 mt-1 space-y-1">
-                    <div>Seats: {item.seats}</div>
-                    <div>Start Date: {item.start_date}</div>
-                    <div>Status: {item.status}</div>
+                    <div>{t.list.seats} {item.seats}</div>
+                    <div>{t.list.startDate} {item.start_date}</div>
+                    <div>{t.list.status} {item.status}</div>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -352,7 +355,7 @@ export function LicenceHistoryStepForm() {
             >
               <Link href={`${paymentPath}?hospitalId=${hospitalId}`}>
                 <ArrowLeft className="size-4" />
-                Back
+                {common.back}
               </Link>
             </Button>
           </div>
@@ -373,14 +376,14 @@ export function LicenceHistoryStepForm() {
             }}
             className="px-4 py-2 cursor-pointer flex items-center gap-2 rounded-full"
           >
-            Skip
+            {common.skip}
           </Button>
           <Button
             type="button"
             onClick={handleSaveAndContinue}
             className="bg-green-600 hover:bg-green-700 text-white rounded-full py-3 px-6"
           >
-            Save & Continue
+            {dict.pages.hospitals.create.submit}
           </Button>
         </div>
       </div>
@@ -389,10 +392,10 @@ export function LicenceHistoryStepForm() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingItem ? "Edit Licence History" : "Add Licence History"}
+              {editingItem ? t.editDialogTitle : t.addDialogTitle}
             </DialogTitle>
             <DialogDescription>
-              Configure licence plan and subscription details
+              {t.dialogDescription}
             </DialogDescription>
           </DialogHeader>
 
@@ -406,9 +409,9 @@ export function LicenceHistoryStepForm() {
                 name="plan_key"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Plan Key *</Label>
+                    <Label>{t.form.planKey.label}</Label>
                     <FormControl>
-                      <Input placeholder="Enter plan key" {...field} />
+                      <Input placeholder={t.form.planKey.placeholder} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -426,7 +429,7 @@ export function LicenceHistoryStepForm() {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Number of seats"
+                          placeholder= {t.form.seats.placeholder}
                           {...restField}
                           value={value ?? ""}
                           onChange={(e) => {
@@ -445,12 +448,12 @@ export function LicenceHistoryStepForm() {
                   name="storage_quota_mb"
                   render={({ field: { onChange, value, ...restField } }) => (
                     <FormItem>
-                      <Label>Storage Quota (MB) *</Label>
+                      <Label>{t.form.storageQuota.label}</Label>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Storage in MB"
+                          placeholder={t.form.storageQuota.placeholder}
                           {...restField}
                           value={value ?? ""}
                           onChange={(e) => {
@@ -471,7 +474,7 @@ export function LicenceHistoryStepForm() {
                   name="start_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Start Date *</Label>
+                      <Label>{t.form.startDate.label}</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -489,7 +492,7 @@ export function LicenceHistoryStepForm() {
                   name="end_date"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>End Date *</Label>
+                      <Label>{t.form.endDate.label}</Label>
                       <FormControl>
                         <Input
                           type="date"
@@ -509,7 +512,7 @@ export function LicenceHistoryStepForm() {
                   name="auto_renew"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Auto Renew</Label>
+                      <Label>{t.form.autoRenew.label}</Label>
                       <FormControl>
                         <div className="flex items-center gap-2 h-10">
                           <input
@@ -519,7 +522,7 @@ export function LicenceHistoryStepForm() {
                             className="w-4 h-4 cursor-pointer"
                           />
                           <span className="text-sm text-slate-600">
-                            {field.value ? "Enabled" : "Disabled"}
+                            {field.value ? t.form.autoRenew.enabled : t.form.autoRenew.disabled}
                           </span>
                         </div>
                       </FormControl>
@@ -546,20 +549,20 @@ export function LicenceHistoryStepForm() {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <Label>Status</Label>
+                      <Label>{t.form.status.label}</Label>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
                         >
                           <SelectTrigger className="w-full ">
-                            <SelectValue placeholder="Select status" />
+                            <SelectValue placeholder={t.form.status.placeholder} />
                           </SelectTrigger>
                           <SelectContent className="w-[var(--radix-select-trigger-width)]">
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                            <SelectItem value="suspended">Suspended</SelectItem>
+                            <SelectItem value="pending">{t.form.status.values.pending}</SelectItem>
+                            <SelectItem value="active">{t.form.status.values.active}</SelectItem>
+                            <SelectItem value="inactive">{t.form.status.values.inactive}</SelectItem>
+                            <SelectItem value="suspended">{t.form.status.values.suspended}</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -588,11 +591,11 @@ export function LicenceHistoryStepForm() {
                 >
                   {isPending
                     ? editingItem
-                      ? "Updating..."
-                      : "Adding..."
+                      ? common.updating
+                      : common.adding
                     : editingItem
-                      ? "Update"
-                      : "Add"}
+                      ? common.update
+                      : common.add}
                 </Button>
               </DialogFooter>
             </form>

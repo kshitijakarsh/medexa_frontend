@@ -654,7 +654,7 @@ export const mainModules: MainModule[] = [
         label: "Consumables",
         actions: ["view", "viewOne", "create", "edit", "delete"],
       },
-       {
+      {
         key: "equipment",
         label: "Equipment",
         actions: ["view", "viewOne", "create", "edit", "delete"],
