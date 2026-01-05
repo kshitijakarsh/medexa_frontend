@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { DataTable } from "@/components/common/data-table";
 import FilterButton from "@/components/common/filter-button";
@@ -19,6 +19,7 @@ import Image from "next/image";
 import { InstructionEntry, InstructionFilterState } from "../types";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { NURSE_TASKS_DATA, LAB_ORDERS_DATA } from "../mock-data";
+import { createNurseOrdersApiClient } from "@/lib/api/doctor/nurse-orders-api";
 
 interface DoctorInstructionsViewProps {
     loading: boolean;
@@ -37,24 +38,17 @@ interface DoctorInstructionsViewProps {
     referrals?: InstructionEntry[];
 }
 
-const TABS = [
-    { label: "Nurse Clinical Tasks", value: "Nurse Clinical Tasks", count: 3 },
-    { label: "Laboratory Orders", value: "Laboratory Orders", count: 3 },
-    { label: "Radiology Orders", value: "Radiology Orders", count: 3 },
-    { label: "Surgery / OT Requests", value: "Surgery / OT Requests", count: 3 },
-    { label: "Follow Up Required", value: "Follow Up Required", count: 3 },
-    { label: "Referral", value: "Referral", count: 3 },
-];
+// TABS will be defined inside component to use dynamic counts
 
 export function DoctorInstructionsView({
-    loading,
+    loading: parentLoading,
     viewMode,
     setViewMode,
     searchQuery,
     onSearchChange,
     onClearFilters,
     filters = {},
-    nurseTasks,
+    nurseTasks: propNurseTasks,
     labOrders,
     radiologyOrders,
     surgeryRequests,
@@ -62,11 +56,138 @@ export function DoctorInstructionsView({
     referrals
 }: DoctorInstructionsViewProps) {
     const [activeTab, setActiveTab] = useState<string>("Nurse Clinical Tasks");
+    const [nurseTasks, setNurseTasks] = useState<InstructionEntry[]>([]);
+    const [nurseTasksLoading, setNurseTasksLoading] = useState(false);
+
+    // Fetch nurse orders when "Nurse Clinical Tasks" tab is active
+    useEffect(() => {
+        const fetchNurseOrders = async () => {
+            if (activeTab === "Nurse Clinical Tasks") {
+                setNurseTasksLoading(true);
+                try {
+                    const apiClient = createNurseOrdersApiClient({});
+                    
+                    // Prepare params based on filters
+                    const params: any = {
+                        page: 1,
+                        limit: 100,
+                    };
+
+                    // Apply filters
+                    if (filters?.status && filters.status !== "all" && filters.status !== "") {
+                        params.status = filters.status;
+                    }
+                    if (filters?.department && filters.department !== "all-departments" && filters.department !== "") {
+                        params.department_id = String(filters.department);
+                    }
+                    if (filters?.doctor && filters.doctor !== "all-doctors" && filters.doctor !== "") {
+                        params.doctor_id = String(filters.doctor);
+                    }
+                    if (searchQuery && searchQuery.trim() !== "") {
+                        params.search = searchQuery.trim();
+                    }
+
+                    const response = await apiClient.getAll(params);
+
+                    if (response.data.success) {
+                        // Map API response to InstructionEntry format
+                        const mapped: InstructionEntry[] = response.data.data.map((order: any) => {
+                            const patientName = order.patient 
+                                ? `${order.patient.first_name || ""} ${order.patient.last_name || ""}`.trim()
+                                : "Unknown Patient";
+                            
+                            const mrn = order.patient?.civil_id 
+                                ? `MRN-${order.patient.civil_id}` 
+                                : (order.patient_id ? `MRN-${order.patient_id}` : "N/A");
+
+                            const visitId = order.visit_id 
+                                ? `Visit ID-${order.visit_id}` 
+                                : "N/A";
+
+                            // Format order type (convert snake_case to Title Case)
+                            const formatOrderType = (type: string): string => {
+                                if (!type) return "N/A";
+                                return type
+                                    .split('_')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                                    .join(' ');
+                            };
+
+                            // Get doctor name from createdBy if available
+                            const doctorName = order.createdBy 
+                                ? `${order.createdBy.first_name || ""} ${order.createdBy.last_name || ""}`.trim()
+                                : "Unknown Doctor";
+
+                            // Format date time
+                            const dateTime = order.details?.start_date 
+                                ? new Date(order.details.start_date).toLocaleString("en-US", {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true
+                                })
+                                : (order.created_at 
+                                    ? new Date(order.created_at).toLocaleString("en-US", {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        hour12: true
+                                    })
+                                    : "N/A");
+
+                            // Map urgency to priority
+                            const priority: "Urgent" | "Normal" | "Routine" = 
+                                order.urgency === "urgent" ? "Urgent" : 
+                                order.urgency === "routine" ? "Routine" : "Normal";
+
+                            // Map status
+                            const status: "Pending" | "Completed" = 
+                                order.status === "completed" ? "Completed" : "Pending";
+
+                            return {
+                                id: order.id,
+                                patientName,
+                                mrn,
+                                visitId,
+                                doctorName,
+                                specialty: "General", // API doesn't provide specialty
+                                nurseName: doctorName, // Using doctor name as nurse name for now
+                                nurseRole: "Nurse", // Default role
+                                orderType: formatOrderType(order.order_type),
+                                description: order.details?.wound_location 
+                                    ? `${order.details.wound_location} - ${order.notes || ""}`.trim()
+                                    : (order.notes || "N/A"),
+                                frequency: order.details?.frequency || "N/A",
+                                dateTime,
+                                priority,
+                                status,
+                            };
+                        });
+
+                        setNurseTasks(mapped);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch nurse orders:", error);
+                    setNurseTasks([]);
+                } finally {
+                    setNurseTasksLoading(false);
+                }
+            }
+        };
+
+        fetchNurseOrders();
+    }, [activeTab, filters?.status, filters?.department, filters?.doctor, searchQuery]);
 
     // Dynamic Data Source
     const getData = () => {
         switch (activeTab) {
-            case "Nurse Clinical Tasks": return nurseTasks || NURSE_TASKS_DATA;
+            case "Nurse Clinical Tasks": 
+                // Use fetched data if available, otherwise use prop, otherwise fallback to mock
+                return nurseTasks.length > 0 ? nurseTasks : (propNurseTasks || NURSE_TASKS_DATA);
             case "Laboratory Orders": return labOrders || LAB_ORDERS_DATA;
             // Add others as needed or fallback to empty
             case "Radiology Orders": return radiologyOrders || [];
@@ -77,7 +198,18 @@ export function DoctorInstructionsView({
         }
     };
 
-    const data = getData(); // In real app, this would be fetched based on tab
+    const data = getData();
+    const loading = parentLoading || (activeTab === "Nurse Clinical Tasks" && nurseTasksLoading);
+
+    // Dynamic tabs with counts
+    const TABS = [
+        { label: "Nurse Clinical Tasks", value: "Nurse Clinical Tasks", count: nurseTasks.length || (propNurseTasks?.length || 0) },
+        { label: "Laboratory Orders", value: "Laboratory Orders", count: labOrders?.length || 0 },
+        { label: "Radiology Orders", value: "Radiology Orders", count: radiologyOrders?.length || 0 },
+        { label: "Surgery / OT Requests", value: "Surgery / OT Requests", count: surgeryRequests?.length || 0 },
+        { label: "Follow Up Required", value: "Follow Up Required", count: followUps?.length || 0 },
+        { label: "Referral", value: "Referral", count: referrals?.length || 0 },
+    ];
 
     // Columns Definition
     const getNurseColumns = () => [

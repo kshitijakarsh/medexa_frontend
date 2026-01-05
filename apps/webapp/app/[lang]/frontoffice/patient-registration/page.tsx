@@ -32,12 +32,12 @@ const calculateAge = (dobString: string | null | undefined): string => {
     try {
         const dob = new Date(dobString);
         if (isNaN(dob.getTime())) return "N/A";
-        
+
         const now = new Date();
         let years = now.getFullYear() - dob.getFullYear();
         let months = now.getMonth() - dob.getMonth();
         let days = now.getDate() - dob.getDate();
-        
+
         if (days < 0) {
             months--;
             days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
@@ -46,7 +46,7 @@ const calculateAge = (dobString: string | null | undefined): string => {
             years--;
             months += 12;
         }
-        
+
         return `${years} Year${years !== 1 ? 's' : ''}, ${months} Month${months !== 1 ? 's' : ''}, ${days} Day${days !== 1 ? 's' : ''}`;
     } catch {
         return "N/A";
@@ -58,7 +58,7 @@ const mapPatientToEntry = (patient: PatientItem): PatientEntry => {
     // Determine if VIP based on category name (case-insensitive)
     const categoryName = patient.category?.name?.toLowerCase() || "";
     const isVip = categoryName.includes("vip");
-    
+
     // Map category
     let category: "VIP" | "Normal" | "Emergency" = "Normal";
     if (isVip) {
@@ -66,19 +66,19 @@ const mapPatientToEntry = (patient: PatientItem): PatientEntry => {
     } else if (categoryName.includes("emergency")) {
         category = "Emergency";
     }
-    
+
     // Map status
     const patientStatus = patient.status?.toLowerCase() || "active";
     let status: PatientEntry["status"] = "Active";
     let registrationStatus: PatientEntry["registrationStatus"] = "Registered Patient";
-    
+
     if (patientStatus === "inactive") {
         status = "Inactive";
     }
-    
+
     // For now, default to "Registered Patient" - this might need to come from API
     // You may need to add a field to the API response for registration status
-    
+
     return {
         id: String(patient.id),
         mrn: patient.civil_id ? `MRN-${patient.civil_id}` : `MRN-${patient.id}`,
@@ -290,10 +290,10 @@ export default function PatientRegistrationPage() {
                 }
 
                 const response = await apiClient.getPatients(params);
-                
+
                 if (response.data.success) {
                     const mappedPatients = response.data.data.map(mapPatientToEntry);
-                    
+
                     // Filter by registration status (tabs) - client-side for now
                     // This might need to come from API in the future
                     let filtered = mappedPatients;
@@ -302,7 +302,7 @@ export default function PatientRegistrationPage() {
                         // You may need to add registration_status to the API response
                         filtered = mappedPatients.filter(p => p.registrationStatus === filters.registrationStatus);
                     }
-                    
+
                     setPatients(filtered);
                     setTotalPatients(response.data.pagination?.total || 0);
                 }
@@ -335,7 +335,7 @@ export default function PatientRegistrationPage() {
 
     // Handle patient card click
     const handlePatientClick = (patient: PatientEntry) => {
-        router.push(withLocale(`/frontoffice/patient-details/${patient.id}`));
+        router.push(`/frontoffice/patient-details/${patient.id}`);
     };
 
     // Get count for each status tab
@@ -523,7 +523,7 @@ export default function PatientRegistrationPage() {
                         </Button>
 
                         <Button
-                            onClick={() => router.push(withLocale("/patient/add-patient"))}
+                            onClick={() => router.push("/patient/add-patient")}
                             className="bg-[#2CB470] hover:bg-[#259b60] text-white rounded-full h-10 px-5 gap-2 font-medium shadow-sm shrink-0"
                         >
                             Register New <Plus className="w-4 h-4 bg-white text-[#2CB470] rounded-full p-0.5" />

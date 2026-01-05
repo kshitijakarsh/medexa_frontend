@@ -3,6 +3,7 @@ export const DOCTOR_BASE = `/doctor`
 export const FRONTOFFICE_BASE = "/frontoffice"
 export const HR = "/hr"
 export const NURSE_BASE = "/nurse"
+export const SURGERY_BASE = "/surgery"
 
 export const ROUTES = {
   ORGANIZATION: `/organization-setup`,
@@ -60,6 +61,8 @@ export const ROUTES = {
   FRONTOFFICE_SCHEDULE: `${FRONTOFFICE_BASE}/schedule`,
   FRONTOFFICE_TIME_SLOTS: `${FRONTOFFICE_BASE}/time-slots`,
   FRONTOFFICE_PATIENT_REGISTRATION: `${FRONTOFFICE_BASE}/patient-registration`,
+  FRONTOFFICE_APPOINTMENT: `${FRONTOFFICE_BASE}/appointment`,
+  FRONTOFFICE_APPOINTMENT_BOOK: `${FRONTOFFICE_BASE}/appointment/book`,
   FRONTOFFICE_OPD: `${FRONTOFFICE_BASE}/OPD`,
   FRONTOFFICE_IPD: `${FRONTOFFICE_BASE}/IPD`,
 
@@ -67,6 +70,16 @@ export const ROUTES = {
   // HR
   HR: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
+
+  // Surgery
+  SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
+  SURGERY_OT_SCHEDULE: `${SURGERY_BASE}/ot-schedule`,
+  SURGERY_PRE_OP: `${SURGERY_BASE}/pre-op`,
+  SURGERY_OT_TEAMS: `${SURGERY_BASE}/ot-setting/teams`,
+  SURGERY_OT_TEAMS_ADD: `${SURGERY_BASE}/ot-setting/teams/new`,
+  SURGERY_OT_TEMPLATES: `${SURGERY_BASE}/ot-setting/templates`,
+  SURGERY_OT_TEMPLATES_NEW: `${SURGERY_BASE}/ot-setting/templates/new`,
+  SURGERY_WARD_STORE: `${SURGERY_BASE}/ward-store`,
 }
 
 // Build URL with query parameters

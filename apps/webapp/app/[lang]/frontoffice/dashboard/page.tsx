@@ -1,9 +1,10 @@
 "use client"
 
-import Link from "next/link"
 import { Calendar, Users } from "lucide-react"
 import { useParams } from "next/navigation"
 import { useDictionary } from "@/i18n/dictionary-context"
+import { ROUTES } from "@/lib/routes"
+import { LocaleLink } from "@/components/locale-link"
 
 export default function FrontOfficeDashboardPage() {
   const params = useParams<{ lang?: string }>()
@@ -20,7 +21,7 @@ export default function FrontOfficeDashboardPage() {
           {/* Navigation Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Appointment Book Card */}
-            <Link href={`/${lang}/appointment`}>
+            <LocaleLink href={ROUTES.FRONTOFFICE_APPOINTMENT}>
               <div className="border border-[#CFE9FF] bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col items-center justify-center min-h-[200px]">
                 <Calendar className="w-12 h-12 text-[#2CB470] mb-4" />
                 <h3 className="text-xl font-semibold text-gray-800">
@@ -30,16 +31,16 @@ export default function FrontOfficeDashboardPage() {
                   {t.bookNewAppointments}
                 </p>
               </div>
-            </Link>
+            </LocaleLink>
 
             {/* Patient Card */}
-            <Link href={`/${lang}/patient`}>
+            <LocaleLink href="/patient">
               <div className="border border-[#CFE9FF] bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer h-full flex flex-col items-center justify-center min-h-[200px]">
                 <Users className="w-12 h-12 text-[#2CB470] mb-4" />
                 <h3 className="text-xl font-semibold text-gray-800">{t.patient}</h3>
                 <p className="text-sm text-gray-500 mt-2">{t.managePatients}</p>
               </div>
-            </Link>
+            </LocaleLink>
           </div>
         </div>
       </div>

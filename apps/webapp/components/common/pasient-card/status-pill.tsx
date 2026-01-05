@@ -318,9 +318,34 @@ const statusStyles: Record<
     border: "border border-[#CFE9FF]",
   },
 
+  Preop: {
+    bg: "bg-blue-50",
+    text: "text-blue-600",
+    border: "border border-blue-200",
+  },
+
+  Intraop: {
+    bg: "bg-orange-50",
+    text: "text-orange-600",
+    border: "border border-orange-200",
+  },
+
+  Postop: {
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
+    border: "border border-emerald-200",
+  },
+
   Finished: {
     bg: "bg-[#E7F8ED]",
     text: "text-[#0F9D58]",
+  },
+
+  Emergency: {
+    bg: "bg-red-100",
+    border: "border border-red-300",
+    text: "text-red-600",
+
   },
 
   // Your previous statuses
