@@ -249,6 +249,8 @@ import { AppointmentPatientCell } from "@/components/common/pasient-card/appoint
 import { VisitStatusSelector } from "./common/VisitStatusSelector";
 import { canWorkOnVisit } from "./common/visitGuards";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function AppointmentDetailHeader({
   item,
   onSaveDraft,
@@ -278,6 +280,7 @@ export function AppointmentDetailHeader({
   // ].includes(item.status);
 
   const isCompleted = item.status === "completed";
+  const dict = useDictionary();
 
   return (
     <div className="
@@ -288,7 +291,8 @@ export function AppointmentDetailHeader({
       flex 
       justify-between 
       items-start 
-      border border-[#E8F6FF]
+      border border-0 border-b-2
+      border-b-[#0086F8]
       gap-3
     ">
 
@@ -360,7 +364,7 @@ export function AppointmentDetailHeader({
         {/* START CONSULTATION */}
         {!canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
-            label={starting ? "Starting..." : "Start Consultation"}
+            label={starting ? dict.pages.doctor.appointment.header.starting : dict.pages.doctor.appointment.header.startConsultation}
             icon={<Users size={18} />}
             variant="solid"
             disabled={starting || finishing || isLoading}
@@ -371,7 +375,7 @@ export function AppointmentDetailHeader({
         {/* FINISH CONSULTATION */}
         {canWorkOnVisit(item.status) && !isCompleted && (
           <ActionButton
-            label={finishing ? "Finishing..." : "Finish Consultation"}
+            label={finishing ? dict.pages.doctor.appointment.header.finishing : dict.pages.doctor.appointment.header.finishConsultation}
             icon={<Users size={18} />}
             variant="solid"
             disabled={finishing || saving || isLoading}
@@ -380,14 +384,14 @@ export function AppointmentDetailHeader({
         )}
 
         <ActionButton
-          label="View Details"
+          label={dict.pages.doctor.appointment.header.viewDetails}
           icon={<FileText size={18} />}
           variant="outline"
           disabled={true}
         />
 
         <ActionButton
-          label="Refer Doctor"
+          label={dict.pages.doctor.appointment.header.referDoctor}
           icon={<Share2 size={18} />}
           variant="outline"
           disabled={true}

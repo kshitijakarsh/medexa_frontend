@@ -104,6 +104,7 @@ import { hasPermission, PERMISSIONS } from "@/app/utils/permissions";
 import { RowActionMenu } from "@/components/common/row-action-menu";
 import { Pencil, Eye, Trash2, ShieldCheck } from "lucide-react";
 import { ReactNode } from "react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface RowAction {
   label: string;
@@ -118,10 +119,12 @@ export function OperationTheatresRowActionMenu({ onEdit, onView, onDelete, userP
 
 
   const rowActions: RowAction[] = [];
+  const dict = useDictionary();
+  const trans = dict.common;
 
   if (hasPermission(userPermissions, PERMISSIONS.OPERATION_THEATRES.EDIT)) {
     rowActions.push({
-      label: "Edit",
+      label: trans.edit,
       icon: <Pencil className="w-4 h-4" />,
       onClick: onEdit,
       variant: "success",
@@ -129,7 +132,7 @@ export function OperationTheatresRowActionMenu({ onEdit, onView, onDelete, userP
   }
   if (hasPermission(userPermissions, PERMISSIONS.OPERATION_THEATRES.EDIT)) {
     rowActions.push({
-      label: "View",
+      label: trans.view,
       icon: <Eye className="w-4 h-4" />,
       onClick: onView,
       variant: "success",
@@ -137,7 +140,7 @@ export function OperationTheatresRowActionMenu({ onEdit, onView, onDelete, userP
   }
   if (hasPermission(userPermissions, PERMISSIONS.OPERATION_THEATRES.DELETE)) {
     rowActions.push({
-      label: "Delete",
+      label: trans.delete,
       icon: <Trash2 className="w-4 h-4" />,
       onClick: onDelete,
       variant: "danger",

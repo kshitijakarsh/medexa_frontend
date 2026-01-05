@@ -22,6 +22,7 @@ import {
 } from "@workspace/ui/components/select";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const schema = z.object({
   medication_name: z.string().min(1, "Medication name is required"),
@@ -50,7 +51,11 @@ export default function MedicationForm({
   initialValues,
   submitLabel,
 }: MedicationFormProps) {
-  const form = useForm({
+  const dict = useDictionary();
+  const { form } = dict.pages.doctor.appointment.tabsContent.nurseOrders;
+  const { medication, common, options, frequencies } = form;
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       medication_name: initialValues?.medication_name || "",
@@ -83,20 +88,20 @@ export default function MedicationForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+    <Form {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submit)} className="space-y-4">
         {/* Medication Name and Dose */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="medication_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Medication Name</FormLabel>
+                <FormLabel>{medication.medicationName}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Fluid Type" />
+                      <SelectValue placeholder={medication.selectMedication} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Paracetamol">Paracetamol</SelectItem>
@@ -112,15 +117,15 @@ export default function MedicationForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="dose"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dose</FormLabel>
+                <FormLabel>{medication.dose}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Volume" />
+                      <SelectValue placeholder={medication.selectDose} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="250mg">250mg</SelectItem>
@@ -138,15 +143,15 @@ export default function MedicationForm({
         {/* Route and Frequency */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="route"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Route</FormLabel>
+                <FormLabel>{medication.route}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Rate" />
+                      <SelectValue placeholder={medication.selectRoute} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Oral">Oral</SelectItem>
@@ -162,21 +167,21 @@ export default function MedicationForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="frequency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Frequency</FormLabel>
+                <FormLabel>{medication.frequency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Duration" />
+                      <SelectValue placeholder={common.selectFrequency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Once daily">Once daily</SelectItem>
-                      <SelectItem value="Twice daily">Twice daily</SelectItem>
-                      <SelectItem value="Three times daily">Three times daily</SelectItem>
-                      <SelectItem value="Every 6 hours">Every 6 hours</SelectItem>
+                      <SelectItem value="Once daily">{frequencies.onceDaily}</SelectItem>
+                      <SelectItem value="Twice daily">{frequencies.twiceDaily}</SelectItem>
+                      <SelectItem value="Three times daily">{frequencies.threeTimesDaily}</SelectItem>
+                      <SelectItem value="Every 6 hours">{frequencies.every6Hours}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -189,15 +194,15 @@ export default function MedicationForm({
         {/* Duration and Urgency */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="duration"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Duration</FormLabel>
+                <FormLabel>{medication.duration}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Date" />
+                      <SelectValue placeholder={common.selectDuration} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="3 days">3 days</SelectItem>
@@ -213,20 +218,20 @@ export default function MedicationForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="urgency"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Urgency</FormLabel>
+                <FormLabel>{common.urgency}</FormLabel>
                 <FormControl>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Duration" />
+                      <SelectValue placeholder={common.selectUrgency} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="urgent">Urgent</SelectItem>
-                      <SelectItem value="routine">Routine</SelectItem>
-                      <SelectItem value="stat">STAT</SelectItem>
+                      <SelectItem value="urgent">{options.urgent}</SelectItem>
+                      <SelectItem value="routine">{options.routine}</SelectItem>
+                      <SelectItem value="stat">{options.stat}</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
@@ -239,11 +244,11 @@ export default function MedicationForm({
         {/* Start Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{common.startDate}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -253,11 +258,11 @@ export default function MedicationForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>{common.startTime}</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -269,14 +274,14 @@ export default function MedicationForm({
 
         {/* Instructions/Notes */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instructions / Notes</FormLabel>
+              <FormLabel>{common.notes}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter Instructions / Notes"
+                  placeholder={common.enterNotes}
                   rows={3}
                   {...field}
                 />
@@ -288,11 +293,19 @@ export default function MedicationForm({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
-          <CancelButton onClick={onCancel} />
+          <CancelButton onClick={onCancel} label={common.cancel} />
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            label={isSubmitting ? (submitLabel === "Update" ? "Updating..." : "Adding...") : (submitLabel || "Add Order")} 
+            label={
+              isSubmitting
+                ? submitLabel === "Update"
+                  ? common.updating
+                  : common.adding
+                : submitLabel === "Update"
+                  ? common.update
+                  : common.add
+            }
           />
         </div>
       </form>

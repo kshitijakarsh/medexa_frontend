@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { useSoapTemplates } from "./useSoapTemplates";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 interface Props {
   open: boolean;
@@ -21,14 +22,15 @@ export function SelectSoapTemplateModal({
   onSelect,
 }: Props) {
   const { data, isLoading } = useSoapTemplates();
+  const dict = useDictionary();
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Select Clinical Template</DialogTitle>
+          <DialogTitle>{dict.pages.doctor.appointment.tabsContent.soapNotes.templateModal.title}</DialogTitle>
           <p className="text-sm text-gray-500">
-            Choose a specialty template to auto-fill SOAP Note fields.
+            {dict.pages.doctor.appointment.tabsContent.soapNotes.templateModal.subtitle}
           </p>
         </DialogHeader>
 

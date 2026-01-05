@@ -103,11 +103,14 @@ import { getIdToken } from "@/app/utils/auth";
 
 import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { SoapTemplateCardSkeleton } from "./soap-template/SoapTemplateCardSkeleton";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export function SoapTemplateList() {
     const router = useRouter();
     const { withLocale } = useLocaleRoute();
     const queryClient = useQueryClient();
+    const dict = useDictionary();
+    const { soapTemplates } = dict.pages.doctor.profile;
 
     /* ---------------- Auth ---------------- */
     const [authToken, setAuthToken] = useState("");
@@ -141,12 +144,12 @@ export function SoapTemplateList() {
     const deleteMutation = useMutation({
         mutationFn: (id: string) => api!.deleteSoapTemplate(id),
         onSuccess: () => {
-            toast.success("SOAP template deleted");
+            toast.success(soapTemplates.deleteSuccess);
             queryClient.invalidateQueries({ queryKey: ["soap-templates"] });
             setDeleteId(null);
         },
         onError: (err: any) =>
-            toast.error(err.message || "Failed to delete SOAP template"),
+            toast.error(err.message || soapTemplates.deleteError),
     });
 
     /* ---------------- UI ---------------- */
@@ -155,10 +158,10 @@ export function SoapTemplateList() {
             <div className="space-y-4">
                 {/* Header */}
                 <div className="flex justify-between items-center">
-                    <h2 className="text-lg font-semibold">SOAP Templates</h2>
+                    <h2 className="text-lg font-semibold">{soapTemplates.title}</h2>
 
                     <NewButton
-                        name="Create Template"
+                        name={soapTemplates.createTemplate}
                         handleClick={() =>
                             router.push(
                                 withLocale(ROUTES.DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_CREATE)
@@ -205,16 +208,16 @@ export function SoapTemplateList() {
                                         href={withLocale(
                                             `${ROUTES.DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE}${t.id}${ROUTES.DOCTOR_PROFILE_SOAP_NOTE_TEMPLATE_EDIT}`
                                         )}
-                                        className="px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm flex items-center gap-1"
+                                        className="px-4 py-1.5 rounded-full bg-blue-100 text-blue-700 text-sm flex items-center gap-1 hover:bg-blue-200 transition-colors"
                                     >
-                                        <Pencil size={14} /> Edit
+                                        <Pencil size={14} /> {soapTemplates.edit}
                                     </Link>
 
                                     <button
                                         onClick={() => setDeleteId(t.id)}
-                                        className="px-4 py-1.5 rounded-full bg-red-100 text-red-700 text-sm flex items-center gap-1"
+                                        className="px-4 py-1.5 rounded-full bg-red-100 text-red-700 text-sm flex items-center gap-1 hover:bg-red-200 transition-colors"
                                     >
-                                        <Trash2 size={14} /> Delete
+                                        <Trash2 size={14} /> {soapTemplates.delete}
                                     </button>
                                 </div>
                             </div>
@@ -225,9 +228,9 @@ export function SoapTemplateList() {
             {/* Delete Confirmation */}
             <ConfirmDialog
                 open={!!deleteId}
-                title="Delete SOAP Template?"
-                description="This action cannot be undone. The SOAP template will be permanently removed."
-                confirmText="Delete"
+                title={soapTemplates.deleteTitle}
+                description={soapTemplates.deleteDesc}
+                confirmText={soapTemplates.delete}
                 loading={deleteMutation.isPending}
                 onClose={() => setDeleteId(null)}
                 onConfirm={() => deleteMutation.mutate(deleteId!)}

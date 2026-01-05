@@ -114,6 +114,7 @@ import { hasPermission, PERMISSIONS } from "@/app/utils/permissions";
 import { RowActionMenu } from "@/components/common/row-action-menu";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { ReactNode } from "react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface RowAction {
   label: string;
@@ -147,6 +148,7 @@ export function OperationRowActionMenu({
     [];
 
   const rowActions: RowAction[] = [];
+  const dict = useDictionary();
 
   const permissionGroup = PERMISSION_MAP[mode];
 
@@ -157,7 +159,7 @@ export function OperationRowActionMenu({
   // EDIT permission check
   if (permissionGroup && hasPermission(permissionList, permissionGroup.EDIT)) {
     rowActions.push({
-      label: "Edit",
+      label: dict.common.edit,
       icon: <Pencil className="w-4 h-4" />,
       onClick: onEdit,
       variant: "success",
@@ -167,7 +169,7 @@ export function OperationRowActionMenu({
   // EDIT permission check
   if (permissionGroup && hasPermission(permissionList, permissionGroup.EDIT)) {
     rowActions.push({
-      label: "View",
+      label: dict.common.view,
       icon: <Eye className="w-4 h-4" />,
       onClick: onView,
       variant: "success",
@@ -177,7 +179,7 @@ export function OperationRowActionMenu({
   // DELETE permission check
   if (permissionGroup && hasPermission(permissionList, permissionGroup.DELETE)) {
     rowActions.push({
-      label: "Delete",
+      label: dict.common.delete,
       icon: <Trash2 className="w-4 h-4" />,
       onClick: onDelete,
       variant: "danger",

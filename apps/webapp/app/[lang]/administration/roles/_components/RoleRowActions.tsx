@@ -63,6 +63,7 @@ import { hasPermission, PERMISSIONS } from "@/app/utils/permissions";
 import { RowActionMenu } from "@/components/common/row-action-menu";
 import { Pencil, Eye, Trash2, ShieldCheck } from "lucide-react";
 import { ReactNode } from "react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // export function EmployeeRowActions({ onEdit, onView, onDelete, onPermission }: any) {
 //   const rowActions = [
@@ -93,10 +94,11 @@ export function RoleRowActions({ onEdit, onView, onDelete, onPermission, userPer
   // ];
 
    const rowActions: RowAction[] = [];
+   const dict = useDictionary();
   
     if (hasPermission(userPermissions, PERMISSIONS.ROLE.EDIT)) {
       rowActions.push({
-        label: "Edit",
+        label: dict.actions.edit,
         icon: <Pencil className="w-4 h-4" />,
         onClick: onEdit,
         variant: "success",
@@ -104,7 +106,7 @@ export function RoleRowActions({ onEdit, onView, onDelete, onPermission, userPer
     }
      if (hasPermission(userPermissions, PERMISSIONS.ROLE.EDIT)) {
       rowActions.push({
-        label: "Permissions",
+        label: dict.actions.permissions,
         icon: <ShieldCheck className="w-4 h-4" />,
         onClick: onPermission,
         variant: "success",
@@ -113,7 +115,7 @@ export function RoleRowActions({ onEdit, onView, onDelete, onPermission, userPer
   
     if (hasPermission(userPermissions, PERMISSIONS.ROLE.DELETE)) {
       rowActions.push({
-        label: "Delete",
+        label: dict.actions.delete,
         icon: <Trash2 className="w-4 h-4" />,
         onClick: onDelete,
         variant: "danger",

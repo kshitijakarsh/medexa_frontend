@@ -1,22 +1,36 @@
-import { Header } from "@/components/header"
-import { Providers } from "@/components/providers"
-import { ReactNode } from "react"
+"use client";
 
-export default async function TenantLayout({
+import { PERMISSIONS, hasPermission, normalizePermissionList } from "@/app/utils/permissions";
+import { NoPermission } from "@/components/common/no-permission-page";
+import { Header } from "@/components/header";
+import { useUserStore } from "@/store/useUserStore";
+import { ReactNode } from "react";
+
+export default function TenantLayout({
     children,
-}: Readonly<{
-    children: ReactNode
-}>) {
+}: {
+    children: ReactNode;
+}) {
+    const userPermissions = useUserStore(
+        (s) => s.user?.role.permissions
+    );
 
+    // ⛔ Wait for store hydration
+    const permissionKeys = normalizePermissionList(userPermissions)
+
+
+    const allowed = hasPermission(
+        permissionKeys,
+        PERMISSIONS.NURSE.USERS.VIEW
+    );
 
     return (
         <main className="min-h-screen w-full bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] overflow-x-hidden">
             <Header />
+
             <div className="w-full">
-
-                {children}
+                {allowed ? children : <NoPermission />}
             </div>
-
         </main>
-    )
+    );
 }

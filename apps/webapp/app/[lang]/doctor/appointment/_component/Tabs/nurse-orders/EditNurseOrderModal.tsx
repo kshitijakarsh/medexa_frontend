@@ -26,6 +26,7 @@ import SpecialNotesForm from "./SpecialNotesForm";
 import MonitoringForm from "./MonitoringForm";
 // Catheter Care Form
 import CatheterCareForm from "./CatheterCareForm";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 interface EditNurseOrderModalProps {
   visitId: string;
@@ -40,6 +41,7 @@ export default function EditNurseOrderModal({
   open,
   onClose,
 }: EditNurseOrderModalProps) {
+  const dict = useDictionary();
   const [selectedOrderType, setSelectedOrderType] = useState<OrderType>("iv_fluids");
   const updateNurseOrder = useUpdateNurseOrder(visitId);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -173,11 +175,11 @@ export default function EditNurseOrderModal({
     <AppDialog
       open={open}
       onClose={onClose}
-      title="Edit Nurse Order"
+      title={dict.pages.doctor.appointment.tabsContent.nurseOrders.editModal.title}
     >
       <div className="space-y-4 max-h-[80vh] overflow-y-auto">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Order Type</label>
+          <label className="text-sm font-medium">{dict.pages.doctor.appointment.tabsContent.nurseOrders.modal.orderType}</label>
           <Select
             value={selectedOrderType}
             onValueChange={(value) => setSelectedOrderType(value as OrderType)}
@@ -186,9 +188,9 @@ export default function EditNurseOrderModal({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(ORDER_TYPE_LABELS).map(([key, label]) => (
+              {Object.keys(ORDER_TYPE_LABELS).map((key) => (
                 <SelectItem key={key} value={key}>
-                  {label}
+                  {(dict.pages.doctor.appointment.tabsContent.nurseOrders.orderTypes as any)[key]}
                 </SelectItem>
               ))}
             </SelectContent>

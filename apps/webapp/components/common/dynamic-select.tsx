@@ -244,6 +244,7 @@ export const DynamicSelect: React.FC<DynamicSelectProps> = ({
         <PopoverContent
           className="p-0 bg-white border border-gray-200 rounded-lg shadow-lg w-[var(--radix-popover-trigger-width)]"
           align="start"
+          onWheel={(e) => e.stopPropagation()}
         >
           <Command>
             {searchable && (
@@ -252,7 +253,7 @@ export const DynamicSelect: React.FC<DynamicSelectProps> = ({
                 {/* <Search className="absolute right-2 top-2.5 h-4 w-4 text-gray-400" /> */}
               </div>
             )}
-            <CommandList className="max-h-56 overflow-y-auto">
+            <CommandList className="max-h-56 overflow-y-auto overflow-x-hidden overscroll-contain">
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
                 {options.map((opt) => (

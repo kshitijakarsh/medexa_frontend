@@ -22,6 +22,7 @@ import {
 } from "@workspace/ui/components/select";
 import { PrimaryButton } from "@/components/common/buttons/primary-button";
 import { CancelButton } from "@/components/common/buttons/cancel-button";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const schema = z.object({
   note_type: z.string().min(1, "Note type is required"),
@@ -46,7 +47,11 @@ export default function SpecialNotesForm({
   initialValues,
   submitLabel,
 }: SpecialNotesFormProps) {
-  const form = useForm({
+  const dict = useDictionary();
+  const { form } = dict.pages.doctor.appointment.tabsContent.nurseOrders;
+  const { specialNotes, common, options } = form;
+
+  const formMethods = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       note_type: initialValues?.note_type || "",
@@ -71,19 +76,19 @@ export default function SpecialNotesForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+    <Form {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submit)} className="space-y-4">
         {/* Note Type */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="note_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Note Type</FormLabel>
+              <FormLabel>{specialNotes.noteType}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Enter Note Type" />
+                    <SelectValue placeholder={specialNotes.enterNoteType} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Allergy Alert">Allergy Alert</SelectItem>
@@ -101,20 +106,20 @@ export default function SpecialNotesForm({
 
         {/* Urgency */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="urgency"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Urgency</FormLabel>
+              <FormLabel>{common.urgency}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Urgency" />
+                    <SelectValue placeholder={common.selectUrgency} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                    <SelectItem value="routine">Routine</SelectItem>
-                    <SelectItem value="stat">STAT</SelectItem>
+                    <SelectItem value="urgent">{options.urgent}</SelectItem>
+                    <SelectItem value="routine">{options.routine}</SelectItem>
+                    <SelectItem value="stat">{options.stat}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -126,11 +131,11 @@ export default function SpecialNotesForm({
         {/* Start Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{common.startDate}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -140,11 +145,11 @@ export default function SpecialNotesForm({
           />
 
           <FormField
-            control={form.control}
+            control={formMethods.control}
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>{common.startTime}</FormLabel>
                 <FormControl>
                   <Input type="time" {...field} />
                 </FormControl>
@@ -156,14 +161,14 @@ export default function SpecialNotesForm({
 
         {/* Clinical Notes */}
         <FormField
-          control={form.control}
+          control={formMethods.control}
           name="clinical_notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Clinical Notes (Optional)</FormLabel>
+              <FormLabel>{common.clinicalNotes}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Enter Clinical Notes"
+                  placeholder={common.enterClinicalNotes}
                   rows={3}
                   {...field}
                 />
@@ -175,11 +180,19 @@ export default function SpecialNotesForm({
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
-          <CancelButton onClick={onCancel} />
+          <CancelButton onClick={onCancel} label={common.cancel} />
           <PrimaryButton
             type="submit"
             disabled={isSubmitting}
-            label={isSubmitting ? (submitLabel === "Update" ? "Updating..." : "Adding...") : (submitLabel || "Add Order")} 
+            label={
+              isSubmitting
+                ? submitLabel === "Update"
+                  ? common.updating
+                  : common.adding
+                : submitLabel === "Update"
+                  ? common.update
+                  : common.add
+            }
           />
         </div>
       </form>

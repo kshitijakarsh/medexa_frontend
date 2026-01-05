@@ -43,23 +43,26 @@ import {
   FRONTOFFICE_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 export function AppSidebar({ }) {
   const pathname = usePathname()
   const { withLocale } = useLocaleRoute()
+  const dict = useDictionary()
 
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
     hr: pathname.includes(HR),
-    frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
+    // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
   }
 
   const items = [
     ...(!modulesAvailable.hr && !modulesAvailable.doctor && !modulesAvailable.frontoffice
       ? [
         {
-          title: "Organization Setup",
+          title: dict.nav.organizationSetup,
           url: [
             withLocale(ROUTES.ORGANIZATION),
             withLocale(ROUTES.ADMINISTRATION_CHARGES),
@@ -93,25 +96,25 @@ export function AppSidebar({ }) {
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
           icon: LayoutDashboard,
         },
-        {
-          title: "Appointment",
-          icon: Calendar,
-          url: [], // Group header
-          items: [
-            {
-              title: "Appointments",
-              url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
-            },
-            {
-              title: "Completed",
-              url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
-            },
-            {
-              title: "Appointment Schedule",
-              url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
-            }
-          ]
-        },
+        // {
+        //   title: "Appointment",
+        //   icon: Calendar,
+        //   url: [], // Group header
+        //   items: [
+        //     {
+        //       title: "Appointments",
+        //       url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
+        //     },
+        //     {
+        //       title: "Completed",
+        //       url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
+        //     },
+        //     {
+        //       title: "Appointment Schedule",
+        //       url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
+        //     }
+        //   ]
+        // },
       ]
       : []),
     ...(modulesAvailable.frontoffice

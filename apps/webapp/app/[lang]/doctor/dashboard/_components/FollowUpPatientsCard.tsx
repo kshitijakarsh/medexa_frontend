@@ -111,8 +111,10 @@ import { ViewAllLink } from "./ui/ViewAllLink";
 import { buildUrl, DoctorTabs, ROUTES } from "@/lib/routes";
 
 import { useDoctorVisitsQuery } from "./api";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function FollowUpPatientsCard() {
+  const dict = useDictionary();
   const { data, isLoading } = useDoctorVisitsQuery({
     status: "followup",
     limit: 5,
@@ -131,12 +133,13 @@ export default function FollowUpPatientsCard() {
             <Accessibility className="w-5 h-5" />
           </span>
 
-          <div className="text-base font-semibold">Follow Up Patients</div>
+          <div className="text-base font-semibold">{dict.dashboard.followUpPatients}</div>
         </div>
 
         <ViewAllLink
           href={buildUrl(ROUTES.DOCTOR_VIEW_ALL, { tab: DoctorTabs[3]?.key })}
           disabled={!hasItems}
+          label={dict.dashboard.viewAll}
         />
       </div>
 
@@ -145,8 +148,8 @@ export default function FollowUpPatientsCard() {
         {isLoading
           ? [...Array(3)].map((_, i) => <FollowUpPatientSkeleton key={i} />)
           : hasItems
-          ? items.map((p) => <FollowUpPatientItem key={p.id} p={p} />)
-          : <div className="text-gray-500 text-sm py-4">No Follow Up patients found.</div>
+            ? items.map((p) => <FollowUpPatientItem key={p.id} p={p} />)
+            : <div className="text-gray-500 text-sm py-4">{dict.dashboard.noFollowUpFound}</div>
         }
       </div>
     </DashboardSectionCard>

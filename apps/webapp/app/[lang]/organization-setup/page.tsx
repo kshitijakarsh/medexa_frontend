@@ -421,8 +421,12 @@ import { SearchIcon } from "lucide-react";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { masterConfig } from "./_components/fecth-master";
 import { useUserStore } from "@/store/useUserStore";
+import { Dictionary } from "@/i18n/get-dictionary";
+import { useDictionary } from "@/i18n/use-dictionary";
+
 
 interface MasterData {
+  id: string;
   title: string;
   subtitle: string;
   active: number;
@@ -440,6 +444,7 @@ export default function MastersPage() {
   const [data, setData] = useState<MasterData[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const dict = useDictionary();
 
   /* ------------------------------------------------------------
       Extract allowed submodules from user permissions
@@ -472,37 +477,37 @@ export default function MastersPage() {
   //   );
   // }, [user]);
 
-// temprerory fix
+  // temprerory fix
   const allowedSubmodules = useMemo(() => {
-  const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
-    typeof p === "string" ? p : p.name
-  );
+    const permissionStrings = (user?.role?.permissions || []).map((p: any) =>
+      typeof p === "string" ? p : p.name
+    );
 
-  // normal extraction (your existing logic)
-  const subs = Array.from(
-    new Set(
-      permissionStrings
-        .filter((p) => p.startsWith("administration:"))
-        .map((p) => p.split(":")[1])
-    )
-  );
+    // normal extraction (your existing logic)
+    const subs = Array.from(
+      new Set(
+        permissionStrings
+          .filter((p) => p.startsWith("administration:"))
+          .map((p) => p.split(":")[1])
+      )
+    );
 
-  // SPECIAL RULE FOR "user" SUBMODULE
-  const userPermissions = permissionStrings.filter((p) =>
-    p.startsWith("administration:user:")
-  );
+    // SPECIAL RULE FOR "user" SUBMODULE
+    const userPermissions = permissionStrings.filter((p) =>
+      p.startsWith("administration:user:")
+    );
 
-  const hasOnlyViewOne =
-    userPermissions.length === 1 &&
-    userPermissions[0].endsWith("viewOne");
+    const hasOnlyViewOne =
+      userPermissions.length === 1 &&
+      userPermissions[0].endsWith("viewOne");
 
-  // If user ONLY has viewOne → remove "user" from allowed list
-  if (hasOnlyViewOne) {
-    return subs.filter((s) => s !== "user");
-  }
+    // If user ONLY has viewOne → remove "user" from allowed list
+    if (hasOnlyViewOne) {
+      return subs.filter((s) => s !== "user");
+    }
 
-  return subs;
-}, [user]);
+    return subs;
+  }, [user]);
 
 
 
@@ -513,12 +518,13 @@ export default function MastersPage() {
     const load = async () => {
       setLoading(true);
 
-      const masters = await fetchMasters();
+      const masters = await fetchMasters({ dict });
 
       // attach config and submoduleKey
       const mastersWithKeys = masters
         .map((m) => {
-          const config = masterConfig[m.title];
+          const config = masterConfig[m.id];
+          // console.log("masterConfig:", m.id, config);
           if (!config) return null;
 
           return {
@@ -531,12 +537,12 @@ export default function MastersPage() {
         .filter(Boolean) as MasterData[];
 
       // debug: show masters mapped to submodule keys
-      if (typeof console !== "undefined") {
-        console.log(
-          "mastersWithKeys:",
-          mastersWithKeys.map((m) => ({ title: m.title, submoduleKeys: m.submoduleKeys }))
-        );
-      }
+      // if (typeof console !== "undefined") {
+      //   console.log(
+      //     "mastersWithKeys:",
+      //     mastersWithKeys.map((m) => ({ title: m.title, submoduleKeys: m.submoduleKeys }))
+      //   );
+      // }
       // filter by allowed submodules
       // const visibleMasters = mastersWithKeys.filter((m) =>
       //   allowedSubmodules.includes(m.submoduleKey!)
@@ -545,9 +551,9 @@ export default function MastersPage() {
         m.submoduleKeys?.some((key) => allowedSubmodules.includes(key))
       );
 
-      if (typeof console !== "undefined") {
-        console.log("visibleMasters:", visibleMasters.map((m) => m.title));
-      }
+      // if (typeof console !== "undefined") {
+      //   console.log("visibleMasters:", visibleMasters.map((m) => m.title));
+      // }
       setData(visibleMasters);
       setLoading(false);
     };
@@ -581,7 +587,7 @@ export default function MastersPage() {
           <div className="absolute top-0 right-6 z-20">
             <div className="relative w-64">
               <Input
-                placeholder="Search..."
+                placeholder={dict.common.search}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pr-9 bg-white shadow-lg border border-gray-200 focus:ring-1 focus:ring-blue-300"
@@ -607,7 +613,7 @@ export default function MastersPage() {
           </div>
         ) : (
           Object.entries(grouped).map(([category, items]) => (
-            <DashboardSection key={category} title={category} items={items} />
+            <DashboardSection key={category} title={category} id={category} items={items} />
           ))
         )}
       </div>

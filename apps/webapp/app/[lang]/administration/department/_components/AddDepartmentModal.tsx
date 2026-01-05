@@ -529,6 +529,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Plus, PlusCircle, Trash2, X } from "lucide-react";
 import { AppDialog } from "@/components/common/app-dialog";
 import { StatusSwitch } from "@/components/common/switch-green";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // const departmentSchema = z.object({
 //   name: z.string().min(1, "Department name is required").max(50),
@@ -577,6 +578,9 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
     name: "departments",
   });
 
+  const dict = useDictionary();
+  const trans = dict.pages.department;
+
   // useEffect(() => {
   //   if (!open) form.reset({ departments: [{ name: "", active: false }] });
   // }, [open, form]);
@@ -604,7 +608,7 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
 
 
   return (
-    <AppDialog open={open} onClose={onClose} title="Add Department" maxWidth="md:max-w-xl">
+    <AppDialog open={open} onClose={onClose} title={trans.addDepartment.title} maxWidth="md:max-w-xl">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
           {/* Body */}
@@ -628,7 +632,7 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
                           <FormLabel>Department {fields.length > 1 ? index + 1 : ""}</FormLabel>
 
                           <FormControl>
-                            <Input placeholder="Enter Department Name" {...field} />
+                            <Input placeholder={trans.addDepartment.dialogSubtitle} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -644,7 +648,7 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
                             <FormLabel className="pb-2">Status</FormLabel>
                             <div className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"} h-9 px-2`}>
                               <span className={`text-sm ${field.value ? "text-red-500" : "text-red-500"}`}>
-                                Inactive
+                                {trans.addDepartment.Status.inactive}
                               </span>
                               <FormControl>
                                 {/* <Switch
@@ -656,7 +660,7 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
 
                               </FormControl>
                               <span className={`text-sm ${field.value ? "text-green-600" : "text-gray-400"}`}>
-                                Active
+                               {trans.addDepartment.Status.active}
                               </span>
                             </div>
                           </div>
@@ -697,10 +701,10 @@ export default function AddDepartmentModal({ open, onClose, onSave, editData }: 
           {/* Footer */}
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
+              {dict.common.cancel}
             </Button>
             <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white">
-              Save
+              {dict.common.save}
             </Button>
           </div>
         </form>

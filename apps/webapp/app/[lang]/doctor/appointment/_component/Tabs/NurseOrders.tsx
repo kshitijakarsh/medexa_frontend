@@ -17,8 +17,11 @@ import { ClipboardList, MoreVertical, Trash2, Edit, Eye } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@workspace/ui/components/dropdown-menu";
 import { ORDER_TYPE_LABELS } from "./nurse-orders/nurse-order";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export default function NurseOrders({ patientId }: { patientId: string }) {
   const { id: visitId } = useParams() as { id: string };
+  const dict = useDictionary();
 
   const { data, isLoading, refetch } = useNurseOrdersByVisitId(visitId);
   const deleteNurseOrder = useDeleteNurseOrder(visitId);
@@ -117,9 +120,9 @@ export default function NurseOrders({ patientId }: { patientId: string }) {
       <SectionWrapper
         header={
           <div className="flex justify-between items-center">
-            <h2 className="text-lg font-semibold">Nurse Orders</h2>
+            <h2 className="text-lg font-semibold">{dict.pages.doctor.appointment.tabsContent.nurseOrders.title}</h2>
             <NewButton
-              name="Add Nurse Order"
+              name={dict.pages.doctor.appointment.tabsContent.nurseOrders.add}
               handleClick={() => setShowAddModal(true)}
             />
           </div>
@@ -137,15 +140,15 @@ export default function NurseOrders({ patientId }: { patientId: string }) {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b">
-                    <th className="text-left p-3 font-semibold text-sm">Sl No</th>
-                    <th className="text-left p-3 font-semibold text-sm">Order Type</th>
-                    <th className="text-left p-3 font-semibold text-sm">Details</th>
-                    <th className="text-left p-3 font-semibold text-sm">Urgency</th>
-                    <th className="text-left p-3 font-semibold text-sm">Frequency/Time</th>
-                    <th className="text-left p-3 font-semibold text-sm">Date & Time</th>
-                    <th className="text-left p-3 font-semibold text-sm">Doctor</th>
-                    <th className="text-left p-3 font-semibold text-sm">Status</th>
-                    <th className="text-left p-3 font-semibold text-sm">Actions</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.slNo}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.orderType}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.details}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.urgency}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.frequencyTime}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.dateTime}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.doctor}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.status}</th>
+                    <th className="text-left p-3 font-semibold text-sm">{dict.pages.doctor.appointment.tabsContent.nurseOrders.table.actions}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -153,11 +156,11 @@ export default function NurseOrders({ patientId }: { patientId: string }) {
                     <tr key={order.id} className="border-b hover:bg-gray-50">
                       <td className="p-3 text-sm">{index + 1}</td>
                       <td className="p-3 text-sm">
-                        {ORDER_TYPE_LABELS[order.order_type as keyof typeof ORDER_TYPE_LABELS] || order.order_type}
+                        {(dict.pages.doctor.appointment.tabsContent.nurseOrders.orderTypes as any)[order.order_type] || order.order_type}
                       </td>
                       <td className="p-3 text-sm">{getOrderDetails(order)}</td>
                       <td className={`p-3 text-sm ${getUrgencyColor(order.urgency)}`}>
-                        {order.urgency?.toUpperCase()}
+                        {(dict.pages.doctor.appointment.tabsContent.nurseOrders.form.options as any)[order.urgency?.toLowerCase()] || order.urgency}
                       </td>
                       <td className="p-3 text-sm">{getFrequencyOrTime(order)}</td>
                       <td className="p-3 text-sm">{formatDateTime(order.created_at)}</td>
@@ -165,42 +168,42 @@ export default function NurseOrders({ patientId }: { patientId: string }) {
                         {order.createdBy && (order.createdBy as any).name
                           ? (order.createdBy as any).name
                           : order.created_by && typeof order.created_by === "object" && (order.created_by as any).name
-                          ? (order.created_by as any).name
-                          : order.createdBy && order.createdBy.first_name
-                          ? `Dr. ${order.createdBy.first_name} ${order.createdBy.last_name}`
-                          : "N/A"}
+                            ? (order.created_by as any).name
+                            : order.createdBy && order.createdBy.first_name
+                              ? `Dr. ${order.createdBy.first_name} ${order.createdBy.last_name}`
+                              : "N/A"}
                       </td>
                       <td className="p-3 text-sm">
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status || "pending")}`}>
-                          {order.status || "Pending"}
+                          {(dict.pages.doctor.appointment.tabsContent.nurseOrders.form.options as any)[order.status?.toLowerCase() || "pending"] || order.status}
                         </span>
                       </td>
                       <td className="p-3 text-sm">
                         <DropdownMenu>
                           <DropdownMenuTrigger className="text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                            Action <MoreVertical size={16} />
+                            {dict.pages.doctor.appointment.tabsContent.nurseOrders.table.action} <MoreVertical size={16} />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem 
-                              onClick={() => handleView(order)} 
+                            <DropdownMenuItem
+                              onClick={() => handleView(order)}
                               className="cursor-pointer"
                             >
                               <Eye size={16} className="mr-2" />
-                              View
+                              {dict.pages.doctor.appointment.tabsContent.nurseOrders.table.view}
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleEdit(order)} 
+                            <DropdownMenuItem
+                              onClick={() => handleEdit(order)}
                               className="cursor-pointer"
                             >
                               <Edit size={16} className="mr-2" />
-                              Edit
+                              {dict.pages.doctor.appointment.tabsContent.nurseOrders.table.edit}
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => deleteNurseOrder.mutate(order.id)} 
+                            <DropdownMenuItem
+                              onClick={() => deleteNurseOrder.mutate(order.id)}
                               className="cursor-pointer text-red-600"
                             >
                               <Trash2 size={16} className="mr-2" />
-                              Delete
+                              {dict.pages.doctor.appointment.tabsContent.nurseOrders.table.delete}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -244,15 +247,16 @@ export default function NurseOrders({ patientId }: { patientId: string }) {
 }
 
 function EmptyNurseOrders({ onAdd }: { onAdd: () => void }) {
+  const dict = useDictionary();
   return (
     <div className="flex flex-col justify-center items-center h-72 text-gray-500">
       <ClipboardList size={50} />
-      <p>No nurse orders recorded.</p>
+      <p>{dict.pages.doctor.appointment.tabsContent.nurseOrders.empty}</p>
       <button
         onClick={onAdd}
         className="mt-3 bg-green-600 text-white px-4 py-2 rounded-full"
       >
-        Add Nurse Order
+        {dict.pages.doctor.appointment.tabsContent.nurseOrders.add}
       </button>
     </div>
   );

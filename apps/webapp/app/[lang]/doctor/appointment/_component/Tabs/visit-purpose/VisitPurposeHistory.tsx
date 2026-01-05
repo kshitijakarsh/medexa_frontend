@@ -105,10 +105,13 @@ import { useVisitPurposeByVisitIdHistory } from "../_hooks/useVisitPurpose";
 import { format } from "@workspace/ui/hooks/use-date-fns";
 import { useLocaleRoute } from "@/app/hooks/use-locale-route";
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function VisitPurposeHistory({ patientId }: { patientId: string }) {
     const router = useRouter();
     const { id: visitId } = useParams() as { id: string };
-    const { withLocale } = useLocaleRoute()
+    const { withLocale } = useLocaleRoute();
+    const dict = useDictionary();
 
     // 🔥 Call your API hook
     const { data, isLoading } = useVisitPurposeByVisitIdHistory(patientId);
@@ -118,13 +121,13 @@ export function VisitPurposeHistory({ patientId }: { patientId: string }) {
     return (
         <div className="mt-4">
             <h3 className="text-sm font-semibold mb-2">
-                Previous History of Visit Purpose
+                {dict.pages.doctor.appointment.tabsContent.visitPurpose.history.title}
             </h3>
 
             {isLoading ? (
                 <HistorySkeleton />
             ) : history.length === 0 ? (
-                <p className="text-gray-500 text-sm">No previous visit purpose found.</p>
+                <p className="text-gray-500 text-sm">{dict.pages.doctor.appointment.tabsContent.visitPurpose.history.empty}</p>
             ) : (
                 <div className="flex flex-col gap-4">
                     {history.map((item: any) => {
@@ -144,7 +147,7 @@ export function VisitPurposeHistory({ patientId }: { patientId: string }) {
                                         ? format(createdAt, "MMMM dd, yyyy")
                                         : "Unknown Date"
                                 }
-                                subtitle={`Recorded by ${recorderName || "Unknown"} at ${createdAt
+                                subtitle={`${dict.pages.doctor.appointment.tabsContent.visitPurpose.history.recordedBy} ${recorderName || "Unknown"} at ${createdAt
                                     // ? createdAt.toLocaleTimeString("en-US", {
                                     //     hour: "numeric",
                                     //     minute: "2-digit",

@@ -119,9 +119,12 @@ import {
     soapTemplateSchema,
     SoapTemplateFormSchema,
 } from "../_components/soap-template-schema";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 export default function SoapCreateTemplate() {
     const router = useRouter();
+    const dict = useDictionary();
+    const { soapTemplates } = dict.pages.doctor.profile;
 
     /* ---------------- Auth ---------------- */
     const [authToken, setAuthToken] = useState("");
@@ -157,18 +160,18 @@ export default function SoapCreateTemplate() {
         mutationFn: (values: SoapTemplateFormSchema) =>
             api!.createSoapTemplate(values),
         onSuccess: () => {
-            toast.success("SOAP template created successfully");
+            toast.success(soapTemplates.success);
             router.back();
         },
         onError: (err: any) =>
-            toast.error(err.message || "Failed to create SOAP template"),
+            toast.error(err.message || soapTemplates.error),
     });
 
-    /* ---------------- UI (UNCHANGED) ---------------- */
+    /* ---------------- UI ---------------- */
     return (
         <div className="p-4">
             <div className="p-6 bg-white border rounded-xl shadow-sm space-y-6">
-                <h2 className="text-lg font-semibold">SOAP Templates</h2>
+                <h2 className="text-lg font-semibold">{soapTemplates.title}</h2>
 
                 <Form {...form}>
                     <form
@@ -184,9 +187,9 @@ export default function SoapCreateTemplate() {
                                 name="template_name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Template Name</FormLabel>
+                                        <FormLabel>{soapTemplates.templateName}</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Enter Template Name" {...field} />
+                                            <Input placeholder={soapTemplates.enterTemplateName} {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -198,10 +201,10 @@ export default function SoapCreateTemplate() {
                                 name="specialty"
                                 render={({ field, fieldState }) => (
                                     <FormItem>
-                                        <FormLabel>Specialty</FormLabel>
+                                        <FormLabel>{soapTemplates.specialty}</FormLabel>
                                         <FormControl>
                                             <AppSelect
-                                                placeholder="Select Specialty"
+                                                placeholder={soapTemplates.selectSpecialty}
                                                 value={field.value}
                                                 onChange={field.onChange}
                                                 options={SOAP_SPECIALTIES}
@@ -216,14 +219,14 @@ export default function SoapCreateTemplate() {
 
                         {/* SOAP Data */}
                         <div className="bg-blue-50/30 border rounded-xl p-5 space-y-4">
-                            <h3 className="font-semibold">SOAP Templates Data</h3>
+                            <h3 className="font-semibold">{soapTemplates.dataTitle}</h3>
 
                             <div className="grid grid-cols-2 gap-6">
                                 {[
-                                    { key: "subjective", label: "Subjective", placeholder: "Enter Subjective" },
-                                    { key: "objective", label: "Objective", placeholder: "Enter Clinical Notes" },
-                                    { key: "assessment", label: "Assessment", placeholder: "Enter Objective Template" },
-                                    { key: "plan", label: "Plan", placeholder: "Enter Plan Template" },
+                                    { key: "subjective", label: soapTemplates.subjective, placeholder: soapTemplates.enterSubjective },
+                                    { key: "objective", label: soapTemplates.objective, placeholder: soapTemplates.enterObjective },
+                                    { key: "assessment", label: soapTemplates.assessment, placeholder: soapTemplates.enterAssessment },
+                                    { key: "plan", label: soapTemplates.plan, placeholder: soapTemplates.enterPlan },
                                 ].map(({ key, label, placeholder }) => (
                                     <FormField
                                         key={key}
@@ -256,7 +259,7 @@ export default function SoapCreateTemplate() {
                                 onClick={() => router.back()}
                                 disabled={createMutation.isPending}
                             >
-                                Cancel
+                                {soapTemplates.cancel}
                             </Button>
 
                             <Button
@@ -264,7 +267,7 @@ export default function SoapCreateTemplate() {
                                 className="bg-green-600 hover:bg-green-700 text-white"
                                 disabled={createMutation.isPending}
                             >
-                                {createMutation.isPending ? "Saving..." : "Save Templates"}
+                                {createMutation.isPending ? soapTemplates.saving : soapTemplates.save}
                             </Button>
                         </div>
                     </form>

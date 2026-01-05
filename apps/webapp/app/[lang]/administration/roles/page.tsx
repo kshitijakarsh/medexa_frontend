@@ -402,12 +402,14 @@ import { PageHeader } from "@/components/common/page-header"
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable"
 import { PaginationControls } from "@/components/common/data-table/PaginationControls"
 import { AddRoleDialog } from "./_components/AddDialog"
+import { PermissionGuard } from "@/components/auth/PermissionGuard"
 
 import { createRoleApiClient } from "@/lib/api/administration/roles"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useUserStore } from "@/store/useUserStore"
 import { PERMISSIONS } from "@/app/utils/permissions"
 import { Can } from "@/components/common/app-can"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 const limit = 10
 
@@ -416,6 +418,9 @@ function RolesPageContent() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const searchParams = useSearchParams()
+  const dict = useDictionary()
+  const rolesDict = dict?.pages?.roles;
+
 
   /* ----------------------------------
           URL State
@@ -523,7 +528,7 @@ function RolesPageContent() {
   const columns = [
     {
       key: "sno",
-      label: "S.No",
+      label: rolesDict.columns.table.sno,
       // render: (_: any, index: number) => index + 1 + (page - 1) * limit,
       render: (_: any, index?: number) => {
         const safeIndex = typeof index === "number" ? index : 0
@@ -539,12 +544,12 @@ function RolesPageContent() {
     },
     {
       key: "name",
-      label: "Role",
+      label: rolesDict.columns.role,
       render: (r: any) => <span className="font-medium">{r.name}</span>,
     },
     {
       key: "status",
-      label: "Status",
+      label: rolesDict.columns.status,
       render: (r: any) => (
         <span
           className={r.status === "active" ? "text-green-600" : "text-red-500"}
@@ -556,13 +561,13 @@ function RolesPageContent() {
     },
     {
       key: "created_at",
-      label: "Created On",
+      label: rolesDict.columns.createdOn,
       render: (r: any) => new Date(r.created_at).toLocaleString(),
       className: "w-[150px]",
     },
     {
       key: "action",
-      label: "Action",
+      label: rolesDict.columns.action,
       render: (r: any) => (
         <RoleRowActions
           onEdit={() => {
@@ -588,7 +593,7 @@ function RolesPageContent() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title="User Roles Configuration" />
+        <PageHeader title={rolesDict.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Header Controls */}
@@ -597,13 +602,14 @@ function RolesPageContent() {
               filters={filters}
               onClick={() => setIsFilterDialogOpen(true)}
               onClear={() => setFilters({})}
+              inverted={true}
             />
 
             <SearchInput
               value={search}
               onChange={setSearch}
               onSearch={setSearchQuery}
-              placeholder="Search roles..."
+              placeholder={rolesDict.filters.search}
             />
 
             <QuickActions />
@@ -668,7 +674,9 @@ function RolesPageContent() {
 export default function RolesPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <RolesPageContent />
+      <PermissionGuard permission={PERMISSIONS.ROLE.VIEW}>
+        <RolesPageContent />
+      </PermissionGuard>
     </Suspense>
   )
 }
