@@ -624,6 +624,11 @@ export function SectionDropdown() {
   ).filter((k): k is ModuleKey => k in moduleLandingPath && k !== "common")
 
 
+  // type ModuleKey = keyof typeof moduleLandingPath
+
+  // const moduleKeys = Array.from(
+  //   new Set([...permissionStrings.map((p: any) => p.split(":")[0]), "surgery"])
+  // ).filter((k): k is ModuleKey => k in moduleLandingPath)
 
   // Build dropdown sections dynamically
   // const sections = moduleKeys.map((moduleKey) => ({
