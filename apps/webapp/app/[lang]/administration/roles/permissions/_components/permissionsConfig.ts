@@ -338,7 +338,7 @@ export const mainModules: MainModule[] = [
       },
       {
         key: "patientCategory",
-        label: "Patients",
+        label: "Patient Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       // {
@@ -706,6 +706,11 @@ export const mainModules: MainModule[] = [
       {
         key: "department",
         label: "Department",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "patientCategory",
+        label: "Patients Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
     ],
