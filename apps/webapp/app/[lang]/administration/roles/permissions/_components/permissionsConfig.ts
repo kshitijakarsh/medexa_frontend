@@ -277,6 +277,11 @@ export const mainModules: MainModule[] = [
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
+        key: "bed",
+        label: "Bed",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
         key: "bedType",
         label: "Bed Type",
         actions: ["view", "create", "edit", "delete", "viewOne"],
@@ -513,7 +518,7 @@ export const mainModules: MainModule[] = [
       {
         key: "visit",
         label: "Visits",
-        actions: ["view","viewOne"],
+        actions: ["view", "viewOne", "edit"],
       },
       {
         key: "vitals",
@@ -543,7 +548,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view","viewOne"],
+        actions: ["view", "viewOne"],
       },
       {
         key: "medications",
@@ -587,7 +592,7 @@ export const mainModules: MainModule[] = [
       {
         key: "visit",
         label: "Visits",
-        actions: ["view","viewOne","edit"],
+        actions: ["view", "viewOne", "edit"],
       },
       {
         key: "users",
@@ -666,7 +671,7 @@ export const mainModules: MainModule[] = [
     key: "frontoffice",
     id: 10,
     label: "Front Office",
-    icon: UserRound, 
+    icon: UserRound,
     subModules: [
       {
         key: "patient",
@@ -712,6 +717,16 @@ export const mainModules: MainModule[] = [
         key: "patientCategory",
         label: "Patients Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "nurse_orders",
+        label: "Nurse Orders",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "bed",
+        label: "Bed",
+        actions: ["view", "viewOne"],
       },
     ],
   },

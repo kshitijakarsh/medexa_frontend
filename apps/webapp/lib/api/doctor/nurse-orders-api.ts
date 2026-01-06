@@ -88,7 +88,7 @@ class NurseOrdersApiClient {
     search?: string;
   }): Promise<AxiosResponse<any>> {
     const config = await this.getJsonRequestConfig();
-    return axios.get(`${this.baseUrl}api/v1/nurse-orders`, {
+    return axios.get(`${this.baseUrl}/api/v1/nurse-orders`, {
       ...config,
       params,
     });
