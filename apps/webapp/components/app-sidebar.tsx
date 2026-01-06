@@ -46,6 +46,7 @@ import {
   ROUTES,
   FRONTOFFICE_BASE,
   SURGERY_BASE,
+  NURSE_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 import { useDictionary } from "@/i18n/use-dictionary"
@@ -58,19 +59,21 @@ export function AppSidebar({ }) {
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
+    nurse: pathname.includes(NURSE_BASE),
     hr: pathname.includes(HR),
     // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
-    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)) && !pathname.includes(NURSE_BASE),
     surgery: pathname.includes(SURGERY_BASE),
   }
 
   const items = [
-    ...(!modulesAvailable.hr && !modulesAvailable.doctor && !modulesAvailable.frontoffice
+    ...(!modulesAvailable.frontoffice && !modulesAvailable.doctor && !modulesAvailable.nurse && !modulesAvailable.hr && !modulesAvailable.surgery
       ? [
         {
           title: dict.nav.organizationSetup,
           url: [
             withLocale(ROUTES.ORGANIZATION),
+            withLocale(ROUTES.ADMINISTRATION_DEPARTMENT),
             withLocale(ROUTES.ADMINISTRATION_CHARGES),
             withLocale(ROUTES.ADMINISTRATION_ROLES),
             withLocale(ROUTES.ADMINISTRATION_OPERATION_THEATRES),
@@ -79,6 +82,8 @@ export function AppSidebar({ }) {
             withLocale(ROUTES.ADMINISTRATION_ROLES_PERMISSIONS),
             withLocale(ROUTES.ADMINISTRATION_INSURANCE),
             withLocale(ROUTES.ADMINISTRATION_USER),
+            withLocale(ROUTES.ADMINISTRATION_CHARGES),
+            withLocale(ROUTES.ADMINISTRATION_CHARGES_ADD),
           ],
           icon: Settings,
         },
@@ -92,6 +97,7 @@ export function AppSidebar({ }) {
           url: [withLocale(ROUTES.HR)],
           icon: IdCard,
         },
+
       ]
       : []),
 
@@ -101,26 +107,48 @@ export function AppSidebar({ }) {
           title: "Dashboard",
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
-        // {
-        //   title: "Appointment",
-        //   icon: Calendar,
-        //   url: [], // Group header
-        //   items: [
-        //     {
-        //       title: "Appointments",
-        //       url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
-        //     },
-        //     {
-        //       title: "Completed",
-        //       url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
-        //     },
-        //     {
-        //       title: "Appointment Schedule",
-        //       url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
-        //     }
-        //   ]
-        // },
+        {
+          title: "Appointment",
+          icon: Calendar,
+          url: [], // Group header
+          items: [
+            {
+              title: "View All",
+              url: [withLocale(ROUTES.DOCTOR_VIEW_ALL)],
+            },
+            {
+              title: "VIP",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=vip`)],
+            },
+            {
+              title: "Follow Up",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=follow`)],
+            },
+            {
+              title: "Emergency",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=emergency`)],
+            },
+
+
+          ]
+        },
+      ]
+      : []),
+    ...(modulesAvailable.nurse
+      ? [
+        {
+          title: "Dashboard",
+          url: [withLocale(ROUTES.NURSE_DASHBOARD)],
+          icon: LayoutDashboard,
+          exactMatch: true,
+        },
+        {
+          title: "Patient Visits",
+          url: [withLocale(ROUTES.NURSE_RECENT_PATIENTS)],
+          icon: User2,
+        },
       ]
       : []),
     ...(modulesAvailable.frontoffice
@@ -129,6 +157,7 @@ export function AppSidebar({ }) {
           title: "Dashboard",
           url: [ROUTES.FRONTOFFICE_DASHBOARD],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
         {
           title: "Patient Record",
@@ -204,6 +233,7 @@ export function AppSidebar({ }) {
           title: "Dashboard",
           url: [withLocale(ROUTES.SURGERY_DASHBOARD)],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
         {
           title: "Surgery",
@@ -287,38 +317,32 @@ export function AppSidebar({ }) {
   //     : pathWithoutLocale.startsWith(url)
   // }
   const searchParams = useSearchParams()
-  const isActive = (urls: string[] | string) => {
+  const isActive = (urls: string[] | string, exact = false) => {
     // Remove locale prefix from pathname for comparison if present
-    // Pathname might be /en/frontoffice/... (though en is default and usually not in URL),
-    // /ar/frontoffice/... (with locale prefix), or /frontoffice/... (default locale, no prefix)
-    // We need to normalize to /frontoffice/... for comparison
     const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/)/, "")
     const fullPath = pathWithoutLocale + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
 
     const checkUrl = (url: string) => {
+      // Also remove locale prefix from item URL for comparison
+      const urlWithoutLocale = url.replace(/^\/[a-z]{2}(?=\/)/, "")
+
       if (url.includes("?")) {
-        return fullPath === url
+        // Compare without locale
+        return fullPath === urlWithoutLocale
       }
-      // If we are on /appointment?tab=completed, and checking /appointment, 
-      // strictly speaking startsWith works, but we want mutually exclusive highlighting?
-      // User wants "Appointment" (default) NOT to highlight when "Completed" is active?
-      // "no need to highlight the completed also just highlight appointemnt"
-      // If I am on ...?tab=completed, "Appointment" (/appointment) check returns true.
-      // So both highlight.
-      // I need to ensure "Appointment" only highlights if NO specific tab query is causing conflict?
-      // Or simply: if current path has query params, and target url doesn't, maybe we shouldn't match?
-      // But standard "Appointment" might view standard page.
-      // Let's rely on exact match for query params items.
-      // And for the base item "/appointment", explicit check?
+
+      if (exact) {
+        return pathWithoutLocale === urlWithoutLocale
+      }
 
       // Simple fix: If current URL has `tab=completed`, then `/appointment` should NOT be active?
-      if (url.endsWith("/appointment") && searchParams?.has("tab")) {
+      if (urlWithoutLocale.endsWith("/appointment") && searchParams?.has("tab")) {
         return false
       }
 
-      return url === "/"
+      return urlWithoutLocale === "/"
         ? pathWithoutLocale === "" || pathWithoutLocale === "/"
-        : pathWithoutLocale.startsWith(url)
+        : pathWithoutLocale.startsWith(urlWithoutLocale)
     }
 
     if (Array.isArray(urls)) {
@@ -446,9 +470,9 @@ export function AppSidebar({ }) {
   )
 }
 
-function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive: (url: string | string[]) => boolean; sidebarState: string }) {
+function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive: (url: string | string[], exact?: boolean) => boolean; sidebarState: string }) {
   const [isOpen, setIsOpen] = useState(false)
-  const isGroupActive = item.items?.some((sub: any) => isActive(sub.url))
+  const isGroupActive = item.items?.some((sub: any) => isActive(sub.url, sub.exactMatch))
 
   useEffect(() => {
     if (isGroupActive) {
@@ -508,12 +532,12 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
                 <div className="absolute left-0 top-1/2 w-4 h-[1px] bg-blue-900/40 -translate-y-1/2 -translate-x-[1px]" />
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive(subItem.url)}
+                  isActive={isActive(subItem.url, subItem.exactMatch)}
                   className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none flex items-center justify-between"
                 >
                   <LocaleLink href={subItem.url[0] || ""} className="flex items-center justify-between w-full">
                     <span>{subItem.title}</span>
-                    {isActive(subItem.url) && <ChevronRight className="w-4 h-4 text-[#34D399] -rotate-45" />}
+                    {isActive(subItem.url, subItem.exactMatch) && <ChevronRight className="w-4 h-4 text-[#34D399] -rotate-45" />}
                   </LocaleLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -530,8 +554,8 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
     >
       <SidebarMenuButton
         asChild
-        isActive={isActive(item.url)}
-        className={`text-sm p-3 ${isGreenItem && isActive(item.url)
+        isActive={isActive(item.url, item.exactMatch)}
+        className={`text-sm p-3 ${isGreenItem && isActive(item.url, item.exactMatch)
           ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
           : isGreenItem
             ? "bg-transparent hover:bg-[#34D399]/20 text-white"
