@@ -1,16 +1,46 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
+import FilterButton from "@/components/common/filter-button";
 import { SlidersHorizontal } from "lucide-react";
 import { ConsumptionStock } from "./ConsumptionStock";
 import { EquipmentStock } from "./EquipmentStock";
 
+import { createWardApiClient } from "@/lib/api/surgery/ward";
+
 export function WardStockSection() {
+    const dict = useDictionary();
+    const router = useRouter();
+    const params = useParams();
+    const lang = params.lang as string;
     const [subTab, setSubTab] = useState("Consumption Stock");
     const [search, setSearch] = useState("");
+
+    const wardApi = createWardApiClient({});
+
+    const { data: stockResponse, isLoading, refetch } = useQuery({
+        queryKey: ["ward-stock", subTab, search],
+        queryFn: async () => {
+            const categoryFilter =
+                subTab === "Consumption Stock"
+                    ? "Consumables"
+                    : subTab === "Equipment Stock"
+                        ? "Equipment"
+                        : undefined;
+
+            const response = await wardApi.getWardStock({
+                category: categoryFilter,
+                search: search || undefined,
+            });
+            return response.data;
+        },
+    });
 
     return (
         <>
@@ -21,17 +51,15 @@ export function WardStockSection() {
                         <DynamicTabs
                             defaultTab={subTab}
                             tabs={[
-                                { label: "Consumption Stock", key: "Consumption Stock" },
-                                { label: "Equipment Stock", key: "Equipment Stock" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.wardStockSubItems.consumptionStock, key: "Consumption Stock" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.wardStockSubItems.equipmentStock, key: "Equipment Stock" },
                             ]}
                             onChange={setSubTab}
                         />
                     </div>
 
                     <div className="flex items-center gap-3 ml-auto">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-full text-sm font-medium transition-colors hover:bg-blue-50/50">
-                            Filter <SlidersHorizontal size={16} />
-                        </button>
+                        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                         <SearchInput
                             value={search}
                             onChange={setSearch}
@@ -41,14 +69,24 @@ export function WardStockSection() {
                         />
                         <NewButton
                             name="Add Request Stock"
-                            handleClick={() => console.log("Add Request Stock clicked")}
+                            handleClick={() => router.push(`/${lang}/surgery/ward-store/stock-requests`)}
                         />
                     </div>
                 </div>
             </div>
 
-            {subTab === "Consumption Stock" && <ConsumptionStock />}
-            {subTab === "Equipment Stock" && <EquipmentStock />}
+            {subTab === "Consumption Stock" && (
+                <ConsumptionStock
+                    data={stockResponse?.data}
+                    isLoading={isLoading}
+                />
+            )}
+            {subTab === "Equipment Stock" && (
+                <EquipmentStock
+                    data={stockResponse?.data}
+                    isLoading={isLoading}
+                />
+            )}
         </>
     );
 }

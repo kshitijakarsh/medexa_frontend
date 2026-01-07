@@ -22,6 +22,10 @@ import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
 import ActionMenu from "@/components/common/action-menu";
+import { useDictionary } from "@/i18n/use-dictionary";
+import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
+import { StatusPill } from "@/components/common/pasient-card/status-pill";
+import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 
 interface Column<T> {
     key: keyof T | string;
@@ -30,9 +34,13 @@ interface Column<T> {
     className?: string;
 }
 
+
+
 export default function SurgeryList() {
     const router = useRouter();
     const { lang } = useParams();
+    const dict = useDictionary();
+    const scheduleDict = dict.pages.surgery.otSchedule;
     const [selectedTeam, setSelectedTeam] = useState("");
     const [searchType, setSearchType] = useState({ label: "MRN", value: "mrn" });
     const [searchValue, setSearchValue] = useState("");
@@ -56,6 +64,7 @@ export default function SurgeryList() {
         data: responseData,
         isLoading,
         error,
+        refetch,
     } = useQuery({
         queryKey: ["surgeries", page, searchQuery, selectedStatus, selectedDept, selectedDoctor],
         queryFn: async () => {
@@ -72,8 +81,7 @@ export default function SurgeryList() {
     });
 
     const surgeries = useMemo(() => {
-        if (!responseData?.data) return [];
-        return responseData.data;
+        return responseData?.data || [];
     }, [responseData]);
 
     const totalPages = responseData?.pagination?.totalPages || 0;
@@ -90,28 +98,25 @@ export default function SurgeryList() {
     const searchOptions = [
         { label: "MRN", value: "mrn" },
         { label: "Name", value: "name" },
-        { label: "Surgery", value: "surgery" },
+        { label: "Status", value: "status" },
     ];
 
     const columns: Column<Surgery>[] = [
         {
             key: "patient",
-            label: "Patient",
+            label: dict.pages.surgery.otSchedule.columns.patient,
             render: (row) => (
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-700">
-                        {row.patient?.first_name} {row.patient?.last_name}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                        {/* {row.patient?.mrn} • {row.patient?.age}y • {row.patient?.gender} */}
-                        ID: {row.patient_id}
-                    </span>
-                </div>
+                <AppointmentPatientCell
+                    name={`${row.patient?.first_name || ""} ${row.patient?.last_name || ""}`}
+                    mrn={row.patient?.civil_id || `ID: ${row.patient_id}`}
+                    avatar={undefined}
+                    vip={row.patient?.vip}
+                />
             )
         },
         {
             key: "requestedDoctor",
-            label: "Requested Doctor",
+            label: scheduleDict.columns.requestedDoctor,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
@@ -125,7 +130,7 @@ export default function SurgeryList() {
         },
         {
             key: "procedure",
-            label: "Procedure",
+            label: scheduleDict.columns.procedure,
             render: (row) => (
                 <span className="text-sm text-slate-700 font-medium">
                     {row.surgery_type || "N/A"}
@@ -134,7 +139,7 @@ export default function SurgeryList() {
         },
         {
             key: "surgeon",
-            label: "Surgeon",
+            label: scheduleDict.columns.surgeon,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
@@ -148,16 +153,16 @@ export default function SurgeryList() {
         },
         {
             key: "requestedFor",
-            label: "Requested For",
+            label: scheduleDict.columns.requestedFor,
             render: (row) => (
-                <span className="text-sm text-slate-700">
-                    {row.scheduled_date ? new Date(row.scheduled_date).toLocaleDateString() : "—"}
-                </span>
+                <TimeRoomInfo
+                    time={row.date ? new Date(row.date).toLocaleTimeString() : (row.scheduled_date ? new Date(row.scheduled_date).toLocaleTimeString() : "—")}
+                />
             )
         },
         {
             key: "urgency",
-            label: "Urgency",
+            label: scheduleDict.columns.urgency,
             render: (row) => (
                 <span
                     className={`
@@ -175,23 +180,23 @@ export default function SurgeryList() {
         },
         {
             key: "actions",
-            label: "Action",
+            label: dict.pages.surgery.common.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: dict.common.view,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
-                        label: "Edit",
+                        label: dict.common.edit,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
-                        label: "Delete",
+                        label: dict.common.delete,
                         // onClick: () => { }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
@@ -203,33 +208,33 @@ export default function SurgeryList() {
     return (
         <div>
             <div className="flex flex-col gap-4">
-                <h1 className="font-medium text-base">Surgery List</h1>
+                <h1 className="font-medium text-base">{scheduleDict.surgeryList}</h1>
 
                 {/* Filters + Calendar toggle */}
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
                         <DateRangeDropdown
-                            label="Date Range"
+                            label={scheduleDict.dateRange}
                             value={dateRange}
                             onSelect={setDateRange}
                         />
                         <FilterDropdown
                             icon={<BriefcaseMedical size={16} />}
-                            label="Department"
+                            label={dict.pages.surgery.common.department}
                             options={departments}
                             value={selectedDept}
                             onSelect={setSelectedDept}
                         />
                         <FilterDropdown
                             icon={<Stethoscope size={16} />}
-                            label="Doctor"
+                            label={dict.pages.surgery.common.doctor}
                             options={doctors}
                             value={selectedDoctor}
                             onSelect={setSelectedDoctor}
                         />
                         <FilterDropdown
                             icon={<Ellipsis size={16} />}
-                            label="Status"
+                            label={dict.common.status}
                             options={["Active", "Inactive"]}
                             value={selectedStatus}
                             onSelect={setSelectedStatus}
@@ -244,7 +249,7 @@ export default function SurgeryList() {
                         label={
                             <>
                                 <CalendarDays size={18} className="text-blue-500" />
-                                Calendar View
+                                {dict.pages.surgery.common.calendarView}
                             </>
                         }
                     />
@@ -252,9 +257,8 @@ export default function SurgeryList() {
             </div>
 
             <div className="flex items-center justify-between gap-4 my-2">
-                {/* LEFT */}
                 <div className="flex shrink-0 items-center gap-3">
-                    <FilterButton onClick={() => { }} className="bg-blue-500 text-white hover:none" />
+                    <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                 </div>
 
                 {/* RIGHT */}
@@ -274,7 +278,7 @@ export default function SurgeryList() {
                                     setSearchQuery("");
                                 }
                             }}
-                            placeholder="Search Surgeries"
+                            placeholder={dict.common.search}
                         />
                     </div>
 
@@ -285,13 +289,13 @@ export default function SurgeryList() {
                     />
 
                     {/* Add Button */}
-                    <NewButton
-                        name="Add Surgery"
+                    {/* <NewButton
+                        name={dict.pages.surgery.otSchedule.addSurgery}
                         className="h-9 text-sm"
                         handleClick={() => {
                             router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
                         }}
-                    ></NewButton>
+                    ></NewButton> */}
 
                     {/* View mode toggle */}
                     <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
@@ -307,6 +311,7 @@ export default function SurgeryList() {
                     columns={columns}
                     data={surgeries}
                     loading={isLoading}
+                    striped
                     pagination={
                         totalPages > 1 ? (
                             <PaginationControls

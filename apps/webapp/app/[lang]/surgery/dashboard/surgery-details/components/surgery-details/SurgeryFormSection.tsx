@@ -6,6 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/componen
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
+import { Button } from "@workspace/ui/components/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import { Calendar } from "@workspace/ui/components/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
+import { format } from "@workspace/ui/hooks/use-date-fns";
 
 const PROCEDURE_OPTIONS = [
   { value: "appendectomy", label: "Appendectomy" },
@@ -25,7 +30,18 @@ const OT_ROOM_OPTIONS = [
   { value: "ot_3", label: "OT Room 3" },
 ];
 
+// Generate time slots every 30 mins
+const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
+  const hours = Math.floor(i / 2);
+  const minutes = i % 2 === 0 ? "00" : "30";
+  const paddedHours = hours.toString().padStart(2, "0");
+  return `${paddedHours}:${minutes}`;
+});
+
 const SurgeryFormSection: React.FC = () => {
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = React.useState<string>("08:00");
+
   return (
     <Card className="shadow-none border-0">
       <CardHeader>
@@ -67,28 +83,52 @@ const SurgeryFormSection: React.FC = () => {
 
         {/* Date, Time, OT Room */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Date Picker */}
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-slate-800">Surgery Date</Label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Select Date"
-                className="h-10 pr-10"
-              />
-              <CalendarIcon size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
-            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full h-10 justify-start text-left font-normal px-3"
+                >
+                  <div className="flex-1">
+                    {selectedDate ? format(selectedDate, "dd/MM/yyyy") : <span>Select Date</span>}
+                  </div>
+                  <CalendarIcon size={18} className="text-emerald-500" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
+
+          {/* Time Select */}
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-slate-800">Surgery Time</Label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Select Time"
-                className="h-10 pr-10"
-              />
-              <Clock size={18} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
-            </div>
+            <Select value={selectedTime} onValueChange={setSelectedTime}>
+              <SelectTrigger className="w-full h-10 px-3">
+                <div className="flex-1 text-left">
+                  <SelectValue placeholder="Select Time" />
+                </div>
+                <Clock size={18} className="text-emerald-500 mr-2" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[200px]">
+                {TIME_SLOTS.map((slot) => (
+                  <SelectItem key={slot} value={slot}>
+                    {slot}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
           <SelectField
             label="OT Room"
             placeholder="Select OT Room"

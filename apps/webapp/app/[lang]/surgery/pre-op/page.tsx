@@ -3,15 +3,13 @@
 import React from "react";
 import {
   CalendarDays,
-  LayoutGrid,
-  Search,
-  ChevronDown,
-  SlidersHorizontal,
-  LayoutList,
 } from "lucide-react";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { useDictionary } from "@/i18n/use-dictionary";
 // import type { Column } from "@/components/common/data-table";
 
 interface Column<T> {
@@ -26,6 +24,11 @@ import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 import NewButton from "@/components/common/new-button";
 import ActionMenu from "@/components/common/action-menu";
+import FilterButton from "@/components/common/filter-button";
+import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
+import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
+import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
+import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
 
 type PreOpRow = {
   id: string;
@@ -78,6 +81,63 @@ export default function PreOpList() {
   const [activeTab, setActiveTab] = React.useState("All Surgeries");
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const [sortOrder, setSortOrder] = React.useState<"nearest" | "farthest">("nearest");
+  const [isCalendarView, setIsCalendarView] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
+  const [searchType, setSearchType] = React.useState({ label: "MRN", value: "mrn" });
+  const [searchValue, setSearchValue] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const surgeryApi = createSurgeryApiClient({});
+
+  const {
+    data: responseData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["surgeries-preop", searchQuery, activeTab],
+    queryFn: async () => {
+      const statusMap: Record<string, string> = {
+        "Pre-op": "PreOp",
+        "Intra Op": "IntraOp",
+        "Post-op": "PostOp",
+      };
+      const resp = await surgeryApi.getAll({
+        search: searchQuery || undefined,
+        status: statusMap[activeTab] || undefined,
+      });
+      return resp.data;
+    },
+  });
+
+  const USE_MOCK_DATA = true;
+
+  const surgeries = React.useMemo(() => {
+    const actualData = responseData?.data || [];
+    if (USE_MOCK_DATA) {
+      // Filter mock data based on active tab locally for now
+      const filteredMock = activeTab === "All Surgeries"
+        ? PRE_OP_DATA
+        : PRE_OP_DATA.filter(d => {
+          const statusMap: Record<string, string> = {
+            "Pre-op": "PreOp",
+            "Intra Op": "IntraOp",
+            "Post-op": "PostOp",
+          };
+          return d.status === statusMap[activeTab];
+        });
+      return [...filteredMock, ...actualData];
+    }
+    return actualData;
+  }, [responseData, activeTab]);
+
+  const searchOptions = [
+    { label: "MRN", value: "mrn" },
+    { label: "Name", value: "name" },
+    { label: "Status", value: "status" },
+  ];
 
   const columns = React.useMemo<Column<PreOpRow>[]>(() => [
     {
@@ -99,7 +159,7 @@ export default function PreOpList() {
     {
       key: "time",
       label: "Date and Time",
-      render: (row) => <TimeRoomInfo time={row.time}/>,
+      render: (row) => <TimeRoomInfo time={row.time} />,
     },
     {
       key: "procedure",
@@ -117,23 +177,22 @@ export default function PreOpList() {
     {
       key: "action",
       label: "Action",
-      className: "text-right",
       render: (row) => (
         <ActionMenu actions={[
           {
-            label: "View",
+            label: dict.common.view,
             onClick: () => {
               router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
             }
           },
           {
-            label: "Edit",
+            label: dict.common.edit,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
           },
           {
-            label: "Delete",
+            label: dict.common.delete,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
@@ -150,24 +209,13 @@ export default function PreOpList() {
     postOp: PRE_OP_DATA.filter((d) => d.status === "PostOp").length,
   }), []);
 
-  const filteredData = React.useMemo(() => {
-    switch (activeTab) {
-      case "Pre-op":
-        return PRE_OP_DATA.filter((d) => d.status === "PreOp");
-      case "Intra Op":
-        return PRE_OP_DATA.filter((d) => d.status === "IntraOp");
-      case "Post-op":
-        return PRE_OP_DATA.filter((d) => d.status === "PostOp");
-      default:
-        return PRE_OP_DATA;
-    }
-  }, [activeTab]);
+  const filteredData = surgeries;
 
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <h1 className="text-slate-800 font-medium text-sm">
-          Surgeries Request List
+        <h1 className="font-medium text-base">
+          {dict.pages.surgery.preOp.surgeriesRequestList}
         </h1>
 
         {/* Filters */}
@@ -175,81 +223,66 @@ export default function PreOpList() {
           <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
             <DynamicTabs
               tabs={[
-                { key: "All Surgeries", label: "All Surgeries"},
-                { key: "Pre-op", label: "Pre-op", count: counts.preOp },
-                { key: "Intra Op", label: "Intra Op", count: counts.intraOp },
-                { key: "Post-op", label: "Post-op", count: counts.postOp },
+                { key: "All Surgeries", label: dict.pages.surgery.preOp.tabs.allSurgeries },
+                { key: "Pre-op", label: dict.pages.surgery.preOp.tabs.preOp, count: counts.preOp },
+                { key: "Intra Op", label: dict.pages.surgery.preOp.tabs.intraOp, count: counts.intraOp },
+                { key: "Post-op", label: dict.pages.surgery.preOp.tabs.postOp, count: counts.postOp },
               ]}
               defaultTab={activeTab}
               onChange={(key) => setActiveTab(key)}
             />
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <span className="flex items-center gap-1 text-sm font-medium text-gray-700">
-              <CalendarDays size={18} className="text-blue-500" />
-              Calendar View
-            </span>
-
-            <button
-              role="switch"
-              aria-checked="false"
-              className="relative h-5 w-10 rounded-full bg-gray-300"
-            >
-              <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-white shadow-sm" />
-            </button>
-          </div>
+          <StatusToggle
+            variant="simple"
+            isActive={isCalendarView}
+            onToggle={setIsCalendarView}
+            className="flex shrink-0"
+            label={
+              <>
+                <CalendarDays size={18} className="text-blue-500" />
+                {dict.pages.surgery.common.calendarView}
+              </>
+            }
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 my-2">
-        <button className="flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm text-white shadow-soft">
-          Filter <SlidersHorizontal size={14} />
-        </button>
+        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
 
         <div className="flex flex-1 items-center justify-end gap-3">
-          <div className="flex h-9 items-center overflow-hidden rounded-full bg-background shadow-soft">
-            <button className="flex h-full items-center gap-1 px-3 text-xs font-medium text-blue-500">
-              <Search size={14} />
-              MRN
-              <ChevronDown size={12} />
-            </button>
-            <input
-              type="text"
-              placeholder="Search MRN"
-              className="w-48 px-3 text-sm outline-none"
+          <div className="w-auto">
+            <SearchWithDropdown
+              options={searchOptions}
+              selectedOption={searchType}
+              onOptionSelect={setSearchType}
+              searchValue={searchValue}
+              onSearchChange={(val: string) => {
+                setSearchValue(val);
+                if (val.length >= 2) {
+                  setSearchQuery(val);
+                } else if (val.length === 0) {
+                  setSearchQuery("");
+                }
+              }}
+              placeholder={dict.common.search}
             />
           </div>
 
-          <button className="flex items-center gap-2 rounded-full bg-white shadow-soft px-4 py-1.5 text-sm">
-            Quick
-            <div className="flex flex-col">
-              <ChevronDown size={12} className="rotate-180 text-blue-500" />
-              <ChevronDown size={12} className="text-blue-500" />
-            </div>
-          </button>
+          <DateFilter
+            sortOrder={sortOrder}
+            onSortChange={setSortOrder}
+          />
 
-          {/* <button className="flex items-center gap-2 rounded-full bg-green-room pl-4 pr-0.5 py-0.5 text-sm text-white shadow-soft">
-            Add surgery
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#50C786]">
-              <Plus size={14} />
-            </div>
-          </button> */}
-
-          <NewButton
-            name="Add Surgeries"
+          {/* <NewButton
+            name={dict.pages.surgery.otSchedule.addSurgery}
+            className="h-9 text-sm"
             handleClick={() => {
               router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
             }}
-          ></NewButton>
+          ></NewButton> */}
 
-          <div className="flex items-center gap-1 bg-white rounded-full p-0.5 shadow-soft">
-            <button className="p-1.5 text-gray-500">
-              <LayoutGrid size={18} />
-            </button>
-            <button className="rounded-full bg-green-room p-1.5 text-white">
-              <LayoutList size={18} />
-            </button>
-          </div>
+          <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
         </div>
       </div>
 
@@ -258,6 +291,7 @@ export default function PreOpList() {
         <ResponsiveDataTable
           columns={columns}
           data={filteredData}
+          loading={isLoading}
           striped
         />
       </div>

@@ -18,91 +18,29 @@ export type WardStockItem = {
     status: "Available" | "Low Stock" | "Out Of Stock";
 };
 
-// --- Mock Data ---
-const WARD_STOCK_DATA: WardStockItem[] = [
-    {
-        id: "1",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 20,
-        store: "Pharmacy 4",
-        expiry: "2025-09-27 19:30",
-        status: "Low Stock",
-    },
-    {
-        id: "2",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 45,
-        minQty: 10,
-        store: "Store 2",
-        expiry: "2025-09-27 19:30",
-        status: "Low Stock",
-    },
-    {
-        id: "3",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 5,
-        minQty: 2,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "4",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "5",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "6",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "7",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Out Of Stock",
-    },
-    {
-        id: "8",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-];
+import { WardStock } from "@/lib/api/surgery/ward";
 
-export const ConsumptionStock = () => {
+interface ConsumptionStockProps {
+    data?: WardStock[];
+    isLoading: boolean;
+}
+
+export const ConsumptionStock = ({ data, isLoading }: ConsumptionStockProps) => {
+    // Map API data (snake_case) to table display format
+    const tableData: WardStockItem[] = React.useMemo(() => {
+        if (!data) return [];
+        return data.map((item) => ({
+            id: item.id,
+            itemName: item.item_name,
+            category: item.category,
+            currentQty: item.current_qty,
+            minQty: item.min_qty,
+            store: item.store || "—",
+            expiry: item.expiry || "—",
+            status: item.status,
+        }));
+    }, [data]);
+
     const columns = [
         {
             key: "itemName",
@@ -158,21 +96,12 @@ export const ConsumptionStock = () => {
                 <ActionMenu actions={[
                     {
                         label: "View",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
                     },
                     {
                         label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
                     },
                     {
                         label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
 
@@ -184,8 +113,9 @@ export const ConsumptionStock = () => {
         <div className="flex flex-col h-full mt-2">
             <ResponsiveDataTable
                 columns={columns}
-                data={WARD_STOCK_DATA}
+                data={tableData}
                 striped
+                loading={isLoading}
             />
         </div>
     );

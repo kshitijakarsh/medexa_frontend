@@ -30,6 +30,10 @@ type AddEquipmentUsageModalProps = {
     onSave: (data: any) => void;
 };
 
+import { createPatientsApiClient } from "@/lib/api/patients-api";
+import { createWardApiClient } from "@/lib/api/surgery/ward";
+import { useQuery } from "@tanstack/react-query";
+
 export function AddEquipmentUsageModal({
     open,
     onOpenChange,
@@ -42,6 +46,27 @@ export function AddEquipmentUsageModal({
     const [startTime, setStartTime] = useState<Date | undefined>(undefined);
     const [endTime, setEndTime] = useState<Date | undefined>(undefined);
     const [notes, setNotes] = useState("");
+
+    const patientsApi = createPatientsApiClient({});
+    const wardApi = createWardApiClient({});
+
+    const { data: patientsData } = useQuery({
+        queryKey: ["patients-small-list"],
+        queryFn: async () => {
+            const response = await patientsApi.getPatients({ limit: 100 });
+            return response.data.data;
+        },
+        enabled: open,
+    });
+
+    const { data: equipmentData } = useQuery({
+        queryKey: ["ward-stock-equipment-small-list"],
+        queryFn: async () => {
+            const response = await wardApi.getWardStock({ category: "Equipment" });
+            return response.data.data;
+        },
+        enabled: open,
+    });
 
     const handleSave = () => {
         onSave({
@@ -76,8 +101,14 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Patient" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Ganguli Rathod">Ganguli Rathod</SelectItem>
-                                    <SelectItem value="John Doe">John Doe</SelectItem>
+                                    {patientsData?.map((p) => (
+                                        <SelectItem key={p.id} value={p.id.toString()}>
+                                            {p.first_name} {p.last_name}
+                                        </SelectItem>
+                                    ))}
+                                    {(!patientsData || patientsData.length === 0) && (
+                                        <SelectItem value="none" disabled>No patients found</SelectItem>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -88,8 +119,14 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Item Name" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Oxygen Cylinder">Oxygen Cylinder</SelectItem>
-                                    <SelectItem value="Monitor">Vital Signs Monitor</SelectItem>
+                                    {equipmentData?.map((item) => (
+                                        <SelectItem key={item.id} value={item.id}>
+                                            {item.item_name}
+                                        </SelectItem>
+                                    ))}
+                                    {(!equipmentData || equipmentData.length === 0) && (
+                                        <SelectItem value="none" disabled>No equipment found</SelectItem>
+                                    )}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -104,8 +141,7 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Asset ID" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Oxy-004">Oxy-004</SelectItem>
-                                    <SelectItem value="Oxy-005">Oxy-005</SelectItem>
+                                    <SelectItem value="none" disabled>No assets available</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

@@ -3,7 +3,6 @@
 import React from "react";
 import { ArrowLeft, Save, FilePlus2Icon } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Patient } from "../../../_lib/types";
 import PatientBanner from "../components/shared/PatientBanner";
 import PostOpCare from "../components/post-op/PostOpCare";
@@ -13,7 +12,7 @@ import PreOpChecklist from "../components/pre-op/PreOpChecklist";
 import { AnesthesiaPlan } from "../components/anesthesia/AnesthesiaPlan";
 import { SurgeryDetailsTab } from "../components/surgery-details/SurgeryDetailsTab";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-import { createSurgeryApiClient } from "@/lib/api/surgery/surgeries";
+import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 
 const PATIENT_DATA: Patient = {
@@ -34,23 +33,12 @@ const PATIENT_DATA: Patient = {
 export default function SurgeryDetailsPage() {
   const router = useRouter();
   const { id } = useParams();
-  const surgeryApi = createSurgeryApiClient({});
 
   const [activeTab, setActiveTab] = React.useState("Surgery Details");
   const [isEditing, setIsEditing] = React.useState(false);
   const [anesthesiaActiveTab, setAnesthesiaActiveTab] = React.useState("Medical History");
 
-  const { data: response, isLoading } = useQuery({
-    queryKey: ["surgery-details", id],
-    queryFn: async () => {
-      if (!id || id === "new") return null;
-      const resp = await surgeryApi.getById(id as string);
-      return resp.data;
-    },
-    enabled: !!id && id !== "new",
-  });
-
-  const surgeryData = response?.data;
+  const { data: surgeryData, isLoading } = useSurgeryById(id as string);
 
   // Map surgeryData to Patient interface for common banner
   const patientData: Patient | undefined = surgeryData?.patient ? {
@@ -98,6 +86,28 @@ export default function SurgeryDetailsPage() {
     }
   };
 
+  // Show loading skeleton while surgery data is loading
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <Skeleton className="h-6 w-48" />
+        </div>
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-10 w-full" />
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-8">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+          <div className="col-span-4">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
@@ -134,23 +144,51 @@ export default function SurgeryDetailsPage() {
       </div>
 
       {activeTab === "Post-Op Care" ? (
-        <PostOpCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <PostOpCare
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Nurse" ? (
-        <NurseCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <NurseCare
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Intra-Op Notes" ? (
-        <IntraOpNotes isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <IntraOpNotes
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Anesthesia Plan" ? (
         <AnesthesiaPlan
           activeTab={anesthesiaActiveTab}
           onTabChange={setAnesthesiaActiveTab}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          surgeryId={id as string}
           patientId={surgeryData?.patient_id}
         />
       ) : activeTab === "Pre-Op Checklist" ? (
-        <PreOpChecklist isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} onEdit={() => setIsEditing(true)} />
+        <PreOpChecklist
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          onEdit={() => setIsEditing(true)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : (
-        <SurgeryDetailsTab isEditing={isEditing} setIsEditing={setIsEditing} patientId={surgeryData?.patient_id} />
+        <SurgeryDetailsTab
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+          surgeryData={surgeryData}
+        />
       )}
     </div>
   );

@@ -4,16 +4,16 @@ import ChecklistSidebar from "../shared/ChecklistSidebar";
 import { IntraOpEditMode } from "./IntraOpEditMode";
 import { IntraOpViewMode } from "./IntraOpViewMode";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { createIntraopApiClient } from "@/lib/api/surgery/intraop";
 
 type IntraOpNotesProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
+  surgeryId?: string;
+  patientId?: string;
 };
 
-export default function IntraOpNotes({ isEditing, onSaveDraft }: IntraOpNotesProps) {
-  const { id: surgeryId } = useParams();
+export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId, patientId }: IntraOpNotesProps) {
   const intraopApi = createIntraopApiClient();
 
   const { data: intraopResponse, isLoading } = useQuery({

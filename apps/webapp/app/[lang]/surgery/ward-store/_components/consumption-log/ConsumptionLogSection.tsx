@@ -3,14 +3,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createWardApiClient } from "@/lib/api/surgery/ward";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
+import FilterButton from "@/components/common/filter-button";
 import { SlidersHorizontal } from "lucide-react";
 import { ConsumptionLog } from "./ConsumptionLog";
 import { AddConsumptionLogModal } from "./AddConsumptionLogModal";
 
 export function ConsumptionLogSection() {
+    const dict = useDictionary();
     const [logSubTab, setLogSubTab] = useState("All");
     const [search, setSearch] = useState("");
     const [showAddLogModal, setShowAddLogModal] = useState(false);
@@ -22,6 +25,7 @@ export function ConsumptionLogSection() {
     const {
         data: logsResponse,
         isLoading,
+        refetch,
     } = useQuery({
         queryKey: ["consumption-logs", logSubTab, search],
         queryFn: async () => {
@@ -49,18 +53,16 @@ export function ConsumptionLogSection() {
                         <DynamicTabs
                             defaultTab={logSubTab}
                             tabs={[
-                                { label: "All", key: "All" },
-                                { label: "Ward", key: "Ward" },
-                                { label: "Patient", key: "Patient" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.all, key: "All" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.ward, key: "Ward" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.patient, key: "Patient" },
                             ]}
                             onChange={setLogSubTab}
                         />
                     </div>
 
                     <div className="flex items-center gap-3 ml-auto">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-full text-sm font-medium transition-colors hover:bg-blue-50/50">
-                            Filter <SlidersHorizontal size={16} />
-                        </button>
+                        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                         <SearchInput
                             value={search}
                             onChange={setSearch}

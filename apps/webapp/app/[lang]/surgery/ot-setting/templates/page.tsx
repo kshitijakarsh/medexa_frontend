@@ -1,7 +1,11 @@
 "use client";
 
 import { useRouter, useParams } from "next/navigation";
-import { DataTable } from "@/components/common/data-table";
+import { useQuery } from "@tanstack/react-query";
+import { useDictionary } from "@/i18n/use-dictionary";
+import { ResponsiveDataTable as DataTable, Column } from "@/components/common/data-table/ResponsiveDataTable";
+import { useState, useMemo } from "react";
+import { DateRange } from "react-day-picker";
 
 import {
     Calendar,
@@ -16,14 +20,12 @@ import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWi
 import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
 import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
-import { useState, useMemo } from "react";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
-import { DateRange } from "react-day-picker";
-import { Column } from "@/components/common/data-table/ResponsiveDataTable";
+import { createSurgeryTemplateApiClient, SurgeryTemplate } from "@/lib/api/surgery/templates";
 
-interface TemplateData {
+interface TemplateTableRow {
     id: string;
     templateName: string;
     procedure: string;
@@ -39,58 +41,11 @@ interface TemplateData {
     status: "Active" | "Inactive";
 }
 
-// Mock Data for Templates
-const MOCK_TEMPLATES: TemplateData[] = [
-    {
-        id: "1",
-        templateName: "Cardiac Bypass Standard",
-        procedure: "Coronary Artery Bypass",
-        leadSurgeon: { name: "Dr. Sarah Smith", department: "Cardiology" },
-        createdOn: "2024-01-15 09:30 AM",
-        createdBy: { name: "Dr. James Wilson", department: "Cardiology" },
-        status: "Active"
-    },
-    {
-        id: "2",
-        templateName: "Appendectomy Routine",
-        procedure: "Laparoscopic Appendectomy",
-        leadSurgeon: { name: "Dr. Mike Chen", department: "General Surgery" },
-        createdOn: "2024-02-01 02:15 PM",
-        createdBy: { name: "Admin System", department: "Administration" },
-        status: "Active"
-    },
-    {
-        id: "3",
-        templateName: "Knee Replacement Prep",
-        procedure: "Total Knee Arthroplasty",
-        leadSurgeon: { name: "Dr. Emily Wong", department: "Orthopedics" },
-        createdOn: "2023-11-20 11:45 AM",
-        createdBy: { name: "Dr. Sarah Smith", department: "Orthopedics" },
-        status: "Inactive"
-    },
-    {
-        id: "4",
-        templateName: "Cataract Surgery Flow",
-        procedure: "Phacoemulsification",
-        leadSurgeon: { name: "Dr. John Doe", department: "Ophthalmology" },
-        createdOn: "2024-03-10 08:00 AM",
-        createdBy: { name: "Admin System", department: "Administration" },
-        status: "Active"
-    },
-    {
-        id: "5",
-        templateName: "Hernia Repair Fast",
-        procedure: "Inguinal Hernia Repair",
-        leadSurgeon: { name: "Dr. Lisa Ray", department: "General Surgery" },
-        createdOn: "2024-01-05 04:30 PM",
-        createdBy: { name: "Dr. Mike Chen", department: "General Surgery" },
-        status: "Active"
-    }
-];
-
 export default function TemplatesList() {
     const router = useRouter();
-    const { lang } = useParams();
+    const params = useParams();
+    const lang = params.lang as string;
+    const dict = useDictionary();
 
     // State
     const [searchType, setSearchType] = useState({ label: "Template Name", value: "templateName" });
@@ -105,16 +60,55 @@ export default function TemplatesList() {
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
 
+    const templatesApi = createSurgeryTemplateApiClient({});
+
+    const {
+        data: templatesResponse,
+        isLoading,
+        error: templatesError,
+        refetch,
+    } = useQuery({
+        queryKey: ["surgery-templates", searchValue, selectedStatus],
+        queryFn: async () => {
+            const response = await templatesApi.getTemplates({
+                search: searchValue.length >= 2 ? searchValue : undefined,
+                status: selectedStatus || undefined,
+            });
+            return response.data;
+        },
+    });
+
+    const templatesData = templatesResponse?.data || [];
+
+    // Map API data to table format
+    const tableData: TemplateTableRow[] = templatesData.map((template: SurgeryTemplate) => ({
+        id: template.id,
+        templateName: template.name || "—",
+        procedure: template.procedure?.name || "—",
+        leadSurgeon: {
+            name: template.lead_surgeon?.name || "Not Assigned",
+            department: template.lead_surgeon?.department || "—",
+        },
+        createdOn: template.created_at
+            ? new Date(template.created_at).toLocaleString()
+            : "—",
+        createdBy: {
+            name: template.createdBy?.name || "System",
+            department: template.createdBy?.department || "—",
+        },
+        status: template.status === 'active' ? 'Active' : 'Inactive',
+    }));
+
     // Memoized Filter Options
     const departments = useMemo(() => {
-        const uniqueValues = new Set(MOCK_TEMPLATES.map((t) => t.leadSurgeon.department));
+        const uniqueValues = new Set(tableData.map((t) => t.leadSurgeon.department).filter(d => d !== "—"));
         return Array.from(uniqueValues);
-    }, []);
+    }, [tableData]);
 
     const doctors = useMemo(() => {
-        const uniqueValues = new Set(MOCK_TEMPLATES.map((t) => t.leadSurgeon.name));
+        const uniqueValues = new Set(tableData.map((t) => t.leadSurgeon.name).filter(n => n !== "Not Assigned"));
         return Array.from(uniqueValues);
-    }, []);
+    }, [tableData]);
 
     const searchOptions = [
         { label: "Template Name", value: "templateName" },
@@ -122,7 +116,7 @@ export default function TemplatesList() {
         { label: "Surgeon", value: "surgeon" },
     ];
 
-    const columns: Column<TemplateData>[] = [
+    const columns: Column<TemplateTableRow>[] = [
         {
             key: "templateName",
             label: "Template Name",
@@ -148,15 +142,11 @@ export default function TemplatesList() {
         {
             key: "createdOn",
             label: "Created On",
-            render: (row) => {
-                const [date, ...timeParts] = row.createdOn.split(' ');
-                const time = timeParts.join(' ');
-                return (
-                    <div className="flex flex-col">
-                        <span className="text-sm text-slate-700">{date} {time}</span>
-                    </div>
-                );
-            }
+            render: (row) => (
+                <div className="flex flex-col">
+                    <span className="text-sm text-slate-700">{row.createdOn}</span>
+                </div>
+            )
         },
         {
             key: "createdBy",
@@ -191,24 +181,24 @@ export default function TemplatesList() {
         {
             key: "actions",
             label: "Action",
-            render: () => (
+            render: (row) => (
                 <ActionMenu actions={[
                     {
                         label: "View",
                         // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}`);
                         // }
                     },
                     {
                         label: "Edit",
                         // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}/edit`);
                         // }
                     },
                     {
                         label: "Delete",
                         // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
+                        //     // Handle delete
                         // }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
@@ -225,27 +215,27 @@ export default function TemplatesList() {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
                         <DateRangeDropdown
-                            label="Date Range"
+                            label={dict.pages.surgery.otSchedule.dateRange}
                             value={dateRange}
                             onSelect={setDateRange}
                         />
                         <FilterDropdown
                             icon={<BriefcaseMedical size={16} />}
-                            label="Department"
+                            label={dict.pages.surgery.common.department}
                             options={departments}
                             value={selectedDept}
                             onSelect={setSelectedDept}
                         />
                         <FilterDropdown
                             icon={<Stethoscope size={16} />}
-                            label="Doctor"
+                            label={dict.pages.surgery.common.doctor}
                             options={doctors}
                             value={selectedDoctor}
                             onSelect={setSelectedDoctor}
                         />
                         <FilterDropdown
                             icon={<Ellipsis size={16} />}
-                            label="Status"
+                            label={dict.common.status}
                             options={["Active", "Inactive"]}
                             value={selectedStatus}
                             onSelect={setSelectedStatus}
@@ -270,7 +260,7 @@ export default function TemplatesList() {
             <div className="flex items-center justify-between gap-4 my-2">
                 {/* LEFT */}
                 <div className="flex shrink-0 items-center gap-3">
-                    <FilterButton onClick={() => { }} className="bg-blue-500 text-white hover:bg-blue-600 border-none" />
+                    <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:bg-blue-600 border-none" />
                 </div>
 
                 {/* RIGHT */}
@@ -309,8 +299,8 @@ export default function TemplatesList() {
 
             <DataTable
                 columns={columns}
-                data={MOCK_TEMPLATES}
-            // onRowClick={(row) => router.push(`/surgery/dashboard/templates/${row.id}`)}
+                data={tableData}
+                loading={isLoading}
             />
         </div>
     );

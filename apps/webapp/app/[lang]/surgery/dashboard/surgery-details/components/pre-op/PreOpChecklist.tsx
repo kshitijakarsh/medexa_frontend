@@ -233,7 +233,7 @@ const MOCK_METRICS: PreOpMetric[] = [
   { title: "OT & Resource Readiness", completed: 6, total: 7 },
 ];
 
-export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void }) {
+export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgeryId, patientId }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void; surgeryId?: string; patientId?: string }) {
   const [sectionsData, setSectionsData] = React.useState<SectionConfig[]>(INITIAL_SECTIONS);
 
   // Calculate sidebar counts dynamically

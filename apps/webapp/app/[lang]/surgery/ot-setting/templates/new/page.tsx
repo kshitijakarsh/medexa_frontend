@@ -14,20 +14,8 @@ import { createSurgeryTemplateApiClient } from "@/lib/api/surgery/templates";
 interface Procedure {
     id: string;
     title: string;
-    details?: string;
+    description?: string;
 }
-
-// --- Mock Data ---
-const MOCK_PROCEDURES = [
-    {
-        title: "ECG - 12 Lead",
-        details: "Impression: Normal sinus rhythm. No ST-T wave changes. No evidence of acute ischemia."
-    }
-];
-
-const MOCK_INVESTIGATIONS = [
-    { name: "CBC (Complete Blood Count)", badges: ["Laboratory Tests", "STAT"] }
-];
 
 const PendingActionItem = ({ title, details, onRemove }: { title: string, details?: string, onRemove: () => void }) => (
     <div className="rounded-lg border border-blue-200 p-2 flex items-center justify-between bg-blue-50/50">
@@ -91,16 +79,17 @@ export default function CreateTemplatePage() {
 
     // Sections State
     const [procedures, setProcedures] = useState<{ title: string; details?: string }[]>([]);
-    const [investigations, setInvestigations] = useState(MOCK_INVESTIGATIONS);
+    const [investigations, setInvestigations] = useState<string[]>([]);
     const [medicalClearances, setMedicalClearances] = useState<string[]>([]);
     const [consents, setConsents] = useState<string[]>([]);
-    const [nursingOrders, setNursingOrders] = useState(["Monitor vital signs every 2 hours", "Maintain strict intake & output chart", "Ensure consent forms are signed"]);
-    const [patientPrep, setPatientPrep] = useState(["NPO for 6 Hours", "DVT Prophylaxis - Stockings"]);
-    const [anesthesiaReq, setAnesthesiaReq] = useState(["General Anesthesia", "Endotracheal Intubation"]);
-    const [equipment, setEquipment] = useState(["Laparoscopic Tower", "Harmonic Scalpel"]);
-    const [implants, setImplants] = useState(["Clips for Cystic Duct/Artery", "Retrieval Bag"]);
-    const [bloodPrep, setBloodPrep] = useState(["Keep 2 units blood on standby", "Platelets on call"]);
+    const [nursingOrders, setNursingOrders] = useState<string[]>([]);
+    const [patientPrep, setPatientPrep] = useState<string[]>([]);
+    const [anesthesiaReq, setAnesthesiaReq] = useState<string[]>([]);
+    const [equipment, setEquipment] = useState<string[]>([]);
+    const [implants, setImplants] = useState<string[]>([]);
+    const [bloodPrep, setBloodPrep] = useState<string[]>([]);
 
+    const [isSaving, setIsSaving] = useState(false);
 
     // Generic handler for adding/removing
     const makeHandlers = (getter: any[], setter: any) => ({
@@ -126,14 +115,34 @@ export default function CreateTemplatePage() {
         setConsents([...consents, name]);
     };
 
+    const handleSave = async (isDraft: boolean) => {
+        if (!templateName.trim()) {
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await templatesApi.create({
+                name: templateName,
+                status: isDraft ? 'inactive' : (isActive ? 'active' : 'inactive'),
+                // Extend the payload as per backend requirements
+            });
+            router.back();
+        } catch (error) {
+            console.error("Failed to save template:", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className="min-h-screen">
             <div className="sticky top-0 z-10 px-6 py-4 flex items-center gap-2">
                 <button
                     onClick={() => router.back()}
-                    className="p-2 -ml-2 bg-blue-500 text-slate-500 transition-colors rounded-md"
+                    className="p-2 -ml-2 text-slate-500 transition-colors rounded-md"
                 >
-                    <ArrowLeft size={20} className="text-white" />
+                    <ArrowLeft size={20} className="text-slate-800" />
                 </button>
                 <h1 className="text-base font-medium tracking-tight">Create Template</h1>
             </div>
@@ -200,8 +209,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.name}
-                                details={typeof item !== 'string' && item.badges ? item.badges.join(", ") : undefined}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -217,7 +225,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -233,7 +241,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -247,7 +255,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -261,7 +269,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -275,7 +283,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -289,7 +297,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -303,7 +311,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -317,7 +325,7 @@ export default function CreateTemplatePage() {
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -328,11 +336,19 @@ export default function CreateTemplatePage() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-                <button className="px-6 py-2 border border-blue-500 text-blue-500 font-medium rounded-lg text-sm bg-white hover:bg-blue-50">
-                    SAVE AS DRAFT
+                <button
+                    disabled={isSaving}
+                    onClick={() => handleSave(true)}
+                    className="px-6 py-2 border border-blue-500 text-blue-500 font-medium rounded-lg text-sm bg-white hover:bg-blue-50 disabled:opacity-50"
+                >
+                    {isSaving ? "SAVING..." : "SAVE AS DRAFT"}
                 </button>
-                <button className="flex gap-2 items-center px-4 py-2 rounded-lg bg-[#50C786] text-white font-medium text-sm hover:bg-emerald-600">
-                    <Send size={16} /> COMPLETE & SIGN
+                <button
+                    disabled={isSaving}
+                    onClick={() => handleSave(false)}
+                    className="flex gap-2 items-center px-4 py-2 rounded-lg bg-[#50C786] text-white font-medium text-sm hover:bg-emerald-600 disabled:opacity-50"
+                >
+                    {isSaving ? "SAVING..." : <><Send size={16} /> COMPLETE & SIGN</>}
                 </button>
             </div>
         </div>

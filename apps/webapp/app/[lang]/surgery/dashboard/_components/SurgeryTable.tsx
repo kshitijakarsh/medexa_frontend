@@ -13,6 +13,7 @@ import { Button } from "@workspace/ui/components/button";
 import { useRouter, useParams } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import ActionMenu from "@/components/common/action-menu";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // Table row interface for display
 interface SurgeryRow {
@@ -34,6 +35,8 @@ interface SurgeryRow {
 const SurgeryTable: React.FC = () => {
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const surgeryTableDict = dict.pages.surgery.dashboard;
   const [activeTab, setActiveTab] = React.useState("Surgeries");
   // API Client
   const surgeryApi = createSurgeryApiClient({});
@@ -123,11 +126,11 @@ const SurgeryTable: React.FC = () => {
   const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
       key: "otRoom",
-      label: "OT Room",
+      label: surgeryTableDict.table.otRoom,
     },
     {
       key: "patient",
-      label: "Patient",
+      label: surgeryTableDict.table.patient,
       render: (row) => (
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -155,15 +158,15 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "time",
-      label: "Time",
+      label: surgeryTableDict.table.time,
     },
     {
       key: "procedure",
-      label: "Procedure",
+      label: surgeryTableDict.table.procedure,
     },
     {
       key: "surgeon",
-      label: "Surgeon",
+      label: surgeryTableDict.table.surgeon,
       render: (row) => (
         <>
           <div className="text-sm font-medium text-gray-900">
@@ -175,7 +178,7 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "status",
-      label: "Status",
+      label: surgeryTableDict.table.status,
       render: (row) => (
         <span
           className={`rounded-full border px-4 py-1 text-xs font-medium ${getStatusStyle(
@@ -188,24 +191,24 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "action",
-      label: "Action",
+      label: surgeryTableDict.table.action,
       className: "text-right",
       render: (row) => (
         <ActionMenu actions={[
           {
-            label: "View",
+            label: surgeryTableDict.table.actions.view,
             onClick: () => {
               router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
             }
           },
           {
-            label: "Edit",
+            label: surgeryTableDict.table.actions.edit,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
           },
           {
-            label: "Delete",
+            label: surgeryTableDict.table.actions.delete,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
@@ -213,18 +216,18 @@ const SurgeryTable: React.FC = () => {
         ]} className="bg-transparent hover:bg-transparent text-blue-500" />
       ),
     },
-  ], []);
+  ], [dict, lang, router]);
 
   return (
-    <div className="mb-8 overflow-hidden rounded-3xl bg-background shadow-soft">
+    <div className="mb-8 overflow-hidden rounded-3xl bg-background">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-light px-2 py-5">
-        <div className="flex gap-2 rounded-2xl py-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-2 pt-4">
+        <div className="flex gap-2 rounded-2xl">
           <DynamicTabs
             tabs={[
-              { key: "Surgeries", label: "Surgeries" },
-              { key: "Ongoing", label: "Ongoing" },
-              { key: "Upcoming", label: "Upcoming" },
+              { key: "Surgeries", label: surgeryTableDict.tabs.all },
+              { key: "Ongoing", label: surgeryTableDict.tabs.ongoing },
+              { key: "Upcoming", label: surgeryTableDict.tabs.upcoming },
             ]}
             defaultTab={activeTab}
             onChange={(v) => setActiveTab(v)}
@@ -237,7 +240,7 @@ const SurgeryTable: React.FC = () => {
           className="text-blue-500 text-sm"
           onClick={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
         >
-          View All
+          {surgeryTableDict.viewAll}
         </Button>
       </div>
 

@@ -6,16 +6,19 @@ import PatientCard from "./UI/PatientCard";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button"
 import { ROUTES } from "@/lib/routes";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const EmergencySurgeries: React.FC = () => {
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const emergencyDict = dict.pages.surgery.dashboard;
 
   return (
-    <div className="flex flex-col rounded-xl pt-6 shadow-soft bg-background mb-4">
+    <div className="flex flex-col rounded-xl pt-6 bg-background mb-4">
       <div className="flex flex-row items-center justify-between pl-4">
         <div className="text-lg font-medium">
-          Emergency Surgeries
+          {emergencyDict.emergencySurgeries}
         </div>
         <Button
           variant="link"
@@ -24,7 +27,7 @@ const EmergencySurgeries: React.FC = () => {
             router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`);
           }}
         >
-          View All
+          {emergencyDict.viewAll}
         </Button>
       </div>
       <div className="p-2">

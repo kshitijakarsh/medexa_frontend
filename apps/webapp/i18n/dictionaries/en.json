@@ -1260,9 +1260,223 @@
       }
     },
     "surgery": {
-      "tabs": {
-        "surgery": "Surgery",
-        "Surgeries Today" : "Surgeries Today"
+      "common": {
+        "add": "Add",
+        "action": "Action",
+        "calendarView": "Calendar View",
+        "sort": {
+          "label": "Sort",
+          "nearestDate": "Nearest Date",
+          "farthestDate": "Farthest Date"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "department": "Department",
+        "doctor": "Doctor"
+      },
+      "dashboard": {
+        "emergencySurgeries": "Emergency Surgeries",
+        "viewAll": "View All",
+        "surgeriesToday": "Surgeries Today",
+        "totalSurgeries": "Total Surgeries",
+        "completed": "Completed",
+        "pending": "Pending",
+        "patientTypes": "Patient Types",
+        "ipdPatients": "IPD Patients",
+        "emergency": "Emergency",
+        "surgeryRequest": "Surgery Request",
+        "pendingRequest": "Pending Request",
+        "prescriptionsIssued": "Prescriptions Issued",
+        "tabs": {
+          "all": "Surgeries",
+          "ongoing": "Ongoing",
+          "upcoming": "Upcoming"
+        },
+        "table": {
+          "otRoom": "OT Room",
+          "patient": "Patient",
+          "time": "Time",
+          "procedure": "Procedure",
+          "surgeon": "Surgeon",
+          "status": "Status",
+          "action": "Action",
+          "actions": {
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete"
+          }
+        },
+        "alerts": {
+          "title": "OT Critical Alerts & Actions",
+          "loading": "Loading...",
+          "noUpcoming": "No upcoming surgeries",
+          "noRequests": "No surgery requests",
+          "upcomingSurgeries": "Upcoming Surgeries",
+          "surgeryRequests": "Surgery Requests"
+        }
+      },
+      "otSchedule": {
+        "surgeryList": "Surgery List",
+        "addSurgery": "Add Surgery",
+        "dateRange": "Date Range",
+        "columns": {
+          "patient": "Patient",
+          "requestedDoctor": "Requested Doctor",
+          "procedure": "Procedure",
+          "surgeon": "Surgeon",
+          "requestedFor": "Requested For",
+          "urgency": "Urgency"
+        }
+      },
+      "preOp": {
+        "surgeriesRequestList": "Surgeries Request List",
+        "tabs": {
+          "allSurgeries": "All Surgeries",
+          "preOp": "Pre-Op",
+          "intraOp": "Intra Op",
+          "postOp": "Post-Op"
+        }
+      },
+      "wardStore": {
+        "wardStore": "Ward Store",
+        "selectWard": "Select Ward",
+        "mainTabs": {
+          "consumptionLogSection": "Consumption Log",
+          "consumptionLogSubItems": {
+            "allEquipmentUsage": "All Consumption",
+            "running": "Ward Consumption",
+            "completed": "Patient Consumption"
+          },
+          "equipmentUsageSection": "Equipment Usage Logs",
+          "equipmentUsageSubItems": {
+            "all": "All",
+            "ward": "Ward",
+            "patient": "Patient"
+          },
+          "wardStockSection": "Ward Stock",
+          "wardStockSubItems": {
+            "consumptionStock": "Consumption Stock",
+            "equipmentStock": "Equipment Stock"
+          }
+        },
+        "subTabs": {
+          "wardStock": "Ward Stock",
+          "consumptionLog": "Consumption Log",
+          "equipmentUsage": "Equipment Usage Logs",
+          "all": "All",
+          "ward": "Ward",
+          "patient": "Patient",
+          "running": "Running",
+          "completed": "Completed",
+          "consumptionStock": "Consumption Stock",
+          "equipmentStock": "Equipment Stock"
+        },
+        "consumptionLog": {
+          "modal": {
+            "title": "Consumables",
+            "subtitle": "Add Consumables Items",
+            "usageType": "Usage Type",
+            "patient": "Patient",
+            "itemName": "Item Name",
+            "quantity": "Quantity",
+            "reason": "Reason",
+            "notes": "Notes",
+            "placeholders": {
+              "usageType": "Select Usage Type",
+              "patient": "Select Patient",
+              "itemName": "Select Item Name",
+              "quantity": "Enter Quantity",
+              "reason": "Select Reason",
+              "notes": "Enter / Instructions"
+            }
+          }
+        },
+        "stockRequests": {
+          "title": "Ward Stock",
+          "addRequest": "Add Request Stock",
+          "tabs": {
+            "all": "Stock Requests",
+            "issued": "Issued",
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected",
+            "partiallyApproved": "Partially Approved"
+          },
+          "table": {
+            "requestId": "Request ID",
+            "itemName": "Item Name",
+            "quantity": "Quantity",
+            "requestedDate": "Requested Date",
+            "requestedBy": "Requested By",
+            "status": "Status",
+            "storeRemarks": "Store Remarks",
+            "action": "Action"
+          },
+          "modal": {
+            "title": "Request Stock",
+            "subtitle": "Send Request Stock",
+            "category": "Category",
+            "itemName": "Item Name",
+            "quantityNeeded": "Quantity Needed",
+            "urgency": "Urgency",
+            "reason": "Reason for Request",
+            "requiredByDate": "Required By Date",
+            "notes": "Notes",
+            "placeholders": {
+              "category": "Select Category",
+              "itemName": "Select Item Name",
+              "quantity": "Enter Quantity",
+              "urgency": "Select Urgency",
+              "reason": "Select Reason for Request",
+              "date": "Select Date",
+              "notes": "Enter Notes / Instructions"
+            }
+          }
+        }
+      },
+      "surgeryDetails": {
+        "tabs": {
+          "details": "Details",
+          "preOp": "Pre-Op",
+          "surgery": "Surgery",
+          "postOp": "Post-Op"
+        },
+        "details": {
+          "title": "Schedule Surgery",
+          "surgicalTeam": "Surgical Team",
+          "fields": {
+            "procedure": "Procedure",
+            "department": "Department",
+            "urgency": "Urgency",
+            "estimatedDuration": "Estimated Duration (hours)",
+            "surgeryDate": "Surgery Date",
+            "surgeryTime": "Surgery Time",
+            "otRoom": "OT Room",
+            "surgeonTeam": "Select Surgeon Team",
+            "surgeon": "Surgeon",
+            "assistantSurgeons": "Assistant Surgeons",
+            "anaesthetist": "Anaesthetist",
+            "scrubNurse": "Scrub Nurse",
+            "circulatingNurse": "Circulating Nurse",
+            "otTechnician": "OT Technician"
+          },
+          "actions": {
+            "cancel": "CANCEL",
+            "updateRequest": "Update Request"
+          }
+        },
+        "clinicalSidebar": {
+          "activeProblems": "Active Problems",
+          "allergies": "Allergies",
+          "ongoingMedications": "Ongoing Medications",
+          "activeCondition": "Active Condition",
+          "ongoingMedication": "Ongoing Medication",
+          "surgeryIn": "Surgery in",
+          "at": "at",
+          "noRecords": "No records found"
+        }
       }
     }
   },

@@ -1,47 +1,34 @@
 "use client";
 
 import React from "react";
-import { MoreVertical } from "lucide-react";
 import { Badge } from "@workspace/ui/components/badge";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { WardStockItem } from "./ConsumptionStock";
 import ActionMenu from "@/components/common/action-menu";
 
-// --- Mock Data ---
-const EQUIPMENT_STOCK_DATA: WardStockItem[] = [
-    {
-        id: "e1",
-        itemName: "Vital Signs Monitor",
-        category: "Equipment",
-        currentQty: 5,
-        minQty: 2,
-        store: "Main Store",
-        expiry: "N/A",
-        status: "Available",
-    },
-    {
-        id: "e2",
-        itemName: "Defibrillator",
-        category: "Equipment",
-        currentQty: 2,
-        minQty: 1,
-        store: "Main Store",
-        expiry: "2026-01-01 12:00",
-        status: "Low Stock",
-    },
-    {
-        id: "e3",
-        itemName: "Surgical Laser",
-        category: "Equipment",
-        currentQty: 0,
-        minQty: 1,
-        store: "Main Store",
-        expiry: "N/A",
-        status: "Out Of Stock",
-    },
-];
+import { WardStock } from "@/lib/api/surgery/ward";
 
-export const EquipmentStock = () => {
+interface EquipmentStockProps {
+    data?: WardStock[];
+    isLoading: boolean;
+}
+
+export const EquipmentStock = ({ data, isLoading }: EquipmentStockProps) => {
+    // Map API data (snake_case) to table display format
+    const tableData: WardStockItem[] = React.useMemo(() => {
+        if (!data) return [];
+        return data.map((item) => ({
+            id: item.id,
+            itemName: item.item_name,
+            category: item.category,
+            currentQty: item.current_qty,
+            minQty: item.min_qty,
+            store: item.store || "—",
+            expiry: item.expiry || "—",
+            status: item.status,
+        }));
+    }, [data]);
+
     const columns = [
         {
             key: "itemName",
@@ -95,26 +82,17 @@ export const EquipmentStock = () => {
             label: "Action",
             render: () => (
                 <ActionMenu actions={[
-                                    {
-                                        label: "View",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    },
-                                    {
-                                        label: "Edit",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    },
-                                    {
-                                        label: "Delete",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    }
-                                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
-                
+                    {
+                        label: "View",
+                    },
+                    {
+                        label: "Edit",
+                    },
+                    {
+                        label: "Delete",
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
+
             ),
         },
     ];
@@ -122,12 +100,13 @@ export const EquipmentStock = () => {
     return (
         <div className="flex flex-col h-full">
             {/* Data Table */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="">
                 <div className="overflow-x-auto">
                     <ResponsiveDataTable
                         columns={columns}
-                        data={EQUIPMENT_STOCK_DATA}
+                        data={tableData}
                         striped
+                        loading={isLoading}
                     />
                 </div>
             </div>

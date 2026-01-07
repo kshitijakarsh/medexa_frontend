@@ -12,7 +12,7 @@ import NewButton from "@/components/common/new-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { AnesthesiaPlan as AnesthesiaPlanType, createAnesthesiaApiClient } from "@/lib/api/surgery/anesthesia";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+
 import { toast } from "@workspace/ui/lib/sonner";
 import { Info } from "lucide-react";
 
@@ -29,6 +29,7 @@ interface AnesthesiaPlanProps {
   onTabChange?: (tab: string) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  surgeryId?: string;
   patientId?: string;
 }
 
@@ -37,9 +38,9 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   onTabChange,
   isEditing,
   setIsEditing,
+  surgeryId,
   patientId,
 }) => {
-  const { id: surgeryId } = useParams();
   const anesthesiaApi = createAnesthesiaApiClient();
 
   const { data: anesthesiaResponse, isLoading } = useQuery({
@@ -98,6 +99,7 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
       <NewVitals
         open={isVitalsModalOpen}
         onOpenChange={setIsVitalsModalOpen}
+        patientId={patientId}
       />
 
       <div className="flex items-center justify-between mb-2 px-3">
@@ -136,8 +138,8 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
       <div className="w-full bg-slate-200 h-px"></div>
 
       <div className="py-2">
-        <div className="flex justify-end items-center gap-1">
-          <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
+        <div className="flex justify-end items-center gap-1 mr-2">
+          <div className="flex items-center rounded-full px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
             {/* {updatedAt ? (
                 <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
               ) : */}
@@ -168,7 +170,6 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
           />
         ) : activeTab === "Vitals Examination" ? (
           <VitalsExamination
-            isEditing={isEditing}
             patientId={patientId}
           />
         ) : activeTab === "ASA & Risk" ? (

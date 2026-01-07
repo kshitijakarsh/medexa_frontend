@@ -63,29 +63,52 @@ export interface WardTypeListResponse {
     data: WardType[];
 }
 
-export interface EquipmentUsageLogListResponse {
+export interface WardStock {
+    id: string;
+    item_name: string;
+    category: "Consumables" | "Equipment";
+    current_qty: number;
+    min_qty: number;
+    store: string;
+    expiry: string;
+    status: "Available" | "Low Stock" | "Out Of Stock";
+}
+
+export interface WardStockListResponse {
     success: boolean;
-    data: EquipmentUsageLog[];
+    data: WardStock[];
     pagination?: {
         page: number;
         limit: number;
         total: number;
         totalPages: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
     };
 }
 
-export interface ConsumptionLogListResponse {
+export interface StockRequest {
+    id: string;
+    request_id: string;
+    item_name: string;
+    quantity: number;
+    requested_date: string;
+    requested_by_id?: string;
+    requested_by?: {
+        id: string;
+        first_name: string;
+        last_name: string;
+    };
+    status: "Issued" | "Pending" | "Approved" | "Rejected" | "Partially Approved";
+    store_remarks?: string;
+}
+
+export interface StockRequestListResponse {
     success: boolean;
-    data: ConsumptionLog[];
+    data: StockRequest[];
     pagination?: {
         page: number;
         limit: number;
         total: number;
         totalPages: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
     };
 }
 
@@ -135,6 +158,38 @@ class WardApiClient {
     }) {
         const config = await this.getConfig();
         return axios.get(`${this.baseUrl}/api/v1/consumption-logs`, {
+            ...config,
+            params,
+        });
+    }
+
+    /* ---------------------------------------------------
+       GET: Ward Stock
+    --------------------------------------------------- */
+    async getWardStock(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        category?: string;
+    }) {
+        const config = await this.getConfig();
+        return axios.get<WardStockListResponse>(`${this.baseUrl}/api/v1/ward-stock`, {
+            ...config,
+            params,
+        });
+    }
+
+    /* ---------------------------------------------------
+       GET: All Stock Requests
+    --------------------------------------------------- */
+    async getStockRequests(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+    }) {
+        const config = await this.getConfig();
+        return axios.get<StockRequestListResponse>(`${this.baseUrl}/api/v1/stock-requests`, {
             ...config,
             params,
         });

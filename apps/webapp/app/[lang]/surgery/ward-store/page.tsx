@@ -8,8 +8,11 @@ import { ConsumptionLogSection } from "./_components/consumption-log/Consumption
 import { EquipmentUsageSection } from "./_components/equipment-usage/EquipmentUsageSection";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@workspace/ui/components/select";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export default function WardStorePage() {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
     const [mainTab, setMainTab] = useState("Ward Stock");
     const [selectedWardId, setSelectedWardId] = useState<string | undefined>(undefined);
 
@@ -39,11 +42,11 @@ export default function WardStorePage() {
     return (
         < div >
             < div className="flex items-center justify-between mb-4" >
-                <h1 className="text-lg font-normal">Ward Store</h1>
+                <h1 className="text-lg font-normal">{wardStoreDict.wardStore}</h1>
                 <div className="flex items-center gap-3">
                     <Select value={selectedWardId} onValueChange={setSelectedWardId}>
                         <SelectTrigger className="h-9 border-slate-200 text-sm rounded-full bg-white px-4">
-                            <SelectValue placeholder="Select Ward">
+                            <SelectValue placeholder={wardStoreDict.selectWard}>
                                 {selectedWardName}
                             </SelectValue>
                         </SelectTrigger>
@@ -63,9 +66,9 @@ export default function WardStorePage() {
                 <DynamicTabs
                     defaultTab={mainTab}
                     tabs={[
-                        { label: "Ward Stock", key: "Ward Stock" },
-                        { label: "Consumption Log", key: "Consumption Log" },
-                        { label: "Equipment Usage Logs", key: "Equipment Usage Logs" },
+                        { label: wardStoreDict.mainTabs.wardStockSection, key: "Ward Stock" },
+                        { label: wardStoreDict.mainTabs.consumptionLogSection, key: "Consumption Log" },
+                        { label: wardStoreDict.mainTabs.equipmentUsageSection, key: "Equipment Usage Logs" },
                     ]}
                     onChange={setMainTab}
                 />

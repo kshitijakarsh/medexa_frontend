@@ -4,16 +4,16 @@ import ChecklistSidebar from "../shared/ChecklistSidebar";
 import { NurseCareEditMode } from "./NurseCareEditMode";
 import { NurseCareViewMode } from "./NurseCareViewMode";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { createNurseNotesApiClient } from "@/lib/api/surgery/nurse-notes";
 
 type NurseCareProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
+  surgeryId?: string;
+  patientId?: string;
 };
 
-export default function NurseCare({ isEditing, onSaveDraft }: NurseCareProps) {
-  const { id: surgeryId } = useParams();
+export default function NurseCare({ isEditing, onSaveDraft, surgeryId, patientId }: NurseCareProps) {
   const nurseNotesApi = createNurseNotesApiClient();
 
   const { data: nurseNotesResponse, isLoading } = useQuery({

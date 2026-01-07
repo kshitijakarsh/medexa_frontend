@@ -5,6 +5,7 @@ import { useRouter, useSearchParams, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
+import { useDictionary } from "@/i18n/use-dictionary";
 import ActionMenu from "@/components/common/action-menu";
 import { createSurgeryTeamApiClient, SurgeryTeam } from "@/lib/api/surgery/teams";
 import {
@@ -55,6 +56,7 @@ function TeamsListContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { lang } = useParams();
+    const dict = useDictionary();
 
     const initialPage = parseInt(searchParams.get("page") || "1");
     const [page, setPage] = useState(initialPage);
@@ -89,6 +91,7 @@ function TeamsListContent() {
         data: teamsData,
         isLoading,
         error: teamsError,
+        refetch,
     } = useQuery({
         queryKey: ["surgery-teams", searchQuery, selectedStatus, selectedDept],
         queryFn: async () => {
@@ -262,27 +265,27 @@ function TeamsListContent() {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
                         <DateRangeDropdown
-                            label="Date Range"
+                            label={dict.pages.surgery.otSchedule.dateRange}
                             value={dateRange}
                             onSelect={setDateRange}
                         />
                         <FilterDropdown
                             icon={<BriefcaseMedical size={16} />}
-                            label="Department"
+                            label={dict.pages.surgery.common.department}
                             options={departments.length > 0 ? departments : ["No Departments"]}
                             value={selectedDept}
                             onSelect={setSelectedDept}
                         />
                         <FilterDropdown
                             icon={<Stethoscope size={16} />}
-                            label="Doctor"
+                            label={dict.pages.surgery.common.doctor}
                             options={doctors.length > 0 ? doctors : ["No Doctors"]}
                             value={selectedDoctor}
                             onSelect={setSelectedDoctor}
                         />
                         <FilterDropdown
                             icon={<Ellipsis size={16} />}
-                            label="Status"
+                            label={dict.common.status}
                             options={["Active", "Inactive"]}
                             value={selectedStatus}
                             onSelect={setSelectedStatus}
@@ -307,7 +310,7 @@ function TeamsListContent() {
             <div className="flex items-center justify-between gap-4 my-2">
                 {/* LEFT */}
                 <div className="flex shrink-0 items-center gap-3">
-                    <FilterButton onClick={() => { }} className="bg-blue-500 text-white hover:none" />
+                    <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                 </div>
 
                 {/* RIGHT */}

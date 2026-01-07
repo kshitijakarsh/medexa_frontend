@@ -5,16 +5,16 @@ import ChecklistSidebar from "../shared/ChecklistSidebar";
 import { PostOpEditMode } from "./PostOpEditMode";
 import { PostOpViewMode } from "./PostOpViewMode";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { createPostopApiClient } from "@/lib/api/surgery/post-op";
 
 type PostOpCareProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
+  surgeryId?: string;
+  patientId?: string;
 };
 
-export default function PostOpCare({ isEditing, onSaveDraft }: PostOpCareProps) {
-  const { id: surgeryId } = useParams();
+export default function PostOpCare({ isEditing, onSaveDraft, surgeryId, patientId }: PostOpCareProps) {
   const postopApi = createPostopApiClient();
 
   const { data: postopResponse, isLoading } = useQuery({

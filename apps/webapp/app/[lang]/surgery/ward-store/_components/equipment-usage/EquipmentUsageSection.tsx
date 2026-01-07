@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { createWardApiClient } from "@/lib/api/surgery/ward";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
+import FilterButton from "@/components/common/filter-button";
 import { SlidersHorizontal } from "lucide-react";
 import { EquipmentUsageLogs } from "./EquipmentUsageLogs";
 import { AddEquipmentUsageModal } from "./AddEquipmentUsageModal";
 
 export function EquipmentUsageSection() {
+    const dict = useDictionary();
     const [equipmentSubTab, setEquipmentSubTab] = useState("All Equipment Usage");
     const [search, setSearch] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
@@ -18,6 +21,7 @@ export function EquipmentUsageSection() {
     const {
         data: logsResponse,
         isLoading,
+        refetch,
     } = useQuery({
         queryKey: ["equipment-usage-logs", equipmentSubTab, search],
         queryFn: async () => {
@@ -44,18 +48,16 @@ export function EquipmentUsageSection() {
                         <DynamicTabs
                             defaultTab={equipmentSubTab}
                             tabs={[
-                                { label: "All Equipment Usage", key: "All Equipment Usage" },
-                                { label: "Running", key: "Running" },
-                                { label: "Completed", key: "Completed" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.allEquipmentUsage, key: "All Equipment Usage" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.running, key: "Running" },
+                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.completed, key: "Completed" },
                             ]}
                             onChange={setEquipmentSubTab}
                         />
                     </div>
 
                     <div className="flex items-center gap-3 ml-auto">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-full text-sm font-medium transition-colors hover:bg-blue-50/50">
-                            Filter <SlidersHorizontal size={16} />
-                        </button>
+                        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                         <SearchInput
                             value={search}
                             onChange={setSearch}

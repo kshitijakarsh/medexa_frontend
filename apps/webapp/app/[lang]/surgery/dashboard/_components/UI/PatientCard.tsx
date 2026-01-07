@@ -35,9 +35,7 @@ export default function PatientCard({
     <CardBlock
       className="
         flex h-28 w-full flex-col justify-between
-        rounded-xl bg-background p-3
-        shadow-soft
-      "
+        rounded-xl bg-background p-3"
     >
       {/* TOP — Patient */}
       <AppointmentPatientCell

@@ -300,7 +300,7 @@ export default function NewSurgeryPage() {
 
 
                     {/* Tab Content Area */}
-                    <div className="bg-white rounded-3xl p-4 shadow-soft flex-1 overflow-y-auto relative">
+                    <div className="bg-white rounded-3xl p-4 flex-1 overflow-y-auto relative">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-lg font-bold text-slate-800">Surgery</h2>
                             <Button
