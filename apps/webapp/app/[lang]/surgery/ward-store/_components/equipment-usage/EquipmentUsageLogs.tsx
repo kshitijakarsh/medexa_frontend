@@ -27,15 +27,19 @@ export type EquipmentUsageItem = {
 export const EquipmentUsageLogs = ({
     data,
     isLoading,
+    onEdit,
+    onDelete,
 }: {
     data?: EquipmentUsageLog[];
     isLoading: boolean;
+    onEdit?: (id: string) => void;
+    onDelete?: (id: string) => void;
 }) => {
     const tableData: EquipmentUsageItem[] = React.useMemo(() => {
         if (!data) return [];
         return data.map((log) => ({
             id: log.id,
-            equipmentName: log.equipment_name,
+            equipmentName: log.item_name,
             assetId: log.asset_id,
             patient: {
                 name: log.patient ? `${log.patient.first_name} ${log.patient.last_name}` : "Unknown Patient",
@@ -108,7 +112,7 @@ export const EquipmentUsageLogs = ({
         {
             key: "action",
             label: "Action",
-            render: () => (
+            render: (row: EquipmentUsageItem) => (
                 <ActionMenu actions={[
                     {
                         label: "View",
@@ -118,15 +122,15 @@ export const EquipmentUsageLogs = ({
                     },
                     {
                         label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        onClick: () => {
+                            if (onEdit) onEdit(row.id);
+                        }
                     },
                     {
                         label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        onClick: () => {
+                            if (onDelete) onDelete(row.id);
+                        }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
 

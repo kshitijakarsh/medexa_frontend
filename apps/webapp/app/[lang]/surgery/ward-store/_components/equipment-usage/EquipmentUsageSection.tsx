@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createWardApiClient } from "@/lib/api/surgery/ward";
 import { useDictionary } from "@/i18n/use-dictionary";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
-import { SlidersHorizontal } from "lucide-react";
+import { useDeleteEquipmentUsageLog, useEquipmentUsageLogs } from "@/app/[lang]/surgery/_hooks/useWard";
 import { EquipmentUsageLogs } from "./EquipmentUsageLogs";
 import { AddEquipmentUsageModal } from "./AddEquipmentUsageModal";
 
@@ -15,29 +13,40 @@ export function EquipmentUsageSection() {
     const [equipmentSubTab, setEquipmentSubTab] = useState("All Equipment Usage");
     const [search, setSearch] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedLogId, setSelectedLogId] = useState<string | undefined>(undefined);
 
-    const wardApi = createWardApiClient({});
+    const deleteLogMutation = useDeleteEquipmentUsageLog();
+
+    const handleEdit = (id: string) => {
+        setSelectedLogId(id);
+        setShowAddModal(true);
+    };
+
+    const handleDelete = (id: string) => {
+        deleteLogMutation.mutate(id);
+    };
+
+    const handleModalClose = (open: boolean) => {
+        setShowAddModal(open);
+        if (!open) {
+            setSelectedLogId(undefined);
+        }
+    };
+
+    const statusFilter =
+        equipmentSubTab === "Running"
+            ? "Running"
+            : equipmentSubTab === "Completed"
+                ? "Completed"
+                : undefined;
 
     const {
         data: logsResponse,
         isLoading,
         refetch,
-    } = useQuery({
-        queryKey: ["equipment-usage-logs", equipmentSubTab, search],
-        queryFn: async () => {
-            const statusFilter =
-                equipmentSubTab === "Running"
-                    ? "Running"
-                    : equipmentSubTab === "Completed"
-                        ? "Completed"
-                        : undefined;
-
-            const response = await wardApi.getEquipmentUsageLogs({
-                status: statusFilter,
-                search: search || undefined,
-            });
-            return response.data;
-        },
+    } = useEquipmentUsageLogs({
+        status: statusFilter,
+        search: search || undefined,
     });
 
     return (
@@ -76,14 +85,18 @@ export function EquipmentUsageSection() {
             <EquipmentUsageLogs
                 data={logsResponse?.data}
                 isLoading={isLoading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
             />
 
             <AddEquipmentUsageModal
                 open={showAddModal}
-                onOpenChange={setShowAddModal}
-                onSave={(data) => {
+                onOpenChange={handleModalClose}
+                editId={selectedLogId}
+                onSave={(data: any) => {
                     console.log("Saving equipment usage:", data);
                     setShowAddModal(false);
+                    setSelectedLogId(undefined);
                 }}
             />
         </>

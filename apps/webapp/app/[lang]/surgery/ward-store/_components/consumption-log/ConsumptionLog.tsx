@@ -25,19 +25,23 @@ import { ConsumptionLog as ConsumptionLogType } from "@/lib/api/surgery/ward";
 export const ConsumptionLog = ({
     data,
     isLoading,
+    onEdit,
+    onDelete,
 }: {
     data?: ConsumptionLogType[];
     isLoading: boolean;
+    onEdit?: (id: string) => void;
+    onDelete?: (id: string) => void;
 }) => {
     // Map API data (snake_case) to table display format
     const tableData: ConsumptionLogItem[] = React.useMemo(() => {
         if (!data) return [];
         return data.map((log) => ({
             id: log.id,
-            date: log.date,
+            date: log.date || "-",
             itemName: log.item_name,
             quantity: log.quantity,
-            usageType: log.usage_type,
+            usageType: (log.usage_type.charAt(0).toUpperCase() + log.usage_type.slice(1)) as "Patient" | "Ward",
             patient: log.patient
                 ? {
                     name: `${log.patient.first_name} ${log.patient.last_name}`,
@@ -47,7 +51,7 @@ export const ConsumptionLog = ({
             loggedBy: log.logged_by
                 ? `${log.logged_by.first_name} ${log.logged_by.last_name}`
                 : "Unknown",
-            note: log.note || "-",
+            note: log.notes || "-",
         }));
     }, [data]);
 
@@ -94,25 +98,23 @@ export const ConsumptionLog = ({
         {
             key: "action",
             label: "Action",
-            render: () => (
+            render: (row: ConsumptionLogItem) => (
                 <ActionMenu actions={[
                     {
                         label: "View",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+
                     },
                     {
                         label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        onClick: () => {
+                            if (onEdit) onEdit(row.id);
+                        }
                     },
                     {
                         label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        onClick: () => {
+                            if (onDelete) onDelete(row.id);
+                        }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             ),

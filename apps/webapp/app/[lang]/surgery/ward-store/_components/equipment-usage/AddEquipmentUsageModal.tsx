@@ -28,16 +28,27 @@ type AddEquipmentUsageModalProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSave: (data: any) => void;
+    editId?: string;
 };
 
 import { createPatientsApiClient } from "@/lib/api/patients-api";
 import { createWardApiClient } from "@/lib/api/surgery/ward";
 import { useQuery } from "@tanstack/react-query";
+import { useCreateEquipmentUsageLog, useEquipmentUsageLog, useUpdateEquipmentUsageLog } from "@/app/[lang]/surgery/_hooks/useWard";
+import { useEffect } from "react";
+
+const MOCK_EQUIPMENT = [
+    { id: "e-mock-1", item_name: "Surgical Monitor" },
+    { id: "e-mock-2", item_name: "X-Ray Machine" },
+    { id: "e-mock-3", item_name: "Ventilator" },
+    { id: "e-mock-4", item_name: "Infusion Pump" },
+];
 
 export function AddEquipmentUsageModal({
     open,
     onOpenChange,
     onSave,
+    editId,
 }: AddEquipmentUsageModalProps) {
     const [patient, setPatient] = useState("");
     const [itemName, setItemName] = useState("");
@@ -49,6 +60,32 @@ export function AddEquipmentUsageModal({
 
     const patientsApi = createPatientsApiClient({});
     const wardApi = createWardApiClient({});
+    const createLogMutation = useCreateEquipmentUsageLog();
+    const updateLogMutation = useUpdateEquipmentUsageLog();
+
+    const { data: logData, isLoading: isLoadingLog } = useEquipmentUsageLog(editId);
+
+    useEffect(() => {
+        if (logData?.data) {
+            const log = logData.data;
+            setPatient(log.patient_id || "");
+            setItemName(log.item_name || "");
+            setAssetId(log.asset_id || "");
+            setCondition(log.condition_before_use || "");
+            setStartTime(log.start_time ? new Date(log.start_time) : undefined);
+            setEndTime(log.end_time ? new Date(log.end_time) : undefined);
+            setNotes(log.notes || "");
+        } else {
+            // Reset if not editing
+            setPatient("");
+            setItemName("");
+            setAssetId("");
+            setCondition("");
+            setStartTime(undefined);
+            setEndTime(undefined);
+            setNotes("");
+        }
+    }, [logData, open]);
 
     const { data: patientsData } = useQuery({
         queryKey: ["patients-small-list"],
@@ -68,17 +105,50 @@ export function AddEquipmentUsageModal({
         enabled: open,
     });
 
+    const allEquipment = [
+        ...(equipmentData || []),
+        ...MOCK_EQUIPMENT.filter(mock => !equipmentData?.some((item: any) => item.item_name === mock.item_name))
+    ];
+
     const handleSave = () => {
-        onSave({
-            patient,
-            itemName,
-            assetId,
-            condition,
-            startTime: startTime ? format(startTime, "dd/MM/yyyy") : "",
-            endTime: endTime ? format(endTime, "dd/MM/yyyy") : "",
-            notes
-        });
-        onOpenChange(false);
+        console.log("handleSave called", { itemName, assetId, startTime, condition, patient });
+        if (!itemName || !assetId || !startTime) {
+            console.log("Validation failed", { itemName, assetId, startTime });
+            return;
+        }
+
+        const payload = {
+            item_name: itemName,
+            asset_id: assetId,
+            condition_before_use: condition || "Good",
+            start_time: startTime.toISOString(),
+            end_time: endTime?.toISOString(),
+            notes,
+            patient_id: patient || undefined
+        };
+
+        if (editId) {
+            updateLogMutation.mutate({ id: editId, payload }, {
+                onSuccess: () => {
+                    console.log("Update successful");
+                    onOpenChange(false);
+                },
+                onError: (error) => {
+                    console.error("Update failed", error);
+                }
+            });
+        } else {
+            createLogMutation.mutate(payload, {
+                onSuccess: () => {
+                    console.log("Mutation successful");
+                    onOpenChange(false);
+                    // Reset form is handled in useEffect when open changes or logData is null
+                },
+                onError: (error) => {
+                    console.error("Mutation failed", error);
+                }
+            });
+        }
     };
 
     return (
@@ -86,8 +156,12 @@ export function AddEquipmentUsageModal({
             <DialogContent className="sm:max-w-[700px] gap-2 shadow-2xl border-slate-100 p-4">
                 <div className="flex justify-between items-center border-b pb-2 mb-2">
                     <div>
-                        <DialogTitle className="text-lg font-semibold">Equipment</DialogTitle>
-                        <p className="text-xs text-slate-500">Add Equipment for the patient</p>
+                        <DialogTitle className="text-lg font-semibold">
+                            {editId ? "Edit Equipment Usage Logs" : "Equipment"}
+                        </DialogTitle>
+                        <p className="text-xs text-slate-500">
+                            {editId ? "Update equipment usage for the patient" : "Add Equipment for the patient"}
+                        </p>
                     </div>
                 </div>
 
@@ -101,7 +175,7 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Patient" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {patientsData?.map((p) => (
+                                    {patientsData?.map((p: any) => (
                                         <SelectItem key={p.id} value={p.id.toString()}>
                                             {p.first_name} {p.last_name}
                                         </SelectItem>
@@ -119,12 +193,12 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Item Name" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {equipmentData?.map((item) => (
-                                        <SelectItem key={item.id} value={item.id}>
+                                    {allEquipment?.map((item: any) => (
+                                        <SelectItem key={item.id} value={item.item_name}>
                                             {item.item_name}
                                         </SelectItem>
                                     ))}
-                                    {(!equipmentData || equipmentData.length === 0) && (
+                                    {(!allEquipment || allEquipment.length === 0) && (
                                         <SelectItem value="none" disabled>No equipment found</SelectItem>
                                     )}
                                 </SelectContent>
@@ -141,7 +215,9 @@ export function AddEquipmentUsageModal({
                                     <SelectValue placeholder="Select Asset ID" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="none" disabled>No assets available</SelectItem>
+                                    <SelectItem value="ASSET-001">ASSET-001</SelectItem>
+                                    <SelectItem value="ASSET-002">ASSET-002</SelectItem>
+                                    <SelectItem value="ASSET-003">ASSET-003</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -240,9 +316,10 @@ export function AddEquipmentUsageModal({
                     </Button>
                     <Button
                         onClick={handleSave}
-                        className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider"
+                        disabled={createLogMutation.isPending || updateLogMutation.isPending}
+                        className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider disabled:opacity-50"
                     >
-                        SAVE
+                        {createLogMutation.isPending || updateLogMutation.isPending ? "SAVING..." : (editId ? "UPDATE" : "SAVE")}
                     </Button>
                 </DialogFooter>
             </DialogContent>

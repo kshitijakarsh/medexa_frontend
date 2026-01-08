@@ -1,14 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createWardApiClient } from "@/lib/api/surgery/ward";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { useConsumptionLogs, useDeleteConsumptionLog } from "@/app/[lang]/surgery/_hooks/useWard";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
-import { SlidersHorizontal } from "lucide-react";
 import { ConsumptionLog } from "./ConsumptionLog";
 import { AddConsumptionLogModal } from "./AddConsumptionLogModal";
 
@@ -17,31 +15,34 @@ export function ConsumptionLogSection() {
     const [logSubTab, setLogSubTab] = useState("All");
     const [search, setSearch] = useState("");
     const [showAddLogModal, setShowAddLogModal] = useState(false);
+    const [selectedLogId, setSelectedLogId] = useState<string | undefined>(undefined);
 
-    // API Client
-    const wardApi = createWardApiClient({});
+    const deleteLogMutation = useDeleteConsumptionLog();
 
-    // Fetch consumption logs with React Query
+    const handleEdit = (id: string) => {
+        setSelectedLogId(id);
+        setShowAddLogModal(true);
+    };
+
+    const handleDelete = (id: string) => {
+        deleteLogMutation.mutate(id);
+    };
+
+    const handleModalClose = (open: boolean) => {
+        setShowAddLogModal(open);
+        if (!open) {
+            setSelectedLogId(undefined);
+        }
+    };
+
+    // Fetch consumption logs with the new hook
     const {
         data: logsResponse,
         isLoading,
         refetch,
-    } = useQuery({
-        queryKey: ["consumption-logs", logSubTab, search],
-        queryFn: async () => {
-            const usageTypeFilter =
-                logSubTab === "Ward"
-                    ? "Ward"
-                    : logSubTab === "Patient"
-                        ? "Patient"
-                        : undefined;
-
-            const response = await wardApi.getConsumptionLogs({
-                usage_type: usageTypeFilter,
-                search: search || undefined,
-            });
-            return response.data;
-        },
+    } = useConsumptionLogs({
+        usage_type: logSubTab === "Ward" ? "Ward" : logSubTab === "Patient" ? "Patient" : undefined,
+        search: search || undefined,
     });
 
     return (
@@ -81,14 +82,17 @@ export function ConsumptionLogSection() {
             <ConsumptionLog
                 data={logsResponse?.data}
                 isLoading={isLoading}
+                onEdit={handleEdit}
             />
 
             <AddConsumptionLogModal
                 open={showAddLogModal}
-                onOpenChange={setShowAddLogModal}
-                onSave={(data) => {
+                onOpenChange={handleModalClose}
+                editId={selectedLogId}
+                onSave={(data: any) => {
                     console.log("Saving log:", data);
                     setShowAddLogModal(false);
+                    setSelectedLogId(undefined);
                 }}
             />
         </>
