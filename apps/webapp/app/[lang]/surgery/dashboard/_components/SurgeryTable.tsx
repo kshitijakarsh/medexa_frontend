@@ -198,14 +198,14 @@ const SurgeryTable: React.FC = () => {
           {
             label: surgeryTableDict.table.actions.view,
             onClick: () => {
-              router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
             }
           },
           {
             label: surgeryTableDict.table.actions.edit,
-            // onClick: () => {
-            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-            // }
+            onClick: () => {
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
+            }
           },
           {
             label: surgeryTableDict.table.actions.delete,

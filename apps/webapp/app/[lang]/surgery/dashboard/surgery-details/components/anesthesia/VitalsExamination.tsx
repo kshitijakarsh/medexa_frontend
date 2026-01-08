@@ -140,7 +140,7 @@ export const VitalsExamination = ({
 
       <NoteField
         label="Additional Note"
-        value={vitalsData?.additional_note || "Vital signs recorded successfully. No abnormal values detected in the latest examination."}
+        value={vitalsData?.additional_note || ""}
       />
 
       <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">

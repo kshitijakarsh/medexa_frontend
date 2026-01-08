@@ -186,13 +186,13 @@ export default function SurgeryList() {
                     {
                         label: dict.common.view,
                         onClick: () => {
-                            router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+                            router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
                         }
                     },
                     {
                         label: dict.common.edit,
                         onClick: () => {
-                            router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+                            router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
                         }
                     },
                     {

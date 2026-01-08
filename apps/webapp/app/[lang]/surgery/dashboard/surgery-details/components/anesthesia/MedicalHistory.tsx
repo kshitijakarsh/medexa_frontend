@@ -6,35 +6,17 @@ import { Column } from "@/components/common/data-table/ResponsiveDataTable";
 import { useQuery } from "@tanstack/react-query";
 import { createMedicalHistoryApiClient } from "@/lib/api/surgery/medical-history";
 
-const MEDICATIONS = [
-  {
-    id: 1,
-    name: "Metformin",
-    dose: "500mg",
-    frequency: "twice daily",
-    duration: "10 Days",
-  },
-  {
-    id: 2,
-    name: "Metformin",
-    dose: "500mg",
-    frequency: "twice daily",
-    duration: "10 Days",
-  },
-  {
-    id: 3,
-    name: "Metformin",
-    dose: "500mg",
-    frequency: "twice daily",
-    duration: "10 Days",
-  },
-];
+interface MedicationRow {
+  name: string;
+  dose: string;
+  frequency: string;
+  duration: string;
+}
 
-const columns: Column<typeof MEDICATIONS[number]>[] = [
+const columns: Column<MedicationRow>[] = [
   {
     key: "id",
     label: "Sl No",
-
   },
   {
     key: "name",
@@ -75,23 +57,22 @@ export const MedicalHistory = ({ patientId }: MedicalHistoryProps) => {
 
   const historyItem = response?.data?.[0]?.history;
 
-  const pastSurgicalHistory = historyItem?.surgeries
+  const pastSurgicalHistory = historyItem?.surgeries?.length
     ? historyItem.surgeries.map(s => `${s.name} in ${s.date}`).join(", ")
     : "No surgical history recorded";
 
-  const diseasesHistory = historyItem?.conditions
+  const diseasesHistory = historyItem?.conditions?.length
     ? historyItem.conditions.join(", ")
     : "No disease history recorded";
 
-  const medicationsData = historyItem?.medications
-    ? historyItem.medications.map((m, i) => ({
-      id: i + 1,
+  const medicationsData: MedicationRow[] = historyItem?.medications?.length
+    ? historyItem.medications.map((m) => ({
       name: m,
       dose: "N/A",
       frequency: "As prescribed",
       duration: "Ongoing",
     }))
-    : MEDICATIONS;
+    : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,9 +80,8 @@ export const MedicalHistory = ({ patientId }: MedicalHistoryProps) => {
         <label className="block text-sm text-slate-500 tracking-tight">
           History of Present Illness
         </label>
-        <p className="text-sm font-medium">
-          Patient reports Head pain radiating to left arm for the past 3 hours,
-          associated with sweating and shortness of breath.
+        <p className="text-sm font-medium text-slate-400">
+          No illness summary recorded
         </p>
       </div>
 
