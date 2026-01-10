@@ -171,7 +171,7 @@ type FormSchema = z.infer<typeof formSchema>;
 interface AddDialogProps {
   open: boolean;
   onClose: () => void;
-  mode: "designation" | "specialization" | "roles";
+  mode: "designation" | "specialization" | "userRoles";
   onSave?: (data: any[]) => void | Promise<void>;
   isLoading?: boolean;
 }
@@ -196,13 +196,13 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
   const titleMap = {
     designation: "Add Bulk Designation",
     specialization: "Add Bulk Specialization",
-    roles: "Add User Role",
+    userRoles: "Add User Role",
   };
 
   const labelMap = {
     designation: "Designation Name",
     specialization: "Specialization Name",
-    roles: "User Role Name",
+    userRoles: "User Role Name",
   };
 
   const handleSave = async (values: FormSchema) => {
@@ -217,7 +217,7 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
     }
   };
 
-  const isSingle = mode === "roles";
+  const isSingle = mode === "userRoles";
 
   return (
     <AppDialog
@@ -231,11 +231,10 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
           {/* Body */}
           <div className="max-h-[70vh] overflow-y-auto py-3">
             <div
-              className={`grid ${
-                fields.length > 1 && !isSingle
-                  ? "grid-cols-1 md:grid-cols-2"
-                  : "grid-cols-1"
-              } gap-6`}
+              className={`grid ${fields.length > 1 && !isSingle
+                ? "grid-cols-1 md:grid-cols-2"
+                : "grid-cols-1"
+                } gap-6`}
             >
               {fields.map((field, index) => (
                 <div
@@ -271,9 +270,8 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                           <div className="flex flex-col rounded-md px-3">
                             <FormLabel className="pb-2">Status</FormLabel>
                             <div
-                              className={`flex items-center gap-3 ${
-                                field.value ? "bg-green-50" : "bg-gray-50"
-                              } h-9 px-2`}
+                              className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"
+                                } h-9 px-2`}
                             >
                               <span className="text-sm text-red-500">
                                 Inactive
@@ -286,11 +284,10 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                                 />
                               </FormControl>
                               <span
-                                className={`text-sm ${
-                                  field.value
-                                    ? "text-green-600"
-                                    : "text-gray-400"
-                                }`}
+                                className={`text-sm ${field.value
+                                  ? "text-green-600"
+                                  : "text-gray-400"
+                                  }`}
                               >
                                 Active
                               </span>

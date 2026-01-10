@@ -69,8 +69,9 @@ export const ROUTES = {
 
   // HR
   HR: `${HR}/employee-configuration`,
+  HR_EMPLOYEE_CONFIGURATION: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
-
+  HR_LEAVE_MANAGEMENT: `${HR}/leave-management`,
   // Surgery
   SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
   SURGERY_OT_SCHEDULE: `${SURGERY_BASE}/ot-schedule`,

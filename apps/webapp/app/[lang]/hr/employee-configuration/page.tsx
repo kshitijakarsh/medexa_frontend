@@ -220,7 +220,7 @@ import SearchInput from "@/components/common/search-input"
 import NewButton from "@/components/common/new-button"
 import { getMockEmployees } from "./_components/api"
 import { PageHeader } from "@/components/common/page-header"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { createSpecialisationApiClient } from "@/lib/api/specialisations"
@@ -241,13 +241,13 @@ const employeeConfigurationSection = [
   { key: "humanResources", label: "Employee" },
   { key: "designation", label: "Designation Master" },
   { key: "specialization", label: "Specialization" },
-  { key: "roles", label: "User Roles" },
+  { key: "userRoles", label: "User Roles" },
 ]
 const PERMISSION_MAP = {
   humanResources: PERMISSIONS.EMPLOYEE,
   designation: PERMISSIONS.DESIGNATION,
   specialization: PERMISSIONS.SPECIALISATION,
-  roles: PERMISSIONS.ROLE,
+  userRoles: PERMISSIONS.ROLE,
 }
 
 export default function EmployeeConfigurationPage() {
@@ -257,9 +257,22 @@ export default function EmployeeConfigurationPage() {
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<any[]>([])
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<
-    "humanResources" | "designation" | "specialization" | "roles"
-  >("humanResources")
+    "humanResources" | "designation" | "specialization" | "userRoles"
+  >((searchParams.get("tab") as any) || "humanResources")
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab")
+    if (
+      tabParam &&
+      ["humanResources", "designation", "specialization", "userRoles"].includes(
+        tabParam
+      )
+    ) {
+      setActiveTab(tabParam as any)
+    }
+  }, [searchParams])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false)
   const [filters, setFilters] = useState<any>({})
@@ -379,7 +392,7 @@ export default function EmployeeConfigurationPage() {
       })
       return response.data
     },
-    enabled: activeTab === "roles" && !!roleClient,
+    enabled: activeTab === "userRoles" && !!roleClient,
   })
 
   const {
@@ -592,7 +605,7 @@ export default function EmployeeConfigurationPage() {
       setLoading(false)
     } else if (
       activeTab !== "specialization" &&
-      activeTab !== "roles" &&
+      activeTab !== "userRoles" &&
       activeTab !== "designation" &&
       activeTab !== "humanResources"
     ) {
@@ -624,7 +637,7 @@ export default function EmployeeConfigurationPage() {
 
   // Map roles data to table format
   useEffect(() => {
-    if (activeTab === "roles" && rolesData) {
+    if (activeTab === "userRoles" && rolesData) {
       const mappedData = rolesData.data.map((item, index) => {
         const date = new Date(item.created_at)
         const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
@@ -761,7 +774,7 @@ export default function EmployeeConfigurationPage() {
       {
         key: "name",
         label:
-          activeTab === "roles"
+          activeTab === "userRoles"
             ? "User Role"
             : activeTab === "specialization"
               ? "Specialization"
@@ -807,7 +820,7 @@ export default function EmployeeConfigurationPage() {
               if (activeTab === "specialization" && r._raw) {
                 setEditingSpecialization(r._raw)
                 setIsEditDialogOpen(true)
-              } else if (activeTab === "roles" && r._raw) {
+              } else if (activeTab === "userRoles" && r._raw) {
                 setEditingRole(r._raw)
                 setIsEditRoleDialogOpen(true)
               } else if (activeTab === "designation" && r._raw) {
@@ -824,7 +837,7 @@ export default function EmployeeConfigurationPage() {
                 ) {
                   deleteMutation.mutate(r._raw.id)
                 }
-              } else if (activeTab === "roles" && r._raw) {
+              } else if (activeTab === "userRoles" && r._raw) {
                 if (confirm("Are you sure you want to delete this role?")) {
                   deleteRoleMutation.mutate(r._raw.id)
                 }
@@ -856,7 +869,7 @@ export default function EmployeeConfigurationPage() {
   const handleSave = async (values: any[]) => {
     if (activeTab === "specialization") {
       await createMutation.mutateAsync(values)
-    } else if (activeTab === "roles") {
+    } else if (activeTab === "userRoles") {
       // Roles only accepts single entry (first item)
       if (values.length > 0) {
         await createRoleMutation.mutateAsync(values[0])
@@ -951,8 +964,13 @@ export default function EmployeeConfigurationPage() {
             <div className="flex-shrink-0 w-full lg:w-auto">
               <DynamicTabs
                 tabs={filteredTabs}
-                defaultTab="humanResources"
-                onChange={(tabKey) => setActiveTab(tabKey as any)}
+                defaultTab={activeTab}
+                onChange={(tabKey) => {
+                  setActiveTab(tabKey as any)
+                  const params = new URLSearchParams(searchParams.toString())
+                  params.set("tab", tabKey)
+                  router.push(`?${params.toString()}`)
+                }}
               />
             </div>
 
@@ -1034,55 +1052,55 @@ export default function EmployeeConfigurationPage() {
             pagination={
               (activeTab === "specialization" &&
                 specialisationsData?.pagination) ||
-              (activeTab === "roles" && rolesData?.pagination) ||
-              (activeTab === "designation" && designationsData?.pagination) ||
-              (activeTab === "humanResources" && employeesData?.pagination)
+                (activeTab === "userRoles" && rolesData?.pagination) ||
+                (activeTab === "designation" && designationsData?.pagination) ||
+                (activeTab === "humanResources" && employeesData?.pagination)
                 ? (() => {
-                    const paginationData =
-                      activeTab === "specialization"
-                        ? specialisationsData?.pagination
-                        : activeTab === "roles"
-                          ? rolesData?.pagination
-                          : activeTab === "designation"
-                            ? designationsData?.pagination
-                            : employeesData?.pagination
-                    if (!paginationData) return null
-                    return (
-                      <div className="flex items-center justify-between pb-4 px-4">
-                        <div className="text-sm text-muted-foreground">
-                          Showing {data.length} of{" "}
-                          {paginationData.totalData}{" "}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            disabled={page === 1 || loading}
-                          >
-                            Previous
-                          </Button>
-                          <div className="text-sm">
-                            Page {page} of {paginationData.totalPages}
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setPage((p) =>
-                                Math.min(paginationData.totalPages, p + 1)
-                              )
-                            }
-                            disabled={
-                              page === paginationData.totalPages || loading
-                            }
-                          >
-                            Next
-                          </Button>
-                        </div>
+                  const paginationData =
+                    activeTab === "specialization"
+                      ? specialisationsData?.pagination
+                      : activeTab === "userRoles"
+                        ? rolesData?.pagination
+                        : activeTab === "designation"
+                          ? designationsData?.pagination
+                          : employeesData?.pagination
+                  if (!paginationData) return null
+                  return (
+                    <div className="flex items-center justify-between pb-4 px-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing {data.length} of{" "}
+                        {paginationData.totalData}{" "}
                       </div>
-                    )
-                  })()
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page === 1 || loading}
+                        >
+                          Previous
+                        </Button>
+                        <div className="text-sm">
+                          Page {page} of {paginationData.totalPages}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setPage((p) =>
+                              Math.min(paginationData.totalPages, p + 1)
+                            )
+                          }
+                          disabled={
+                            page === paginationData.totalPages || loading
+                          }
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })()
                 : undefined
             }
             striped
@@ -1094,12 +1112,12 @@ export default function EmployeeConfigurationPage() {
       <AddDialog
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        mode={activeTab as "designation" | "specialization" | "roles"}
+        mode={activeTab as "designation" | "specialization" | "userRoles"}
         onSave={handleSave}
         isLoading={
           activeTab === "specialization"
             ? createMutation.isPending
-            : activeTab === "roles"
+            : activeTab === "userRoles"
               ? createRoleMutation.isPending
               : activeTab === "designation"
                 ? createDesignationMutation.isPending
