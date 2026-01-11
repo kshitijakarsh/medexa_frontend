@@ -106,6 +106,7 @@ interface UpdateEmployeeParams {
   specialisation_id?: number
   department_id?: number
   designation_id?: number
+  user_id?: number
 }
 
 interface Employee {
@@ -158,6 +159,7 @@ interface Employee {
   specialisation_id?: number
   department_id?: number
   designation_id?: number
+  user_id?: number
   tenant_id?: number
   created_at?: string
   updated_at?: string
