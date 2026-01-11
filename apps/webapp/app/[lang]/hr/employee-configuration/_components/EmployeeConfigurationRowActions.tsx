@@ -20,6 +20,8 @@ const PERMISSION_MAP: Record<string, any> = {
   roles: PERMISSIONS.ROLE,
 };
 
+import { useDictionary } from "@/i18n/dictionary-context";
+
 export function EmployeeConfigurationRowActions({
   onView,
   onEdit,
@@ -33,6 +35,7 @@ export function EmployeeConfigurationRowActions({
   userPermissions?: any[]; // accepts PermissionItem[]
   mode: string;
 }) {
+  const dict = useDictionary();
   // Convert objects → strings (if needed)
   const permissionList: string[] =
     userPermissions?.map((p: any) => (typeof p === "string" ? p : p.permission)) ??
@@ -49,7 +52,7 @@ export function EmployeeConfigurationRowActions({
   // VIEW action - always show for humanResources mode
   if (mode === "humanResources" && onView) {
     rowActions.push({
-      label: "View",
+      label: dict.common.view,
       icon: <Eye className="w-4 h-4" />,
       onClick: onView,
       variant: "info",
@@ -59,7 +62,7 @@ export function EmployeeConfigurationRowActions({
   // EDIT permission check
   if (permissionGroup && hasPermission(permissionList, permissionGroup.EDIT)) {
     rowActions.push({
-      label: "Edit",
+      label: dict.common.edit,
       icon: <Pencil className="w-4 h-4" />,
       onClick: onEdit,
       variant: "success",
@@ -69,7 +72,7 @@ export function EmployeeConfigurationRowActions({
   // DELETE permission check
   if (permissionGroup && hasPermission(permissionList, permissionGroup.DELETE)) {
     rowActions.push({
-      label: "Delete",
+      label: dict.common.delete,
       icon: <Trash2 className="w-4 h-4" />,
       onClick: onDelete,
       variant: "danger",
