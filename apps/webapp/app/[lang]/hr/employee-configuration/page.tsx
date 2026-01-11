@@ -237,13 +237,14 @@ import FilterButton from "@/components/common/filter-button"
 import { Can } from "@/components/common/app-can"
 import { ROUTES } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { useDictionary } from "@/i18n/dictionary-context"
 
-const employeeConfigurationSection = [
-  { key: "humanResources", label: "Employee" },
-  { key: "designation", label: "Designation Master" },
-  { key: "specialization", label: "Specialization" },
-  { key: "userRoles", label: "User Roles" },
-]
+const employeeConfigurationTabs = [
+  "humanResources",
+  "designation",
+  "specialization",
+  "userRoles",
+] as const
 const PERMISSION_MAP = {
   humanResources: PERMISSIONS.EMPLOYEE,
   designation: PERMISSIONS.DESIGNATION,
@@ -252,6 +253,7 @@ const PERMISSION_MAP = {
 }
 
 export default function EmployeeConfigurationPage() {
+  const dict = useDictionary()
   const userPermissions = useUserStore((s) => s.user?.role.permissions)
   const router = useRouter()
   const { withLocale } = useLocaleRoute()
@@ -301,10 +303,15 @@ export default function EmployeeConfigurationPage() {
   const permissionStrings =
     userPermissions?.map((p: any) => (typeof p === "string" ? p : p.name)) ?? []
 
-  const filteredTabs = employeeConfigurationSection.filter((t) => {
-    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
-    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false
-  })
+  const filteredTabs = employeeConfigurationTabs
+    .filter((key) => {
+      const perm = PERMISSION_MAP[key]
+      return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false
+    })
+    .map((key) => ({
+      key,
+      label: dict.pages.employeeConfiguration.tabs[key],
+    }))
 
   // Debounce search input
   useEffect(() => {
@@ -597,7 +604,7 @@ export default function EmployeeConfigurationPage() {
           contact: item.phone || "N/A",
           createdOn: formattedDate,
           addedBy: item.created_by ? `User ${item.created_by}` : "N/A",
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           avatar:
             item.photo_url || "https://i.pravatar.cc/100?img=" + (index + 1),
           _raw: item, // Store raw data for mutations
@@ -626,7 +633,7 @@ export default function EmployeeConfigurationPage() {
           sno: (page - 1) * limit + index + 1,
           id: item.id,
           name: item.name,
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           createdOn: formattedDate,
           addedBy: `User ${item.created_by}`,
           _raw: item, // Store raw data for mutations
@@ -648,7 +655,7 @@ export default function EmployeeConfigurationPage() {
           sno: (page - 1) * limit + index + 1,
           id: item.id,
           name: item.name,
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           createdOn: formattedDate,
           addedBy: `User ${item.created_by}`,
           _raw: item, // Store raw data for mutations
@@ -687,7 +694,7 @@ export default function EmployeeConfigurationPage() {
       return [
         {
           key: "humanResources",
-          label: "Human Resources",
+          label: dict.pages.employeeConfiguration.tabs.humanResources,
           render: (row: any) => (
             <div className="flex items-center gap-3">
               <img
@@ -704,32 +711,32 @@ export default function EmployeeConfigurationPage() {
         },
         {
           key: "designation",
-          label: "Designation",
+          label: dict.pages.employeeConfiguration.table.designation,
           render: (row: any) => row.designation,
         },
         {
           key: "department",
-          label: "Department",
+          label: dict.pages.employeeConfiguration.table.department,
           render: (row: any) => row.department,
         },
-        { key: "contact", label: "Contact", render: (row: any) => row.contact },
+        { key: "contact", label: dict.pages.employeeConfiguration.table.contact, render: (row: any) => row.contact },
         {
           key: "createdOn",
-          label: "Created On",
+          label: dict.pages.employeeConfiguration.table.createdOn,
           render: (row: any) => row.createdOn,
         },
         {
           key: "addedBy",
-          label: "Added By",
+          label: dict.pages.employeeConfiguration.table.addedBy,
           render: (row: any) => row.addedBy,
         },
         {
           key: "status",
-          label: "Status",
+          label: dict.pages.employeeConfiguration.table.status,
           render: (row: any) => (
             <span
               className={
-                row.status === "Active" ? "text-green-600" : "text-red-500"
+                row.status === dict.common.active ? "text-green-600" : "text-red-500"
               }
             >
               {row.status}
@@ -738,7 +745,7 @@ export default function EmployeeConfigurationPage() {
         },
         {
           key: "action",
-          label: "Action",
+          label: dict.pages.employeeConfiguration.table.action,
           render: (r: any) => (
             <div className="flex items-center gap-2">
               <EmployeeConfigurationRowActions
@@ -763,7 +770,7 @@ export default function EmployeeConfigurationPage() {
                 onDelete={() => {
                   if (
                     r._raw &&
-                    confirm("Are you sure you want to delete this employee?")
+                    confirm(dict.pages.employeeConfiguration.actions.confirmDelete)
                   ) {
                     deleteEmployeeMutation.mutate(r._raw.id)
                   }
@@ -782,7 +789,7 @@ export default function EmployeeConfigurationPage() {
     return [
       {
         key: "sno",
-        label: "S.No",
+        label: dict.pages.employeeConfiguration.table.sno,
         render: (r: any) => <span>{r.sno}</span>,
         className: "text-center w-[60px]",
       },
@@ -790,12 +797,12 @@ export default function EmployeeConfigurationPage() {
         key: "name",
         label:
           activeTab === "userRoles"
-            ? "User Role"
+            ? dict.pages.employeeConfiguration.table.userRole
             : activeTab === "specialization"
-              ? "Specialization"
+              ? dict.pages.employeeConfiguration.table.specialization
               : activeTab === "designation"
-                ? "Designation Name"
-                : "Name",
+                ? dict.pages.employeeConfiguration.table.designationName
+                : dict.pages.employeeConfiguration.table.name,
         render: (r: any) => (
           <span className="text-gray-800 font-medium">{r.name}</span>
         ),
@@ -946,7 +953,7 @@ export default function EmployeeConfigurationPage() {
       <Header />
 
       <div className="p-5 space-y-8">
-        <PageHeader title="Human Resources" />
+        <PageHeader title={dict.pages.employeeConfiguration.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Tabs and Actions */}
@@ -969,7 +976,7 @@ export default function EmployeeConfigurationPage() {
                             </Button>
                             <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
                             <QuickActionsMenu />
-                            <NewButton handleClick={handleNew} />
+                            <NewButton label={dict.pages.employeeConfiguration.actions.addNewEmployee} />
                         </div>
                     </div> */}
 
@@ -1013,7 +1020,7 @@ export default function EmployeeConfigurationPage() {
               <SearchInput
                 value={search}
                 onChange={setSearch}
-                placeholder="Search..."
+                placeholder={dict.common.search}
               />
               {/* </div> */}
 
