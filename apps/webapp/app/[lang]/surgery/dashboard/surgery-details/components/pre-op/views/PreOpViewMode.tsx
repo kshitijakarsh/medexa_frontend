@@ -362,7 +362,7 @@ export const PreOpViewMode = ({ sectionsData, setSectionsData, onEdit, metrics =
         }));
     };
 
-    const handleClearanceApprove = (data: { status: string; notes: string; doctor: string }) => {
+    const handleClearanceApprove = (data: { status: string; notes?: string; doctor: string }) => {
         if (!selectedClearanceItem) return;
 
         setSectionsData(prev => prev.map(section => {

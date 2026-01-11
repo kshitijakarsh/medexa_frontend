@@ -12,14 +12,19 @@ import { z, zodResolver } from "@workspace/ui/lib/zod";
 import { useForm, Controller } from "@workspace/ui/hooks/use-form";
 import { Form, FormField, FormItem, FormControl, FormMessage } from "@workspace/ui/components/form";
 
+export interface OrderRadiologyData {
+    procedure: string;
+    urgency: string;
+    isRequired: boolean;
+    notes?: string;
+}
+
 const orderRadiologySchema = z.object({
     procedure: z.string().min(1, "Required"),
     urgency: z.string().min(1, "Required"),
     isRequired: z.boolean(),
     notes: z.string().optional(),
 });
-
-type OrderRadiologyData = z.infer<typeof orderRadiologySchema>;
 
 type OrderRadiologyProcedureModalProps = {
     open: boolean;
