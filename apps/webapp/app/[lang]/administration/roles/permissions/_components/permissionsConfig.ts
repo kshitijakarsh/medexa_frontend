@@ -277,6 +277,11 @@ export const mainModules: MainModule[] = [
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       {
+        key: "bed",
+        label: "Bed",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
         key: "bedType",
         label: "Bed Type",
         actions: ["view", "create", "edit", "delete", "viewOne"],
@@ -338,7 +343,7 @@ export const mainModules: MainModule[] = [
       },
       {
         key: "patientCategory",
-        label: "Patients",
+        label: "Patient Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
       // {
@@ -366,6 +371,11 @@ export const mainModules: MainModule[] = [
         label: "Operation Category",
         actions: ["view", "create", "edit", "delete", "viewOne"],
       },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
+      },
     ],
   },
 
@@ -385,6 +395,7 @@ export const mainModules: MainModule[] = [
         label: "Appointment Management",
         actions: ["view", "create", "edit", "delete", "cancel"],
       },
+
     ],
   },
   {
@@ -415,6 +426,11 @@ export const mainModules: MainModule[] = [
         key: "billing",
         label: "Billing",
         actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
       },
     ],
   },
@@ -502,7 +518,7 @@ export const mainModules: MainModule[] = [
       {
         key: "visit",
         label: "Visits",
-        actions: ["view"],
+        actions: ["view", "viewOne", "edit"],
       },
       {
         key: "vitals",
@@ -532,7 +548,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view",],
+        actions: ["view", "viewOne"],
       },
       {
         key: "medications",
@@ -559,6 +575,11 @@ export const mainModules: MainModule[] = [
         label: "Additional Observations",
         actions: ["view", "viewOne", "create", "edit", "delete"],
       },
+      {
+        key: "storage",
+        label: "Storage",
+        actions: ["create"],
+      },
     ],
   },
 
@@ -568,6 +589,11 @@ export const mainModules: MainModule[] = [
     label: "Nurse",
     icon: Syringe,
     subModules: [
+      {
+        key: "visit",
+        label: "Visits",
+        actions: ["view", "viewOne", "edit"],
+      },
       {
         key: "users",
         label: "Users",
@@ -601,7 +627,7 @@ export const mainModules: MainModule[] = [
       {
         key: "nurse_notes",
         label: "Nurse Notes",
-        actions: ["view", "viewOne"],
+        actions: ["view", "viewOne", "create", "edit", "delete"],
       },
       {
         key: "medications",
@@ -645,7 +671,7 @@ export const mainModules: MainModule[] = [
     key: "frontoffice",
     id: 10,
     label: "Front Office",
-    icon: UserRound, // you can swap with Users / UserCog if preferred
+    icon: UserRound,
     subModules: [
       {
         key: "patient",
@@ -676,6 +702,31 @@ export const mainModules: MainModule[] = [
         key: "storage",
         label: "Storage",
         actions: ["create"],
+      },
+      {
+        key: "user",
+        label: "User",
+        actions: ["view"],
+      },
+      {
+        key: "department",
+        label: "Department",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "patientCategory",
+        label: "Patients Category",
+        actions: ["view", "create", "edit", "delete", "viewOne"],
+      },
+      {
+        key: "nurse_orders",
+        label: "Nurse Orders",
+        actions: ["view", "viewOne"],
+      },
+      {
+        key: "bed",
+        label: "Bed",
+        actions: ["view", "viewOne"],
       },
     ],
   },
@@ -734,6 +785,11 @@ export const mainModules: MainModule[] = [
         key: "anesthesiaPlans",
         label: "Anesthesia Plans",
         actions: ["view", "create", "edit", "delete"],
+      },
+      {
+        key: "users",
+        label: "Users",
+        actions: ["view"],
       },
     ],
   },

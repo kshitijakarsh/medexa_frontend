@@ -20,11 +20,14 @@ type DocumentViewModalProps = {
     document?: DocumentData;
 };
 
+import { useDictionary } from "@/i18n/use-dictionary";
+
 export default function DocumentViewModal({
     open,
     onOpenChange,
     document,
 }: DocumentViewModalProps) {
+    const dict = useDictionary();
     if (!document) return null;
 
     return (
@@ -43,11 +46,11 @@ export default function DocumentViewModal({
                     <div className="flex items-center gap-3 shrink-0">
                         <Button variant="outline" className="h-9 gap-2 text-blue-600 border-blue-200 hover:bg-blue-50">
                             <Printer size={16} />
-                            Print Document
+                            {dict.pages.surgery.surgeryDetails.preOp.modals.documentView.print}
                         </Button>
                         <Button className="h-9 gap-2 bg-blue-500 hover:bg-blue-600 text-white">
                             <Download size={16} />
-                            Download Document
+                            {dict.pages.surgery.surgeryDetails.preOp.modals.documentView.download}
                         </Button>
                     </div>
                 </div>
@@ -60,10 +63,10 @@ export default function DocumentViewModal({
                             </div>
                         ) : (
                             <>
-                                <h2 className="text-xl font-serif font-bold uppercase tracking-wider">Laboratories, Inc.</h2>
-                                <h3 className="text-lg font-serif italic">Test Request Form and Test Specifications</h3>
+                                <h2 className="text-xl font-serif font-bold uppercase tracking-wider">{dict.pages.surgery.surgeryDetails.preOp.modals.documentView.labName}</h2>
+                                <h3 className="text-lg font-serif italic">{dict.pages.surgery.surgeryDetails.preOp.modals.documentView.formTitle}</h3>
                                 <div className="text-xs text-slate-400 mt-8">
-                                    [Document Preview Placeholder]
+                                    {dict.pages.surgery.surgeryDetails.preOp.modals.documentView.placeholderPreview}
                                 </div>
                             </>
                         )}
@@ -74,7 +77,7 @@ export default function DocumentViewModal({
                 <div className="p-4 border-t border-slate-100 bg-white">
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-blue-100 bg-blue-50 text-xs text-slate-700">
                         <Info size={14} className="text-blue-500" />
-                        <span className="font-medium">Conducted by {document.conductedBy}</span>
+                        <span className="font-medium">{dict.pages.surgery.surgeryDetails.preOp.modals.documentView.conductedBy} {document.conductedBy}</span>
                         <span className="text-slate-300">•</span>
                         <span>{document.date}</span>
                     </div>

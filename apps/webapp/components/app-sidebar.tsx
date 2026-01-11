@@ -2,7 +2,6 @@
 import {
   Hospital,
   Handshake,
-  Activity,
   LayoutDashboard,
   Monitor,
   User2,
@@ -47,6 +46,7 @@ import {
   ROUTES,
   FRONTOFFICE_BASE,
   SURGERY_BASE,
+  NURSE_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 import { useDictionary } from "@/i18n/use-dictionary"
@@ -59,19 +59,21 @@ export function AppSidebar({ }) {
   const modulesAvailable = {
     administration: pathname.includes(ADMINISTRATION_BASE),
     doctor: pathname.includes(DOCTOR_BASE),
+    nurse: pathname.includes(NURSE_BASE),
     hr: pathname.includes(HR),
     // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
-    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)),
+    frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)) && !pathname.includes(NURSE_BASE),
     surgery: pathname.includes(SURGERY_BASE),
   }
 
   const items = [
-    ...(!modulesAvailable.hr && !modulesAvailable.doctor && !modulesAvailable.frontoffice
+    ...(!modulesAvailable.frontoffice && !modulesAvailable.doctor && !modulesAvailable.nurse && !modulesAvailable.hr && !modulesAvailable.surgery
       ? [
         {
           title: dict.nav.organizationSetup,
           url: [
             withLocale(ROUTES.ORGANIZATION),
+            withLocale(ROUTES.ADMINISTRATION_DEPARTMENT),
             withLocale(ROUTES.ADMINISTRATION_CHARGES),
             withLocale(ROUTES.ADMINISTRATION_ROLES),
             withLocale(ROUTES.ADMINISTRATION_OPERATION_THEATRES),
@@ -80,6 +82,8 @@ export function AppSidebar({ }) {
             withLocale(ROUTES.ADMINISTRATION_ROLES_PERMISSIONS),
             withLocale(ROUTES.ADMINISTRATION_INSURANCE),
             withLocale(ROUTES.ADMINISTRATION_USER),
+            withLocale(ROUTES.ADMINISTRATION_CHARGES),
+            withLocale(ROUTES.ADMINISTRATION_CHARGES_ADD),
           ],
           icon: Settings,
         },
@@ -93,6 +97,7 @@ export function AppSidebar({ }) {
           url: [withLocale(ROUTES.HR)],
           icon: IdCard,
         },
+
       ]
       : []),
 
@@ -102,98 +107,121 @@ export function AppSidebar({ }) {
           title: "Dashboard",
           url: [withLocale(ROUTES.DOCTOR_DASHBOARD)],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
-        // {
-        //   title: "Appointment",
-        //   icon: Calendar,
-        //   url: [], // Group header
-        //   items: [
-        //     {
-        //       title: "Appointments",
-        //       url: [withLocale(ROUTES.DOCTOR_APPOINTMENT_SCREENING)],
-        //     },
-        //     {
-        //       title: "Completed",
-        //       url: [withLocale(`${ROUTES.DOCTOR_APPOINTMENT_SCREENING}/completed`)], // Assuming this route exists or is placeholder
-        //     },
-        //     {
-        //       title: "Appointment Schedule",
-        //       url: [withLocale(ROUTES.DOCTOR_SCHEDULE)],
-        //     }
-        //   ]
-        // },
+        {
+          title: "Appointment",
+          icon: Calendar,
+          url: [], // Group header
+          items: [
+            {
+              title: "View All",
+              url: [withLocale(ROUTES.DOCTOR_VIEW_ALL)],
+            },
+            {
+              title: "VIP",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=vip`)],
+            },
+            {
+              title: "Follow Up",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=follow`)],
+            },
+            {
+              title: "Emergency",
+              url: [withLocale(`${ROUTES.DOCTOR_VIEW_ALL}?tab=emergency`)],
+            },
+
+
+          ]
+        },
+      ]
+      : []),
+    ...(modulesAvailable.nurse
+      ? [
+        {
+          title: "Dashboard",
+          url: [withLocale(ROUTES.NURSE_DASHBOARD)],
+          icon: LayoutDashboard,
+          exactMatch: true,
+        },
+        {
+          title: "Patient Visits",
+          url: [withLocale(ROUTES.NURSE_RECENT_PATIENTS)],
+          icon: User2,
+        },
       ]
       : []),
     ...(modulesAvailable.frontoffice
       ? [
         {
           title: "Dashboard",
-          url: [withLocale(ROUTES.FRONTOFFICE_DASHBOARD)],
+          url: [ROUTES.FRONTOFFICE_DASHBOARD],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
         {
           title: "Patient Record",
-          url: [withLocale(ROUTES.FRONTOFFICE_PATIENT_REGISTRATION)],
+          url: [ROUTES.FRONTOFFICE_PATIENT_REGISTRATION],
           icon: User2,
         },
         {
           title: "Appointment",
-          icon: Calendar,
+          icon: "/images/appoint.svg",
           url: [],
           items: [
             {
               title: "Appointment",
-              url: [withLocale("/appointment")],
+              url: [ROUTES.FRONTOFFICE_APPOINTMENT],
             },
             {
               title: "Completed log",
-              url: [withLocale("/appointment?tab=completed")],
+              url: [`${ROUTES.FRONTOFFICE_APPOINTMENT}?tab=completed`],
             },
             {
               title: "Appointment Schedule",
-              url: [withLocale(ROUTES.FRONTOFFICE_SCHEDULE)],
+              url: [ROUTES.FRONTOFFICE_SCHEDULE],
             }
           ]
         },
         {
           title: "OPD",
           url: [],
-          icon: Activity, // Using Activity as a placeholder for OPD since it relates to ongoing patient activity
+          icon: "/images/opd.svg",
           items: [
             {
               title: "Patients Que",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=queue`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=queue`],
             },
             {
               title: "Completed",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=completed`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=completed`],
             },
             {
               title: "Doctor Instructions",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_OPD}?view=instructions`)],
+              url: [`${ROUTES.FRONTOFFICE_OPD}?view=instructions`],
             },
           ]
         },
         {
           title: "IPD",
           url: [],
-          icon: BedDouble,
+          icon: "/images/ipd.svg",
           items: [
             {
               title: "Admitted Patients",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=admitted`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=admitted`],
             },
             {
               title: "Bed & Ward Management",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=bed-management`],
             },
             {
               title: "Discharged Patients",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=discharged`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=discharged`],
             },
             {
               title: "Doctor Instructions",
-              url: [withLocale(`${ROUTES.FRONTOFFICE_IPD}?view=instructions`)],
+              url: [`${ROUTES.FRONTOFFICE_IPD}?view=instructions`],
             },
           ]
         },
@@ -205,6 +233,7 @@ export function AppSidebar({ }) {
           title: "Dashboard",
           url: [withLocale(ROUTES.SURGERY_DASHBOARD)],
           icon: LayoutDashboard,
+          exactMatch: true,
         },
         {
           title: "Surgery",
@@ -288,35 +317,32 @@ export function AppSidebar({ }) {
   //     : pathWithoutLocale.startsWith(url)
   // }
   const searchParams = useSearchParams()
-  const isActive = (urls: string[] | string) => {
-    // const pathWithoutLocale = pathname.replace(/^\//, "")
-    const pathWithoutLocale = pathname
-    const fullPath = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
+  const isActive = (urls: string[] | string, exact = false) => {
+    // Remove locale prefix from pathname for comparison if present
+    const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/)/, "")
+    const fullPath = pathWithoutLocale + (searchParams?.toString() ? `?${searchParams.toString()}` : "")
 
     const checkUrl = (url: string) => {
+      // Also remove locale prefix from item URL for comparison
+      const urlWithoutLocale = url.replace(/^\/[a-z]{2}(?=\/)/, "")
+
       if (url.includes("?")) {
-        return fullPath === url
+        // Compare without locale
+        return fullPath === urlWithoutLocale
       }
-      // If we are on /appointment?tab=completed, and checking /appointment, 
-      // strictly speaking startsWith works, but we want mutually exclusive highlighting?
-      // User wants "Appointment" (default) NOT to highlight when "Completed" is active?
-      // "no need to highlight the completed also just highlight appointemnt"
-      // If I am on ...?tab=completed, "Appointment" (/appointment) check returns true.
-      // So both highlight.
-      // I need to ensure "Appointment" only highlights if NO specific tab query is causing conflict?
-      // Or simply: if current path has query params, and target url doesn't, maybe we shouldn't match?
-      // But standard "Appointment" might view standard page.
-      // Let's rely on exact match for query params items.
-      // And for the base item "/appointment", explicit check?
+
+      if (exact) {
+        return pathWithoutLocale === urlWithoutLocale
+      }
 
       // Simple fix: If current URL has `tab=completed`, then `/appointment` should NOT be active?
-      if (url.endsWith("/appointment") && searchParams?.has("tab")) {
+      if (urlWithoutLocale.endsWith("/appointment") && searchParams?.has("tab")) {
         return false
       }
 
-      return url === "/"
+      return urlWithoutLocale === "/"
         ? pathWithoutLocale === "" || pathWithoutLocale === "/"
-        : pathWithoutLocale.startsWith(url)
+        : pathWithoutLocale.startsWith(urlWithoutLocale)
     }
 
     if (Array.isArray(urls)) {
@@ -444,9 +470,9 @@ export function AppSidebar({ }) {
   )
 }
 
-function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive: (url: string | string[]) => boolean; sidebarState: string }) {
+function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive: (url: string | string[], exact?: boolean) => boolean; sidebarState: string }) {
   const [isOpen, setIsOpen] = useState(false)
-  const isGroupActive = item.items?.some((sub: any) => isActive(sub.url))
+  const isGroupActive = item.items?.some((sub: any) => isActive(sub.url, sub.exactMatch))
 
   useEffect(() => {
     if (isGroupActive) {
@@ -466,7 +492,7 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
           onClick={() => setIsOpen(!isOpen)}
           isActive={isGroupActive}
           className={`text-sm p-3 w-full justify-between ${isGreenItem && isGroupActive
-            ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
+            ? "!bg-[#34D399] hover:!bg-[#2EB886] !text-white"
             : isGreenItem
               ? "bg-transparent hover:bg-[#34D399]/20 text-white"
               : ""
@@ -474,13 +500,29 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
         >
           <div className="flex items-center gap-2">
             {item.icon && (
-              <item.icon
-                className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
-              />
+              typeof item.icon === 'string' ? (
+                <Image
+                  src={item.icon}
+                  alt={item.title}
+                  width={item.icon === "/images/appoint.svg"
+                    ? (sidebarState === "expanded" ? 20 : 24)
+                    : (sidebarState === "expanded" ? 28 : 32)
+                  }
+                  height={item.icon === "/images/appoint.svg"
+                    ? (sidebarState === "expanded" ? 20 : 24)
+                    : (sidebarState === "expanded" ? 28 : 32)
+                  }
+                  className="transition-all duration-300"
+                />
+              ) : (
+                <item.icon
+                  className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+                />
+              )
             )}
-            <span className="text-base font-medium">{item.title}</span>
+            {sidebarState === "expanded" && <span className="text-base font-medium">{item.title}</span>}
           </div>
-          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />
+          {sidebarState === "expanded" && <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`} />}
         </SidebarMenuButton>
         {isOpen && (
           <SidebarMenuSub className="mx-0 px-0 ml-5 border-l border-blue-900/40 space-y-0 mt-3">
@@ -490,11 +532,12 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
                 <div className="absolute left-0 top-1/2 w-4 h-[1px] bg-blue-900/40 -translate-y-1/2 -translate-x-[1px]" />
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive(subItem.url)}
-                  className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none"
+                  isActive={isActive(subItem.url, subItem.exactMatch)}
+                  className="text-sm p-3 pl-6 h-10 ml-0 bg-[#001740] hover:bg-[#07235B] data-[active=true]:bg-[#0d3480] data-[active=true]:text-white rounded-none w-full border-none shadow-none flex items-center justify-between"
                 >
-                  <LocaleLink href={subItem.url[0] || ""}>
+                  <LocaleLink href={subItem.url[0] || ""} className="flex items-center justify-between w-full">
                     <span>{subItem.title}</span>
+                    {isActive(subItem.url, subItem.exactMatch) && <ChevronRight className="w-4 h-4 text-[#34D399] -rotate-45" />}
                   </LocaleLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -511,8 +554,8 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
     >
       <SidebarMenuButton
         asChild
-        isActive={isActive(item.url)}
-        className={`text-sm p-3 ${isGreenItem && isActive(item.url)
+        isActive={isActive(item.url, item.exactMatch)}
+        className={`text-sm p-3 ${isGreenItem && isActive(item.url, item.exactMatch)
           ? "bg-[#34D399] hover:bg-[#2EB886] text-white data-[active=true]:bg-[#34D399] data-[active=true]:text-white hover:text-white"
           : isGreenItem
             ? "bg-transparent hover:bg-[#34D399]/20 text-white"
@@ -521,11 +564,27 @@ function SidebarNavItem({ item, isActive, sidebarState }: { item: any; isActive:
       >
         <LocaleLink href={item.url[0] || ""}>
           {item.icon && (
-            <item.icon
-              className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
-            />
+            typeof item.icon === 'string' ? (
+              <Image
+                src={item.icon}
+                alt={item.title}
+                width={item.icon === "/images/appoint.svg"
+                  ? (sidebarState === "expanded" ? 20 : 24)
+                  : (sidebarState === "expanded" ? 28 : 32)
+                }
+                height={item.icon === "/images/appoint.svg"
+                  ? (sidebarState === "expanded" ? 20 : 24)
+                  : (sidebarState === "expanded" ? 28 : 32)
+                }
+                className="transition-all duration-300"
+              />
+            ) : (
+              <item.icon
+                className={`transition-transform duration-300 ${sidebarState === "collapsed" ? "w-7 h-7" : "w-5 h-5"}`}
+              />
+            )
           )}
-          <span className="text-base">{item.title}</span>
+          {sidebarState === "expanded" && <span className="text-base">{item.title}</span>}
         </LocaleLink>
       </SidebarMenuButton>
     </SidebarMenuItem>

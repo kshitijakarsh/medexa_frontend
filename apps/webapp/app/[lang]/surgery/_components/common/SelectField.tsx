@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from "@workspace/ui/components/select";
 import NewButton from "@/components/common/new-button";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export interface SelectOption {
     value: string;
@@ -37,6 +38,8 @@ export const SelectField = ({
     onAddClick,
     className,
 }: SelectFieldProps) => {
+    const dict = useDictionary();
+    const common = dict.pages.surgery.common;
     return (
         <div className={`space-y-1.5 ${className || ""}`}>
             <label className="text-sm">{label}</label>
@@ -55,7 +58,7 @@ export const SelectField = ({
                 </Select>
                 {showAddButton && (
                     <NewButton
-                        name="Add"
+                        name={common.add}
                         handleClick={() => {
                             if (onAddClick) {
                                 onAddClick();

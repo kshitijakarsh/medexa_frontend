@@ -19,6 +19,7 @@ import { createVisitPurposeApiClient, type VisitPurposeItem } from "@/lib/api/do
 import { format } from "@workspace/ui/hooks/use-date-fns"
 import { useRouter } from "next/navigation"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { ROUTES } from "@/lib/routes"
 
 interface PatientDetailsModalProps {
     open: boolean
@@ -36,7 +37,7 @@ export function PatientDetailsModal({ open, onClose, patient }: PatientDetailsMo
     const handleCreateVisit = () => {
         if (patientData?.id) {
             onClose()
-            router.push(withLocale(`/appointment/book?patientId=${patientData.id}`))
+            router.push(`${ROUTES.FRONTOFFICE_APPOINTMENT_BOOK}?patientId=${patientData.id}`)
         }
     }
 
@@ -194,14 +195,14 @@ export function PatientDetailsModal({ open, onClose, patient }: PatientDetailsMo
 
                         {/* Quick Actions Sidebar */}
                         <div className="lg:sticky lg:top-0 lg:self-start">
-                        <QuickActionsSidebar
-                            patient={patientData}
-                            onCreateVisit={handleCreateVisit}
-                            onOpenBilling={() => console.log("Open billing")}
-                            onPrintIdCard={() => console.log("Print ID")}
-                            onEditDetails={() => console.log("Edit details")}
-                            onFamilyLink={() => console.log("Family link")}
-                        />
+                            <QuickActionsSidebar
+                                patient={patientData}
+                                onCreateVisit={handleCreateVisit}
+                                onOpenBilling={() => console.log("Open billing")}
+                                onPrintIdCard={() => console.log("Print ID")}
+                                onEditDetails={() => console.log("Edit details")}
+                                onFamilyLink={() => console.log("Family link")}
+                            />
                         </div>
                     </div>
                 </div>

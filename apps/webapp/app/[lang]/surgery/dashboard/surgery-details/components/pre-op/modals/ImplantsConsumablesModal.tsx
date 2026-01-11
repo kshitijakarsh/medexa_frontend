@@ -8,14 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@workspace/ui/components/textarea";
 import { Input } from "@workspace/ui/components/input";
 
-type ImplantData = {
-    implantType: string;
-    size: string;
-    batchNo: string;
-    manufacturer: string;
-    quantity: string;
-    notes: string;
-};
+import { z, zodResolver } from "@workspace/ui/lib/zod";
+import { useForm, Controller } from "@workspace/ui/hooks/use-form";
+import { Form, FormField, FormItem, FormControl, FormMessage } from "@workspace/ui/components/form";
+
+const implantSchema = z.object({
+    implantType: z.string().min(1, "Required"),
+    size: z.string().min(1, "Required"),
+    batchNo: z.string().min(1, "Required"),
+    manufacturer: z.string().min(1, "Required"),
+    quantity: z.string().min(1, "Required"),
+    notes: z.string().optional(),
+});
+
+type ImplantData = z.infer<typeof implantSchema>;
 
 type ImplantsConsumablesModalProps = {
     open: boolean;
@@ -24,39 +30,43 @@ type ImplantsConsumablesModalProps = {
     initialData?: string;
 };
 
+import { useDictionary } from "@/i18n/use-dictionary";
+
 export default function ImplantsConsumablesModal({
     open,
     onOpenChange,
     onSave,
     initialData = "",
 }: ImplantsConsumablesModalProps) {
-    const [implantType, setImplantType] = React.useState("");
-    const [size, setSize] = React.useState("");
-    const [batchNo, setBatchNo] = React.useState("");
-    const [manufacturer, setManufacturer] = React.useState("");
-    const [quantity, setQuantity] = React.useState("");
-    const [notes, setNotes] = React.useState("");
+    const dict = useDictionary();
+
+    const form = useForm<ImplantData>({
+        resolver: zodResolver(implantSchema),
+        defaultValues: {
+            implantType: "",
+            size: "",
+            batchNo: "",
+            manufacturer: "",
+            quantity: "",
+            notes: "",
+        },
+    });
 
     React.useEffect(() => {
         if (open) {
-            setImplantType("");
-            setSize("");
-            setBatchNo("");
-            setManufacturer("");
-            setQuantity("");
-            setNotes("");
+            form.reset({
+                implantType: "",
+                size: "",
+                batchNo: "",
+                manufacturer: "",
+                quantity: "",
+                notes: "",
+            });
         }
-    }, [open, initialData]);
+    }, [open, initialData, form]);
 
-    const handleSave = () => {
-        onSave({
-            implantType,
-            size,
-            batchNo,
-            manufacturer,
-            quantity,
-            notes
-        });
+    const handleSave = (data: ImplantData) => {
+        onSave(data);
         onOpenChange(false);
     };
 
@@ -65,106 +75,160 @@ export default function ImplantsConsumablesModal({
             <DialogContent className="sm:max-w-[700px] gap-2 shadow-2xl border-slate-100 p-4">
                 <div className="flex justify-between items-center border-b pb-2 mb-2">
                     <div>
-                        <DialogTitle className="text-lg font-semibold">Implants & Consumables</DialogTitle>
-                        <p className="text-xs text-slate-500">Select Implants & Consumables for the patient</p>
+                        <DialogTitle className="text-lg font-semibold">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.title}</DialogTitle>
+                        <p className="text-xs text-slate-500">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.subtitle}</p>
                     </div>
                 </div>
 
-                <div className="space-y-3">
-                    {/* Row 1: Implant Type & Size */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                            <Label className="text-xs">Implant Type</Label>
-                            <Select value={implantType} onValueChange={setImplantType}>
-                                <SelectTrigger className="w-full h-8 text-xs bg-slate-50 border-slate-200">
-                                    <SelectValue placeholder="Select Implant Type" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="mesh">Prolene Mesh</SelectItem>
-                                    <SelectItem value="fixation">Fixation Device</SelectItem>
-                                    <SelectItem value="clip">Ligating Clips</SelectItem>
-                                    <SelectItem value="suture">Suture Material</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Size</Label>
-                            <Select value={size} onValueChange={setSize}>
-                                <SelectTrigger className="w-full h-8 text-xs">
-                                    <SelectValue placeholder="Select Size" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="15x15">15x15 cm</SelectItem>
-                                    <SelectItem value="30x30">30x30 cm</SelectItem>
-                                    <SelectItem value="large">Large</SelectItem>
-                                    <SelectItem value="medium">Medium</SelectItem>
-                                    <SelectItem value="small">Small</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    {/* Row 2: Batch, Manufacturer, Quantity */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="space-y-1">
-                            <Label className="text-xs">Batch/Lot No.</Label>
-                            <Select value={batchNo} onValueChange={setBatchNo}>
-                                <SelectTrigger className="w-full h-8 text-xs">
-                                    <SelectValue placeholder="Select Batch/Lot No." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="bx102">BX-102</SelectItem>
-                                    <SelectItem value="bx103">BX-103</SelectItem>
-                                    <SelectItem value="bx104">BX-104</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Manufacturer</Label>
-                            <Select value={manufacturer} onValueChange={setManufacturer}>
-                                <SelectTrigger className="w-full h-8 text-xs">
-                                    <SelectValue placeholder="Select Manufacturer" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="ethicon">Ethicon</SelectItem>
-                                    <SelectItem value="medtronic">Medtronic</SelectItem>
-                                    <SelectItem value="bbraun">B. Braun</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-1">
-                            <Label className="text-xs">Quantity</Label>
-                            <Input
-                                value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
-                                placeholder="Enter Quantity"
-                                className="h-8 text-xs"
-                                type="number"
-                                min="1"
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSave)} className="space-y-3">
+                        {/* Row 1: Implant Type & Size */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <FormField
+                                control={form.control}
+                                name="implantType"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.implantType}</Label>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full h-8 text-xs bg-slate-50 border-slate-200">
+                                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.selectImplantType} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="mesh">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.types.mesh}</SelectItem>
+                                                <SelectItem value="fixation">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.types.fixation}</SelectItem>
+                                                <SelectItem value="clip">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.types.clip}</SelectItem>
+                                                <SelectItem value="suture">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.types.suture}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage className="text-[10px]" />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="size"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.size}</Label>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full h-8 text-xs">
+                                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.selectSize} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="15x15">15x15 cm</SelectItem>
+                                                <SelectItem value="30x30">30x30 cm</SelectItem>
+                                                <SelectItem value="large">Large</SelectItem>
+                                                <SelectItem value="medium">Medium</SelectItem>
+                                                <SelectItem value="small">Small</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage className="text-[10px]" />
+                                    </FormItem>
+                                )}
                             />
                         </div>
-                    </div>
 
-                    {/* Clinical Notes */}
-                    <div className="space-y-1">
-                        <Label className="text-xs">Clinical Notes (Optional)</Label>
-                        <Textarea
-                            placeholder="Enter Clinical Notes"
-                            className="min-h-[60px] h-[60px] resize-none text-xs"
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
+                        {/* Row 2: Batch, Manufacturer, Quantity */}
+                        <div className="grid grid-cols-3 gap-3">
+                            <FormField
+                                control={form.control}
+                                name="batchNo"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.batchNo}</Label>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full h-8 text-xs">
+                                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.selectBatchNo} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="bx102">BX-102</SelectItem>
+                                                <SelectItem value="bx103">BX-103</SelectItem>
+                                                <SelectItem value="bx104">BX-104</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage className="text-[10px]" />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="manufacturer"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.manufacturer}</Label>
+                                        <Select value={field.value} onValueChange={field.onChange}>
+                                            <FormControl>
+                                                <SelectTrigger className="w-full h-8 text-xs">
+                                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.selectManufacturer} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="ethicon">Ethicon</SelectItem>
+                                                <SelectItem value="medtronic">Medtronic</SelectItem>
+                                                <SelectItem value="bbraun">B. Braun</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage className="text-[10px]" />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="quantity"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-1">
+                                        <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.quantity}</Label>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.enterQuantity}
+                                                className="h-8 text-xs"
+                                                type="number"
+                                                min="1"
+                                            />
+                                        </FormControl>
+                                        <FormMessage className="text-[10px]" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {/* Clinical Notes */}
+                        <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                                <FormItem className="space-y-1">
+                                    <Label className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.clinicalNotes}</Label>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder={dict.pages.surgery.surgeryDetails.preOp.modals.implantsConsumables.clinicalNotesPlaceholder}
+                                            className="min-h-[60px] h-[60px] resize-none text-xs"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="text-[10px]" />
+                                </FormItem>
+                            )}
                         />
-                    </div>
-                </div>
 
-                <DialogFooter className="gap-2 sm:gap-0 mt-2">
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="border-blue-400 text-blue-600 hover:bg-blue-50 font-medium px-6 w-24 h-8 rounded-md border text-[10px] uppercase tracking-wider">
-                        CANCEL
-                    </Button>
-                    <Button onClick={handleSave} className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider">
-                        SAVE
-                    </Button>
-                </DialogFooter>
+                        <DialogFooter className="gap-2 sm:gap-0 mt-2">
+                            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-blue-400 text-blue-600 hover:bg-blue-50 font-medium px-6 w-24 h-8 rounded-md border text-[10px] uppercase tracking-wider">
+                                {dict.pages.surgery.surgeryDetails.common.cancel}
+                            </Button>
+                            <Button type="submit" className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider">
+                                {dict.pages.surgery.surgeryDetails.common.save}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

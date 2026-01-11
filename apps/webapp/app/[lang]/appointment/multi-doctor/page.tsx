@@ -56,8 +56,12 @@ export default function MultiDoctorAppointmentPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [bookingSlot, setBookingSlot] = useState<{ doctorId: string, time: string } | null>(null)
+  const [bookingSlot, setBookingSlot] = useState<{ doctorId: string, time: string, slotId?: string } | null>(null)
   const [doctorOptions, setDoctorOptions] = useState<DoctorOption[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState<Record<string, number>>({})
+  const [pagination, setPagination] = useState<Record<string, any>>({})
+  const limit = 100
 
   // Fetch doctors list
   useEffect(() => {
@@ -71,7 +75,7 @@ export default function MultiDoctorAppointmentPage() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            params: { page: 1, limit: 100 },
+            params: { page: 1, limit: 100 }, // Reduced from 1000 to avoid 400 error
           }
         )
         const options = response.data.data.map((d: any) => ({
@@ -85,6 +89,18 @@ export default function MultiDoctorAppointmentPage() {
     }
     fetchDoctors()
   }, [])
+
+  // Reset page when doctors or date changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedDoctors, selectedDate])
+
+  // Log when booking modal opens
+  useEffect(() => {
+    if (isModalOpen) {
+      console.log("🟢 Opening modal with bookingSlot:", bookingSlot)
+    }
+  }, [isModalOpen, bookingSlot])
 
   // Get selected doctor objects
   const selectedDoctorObjects = useMemo(() => {
@@ -119,13 +135,15 @@ export default function MultiDoctorAppointmentPage() {
               doctorId,
               startDate: isoDate,
               endDate: isoDate,
-              slotVisitType: "multi_doctor_appointment",
-              limit: 100,
+              slotVisitType: "doctor_consultation",
+              page: currentPage,
+              limit,
             })
 
             return {
               doctorId,
               slots: response.data.data,
+              pagination: response.data.pagination,
             }
           } catch (error) {
             console.error(`Error fetching slots for doctor ${doctorId}:`, error)
@@ -138,16 +156,27 @@ export default function MultiDoctorAppointmentPage() {
         // Separate slots and appointments
         const slotsMap: Record<string, any[]> = {}
         const allAppointments: Appointment[] = []
+        const paginationMap: Record<string, any> = {}
+        const totalPagesMap: Record<string, number> = {}
 
-        results.forEach(({ doctorId, slots: slotsData }) => {
+        results.forEach(({ doctorId, slots: slotsData, pagination: paginationData }) => {
           // Store raw slots for the grid
           slotsMap[doctorId] = slotsData
+          paginationMap[doctorId] = paginationData
+          totalPagesMap[doctorId] = paginationData?.totalPages || 1
 
           // Extract appointments from booked slots
           slotsData.forEach((slot: any) => {
             if (slot.isBooked && slot.appointment) {
               const apt = slot.appointment
               const patient = apt.patient
+
+              console.log('Found booked slot:', {
+                slotId: slot.id,
+                isBooked: slot.isBooked,
+                appointment: apt,
+                patient: patient
+              })
 
               allAppointments.push({
                 id: apt.id,
@@ -170,8 +199,13 @@ export default function MultiDoctorAppointmentPage() {
           })
         })
 
+        console.log('Total appointments found:', allAppointments.length)
+        console.log('Appointments:', allAppointments)
+
         setSlots(slotsMap)
         setAppointments(allAppointments)
+        setPagination(paginationMap)
+        setTotalPages(totalPagesMap)
       } catch (error) {
         console.error("Error fetching slots and appointments:", error)
         setSlots({})
@@ -182,10 +216,12 @@ export default function MultiDoctorAppointmentPage() {
     }
 
     fetchSlotsAndAppointments()
-  }, [selectedDoctors, selectedDate])
+  }, [selectedDoctors, selectedDate, currentPage])
 
-  const handleAddAppointment = (doctorId: string, time: string) => {
-    setBookingSlot({ doctorId, time })
+  const handleAddAppointment = (doctorId: string, time: string, slotId?: string) => {
+    console.log("🔵 handleAddAppointment called with:", { doctorId, time, slotId })
+    setBookingSlot({ doctorId, time, slotId })
+    console.log("🔵 bookingSlot state will be set to:", { doctorId, time, slotId })
     setIsModalOpen(true)
   }
 
@@ -272,8 +308,45 @@ export default function MultiDoctorAppointmentPage() {
           onConfirmAppointment={handleConfirmAppointment}
           onRescheduleAppointment={handleRescheduleAppointment}
         />
+
+        {/* Pagination Controls */}
+        {selectedDoctors.length > 0 && Object.keys(pagination).length > 0 && (
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-white text-[#001A4D] rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+            >
+              Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: Math.max(...Object.values(totalPages)) }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-10 h-10 rounded-lg font-semibold transition-colors ${currentPage === pageNum
+                    ? 'bg-[#001A4D] text-white'
+                    : 'bg-white text-[#001A4D] hover:bg-gray-100'
+                    }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(Math.max(...Object.values(totalPages)), prev + 1))}
+              disabled={currentPage >= Math.max(...Object.values(totalPages))}
+              className="px-4 py-2 bg-white text-[#001A4D] rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Booking Modal */}
       <MultiDoctorBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -281,9 +354,12 @@ export default function MultiDoctorAppointmentPage() {
         doctorOptions={doctorOptions}
         selectedDate={selectedDate}
         selectedTime={bookingSlot?.time}
+        selectedSlotId={bookingSlot?.slotId}
         onConfirm={(patient: Patient | null, visitingPurpose: string) => {
           console.log("Booking confirmed for", bookingSlot, patient, visitingPurpose)
           setIsModalOpen(false)
+          // Refresh the slots after booking
+          window.location.reload()
         }}
       />
     </main>

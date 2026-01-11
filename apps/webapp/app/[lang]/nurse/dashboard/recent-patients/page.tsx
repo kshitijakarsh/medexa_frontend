@@ -1,15 +1,61 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useNurseVisitsQuery, useNurseAllVisitsQuery } from "../_components/api";
 import { RecentPatientCard } from "../_components/RecentPatient/RecentPatientCard";
 import { RecentPatientSkeleton } from "../_components/RecentPatient/RecentPatientSkeleton";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { hasPermission, normalizePermissionList, PERMISSIONS } from "@/app/utils/permissions";
+import { useUserStore } from "@/store/useUserStore";
 
 function RecentPatientsPageContent() {
+  const [canEditVisits, setCanEditVisits] = useState(false);
   const dict = useDictionary();
   const t = (dict.pages as any)?.nurse?.recentPatients ?? {};
   const [activeTab, setActiveTab] = useState<"visits" | "all">("visits");
+
+  // Get user permissions and all relevant store data
+  const user = useUserStore((s) => s.user);
+  const userPermissions = user?.role?.permissions;
+  
+  // IMMEDIATE LOGGING - before anything else
+  console.log("🔴 IMMEDIATE CHECK (on every render):");
+  console.log("  user:", user);
+  console.log("  userPermissions (raw):", userPermissions);
+  console.log("  Type of userPermissions:", typeof userPermissions, Array.isArray(userPermissions) ? "ARRAY" : "NOT ARRAY");
+  
+  const permissionKeys = normalizePermissionList(userPermissions);
+  console.log("  permissionKeys (after normalize):", permissionKeys);
+  console.log("  PERMISSIONS.NURSE.VISIT.EDIT constant:", PERMISSIONS.NURSE.VISIT.EDIT);
+
+  // Check if user has permission to edit visits
+  useEffect(() => {
+    console.log("\n⚡ INSIDE useEffect:");
+    console.log("  permissionKeys from dependency:", permissionKeys);
+    
+    const hasPermissions = hasPermission(
+      permissionKeys,
+      PERMISSIONS.NURSE.VISIT.EDIT
+    );
+    
+    console.log("  hasPermissions result:", hasPermissions);
+    console.log("  Setting canEditVisits to:", hasPermissions);
+    
+    setCanEditVisits(hasPermissions);
+    
+    // Extra validation
+    if (permissionKeys.includes(PERMISSIONS.NURSE.VISIT.EDIT)) {
+      console.log("  ✅ Permission string IS in permissionKeys array");
+    } else {
+      console.log("  ❌ Permission string NOT in permissionKeys array");
+      console.log("  Looking for:", PERMISSIONS.NURSE.VISIT.EDIT);
+      console.log("  Available permissions:", permissionKeys);
+    }
+  }, [permissionKeys]);  
+  
+  console.log("  Current canEditVisits state:", canEditVisits);
+  console.log("------------------------------------\n");  
+  
 
   const { data: visitsData, isLoading: visitsLoading } = useNurseVisitsQuery({
     page: 1,
@@ -65,7 +111,7 @@ function RecentPatientsPageContent() {
               <RecentPatientSkeleton key={i} />
             ))
             : (activeTab === "visits" ? visits : allVisits).map((visit: any) => (
-              <RecentPatientCard key={visit.id} patient={visit} showNurseMenu={true} />
+              <RecentPatientCard key={visit.id} patient={visit} showNurseMenu={canEditVisits} />
             ))}
         </div>
         {!isLoading && (activeTab === "visits" ? visits : allVisits).length === 0 && (

@@ -40,10 +40,15 @@ export function AppointmentSlotCard({
 }: AppointmentSlotCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const handleCardClick = () => {
+    console.log('Card clicked! Current expanded state:', isExpanded)
+    setIsExpanded(!isExpanded)
+  }
+
   if (isBooked && patientData) {
     return (
       <div
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleCardClick}
         className={cn(
           "bg-white border rounded-xl p-3.5 shadow-sm space-y-3 transition-shadow cursor-pointer",
           isExpanded ? "border-blue-100 shadow-md" : "border-blue-100 hover:shadow-md"

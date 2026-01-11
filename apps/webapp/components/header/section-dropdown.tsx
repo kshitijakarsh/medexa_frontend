@@ -531,6 +531,7 @@ const moduleIconMap: Record<string, any> = {
   frontoffice: Building,
   nurse: Syringe,
   surgery: Scissors,
+  laboratory: Activity
 }
 
 const DefaultIcon = Cog
@@ -550,6 +551,7 @@ const moduleLandingPath: Record<string, string> = {
   analytics: "/analytics",
   hr: "/hr/employee-configuration",
   surgery: "/surgery/dashboard",
+  laboratory: "/laboratory/dashboard",
   // hr_payroll: "/hr-payroll",
   // add more when developed…
 }
@@ -618,10 +620,15 @@ export function SectionDropdown() {
   type ModuleKey = keyof typeof moduleLandingPath
 
   const moduleKeys = Array.from(
-    new Set([...permissionStrings.map((p: any) => p.split(":")[0]), "surgery"])
-  ).filter((k): k is ModuleKey => k in moduleLandingPath)
+    new Set(permissionStrings.map((p) => p.split(":")[0]))
+  ).filter((k): k is ModuleKey => k in moduleLandingPath && k !== "common")
 
 
+  // type ModuleKey = keyof typeof moduleLandingPath
+
+  // const moduleKeys = Array.from(
+  //   new Set([...permissionStrings.map((p: any) => p.split(":")[0]), "surgery"])
+  // ).filter((k): k is ModuleKey => k in moduleLandingPath)
 
   // Build dropdown sections dynamically
   // const sections = moduleKeys.map((moduleKey) => ({
@@ -639,6 +646,7 @@ export function SectionDropdown() {
     moduleKey,
     icon: moduleIconMap[moduleKey] || DefaultIcon,
   }))
+
 
 
   // console.log(user)

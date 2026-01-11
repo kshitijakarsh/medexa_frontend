@@ -243,6 +243,8 @@ import {
 import { AppDialog } from "@/components/common/app-dialog";
 import { AppSelect } from "@/components/common/app-select";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { useCreateProcedure } from "@/app/[lang]/administration/_hooks/useOperation";
+import { CreateProcedurePayload } from "@/lib/api/administration/operation";
 
 const operationSchema = z.object({
   name: z.string().min(1, "Operation name is required"),
@@ -250,9 +252,11 @@ const operationSchema = z.object({
 });
 
 const categorySchema = z.object({
-  category: z.string().min(1, "Operation category is required"),
-  createdOn: z.string().min(1, "Created on is required"),
-  addedBy: z.string().min(1, "Added by is required"),
+  name: z.string().min(1, "Procedure name is required"),
+  code: z.string().min(1, "Procedure code is required"),
+  surgery_type: z.string().min(1, "Surgery type is required"),
+  standard_charge: z.coerce.number().min(0, "Standard charge is required"),
+  status: z.enum(["active", "inactive"]),
 });
 
 type FormSchema =
@@ -269,16 +273,20 @@ interface AddDialogProps {
 export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
   const schema = mode === "operation" ? operationSchema : categorySchema;
   const dict = useDictionary();
-  const form = useForm<FormSchema>({
+  const createProcedure = useCreateProcedure();
+
+  const form = useForm<any>({
     resolver: zodResolver(schema),
     defaultValues:
       mode === "operation"
         ? { name: "", category: "" }
         : {
-            category: "",
-            createdOn: "2025-09-27 19:30",
-            addedBy: "Dr. Ahmed Al-Mansouri",
-          },
+          name: "",
+          code: "",
+          surgery_type: "",
+          standard_charge: 0,
+          status: "active",
+        },
   });
 
   useEffect(() => {
@@ -287,16 +295,26 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
         mode === "operation"
           ? { name: "", category: "" }
           : {
-              category: "",
-              createdOn: "2025-09-27 19:30",
-              addedBy: "Dr. Ahmed Al-Mansouri",
-            }
+            name: "",
+            code: "",
+            surgery_type: "",
+            standard_charge: 0,
+            status: "active",
+          }
       );
   }, [open, mode, form]);
 
   const handleSubmit = (values: any) => {
-    onSave(values);
-    onClose();
+    if (mode === "operationCategory") {
+      createProcedure.mutate(values as CreateProcedurePayload, {
+        onSuccess: () => {
+          onClose();
+        },
+      });
+    } else {
+      onSave(values);
+      onClose();
+    }
   };
 
   return (
@@ -352,12 +370,12 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
             <>
               <FormField
                 control={form.control}
-                name="category"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{dict.pages.operation.tabs.operationCategory}</FormLabel>
+                    <FormLabel>Procedure Name</FormLabel>
                     <FormControl>
-                      <Input placeholder={dict.pages.operation.dialogs.placeholder1} {...field} />
+                      <Input placeholder="Enter procedure name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -366,41 +384,79 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
 
               <FormField
                 control={form.control}
-                name="createdOn"
+                name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{dict.pages.operation.dialogs.createdOn}</FormLabel>
+                    <FormLabel>Procedure Code</FormLabel>
                     <FormControl>
-                      <AppSelect
-                        placeholder={dict.pages.operation.dialogs.placeholderCreatedOn}
-                        value={field.value}
-                        onChange={field.onChange}
-                        options={[
-                          { label: "2025-09-27 19:30", value: "2025-09-27 19:30" },
-                        ]}
-                      />
+                      <Input placeholder="e.g. PROC001" {...field} />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
               <FormField
                 control={form.control}
-                name="addedBy"
+                name="surgery_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{dict.pages.operation.dialogs.addedBy}</FormLabel>
+                    <FormLabel>Surgery Type</FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder={dict.pages.operation.dialogs.placeholderAddedBy}
+                        placeholder="Select surgery type"
                         value={field.value}
                         onChange={field.onChange}
                         options={[
-                          { label: "Dr. Ahmed Al-Mansouri", value: "Dr. Ahmed Al-Mansouri" },
-                          { label: "Dr. Sara Malik", value: "Dr. Sara Malik" },
+                          { label: "Major", value: "major" },
+                          { label: "Minor", value: "minor" },
+                          { label: "Day Case", value: "day_case" },
+                          { label: "Emergency", value: "emergency" },
                         ]}
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="standard_charge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Standard Charge</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 5000"
+                        {...field}
+                        onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <AppSelect
+                        placeholder="Select status"
+                        value={field.value}
+                        onChange={field.onChange}
+                        options={[
+                          { label: "Active", value: "active" },
+                          { label: "Inactive", value: "inactive" },
+                        ]}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -413,11 +469,16 @@ export function AddDialog({ open, onClose, mode, onSave }: AddDialogProps) {
               variant="outline"
               onClick={onClose}
               className="text-blue-600 border-blue-500"
+              disabled={createProcedure.isPending}
             >
               {dict.common.cancel}
             </Button>
-            <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white">
-              {dict.common.save}
+            <Button
+              type="submit"
+              className="bg-green-500 hover:bg-green-600 text-white"
+              disabled={createProcedure.isPending}
+            >
+              {createProcedure.isPending ? "Saving..." : dict.common.save}
             </Button>
           </div>
         </form>

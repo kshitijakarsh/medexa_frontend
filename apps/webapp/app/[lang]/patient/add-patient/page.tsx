@@ -17,6 +17,7 @@ import { useCountries } from "../_hooks/useCountries"
 import { usePatientCategories } from "../_hooks/usePatientCategories"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { LinkFamilyModal } from "./_components/link-family-modal"
+import { createInsuranceApiClient } from "@/lib/api/insurance-api"
 
 
 export default function AddPatientPage() {
@@ -29,6 +30,9 @@ export default function AddPatientPage() {
   const [createdPatientId, setCreatedPatientId] = useState<string>("")
   const [mrn, setMrn] = useState<string>("")
   const [showLinkFamilyModal, setShowLinkFamilyModal] = useState(false)
+  const [insuranceProviders, setInsuranceProviders] = useState<
+    { value: string; label: string }[]
+  >([])
 
   // Form state
   const [formData, setFormData] = useState({
@@ -176,6 +180,31 @@ export default function AddPatientPage() {
     console.log("Print ID Card for MRN:", mrn)
   }
 
+  // Fetch insurance providers
+  useEffect(() => {
+    const fetchInsurances = async () => {
+      try {
+        const insuranceClient = createInsuranceApiClient()
+        const response = await insuranceClient.getInsurances({
+          page: 1,
+          limit: 100,
+          status: "active",
+        })
+
+        const insuranceOptions = response.data.data.map((insurance) => ({
+          value: String(insurance.id),
+          label: insurance.provider_name,
+        }))
+        setInsuranceProviders(insuranceOptions)
+      } catch (error) {
+        console.error("Failed to fetch insurance providers:", error)
+        setInsuranceProviders([])
+      }
+    }
+
+    fetchInsurances()
+  }, [])
+
   // Set default values based on visitType from query params
   useEffect(() => {
     if (visitType) {
@@ -241,12 +270,6 @@ export default function AddPatientPage() {
     { value: "AB-", label: "AB-" },
     { value: "O+", label: "O+" },
     { value: "O-", label: "O-" },
-  ]
-
-  const insuranceProviders = [
-    { value: "12312", label: "Insurance Company 1" },
-    { value: "123123", label: "Insurance Company 2" },
-    { value: "123123123", label: "Insurance Company 3" },
   ]
 
   const planTypes = [
@@ -553,7 +576,7 @@ export default function AddPatientPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <FormSelect
                       label="Insurance Provider"
-                      value={formData.insuranceProvider}
+                      value={formData.insuranceProvider || undefined}
                       onValueChange={(value) =>
                         handleInputChange("insuranceProvider", value)
                       }

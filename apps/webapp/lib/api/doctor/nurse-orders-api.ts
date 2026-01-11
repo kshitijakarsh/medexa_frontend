@@ -71,6 +71,30 @@ class NurseOrdersApiClient {
   }
 
   /* ---------------------------------------------------
+     GET: All Nurse Orders with filters
+  --------------------------------------------------- */
+  async getAll(params?: {
+    page?: number | string;
+    limit?: number | string;
+    status?: string;
+    order_type?: string;
+    urgency?: string;
+    patient_id?: string;
+    visit_id?: string;
+    department_id?: string;
+    doctor_id?: string;
+    start_date?: string;
+    end_date?: string;
+    search?: string;
+  }): Promise<AxiosResponse<any>> {
+    const config = await this.getJsonRequestConfig();
+    return axios.get(`${this.baseUrl}/api/v1/nurse-orders`, {
+      ...config,
+      params,
+    });
+  }
+
+  /* ---------------------------------------------------
      GET: Nurse Orders by Visit ID
   --------------------------------------------------- */
   async getByVisit(visitId: string): Promise<AxiosResponse<any>> {

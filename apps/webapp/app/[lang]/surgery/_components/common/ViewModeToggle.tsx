@@ -20,7 +20,7 @@ export default function ViewModeToggle({
     return (
         <div
             className={cn(
-                "flex shrink-0 items-center gap-1 bg-white rounded-full p-0.5 shadow-soft",
+                "flex shrink-0 items-center gap-1 bg-white rounded-full p-0.5",
                 className
             )}
         >

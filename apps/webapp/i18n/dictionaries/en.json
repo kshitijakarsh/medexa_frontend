@@ -625,6 +625,180 @@
         "noShiftsAdded": "No shifts added yet. Click \"New\" to add a shift.",
         "searchDepartment": "Search Department",
         "searchDoctor": "Search Doctor"
+      },
+      "opd": {
+        "title": "Outpatient Department",
+        "queueView": "Queue View",
+        "completedView": "Completed View",
+        "instructionsView": "Doctor Instructions",
+        "overviewToday": "Overview Today",
+        "attendanceView": "Attendance View",
+        "unknownDoctor": "Unknown Doctor",
+        "unknownPatient": "Unknown Patient",
+        "tokenNo": "Token No",
+        "patientName": "Patient Name",
+        "mrn": "MRN",
+        "visitId": "Visit ID",
+        "doctorName": "Doctor Name",
+        "specialty": "Specialty",
+        "date": "Date",
+        "time": "Time",
+        "bookingType": "Booking Type",
+        "priorityType": "Priority Type",
+        "status": "Status",
+        "reason": "Reason",
+        "type": "Type",
+        "createdOn": "Created On",
+        "action": "Action",
+        "inPerson": "In-person",
+        "teleconsultation": "Teleconsultation",
+        "general": "General",
+        "vip": "VIP",
+        "normal": "Normal",
+        "urgent": "Urgent",
+        "consultation": "Consultation"
+      },
+      "ipd": {
+        "title": "Inpatient Department",
+        "admittedPatients": "Admitted Patients",
+        "bedManagement": "Bed & Ward Management",
+        "dischargedPatients": "Discharged Patients",
+        "doctorInstructions": "Doctor Instructions",
+        "admissionForm": "Admission Form",
+        "patientDetails": "Patient Details",
+        "bedAllocation": "Bed Allocation",
+        "wardAllocation": "Ward Allocation",
+        "admissionDate": "Admission Date",
+        "expectedDischarge": "Expected Discharge",
+        "bedStatus": "Bed Status",
+        "occupied": "Occupied",
+        "vacant": "Vacant",
+        "reserved": "Reserved",
+        "blocked": "Blocked",
+        "cleaning": "Cleaning",
+        "wardNumber": "Ward Number",
+        "bedNumber": "Bed Number",
+        "floorNumber": "Floor Number",
+        "bedNo": "Bed No",
+        "patientName": "Patient Name",
+        "admissionProvider": "Admission Provider",
+        "time": "Time",
+        "location": "Location",
+        "bill": "Bill",
+        "status": "Status",
+        "action": "Action",
+        "patient": "Patient",
+        "visit": "Visit",
+        "doctor": "Doctor",
+        "reason": "Reason",
+        "type": "Type",
+        "createdOn": "Created On",
+        "critical": "Critical",
+        "stable": "Stable",
+        "underObservation": "Under Observation",
+        "preOperative": "Pre-Operative",
+        "postOperative": "Post-Operative",
+        "discharged": "Discharged",
+        "floor": "Floor",
+        "ward": "Ward",
+        "allStatus": "All Status",
+        "all": "All",
+        "icu": "ICU",
+        "searchMRN": "Search MRN",
+        "reviewReports": "Review reports",
+        "completed": "Completed",
+        "unknownPatient": "Unknown Patient",
+        "generalMedicine": "General Medicine",
+        "generalWard": "General Ward",
+        "bookNewAdmission": "Book New Admission",
+        "failedToFetchIPDData": "Failed to fetch IPD data",
+        "errorOccurredFetchingIPDData": "An error occurred while fetching IPD data",
+        "opd": "OPD",
+        "ipd": "IPD"
+      },
+      "patientRegistration": {
+        "title": "Patient Registration",
+        "addNewPatient": "Add New Patient",
+        "patientList": "Patient List",
+        "searchPatient": "Search Patient",
+        "personalInfo": "Personal Information",
+        "contactInfo": "Contact Information",
+        "medicalHistory": "Medical History",
+        "emergencyContact": "Emergency Contact",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "dateOfBirth": "Date of Birth",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "phoneNumber": "Phone Number",
+        "email": "Email",
+        "address": "Address",
+        "city": "City",
+        "state": "State",
+        "country": "Country",
+        "postalCode": "Postal Code",
+        "bloodGroup": "Blood Group",
+        "allergies": "Allergies",
+        "chronicDiseases": "Chronic Diseases",
+        "previousSurgeries": "Previous Surgeries",
+        "currentMedications": "Current Medications",
+        "emergencyContactName": "Emergency Contact Name",
+        "emergencyContactPhone": "Emergency Contact Phone",
+        "relationship": "Relationship",
+        "insuranceInfo": "Insurance Information",
+        "insuranceProvider": "Insurance Provider",
+        "policyNumber": "Policy Number",
+        "validUntil": "Valid Until"
+      },
+      "appointment": {
+        "title": "Appointments",
+        "bookAppointment": "Book Appointment",
+        "appointmentList": "Appointment List",
+        "completedLog": "Completed Log",
+        "appointmentSchedule": "Appointment Schedule",
+        "selectPatient": "Select Patient",
+        "selectDoctor": "Select Doctor",
+        "selectDepartment": "Select Department",
+        "selectDate": "Select Date",
+        "selectTime": "Select Time",
+        "appointmentType": "Appointment Type",
+        "visitType": "Visit Type",
+        "standard": "Standard",
+        "emergency": "Emergency",
+        "followUp": "Follow Up",
+        "notes": "Notes",
+        "confirmAppointment": "Confirm Appointment",
+        "cancelAppointment": "Cancel Appointment",
+        "rescheduleAppointment": "Reschedule Appointment",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "noShow": "No Show",
+        "bookNewAppointment": "Book New Appointment",
+        "cancel": "CANCEL",
+        "addVisit": "ADD VISIT",
+        "generateER": "GENERATE ER",
+        "bookAppointmentButton": "BOOK APPOINTMENT",
+        "consultationFee": "Consultation Fee",
+        "doctorCharge": "Doctor Charge",
+        "procedureFee": "Procedure Fee",
+        "contrastCharge": "Contrast Charge",
+        "teleconsultationFee": "Teleconsultation Fee",
+        "homeVisitFee": "Home Visit Fee",
+        "multiDoctorConsultationFee": "Multi Doctor Consultation Fee",
+        "multiProcedureFee": "Multi Procedure Fee",
+        "mriScan": "MRI Scan",
+        "ctScan": "CT Scan",
+        "bloodTest": "Blood Test",
+        "physiotherapySession": "Physiotherapy Session",
+        "pleaseFillAllRequiredFields": "Please fill in all required fields",
+        "pleaseSelectPatient": "Please select a patient",
+        "invalidSlotFormat": "Invalid slot format",
+        "invalidTimeFormat": "Invalid time format",
+        "failedToCreateVisit": "Failed to create visit"
       }
     },
     "doctor": {
@@ -1086,9 +1260,1275 @@
       }
     },
     "surgery": {
-      "tabs": {
-        "surgery": "Surgery",
-        "Surgeries Today" : "Surgeries Today"
+      "common": {
+        "dynamicSection": {
+          "items": "Items",
+          "noOptions": "No options available"
+        },
+        "prefixes": {
+          "doctor": "Dr.",
+          "otRoom": "OT-"
+        },
+        "fallbacks": {
+          "notAssigned": "Not Assigned",
+          "unknownPatient": "Unknown Patient"
+        },
+        "add": "Add",
+        "action": "Action",
+        "calendarView": "Calendar View",
+        "sort": {
+          "label": "Sort",
+          "nearestDate": "Nearest Date",
+          "farthestDate": "Farthest Date",
+          "routine": "Routine",
+          "urgent": "Urgent",
+          "stat": "Stat"
+        },
+        "status": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "department": "Department",
+        "doctor": "Doctor",
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "completed": "Completed"
+      },
+      "dashboard": {
+        "emergencySurgeries": "Emergency Surgeries",
+        "viewAll": "View All",
+        "surgeriesToday": "Surgeries Today",
+        "totalSurgeries": "Total Surgeries",
+        "completed": "Completed",
+        "pending": "Pending",
+        "patientTypes": "Patient Types",
+        "ipdPatients": "IPD Patients",
+        "emergency": "Emergency",
+        "surgeryRequest": "Surgery Request",
+        "pendingRequest": "Pending Request",
+        "prescriptionsIssued": "Prescriptions Issued",
+        "tabs": {
+          "all": "Surgeries",
+          "ongoing": "Ongoing",
+          "upcoming": "Upcoming"
+        },
+        "table": {
+          "otRoom": "OT Room",
+          "patient": "Patient",
+          "time": "Time",
+          "procedure": "Procedure",
+          "surgeon": "Surgeon",
+          "status": "Status",
+          "action": "Action",
+          "actions": {
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete"
+          }
+        },
+        "alerts": {
+          "title": "OT Critical Alerts & Actions",
+          "loading": "Loading...",
+          "noUpcoming": "No upcoming surgeries",
+          "noRequests": "No surgery requests",
+          "upcomingSurgeries": "Upcoming Surgeries",
+          "surgeryRequests": "Surgery Requests"
+        }
+      },
+      "otSchedule": {
+        "surgeryList": "Surgery List",
+        "addSurgery": "Add Surgery",
+        "dateRange": "Date Range",
+        "columns": {
+          "otRoom": "OT Room",
+          "patient": "Patient",
+          "requestedDoctor": "Requested Doctor",
+          "procedure": "Procedure",
+          "surgeon": "Surgeon",
+          "requestedFor": "Requested For",
+          "urgency": "Urgency",
+          "status": "Status"
+        }
+      },
+      "preOp": {
+        "surgeriesRequestList": "Surgeries Request List",
+        "tabs": {
+          "allSurgeries": "All Surgeries",
+          "preOp": "Pre-Op",
+          "intraOp": "Intra Op",
+          "postOp": "Post-Op"
+        }
+      },
+      "wardStore": {
+        "wardStore": "Ward Store",
+        "selectWard": "Select Ward",
+        "mainTabs": {
+          "consumptionLogSection": "Consumption Log",
+          "consumptionLogSubItems": {
+            "allEquipmentUsage": "All Consumption",
+            "running": "Ward Consumption",
+            "completed": "Patient Consumption"
+          },
+          "equipmentUsageSection": "Equipment Usage Logs",
+          "equipmentUsageSubItems": {
+            "all": "All",
+            "ward": "Ward",
+            "patient": "Patient"
+          },
+          "wardStockSection": "Ward Stock",
+          "wardStockSubItems": {
+            "consumptionStock": "Consumption Stock",
+            "equipmentStock": "Equipment Stock"
+          }
+        },
+        "actions": {
+          "view": "View",
+          "edit": "Edit",
+          "delete": "Delete",
+          "addRequestStock": "Add Request Stock",
+          "addConsumptionLog": "Add Consumption Log",
+          "addEquipmentUsage": "Add Equipment Usage"
+        },
+        "columns": {
+          "date": "Date",
+          "dateTime": "Date & Time",
+          "itemName": "Item Name",
+          "equipmentName": "Equipment Name",
+          "category": "Category",
+          "assetId": "Asset Id",
+          "quantity": "Quantity",
+          "currentQty": "Current Qty",
+          "minQty": "Min Qty",
+          "totalItems": "Total Items",
+          "available": "Available",
+          "inUse": "In Use",
+          "maintenance": "Maintenance",
+          "store": "Store",
+          "expiry": "Expiry",
+          "usageType": "Usage Type",
+          "patient": "Patient",
+          "loggedBy": "Logged By",
+          "recordedBy": "Recorded By",
+          "note": "Note",
+          "notes": "Notes",
+          "action": "Action",
+          "timeRange": "Start Time - End time",
+          "duration": "Duration",
+          "status": "Status",
+          "running": "Running...",
+          "requestId": "Request ID",
+          "requestedDate": "Requested Date",
+          "requestedBy": "Requested By",
+          "storeRemarks": "Store Remarks"
+        },
+        "statuses": {
+          "available": "Available",
+          "lowStock": "Low Stock",
+          "outOfStock": "Out Of Stock",
+          "running": "Running",
+          "completed": "Completed"
+        },
+        "subTabs": {
+          "wardStock": "Ward Stock",
+          "consumptionLog": "Consumption Log",
+          "equipmentUsage": "Equipment Usage Logs",
+          "all": "All",
+          "ward": "Ward",
+          "patient": "Patient",
+          "running": "Running",
+          "completed": "Completed",
+          "consumptionStock": "Consumption Stock",
+          "equipmentStock": "Equipment Stock",
+          "issued": "Issued",
+          "pending": "Pending",
+          "approved": "Approved",
+          "rejected": "Rejected",
+          "partiallyApproved": "Partially Approved"
+        },
+        "consumptionLog": {
+          "modal": {
+            "title": "Consumables",
+            "subtitle": "Add Consumables Items",
+            "editTitle": "Edit Consumption Log",
+            "editSubtitle": "Update consumption details for the patient or ward",
+            "usageType": "Usage Type",
+            "patient": "Patient",
+            "itemName": "Item Name",
+            "quantity": "Quantity",
+            "reason": "Reason",
+            "notes": "Notes",
+            "placeholders": {
+              "usageType": "Select Usage Type",
+              "patient": "Select Patient",
+              "itemName": "Select Item Name",
+              "quantity": "Enter Quantity",
+              "reason": "Select Reason",
+              "notes": "Enter / Instructions"
+            },
+            "notifications": {
+              "usageTypeRequired": "Usage type is required",
+              "patientRequired": "Patient is required",
+              "itemNameRequired": "Item name is required",
+              "quantityRequired": "Quantity is required",
+              "reasonRequired": "Reason is required"
+            }
+          }
+        },
+        "equipmentUsage": {
+          "modal": {
+            "title": "Equipment",
+            "subtitle": "Add Equipment for the patient",
+            "editTitle": "Edit Equipment Usage Logs",
+            "editSubtitle": "Update equipment usage for the patient",
+            "patient": "Patient",
+            "itemName": "Item Name",
+            "assetId": "Asset ID",
+            "condition": "Condition Before Use",
+            "startTime": "Start Time",
+            "endTime": "End Time (Optional)",
+            "notes": "Notes / Instructions",
+            "placeholders": {
+              "patient": "Select Patient",
+              "itemName": "Select Item Name",
+              "assetId": "Select Asset ID",
+              "condition": "Select Condition",
+              "startTime": "Select Start Time",
+              "endTime": "Select End Time",
+              "notes": "Enter Notes / Instructions"
+            },
+            "notifications": {
+              "itemNameRequired": "Item name is required",
+              "assetIdRequired": "Asset ID is required",
+              "startTimeRequired": "Start time is required"
+            }
+          }
+        },
+        "wardStock": {
+          "activityLog": {
+            "title": "Activity Log",
+            "stats": {
+              "currentQuantity": "Current Quantity",
+              "minimumQuantity": "Minimum Quantity",
+              "totalReceived": "Total Received",
+              "totalConsumed": "Total Consumed"
+            },
+            "tabs": {
+              "all": "All",
+              "received": "Received",
+              "returned": "Returned",
+              "consumption": "Consumption",
+              "damaged": "Damaged"
+            }
+          },
+          "equipmentDetail": {
+            "title": "Equipment Stock",
+            "stats": {
+              "totalEquipment": "Total Equipment",
+              "available": "Available",
+              "inUse": "In Use",
+              "maintenance": "Maintenance"
+            }
+          }
+        },
+        "options": {
+          "categories": {
+            "consumables": "Consumables",
+            "equipment": "Equipment"
+          },
+          "usageTypes": {
+            "patient": "Patient",
+            "ward": "Ward"
+          },
+          "urgency": {
+            "high": "High",
+            "medium": "Medium",
+            "low": "Low"
+          },
+          "reasons": {
+            "stockDepletion": "Stock Depletion",
+            "emergencyRequirement": "Emergency Requirement",
+            "routine": "Routine",
+            "emergency": "Emergency"
+          },
+          "conditions": {
+            "new": "New",
+            "good": "Good",
+            "damaged": "Damaged"
+          }
+        },
+        "stockRequests": {
+          "title": "Ward Stock",
+          "addRequest": "Add Request Stock",
+          "modal": {
+            "title": "Request Stock",
+            "subtitle": "Send Request Stock",
+            "category": "Category",
+            "itemName": "Item Name",
+            "quantityNeeded": "Quantity Needed",
+            "urgency": "Urgency",
+            "reason": "Reason for Request",
+            "requiredByDate": "Required By Date",
+            "notes": "Notes",
+            "placeholders": {
+              "category": "Select Category",
+              "itemName": "Select Item Name",
+              "quantity": "Enter Quantity",
+              "urgency": "Select Urgency",
+              "reason": "Select Reason for Request",
+              "date": "Select Date",
+              "notes": "Enter Notes / Instructions"
+            }
+          }
+        }
+      },
+      "surgeryDetails": {
+        "title": "Surgery Details",
+        "tabs": {
+          "details": "Surgery Details",
+          "preOpChecklist": "Pre-Op Checklist",
+          "anesthesiaPlan": "Anesthesia Plan",
+          "intraOpNotes": "Intra-Op Notes",
+          "nurse": "Nurse",
+          "postOpCare": "Post-Op Care"
+        },
+        "actions": {
+          "saveAssessment": "Save Assessment",
+          "submitClearances": "Submit Clearances",
+          "fitForAnesthesia": "Fit For Anesthesia",
+          "notFitForAnesthesia": "Not fit for anesthesia"
+        },
+        "banner": {
+          "insurance": "Insurance",
+          "printDocument": "Print Document",
+          "downloadDocument": "Download Document",
+          "viewDetails": "View Details"
+        },
+        "common": {
+          "action": "Action",
+          "view": "View",
+          "edit": "Edit",
+          "delete": "Delete",
+          "print": "Print",
+          "download": "Download",
+          "add": "Add",
+          "save": "Save",
+          "cancel": "Cancel",
+          "completed": "Completed",
+          "pending": "Pending",
+          "ordered": "Ordered",
+          "orderedBy": "Ordered By",
+          "justNow": "Just now",
+          "noRecords": "No records found",
+          "sections": {
+            "implantsUsed": "Implants Used",
+            "consumablesUsed": "Consumables Used"
+          },
+          "fields": {
+            "time": "Time",
+            "selectTime": "Select Time",
+            "quantity": "Quantity",
+            "enterQuantity": "Enter Quantity",
+            "size": "Size",
+            "selectSize": "Select Size",
+            "manufacturer": "Manufacturer",
+            "selectManufacturer": "Select Manufacturer",
+            "implantType": "Implant Type",
+            "selectImplantType": "Select Implant Type",
+            "itemName": "Item Name",
+            "selectItemName": "Select Item Name",
+            "note": "Note",
+            "enterNote": "Enter Note",
+            "notes": "Notes",
+            "enterNotes": "Enter Notes",
+            "batchLotNo": "Batch/Lot No.",
+            "enterBatchLotNo": "Enter Batch/Lot No.",
+            "selectBatch": "Select Batch",
+            "additionalNotes": "Additional Notes",
+            "enterAdditionalNotes": "Enter Additional Notes"
+          },
+          "actions": {
+            "saveDraft": "SAVE AS DRAFT",
+            "markCompleted": "MARK AS COMPLETED",
+            "submitOrders": "SUBMIT ORDERS",
+            "addImplant": "Add Implant",
+            "addConsumable": "Add Consumable"
+          }
+        },
+        "preOp": {
+          "sidebar": {
+            "title": "All Pre-Op Checklist"
+          },
+          "status": {
+            "completedPrev": "Completed using previous result",
+            "prevAvailable": "Previous result available",
+            "usePrev": "Use Previous Result",
+            "results": "results"
+          },
+          "actions": {
+            "orderLab": "Order Laboratory Test",
+            "orderRad": "Order Radiology Procedure",
+            "approveClearance": "Approve Clearances",
+            "approveClearanceOne": "Approve Clearance",
+            "uploadConsent": "Upload Consent",
+            "createNewOrder": "Create New Order",
+            "loadTemplates": "Load Templates",
+            "saveDraft": "SAVE AS DRAFT",
+            "markCompleted": "MARK AS COMPLETED"
+          },
+          "fields": {
+            "surgeryRequirement": "Surgery Requirement",
+            "surgeryTemplate": "Surgery Template",
+            "selectTemplate": "Select Surgery Template",
+            "search": "Search",
+            "noForms": "No forms found",
+            "required": "is required",
+            "select": "Select"
+          },
+          "sections": {
+            "procedures": "Procedures",
+            "investigations": "Required Investigations",
+            "clearances": "Medical Clearances",
+            "consents": "Consents Required",
+            "nursingOrders": "Nursing Orders (Pre-Op)",
+            "prep": "Patient Preparation Requirements",
+            "anesthesia": "Anaesthesia Requirements",
+            "equipment": "Equipment & Instruments",
+            "implants": "Implants & Consumables",
+            "blood": "Blood & Resource Preparation"
+          },
+          "modals": {
+            "orderLab": {
+              "title": "Order Laboratory Test",
+              "subtitle": "Select lab tests for the patient",
+              "selectTests": "Select Tests",
+              "urgency": "Urgency",
+              "selectUrgency": "Select Urgency",
+              "required": "Required",
+              "requiredMessage": "Patient cannot proceed to the next step until this test is completed.",
+              "notes": "Clinical Notes (Optional)",
+              "notesPlaceholder": "Enter Clinical Notes"
+            },
+            "orderRad": {
+              "title": "Order Radiology Procedure",
+              "subtitle": "Select radiology procedures for the patient",
+              "selectProcedures": "Select Procedures",
+              "urgency": "Urgency",
+              "selectUrgency": "Select Urgency",
+              "required": "Required",
+              "requiredMessage": "Patient cannot proceed to the next step until this procedure is completed.",
+              "notes": "Clinical Notes (Optional)",
+              "notesPlaceholder": "Enter Clinical Notes"
+            },
+            "medicalClearance": {
+              "title": "Medical Clearances",
+              "subtitle": "Select Medical Clearances for the patient",
+              "clearanceType": "Clearance Type",
+              "doctor": "Doctor",
+              "doctorPlaceholder": "Doctor Name",
+              "urgency": "Urgency",
+              "selectUrgency": "Select Urgency",
+              "required": "Required",
+              "requiredMessage": "Patient cannot proceed to the next step until this test is completed.",
+              "notes": "Notes (Optional)",
+              "notesPlaceholder": "Enter Notes"
+            },
+            "consentUpload": {
+              "acceptedFiles": "Accepted: PDF, JPG, PNG, DICOM",
+              "uploadPrompt": "Click to upload or drag & drop",
+              "maxSize": "Max 10MB",
+              "capture": "Capture",
+              "uploadDocument": "Upload Document",
+              "notes": "Notes (Optional)",
+              "notesPlaceholder": "Enter Notes"
+            },
+            "nurseOrders": {
+              "title": "Nurse Orders",
+              "addOrder": "Add Nurse Orders",
+              "orderType": "Order Type",
+              "selectOrderType": "Select Order Type",
+              "types": {
+                "iv_fluids": "IV FLUIDS",
+                "medication": "Medication",
+                "monitoring": "Monitoring"
+              },
+              "required": "Required",
+              "requiredMessage": "Patient cannot proceed to next step.",
+              "fluidType": "Fluid Type",
+              "selectFluidType": "Select Fluid Type",
+              "volume": "Volume (mL)",
+              "selectVolume": "Select Volume",
+              "rate": "Rate (mL/hr)",
+              "selectRate": "Select Rate",
+              "duration": "Duration (hours/days)",
+              "selectDuration": "Select Duration",
+              "urgency": "Urgency",
+              "selectUrgency": "Select Urgency",
+              "totalVolume": "Total Volume",
+              "totalBottles": "Total Bottles",
+              "startDate": "Start Date",
+              "pickDate": "Pick a date",
+              "startTime": "Start Time",
+              "selectTime": "Select Time",
+              "injection": "Injection",
+              "selectInjection": "Select Injection",
+              "dose": "Dose",
+              "catheterType": "Catheter Type",
+              "careType": "Care Type",
+              "frequency": "Frequency",
+              "instructions": "Instructions / Notes",
+              "instructionsPlaceholder": "Enter Instructions / Notes"
+            },
+            "bloodRequirement": {
+              "title": "Add Blood Requirement",
+              "subtitle": "Select Blood Requirement for the patient",
+              "bloodComponent": "Blood Component *",
+              "selectBloodComponent": "Select Blood Component",
+              "components": {
+                "prbc": "Packed Red Blood Cells (PRBC)",
+                "ffp": "Fresh Frozen Plasma (FFP)",
+                "platelets": "Platelets",
+                "whole_blood": "Whole Blood",
+                "cryo": "Cryoprecipitate"
+              },
+              "bloodGroup": "Blood Group",
+              "units": "Units",
+              "selectUnits": "Select Units",
+              "unitLabel": "Unit",
+              "unitsLabel": "Units",
+              "urgency": "Urgency",
+              "selectUrgency": "Select Urgency",
+              "date": "Date",
+              "pickDate": "Pick a date",
+              "time": "Time",
+              "selectTime": "Select Time",
+              "clinicalNotes": "Clinical Notes (Optional)",
+              "clinicalNotesPlaceholder": "Enter Clinical Notes"
+            },
+            "approveClearance": {
+              "orderedBy": "Ordered by",
+              "at": "at",
+              "forPatient": "for the patient",
+              "assignedTo": "Assigned to",
+              "notAssigned": "Not Assigned",
+              "physicianStatus": "Physician Status",
+              "fitForSurgery": "Fit for Surgery",
+              "notFitForSurgery": "Not Fit for Surgery",
+              "status": "Status",
+              "instructions": "Instructions / Notes",
+              "noNotes": "No notes provided.",
+              "doctor": "Doctor",
+              "selectStatus": "Select Surgery Status",
+              "notes": "Notes (Optional)",
+              "notesPlaceholder": "Enter Notes"
+            },
+            "bloodRequirementView": {
+              "title": "Blood Requirement",
+              "subtitle": "Ordered Blood for Patient",
+              "bedAssignment": "Bed Assignment Details"
+            },
+            "documentView": {
+              "print": "Print Document",
+              "download": "Download Document",
+              "conductedBy": "Conducted by",
+              "placeholderPreview": "[Document Preview Placeholder]",
+              "labName": "Laboratories, Inc.",
+              "formTitle": "Test Request Form and Test Specifications"
+            },
+            "implantsConsumables": {
+              "title": "Implants & Consumables",
+              "subtitle": "Select Implants & Consumables for the patient",
+              "orderedSubtitle": "Ordered Implants for Patient",
+              "implantType": "Implant Type",
+              "selectImplantType": "Select Implant Type",
+              "types": {
+                "mesh": "Prolene Mesh",
+                "fixation": "Fixation Device",
+                "clip": "Ligating Clips",
+                "suture": "Suture Material"
+              },
+              "size": "Size",
+              "selectSize": "Select Size",
+              "batchNo": "Batch/Lot No.",
+              "selectBatchNo": "Select Batch/Lot No.",
+              "manufacturer": "Manufacturer",
+              "selectManufacturer": "Select Manufacturer",
+              "quantity": "Quantity",
+              "enterQuantity": "Enter Quantity",
+              "clinicalNotes": "Clinical Notes (Optional)",
+              "clinicalNotesPlaceholder": "Enter Clinical Notes"
+            }
+          },
+          "addLabels": {
+            "procedure": "Add Procedure",
+            "investigation": "Add Investigation",
+            "clearance": "Add Clearance",
+            "consent": "Add Consent",
+            "nursingOrder": "Add Nursing Order",
+            "prep": "Add Prep Requirement",
+            "anesthesia": "Add Anaesthesia Req",
+            "equipment": "Add Equipment",
+            "implant": "Add Implant/Consumable",
+            "blood": "Add Blood/Resource"
+          }
+        },
+        "anesthesia": {
+          "tabs": {
+            "medicalHistory": "Medical History",
+            "airwayAssessment": "Airway Assessment",
+            "vitalsExamination": "Vitals Examination",
+            "asaRisk": "ASA & Risk",
+            "planDetails": "Anesthesia Plan"
+          },
+          "actions": {
+            "addVitals": "Add Vitals",
+            "addNew": "Add New",
+            "saveChanges": "Save Changes",
+            "saving": "Saving...",
+            "next": "NEXT",
+            "previous": "Previous",
+            "cancel": "CANCEL",
+            "save": "SAVE",
+            "add": "Add"
+          },
+          "status": {
+            "lastEditedBy": "Last Edited by",
+            "on": "on",
+            "at": "at",
+            "loading": "Loading anesthesia plan...",
+            "toBeImplemented": "To be implemented"
+          },
+          "airwayAssessment": {
+            "fields": {
+              "mallampatiGrade": "Mallampati Grade",
+              "selectMallampatiGrade": "Select Mallampati Grade",
+              "mouthOpening": "Mouth Opening",
+              "selectMouthOpening": "Select Mouth Opening",
+              "neckMobility": "Neck Mobility",
+              "selectNeckMobility": "Select Neck Mobility",
+              "difficultAirwayRisk": "Difficult Airway Risk",
+              "selectRisk": "Select Risk",
+              "additionalNotes": "Additional Notes",
+              "enterAdditionalNotes": "Patient has adequate mouth opening with normal neck mobility. No history of difficult intubation. Airway assessment suggests low risk for intubation."
+            },
+            "values": {
+              "normal": "Normal",
+              "restricted": "Restricted",
+              "low": "Low",
+              "noNotesRecorded": "No additional notes recorded."
+            },
+            "options": {
+              "mallampati": {
+                "grade1": "Grade 1 - Full visibility",
+                "grade2": "Grade 2 - Partial visibility",
+                "grade3": "Grade 3 - Epiglottis only",
+                "grade4": "Grade 4 - No visibility"
+              },
+              "mouthOpening": {
+                "normal": "Normal (> 3cm)",
+                "restricted": "Restricted (< 3cm)"
+              },
+              "neckMobility": {
+                "normal": "Normal (> 35°)",
+                "restricted": "Restricted",
+                "severelyRestricted": "Severely Restricted"
+              },
+              "airwayRisk": {
+                "low": "Low Risk",
+                "anticipated": "Anticipated Difficult Airway",
+                "emergency": "Emergency Airway"
+              }
+            }
+          },
+          "asaRisk": {
+            "fields": {
+              "asaClassification": "ASA Physical Status Classification",
+              "selectAsaClassification": "Select ASA Physical Status Classification",
+              "surgeryRiskLevel": "Surgery Risk Level",
+              "selectSurgeryRiskLevel": "Select Surgery Risk Level",
+              "riskNotes": "Risk Notes",
+              "enterRiskNotes": "Enter Risk Notes",
+              "additionalNotes": "Additional Notes"
+            },
+            "values": {
+              "noNotesRecorded": "No additional notes recorded."
+            },
+            "options": {
+              "asa": {
+                "asa1": "ASA I - Normal healthy patient",
+                "asa2": "ASA II - Mild systemic disease",
+                "asa3": "ASA III - Severe systemic disease",
+                "asa4": "ASA IV - Life-threatening disease",
+                "asa5": "ASA V - Moribund patient"
+              },
+              "riskLevel": {
+                "low": "Low Risk",
+                "moderate": "Moderate Risk",
+                "high": "High Risk"
+              }
+            }
+          },
+          "medicalHistory": {
+            "title": "Medical History",
+            "subtitle": "Add Medical History",
+            "fields": {
+              "historyOfPresentIllness": "History of Present Illness",
+              "pastSurgicalHistory": "Past Surgical History",
+              "diseasesHistory": "Diseases History",
+              "currentMedications": "Current Medications",
+              "dose": "Dose",
+              "frequency": "Frequency",
+              "remainingDuration": "Remaining Duration",
+              "remainingDurationDays": "Remaining Duration(days)"
+            },
+            "placeholders": {
+              "enterAdditionalNote": "Enter Additional Note",
+              "enterPulseRate": "Enter Pulse Rate",
+              "enterRR": "Enter RR",
+              "selectMedications": "Select Medications",
+              "selectDose": "Select Dose",
+              "selectFrequency": "Select Frequency",
+              "enterRemainingDuration": "Enter Remaining Duration"
+            },
+            "table": {
+              "slNo": "Sl No",
+              "currentMedications": "Current Medications",
+              "dose": "Dose",
+              "frequency": "Frequency",
+              "remainingDuration": "Remaining Duration"
+            },
+            "values": {
+              "noIllnessSummary": "No illness summary recorded",
+              "noSurgicalHistory": "No surgical history recorded",
+              "noDiseaseHistory": "No disease history recorded",
+              "na": "N/A",
+              "asPrescribed": "As prescribed",
+              "ongoing": "Ongoing"
+            }
+          },
+          "vitals": {
+            "title": "Vital",
+            "subtitle": "Add Vital",
+            "fields": {
+              "bloodPressure": "Blood Pressure",
+              "pulseRate": "Pulse Rate",
+              "respirationRate": "Respiration Rate",
+              "spo2": "Spo2(%)",
+              "systolicL": "Systolic(L)",
+              "diastolicL": "Diastolic(L)",
+              "systolicR": "Systolic(R)",
+              "diastolicR": "Diastolic(R)",
+              "temperature": "Temperature",
+              "grbs": "GRBS",
+              "hb": "HB",
+              "height": "Height",
+              "weight": "Weight",
+              "bmi": "BMI",
+              "ibw": "IBW",
+              "rbs": "RBS",
+              "bloodGlucose": "Blood Glucose",
+              "painScore": "Pain Score",
+              "additionalNote": "Additional Note"
+            },
+            "placeholders": {
+              "enterBP": "Enter BP",
+              "enterPulseRate": "Enter Pulse Rate",
+              "enterRR": "Enter RR",
+              "enterSpo2": "Enter Spo2",
+              "enterSystolicL": "Enter Systolic(L)",
+              "enterDiastolicL": "Enter Diastolic(L)",
+              "enterSystolicR": "Enter Systolic(R)",
+              "enterDiastolicR": "Enter Diastolic(R)",
+              "enterTemperature": "Enter Temperature",
+              "enterGRBS": "Enter GRBS",
+              "enterHB": "Enter HB",
+              "enterHeight": "Enter Height",
+              "enterWeight": "Enter Weight",
+              "enterBMI": "Enter BMI",
+              "enterIBW": "Enter IBW",
+              "enterRBS": "Enter RBS",
+              "enterAdditionalNote": "Enter Additional Note"
+            }
+          },
+          "planDetails": {
+            "fields": {
+              "anesthesiaType": "Anesthesia Type",
+              "selectAnesthesiaType": "Select Anesthesia Type",
+              "monitoringRequired": "Monitoring Required",
+              "postOpVentilation": "Post-operative Ventilation Needed",
+              "selectPostOpVentilation": "Select Post-operative Ventilation Needed",
+              "icuRequirement": "ICU Requirement",
+              "selectIcuRequirement": "Select ICU Requirement",
+              "airwayManagementPlan": "Airway Management Plan",
+              "airwayManagementPlanPlaceholder": "Plan for endotracheal intubation under general anesthesia. Standard laryngoscopy anticipated. Difficult airway equipment to be kept ready as precaution."
+            },
+            "options": {
+              "anesthesiaType": {
+                "general": "General Anesthesia",
+                "regional": "Regional Anesthesia",
+                "local": "Local Anesthesia",
+                "spinal": "Spinal Anesthesia",
+                "epidural": "Epidural Anesthesia",
+                "sedationMac": "Sedation / MAC"
+              },
+              "monitoring": {
+                "ecg": "ECG",
+                "spo2": "SpO₂",
+                "nibp": "NIBP",
+                "invasiveBp": "Invasive BP (Arterial Line)",
+                "cvp": "CVP",
+                "bis": "BIS",
+                "etco2": "EtCO₂",
+                "temperature": "Temperature"
+              },
+              "ventilation": {
+                "notRequired": "Not Required",
+                "shortTerm": "Short-term Ventilation",
+                "prolonged": "Prolonged Ventilation"
+              },
+              "icu": {
+                "notRequired": "Not Required",
+                "standby": "Standby",
+                "plannedAdmission": "Planned ICU Admission"
+              }
+            }
+          }
+        },
+        "details": {
+          "title": "Schedule Surgery",
+          "surgicalTeam": "Surgical Team",
+          "fields": {
+            "procedure": "Procedure",
+            "department": "Department",
+            "urgency": "Urgency",
+            "estimatedDuration": "Estimated Duration (hours)",
+            "surgeryDate": "Surgery Date",
+            "surgeryTime": "Surgery Time",
+            "otRoom": "OT Room",
+            "surgeonTeam": "Select Surgeon Team",
+            "surgeon": "Surgeon",
+            "assistantSurgeons": "Assistant Surgeons",
+            "anaesthetist": "Anaesthetist",
+            "scrubNurse": "Scrub Nurse",
+            "circulatingNurse": "Circulating Nurse",
+            "otTechnician": "OT Technician",
+            "surgicalDetails": "Surgery Details"
+          },
+          "placeholders": {
+            "selectProcedure": "Select Procedure Name",
+            "selectCategory": "Select Procedure Category",
+            "enterUrgency": "Enter Urgency",
+            "selectDuration": "Select Estimated Duration",
+            "selectDate": "Select Date",
+            "selectTime": "Select Time",
+            "selectOtRoom": "Select OT Room",
+            "selectSurgeonTeam": "Select Surgeon Team",
+            "selectSurgeon": "Select Surgeon",
+            "selectAssistantSurgeons": "Select Assistant Surgeons",
+            "selectAnaesthetist": "Select Anaesthetist",
+            "selectScrubNurse": "Select Scrub Nurse",
+            "selectCirculatingNurse": "Select Circulating Nurse",
+            "selectOtTechnician": "Select OT Technician"
+          },
+          "actions": {
+            "cancel": "CANCEL",
+            "updateRequest": "Update Request"
+          }
+        },
+        "clinicalSidebar": {
+          "activeProblems": "Active Problems",
+          "allergies": "Allergies",
+          "ongoingMedications": "Ongoing Medications",
+          "activeCondition": "Active Condition",
+          "ongoingMedication": "Ongoing Medication",
+          "surgeryIn": "Surgery in",
+          "at": "at",
+          "noRecords": "No records found"
+        },
+        "intraOp": {
+          "sidebar": {
+            "title": "All Intra-Op Checklist",
+            "surgeryTiming": "Surgery Timing",
+            "procedureDetails": "Procedure Details",
+            "complications": "Complications",
+            "bloodLossTransfusion": "Blood Loss & Transfusion",
+            "implantsConsumables": "Implants Used and Consumables Used",
+            "specimensOther": "Specimens & Other Details",
+            "surgeonNotes": "Surgeon's Additional Notes"
+          },
+          "loading": "Loading intra-operative details...",
+          "sections": {
+            "surgeryTiming": "Surgery Timing",
+            "procedureDetails": "Procedure Details",
+            "complications": "Complications",
+            "bloodLossTransfusion": "Blood Loss & Transfusion",
+            "implantsUsed": "Implants Used",
+            "consumablesUsed": "Consumables Used",
+            "specimensOther": "Specimens & Other Details",
+            "surgeonNotes": "Surgeon's Additional Notes"
+          },
+          "fields": {
+            "patientInTime": "Patient In Time",
+            "anesthesiaStart": "Anesthesia Start",
+            "surgeryStartIncision": "Surgery Start (Incision)",
+            "surgeryEndClosure": "Surgery End (Closure)",
+            "actualProcedure": "Actual Procedure Performed",
+            "selectProcedure": "Select Procedure",
+            "sideSite": "Side / Site",
+            "selectSideSite": "Select Side / Site",
+            "approachAccess": "Approach / Access",
+            "selectApproach": "Select Approach / Access",
+            "intraOpFindings": "Intra-operative Findings",
+            "enterFindings": "Enter findings",
+            "operativeSteps": "Operative Steps Summary",
+            "enterOperativeSteps": "Enter operative steps",
+            "intraOpComplications": "Intra-operative Complications",
+            "enterComplications": "Enter Intra-operative Complications",
+            "estimatedBloodLoss": "Estimated Blood Loss (mL)",
+            "selectBloodLoss": "Select blood loss",
+            "prbcUnits": "PRBC (Units)",
+            "ffpUnits": "FFP (Units)",
+            "plateletsUnits": "Platelets (Units)",
+            "selectUnits": "Select units",
+            "implantType": "Implant Type",
+            "selectImplantType": "Select implant type",
+            "size": "Size",
+            "selectSize": "Select size",
+            "batchLotNo": "Batch / Lot No.",
+            "enterBatchLotNo": "Enter batch/lot number",
+            "manufacturer": "Manufacturer",
+            "selectManufacturer": "Select manufacturer",
+            "quantity": "Quantity",
+            "selectQuantity": "Select quantity",
+            "enterQuantity": "Enter quantity",
+            "itemName": "Item Name",
+            "selectItemName": "Select consumable item",
+            "note": "Note",
+            "enterNote": "Enter additional details",
+            "specimensHistopathology": "Specimens sent for Histopathology",
+            "enterSpecimenDetails": "Enter Specimen Details",
+            "drainsPlaced": "Drains Placed",
+            "enterDrainDetails": "Enter Drain Details",
+            "catheterPlaced": "Catheter Placed",
+            "enterCatheterDetails": "Enter Catheter Details",
+            "specimenDetails": "Specimen Details",
+            "notes": "Notes",
+            "enterAdditionalNotes": "Enter additional notes",
+            "procedure": "Procedure"
+          },
+          "actions": {
+            "saveDraft": "SAVE AS DRAFT",
+            "markCompleted": "MARK AS COMPLETED"
+          }
+        },
+        "nurseCare": {
+          "sidebar": {
+            "title": "All Nurse Care Checklist",
+            "patientReception": "Patient Reception in OT",
+            "safetyChecklist": "Surgical Safety Checklist",
+            "positioning": "Patient Positioning & Preparation",
+            "timeOut": "Time Out (Before Skin Incision)",
+            "signOut": "Sign Out (Before Patient Leaves OT)",
+            "implantsUsed": "Implants Used",
+            "consumablesUsed": "Consumables Used",
+            "additionalNotes": "Additional Nursing Notes"
+          },
+          "loading": "Loading nursing notes...",
+          "sections": {
+            "patientReception": "Patient Reception in OT",
+            "safetyChecklist": "Surgical Safety Checklist",
+            "positioning": "Patient Positioning & Preparation",
+            "timeOut": "Time Out (Before Skin Incision)",
+            "signOut": "Sign Out (Before Patient Leaves OT)",
+            "implantsUsed": "Implants Used",
+            "consumablesUsed": "Consumables Used",
+            "additionalNotes": "Additional Nursing Notes"
+          },
+          "fields": {
+            "patientReceivedTime": "Patient Received Time",
+            "selectTime": "Select Time",
+            "patientIdentityVerified": "Patient Identity Verified",
+            "consentFormVerified": "Consent Form Verified",
+            "surgicalSiteMarked": "Surgical Site Marked",
+            "fastingStatusConfirmed": "Fasting Status Confirmed (NPO)",
+            "patientConfirmsIdentity": "Patient confirms identity, site, procedure, consent",
+            "siteMarkedNotApplicable": "Site marked / Not applicable",
+            "consentFormComplete": "Consent form complete",
+            "pulseOximeterFunctioning": "Pulse oximeter on patient and functioning",
+            "knownAllergiesConfirmed": "Known allergies confirmed",
+            "difficultAirwayAssessed": "Difficult airway/aspiration risk assessed",
+            "bloodLossRiskAssessed": "Risk of >500ml blood loss assessed",
+            "additionalNotes": "Additional Notes",
+            "enterAdditionalNotes": "Enter Additional notes",
+            "patientPosition": "Patient Position",
+            "enterPatientPosition": "Enter Patient Position",
+            "pressurePointsPadded": "All pressure points adequately padded",
+            "allTeamMembersIntroduced": "All team members introduced by name and role",
+            "teamConfirmsPatient": "Surgeon, Anaesthetist, Nurse confirm patient, site, procedure",
+            "antibioticProphylaxis": "Antibiotic prophylaxis given within 60 min",
+            "essentialImagingDisplayed": "Essential imaging displayed",
+            "sterilityConfirmed": "Sterility confirmed (including indicator results)",
+            "procedureRecordedCorrectly": "Procedure name recorded correctly",
+            "instrumentCountsCorrect": "Instrument, sponge, needle counts correct",
+            "specimenLabeled": "Specimen labeled (including patient name)",
+            "equipmentProblemsAddressed": "Equipment problems addressed",
+            "time": "Time",
+            "implantType": "Implant Type",
+            "selectType": "Select Type",
+            "size": "Size",
+            "selectSize": "Select Size",
+            "batchLotNo": "Batch/Lot No.",
+            "selectBatch": "Select Batch",
+            "manufacturer": "Manufacturer",
+            "selectManufacturer": "Select Manufacturer",
+            "quantity": "Quantity",
+            "qty": "Qty",
+            "itemName": "Item Name",
+            "selectItemName": "Select Item Name",
+            "enterQuantity": "Enter Quantity",
+            "note": "Note",
+            "enterNote": "Enter Note",
+            "nursingNotes": "Nursing Notes",
+            "enterNursingNotes": "Enter Nursing Notes"
+          },
+          "actions": {
+            "addImplant": "Add Implant",
+            "addConsumable": "Add Consumable",
+            "saveDraft": "SAVE AS DRAFT",
+            "markCompleted": "MARK AS COMPLETED"
+          }
+        },
+        "postOp": {
+          "sidebar": {
+            "title": "All Post-Op Care Checklist",
+            "disposition": "Disposition / Transfer",
+            "vitalSigns": "Vital Signs Monitoring",
+            "activity": "Activity & Mobilization",
+            "diet": "Diet & Oral Fluids",
+            "nurseOrder": "Nurse Order",
+            "painManagement": "Pain Management",
+            "drains": "Drains, Tubes & Catheters",
+            "specialInstructions": "Special Instructions",
+            "followUp": "Follow-Up & Reviews"
+          },
+          "loading": "Loading post-op details...",
+          "noRecords": "No records found",
+          "sections": {
+            "disposition": "Disposition / Transfer",
+            "vitalSigns": "Vital Signs Monitoring",
+            "activity": "Activity & Mobilization",
+            "diet": "Diet & Oral Fluids",
+            "nurseOrder": "Nurse Order",
+            "painManagement": "Pain Management",
+            "drains": "Drains, Tubes & Catheters",
+            "specialInstructions": "Special Instructions",
+            "followUp": "Follow-Up & Reviews"
+          },
+          "fields": {
+            "transferTo": "Transfer To",
+            "selectTransferTo": "Select Transfer To",
+            "floor": "Floor",
+            "selectFloor": "Select Floor",
+            "wardUnit": "Ward / Unit",
+            "selectWardUnit": "Select Ward / Unit",
+            "bedNumber": "Bed Number",
+            "selectBedNumber": "Select Bed Number",
+            "transferTime": "Transfer Time",
+            "selectTime": "Select Time",
+            "nurse": "Nurse",
+            "selectNurse": "Select Nurse",
+            "monitoringFrequency": "Monitoring Frequency",
+            "selectFrequency": "Select Frequency",
+            "duration": "Duration",
+            "selectDuration": "Select Duration",
+            "specialMonitoring": "Special Monitoring",
+            "selectMonitoring": "Select Monitoring",
+            "activityLevel": "Activity Level",
+            "selectActivityLevel": "Select Activity Level",
+            "mobilizationPlan": "Mobilization Plan",
+            "enterMobilizationPlan": "Enter mobilization plan details",
+            "dietOrders": "Diet Orders",
+            "selectDiet": "Select diet",
+            "timeHour": "Time (Hour)",
+            "selectTimeHour": "Select time",
+            "fluidRestriction": "Fluid Restriction",
+            "fluidRestrictionInstructions": "Fluid Restriction Instructions",
+            "enterFluidRestriction": "Details maximum allowed fluid intake",
+            "instructions": "Instructions",
+            "painAssessmentFrequency": "Pain Assessment Frequency",
+            "targetPainScore": "Target Pain Score (0-10)",
+            "selectTargetScore": "Select target score",
+            "urinaryCatheter": "Urinary Catheter in situ",
+            "catheterRemovalPlan": "Catheter Removal Plan",
+            "enterPostOpInstructions": "Enter post-operative instructions",
+            "ngt": "NGT (Nasogastric Tube) in situ",
+            "ngtManagement": "NGT Management",
+            "additionalSpecialInstructions": "Additional Special Instructions",
+            "enterSpecialInstructions": "Enter special post-operative instructions",
+            "doctor": "Doctor",
+            "selectDoctor": "Select Doctor",
+            "date": "Date",
+            "selectFollowUpDate": "Select follow-up date",
+            "time": "Time"
+          },
+          "table": {
+            "orderType": "Order Type",
+            "details": "Details / Instructions",
+            "urgency": "Urgency",
+            "frequency": "Frequency",
+            "startDateTime": "Start Date Time",
+            "orderedBy": "Ordered By",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "actions": {
+            "addNurseNote": "Add Nurse Note",
+            "saveDraft": "SAVE AS DRAFT",
+            "submitOrders": "SUBMIT ORDERS"
+          }
+        }
+      },
+      "otSetting": {
+        "templates": {
+          "title": "Templates",
+          "addTemplate": "Add Template",
+          "searchTemplates": "Search Templates",
+          "createTemplate": {
+            "title": "Create New Template",
+            "sectionTitle": "Template Details",
+            "templateName": "Template Name",
+            "status": "Status",
+            "placeholders": {
+              "templateName": "Enter template name",
+              "selectProcedure": "Select Procedure",
+              "loadingProcedures": "Loading Procedures...",
+              "selectItemName": "Select Item Name",
+              "loadingClearances": "Loading Clearances...",
+              "addMedicalClearances": "Add Medical Clearances",
+              "loadingConsents": "Loading Consents...",
+              "addConsentsRequired": "Add Consents Required",
+              "addPreparationRequirements": "Add Preparation Requirements",
+              "addAnesthesiaRequirements": "Add Anesthesia Requirements",
+              "addEquipmentInstruments": "Add Equipment & Instruments",
+              "addBloodResourcePreparation": "Add Blood & Resource Preparation"
+            },
+            "notifications": {
+              "templateNameRequired": "Template name is required"
+            },
+            "sections": {
+              "procedures": "Procedures",
+              "requiredInvestigations": "Required Investigations",
+              "medicalClearances": "Medical Clearances",
+              "consentsRequired": "Consents Required",
+              "nursingOrders": "Nursing Orders",
+              "patientPreparation": "Patient Preparation",
+              "anesthesiaRequirements": "Anesthesia Requirements",
+              "equipmentInstruments": "Equipment Instruments",
+              "implantsConsumables": "Implants Consumables",
+              "bloodResourcePreparation": "Blood Resource Preparation"
+            },
+            "actions": {
+              "saving": "Saving...",
+              "saveAsDraft": "Save as Draft",
+              "completeAndSign": "Complete & Sign"
+            }
+          },
+          "columns": {
+            "templateName": "Template Name",
+            "procedure": "Procedure",
+            "leadSurgeon": "Lead Surgeon",
+            "createdBy": "Created By",
+            "createdOn": "Created On",
+            "status": "Status"
+          },
+          "searchLabels": {
+            "templateName": "Template Name",
+            "procedure": "Procedure",
+            "surgeon": "Surgeon"
+          }
+        },
+        "teams": {
+          "title": "Teams",
+          "addTeam": "Add Team",
+          "editTeam": "Edit Team",
+          "searchTeams": "Search Teams",
+          "searchLabels": {
+            "mrn": "MRN",
+            "name": "Name",
+            "team": "Team"
+          },
+          "columns": {
+            "teamName": "Team Name",
+            "leadSurgeon": "Lead Surgeon",
+            "membersCount": "Members Count",
+            "speciality": "Speciality",
+            "createdOn": "Created On",
+            "createdBy": "Created By",
+            "status": "Status"
+          },
+          "actions": {
+            "view": "View",
+            "edit": "Edit",
+            "delete": "Delete"
+          },
+          "memberRoles": {
+            "leadSurgeon": "Lead Surgeon",
+            "assistantSurgeon": "Assistant Surgeon",
+            "anaesthetist": "Anaesthetist",
+            "scrubNurse": "Scrub Nurse",
+            "circulatingNurse": "Circulating Nurse",
+            "otTechnician": "OT Technician"
+          },
+          "createTeam": {
+            "title": "Create Team",
+            "teamName": "Team Name",
+            "specialty": "Specialty",
+            "status": "Status",
+            "teamMember": "Team Member",
+            "placeholders": {
+              "teamName": "Enter Team Name",
+              "specialty": "Enter Specialty",
+              "selectSurgeon": "Select Surgeon",
+              "selectAssistantSurgeon": "Select Assistant Surgeon",
+              "selectAnaesthetist": "Select Anaesthetist",
+              "selectScrubNurse": "Select Scrub Nurse",
+              "selectCirculatingNurse": "Select Circulating Nurse",
+              "selectOtTechnician": "Select OT Technician",
+              "loadingDoctors": "Loading Doctors...",
+              "loadingNurses": "Loading Nurses..."
+            },
+            "actions": {
+              "saveAsDraft": "SAVE AS DRAFT",
+              "completeAndSign": "COMPLETE & SIGN",
+              "creating": "Creating..."
+            },
+            "notifications": {
+              "success": "Team created successfully",
+              "error": "Failed to create team",
+              "teamNameRequired": "Team name is required",
+              "specialtyRequired": "Specialty is required",
+              "leadSurgeonRequired": "Lead surgeon is required",
+              "assistantSurgeonRequired": "Assistant surgeon is required",
+              "anaesthetistRequired": "Anaesthetist is required",
+              "scrubNurseRequired": "Scrub nurse is required",
+              "circulatingNurseRequired": "Circulating nurse is required",
+              "otTechnicianRequired": "OT Technician is required"
+            }
+          },
+          "details": {
+            "title": "Surgery Team",
+            "sectionTitle": "Team Details",
+            "metadata": "Metadata",
+            "teamMember": "Team Member",
+            "teamName": "Team Name",
+            "specialty": "Specialty",
+            "status": "Status",
+            "createdBy": "Created by",
+            "createdDate": "Created date",
+            "failedToLoad": "Failed to load team details.",
+            "goBack": "Go Back"
+          }
+        }
       }
     }
   },

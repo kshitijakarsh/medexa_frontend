@@ -6,6 +6,7 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { createNurseNotesApiClient } from "@/lib/api/surgery/nurse-notes";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // View mode checkbox display
 const ChecklistViewItem = ({ label, checked }: { label: string; checked: boolean }) => (
@@ -21,8 +22,12 @@ interface NurseCareViewModeProps {
 }
 
 export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) => {
+    const dict = useDictionary();
+    const nurseCare = dict.pages.surgery.surgeryDetails.nurseCare;
+    const common = dict.pages.surgery.surgeryDetails.common;
+
     if (isLoading) {
-        return <div className="p-8 text-center text-slate-500">Loading nursing notes...</div>;
+        return <div className="p-8 text-center text-slate-500">{nurseCare.loading}</div>;
     }
 
     // Map API data (assuming snake_case) to UI with fallbacks to mock structure or defaults
@@ -84,81 +89,81 @@ export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) =
     return (
         <>
             {/* View Mode - Patient Reception */}
-            <DetailSection title="Patient Reception in OT">
-                <InfoField label="Patient Received Time" value={displayData.patientReception.time} />
+            <DetailSection title={nurseCare.sections.patientReception}>
+                <InfoField label={nurseCare.fields.patientReceivedTime} value={displayData.patientReception.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Patient Identity Verified" checked={displayData.patientReception.identityVerified} />
-                    <ChecklistViewItem label="Consent Form Verified" checked={displayData.patientReception.consentVerified} />
-                    <ChecklistViewItem label="Surgical Site Marked" checked={displayData.patientReception.siteMarked} />
-                    <ChecklistViewItem label="Fasting Status Confirmed (NPO)" checked={displayData.patientReception.fastingConfirmed} />
+                    <ChecklistViewItem label={nurseCare.fields.patientIdentityVerified} checked={displayData.patientReception.identityVerified} />
+                    <ChecklistViewItem label={nurseCare.fields.consentFormVerified} checked={displayData.patientReception.consentVerified} />
+                    <ChecklistViewItem label={nurseCare.fields.surgicalSiteMarked} checked={displayData.patientReception.siteMarked} />
+                    <ChecklistViewItem label={nurseCare.fields.fastingStatusConfirmed} checked={displayData.patientReception.fastingConfirmed} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Safety Checklist */}
-            <DetailSection title="Surgical Safety Checklist">
-                <InfoField label="Time" value={displayData.safetyChecklist.time} />
+            <DetailSection title={nurseCare.sections.safetyChecklist}>
+                <InfoField label={nurseCare.fields.time} value={displayData.safetyChecklist.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Patient confirms identity, site, procedure, consent" checked={displayData.safetyChecklist.identityConfirmed} />
-                    <ChecklistViewItem label="Site marked / Not applicable" checked={displayData.safetyChecklist.siteMarked} />
-                    <ChecklistViewItem label="Consent form complete" checked={displayData.safetyChecklist.consentComplete} />
-                    <ChecklistViewItem label="Pulse oximeter on patient and functioning" checked={displayData.safetyChecklist.pulseOximeter} />
-                    <ChecklistViewItem label="Known allergies confirmed" checked={displayData.safetyChecklist.allergies} />
-                    <ChecklistViewItem label="Difficult airway/aspiration risk assessed" checked={displayData.safetyChecklist.airway} />
-                    <ChecklistViewItem label="Risk of >500ml blood loss assessed" checked={displayData.safetyChecklist.bloodLoss} />
+                    <ChecklistViewItem label={nurseCare.fields.patientConfirmsIdentity} checked={displayData.safetyChecklist.identityConfirmed} />
+                    <ChecklistViewItem label={nurseCare.fields.siteMarkedNotApplicable} checked={displayData.safetyChecklist.siteMarked} />
+                    <ChecklistViewItem label={nurseCare.fields.consentFormComplete} checked={displayData.safetyChecklist.consentComplete} />
+                    <ChecklistViewItem label={nurseCare.fields.pulseOximeterFunctioning} checked={displayData.safetyChecklist.pulseOximeter} />
+                    <ChecklistViewItem label={nurseCare.fields.knownAllergiesConfirmed} checked={displayData.safetyChecklist.allergies} />
+                    <ChecklistViewItem label={nurseCare.fields.difficultAirwayAssessed} checked={displayData.safetyChecklist.airway} />
+                    <ChecklistViewItem label={nurseCare.fields.bloodLossRiskAssessed} checked={displayData.safetyChecklist.bloodLoss} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={displayData.safetyChecklist.notes} />
+                    <InfoField label={nurseCare.fields.additionalNotes} value={displayData.safetyChecklist.notes} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Positioning */}
-            <DetailSection title="Patient Positioning & Preparation">
-                <InfoField label="Patient Position" value={displayData.positioning.position} />
+            <DetailSection title={nurseCare.sections.positioning}>
+                <InfoField label={nurseCare.fields.patientPosition} value={displayData.positioning.position} />
                 <div className="mt-4">
-                    <ChecklistViewItem label="All pressure points adequately padded" checked={displayData.positioning.pressurePoints} />
+                    <ChecklistViewItem label={nurseCare.fields.pressurePointsPadded} checked={displayData.positioning.pressurePoints} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Time Out */}
-            <DetailSection title="Time Out (Before Skin Incision)">
-                <InfoField label="Time" value={displayData.timeOut.time} />
+            <DetailSection title={nurseCare.sections.timeOut}>
+                <InfoField label={nurseCare.fields.time} value={displayData.timeOut.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="All team members introduced by name and role" checked={displayData.timeOut.teamIntroduced} />
-                    <ChecklistViewItem label="Surgeon, Anaesthetist, Nurse confirm patient, site, procedure" checked={displayData.timeOut.confirmed} />
-                    <ChecklistViewItem label="Antibiotic prophylaxis given within 60 min" checked={displayData.timeOut.antibiotic} />
-                    <ChecklistViewItem label="Essential imaging displayed" checked={displayData.timeOut.imaging} />
-                    <ChecklistViewItem label="Sterility confirmed (including indicator results)" checked={displayData.timeOut.sterility} />
+                    <ChecklistViewItem label={nurseCare.fields.allTeamMembersIntroduced} checked={displayData.timeOut.teamIntroduced} />
+                    <ChecklistViewItem label={nurseCare.fields.teamConfirmsPatient} checked={displayData.timeOut.confirmed} />
+                    <ChecklistViewItem label={nurseCare.fields.antibioticProphylaxis} checked={displayData.timeOut.antibiotic} />
+                    <ChecklistViewItem label={nurseCare.fields.essentialImagingDisplayed} checked={displayData.timeOut.imaging} />
+                    <ChecklistViewItem label={nurseCare.fields.sterilityConfirmed} checked={displayData.timeOut.sterility} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={displayData.timeOut.notes} />
+                    <InfoField label={nurseCare.fields.additionalNotes} value={displayData.timeOut.notes} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Sign Out */}
-            <DetailSection title="Sign Out (Before Patient Leaves OT)">
-                <InfoField label="Time" value={displayData.signOut.time} />
+            <DetailSection title={nurseCare.sections.signOut}>
+                <InfoField label={nurseCare.fields.time} value={displayData.signOut.time} />
                 <div className="mt-4 space-y-2">
-                    <ChecklistViewItem label="Procedure name recorded correctly" checked={displayData.signOut.procedure} />
-                    <ChecklistViewItem label="Instrument, sponge, needle counts correct" checked={displayData.signOut.counts} />
-                    <ChecklistViewItem label="Specimen labeled (including patient name)" checked={displayData.signOut.specimen} />
-                    <ChecklistViewItem label="Equipment problems addressed" checked={displayData.signOut.equipment} />
+                    <ChecklistViewItem label={nurseCare.fields.procedureRecordedCorrectly} checked={displayData.signOut.procedure} />
+                    <ChecklistViewItem label={nurseCare.fields.instrumentCountsCorrect} checked={displayData.signOut.counts} />
+                    <ChecklistViewItem label={nurseCare.fields.specimenLabeled} checked={displayData.signOut.specimen} />
+                    <ChecklistViewItem label={nurseCare.fields.equipmentProblemsAddressed} checked={displayData.signOut.equipment} />
                 </div>
                 <div className="mt-4">
-                    <InfoField label="Additional Notes" value={displayData.signOut.notes} />
+                    <InfoField label={nurseCare.fields.additionalNotes} value={displayData.signOut.notes} />
                 </div>
             </DetailSection>
 
             {/* View Mode - Implants */}
-            <DetailSection title="Implants Used">
+            <DetailSection title={common.sections.implantsUsed}>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="text-left text-xs font-bold text-slate-500 uppercase">
-                                <th className="pb-2">Type</th>
-                                <th className="pb-2">Size</th>
-                                <th className="pb-2">Batch/Lot</th>
-                                <th className="pb-2">Manufacturer</th>
-                                <th className="pb-2">Qty</th>
+                                <th className="pb-2">{common.fields.implantType}</th>
+                                <th className="pb-2">{common.fields.size}</th>
+                                <th className="pb-2">{common.fields.batchLotNo}</th>
+                                <th className="pb-2">{common.fields.manufacturer}</th>
+                                <th className="pb-2">{common.fields.quantity}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -177,14 +182,14 @@ export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) =
             </DetailSection>
 
             {/* View Mode - Consumables */}
-            <DetailSection title="Consumables Used">
+            <DetailSection title={common.sections.consumablesUsed}>
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="text-left text-xs font-bold text-slate-500 uppercase">
-                                <th className="pb-2">Item Name</th>
-                                <th className="pb-2">Quantity</th>
-                                <th className="pb-2">Note</th>
+                                <th className="pb-2">{common.fields.itemName}</th>
+                                <th className="pb-2">{common.fields.quantity}</th>
+                                <th className="pb-2">{common.fields.note}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -201,8 +206,8 @@ export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) =
             </DetailSection>
 
             {/* View Mode - Nursing Notes */}
-            <DetailSection title="Additional Nursing Notes">
-                <InfoField label="Nursing Notes" value={displayData.nursingNotes} />
+            <DetailSection title={nurseCare.sections.additionalNotes}>
+                <InfoField label={nurseCare.fields.nursingNotes} value={displayData.nursingNotes} />
             </DetailSection>
         </>
     );

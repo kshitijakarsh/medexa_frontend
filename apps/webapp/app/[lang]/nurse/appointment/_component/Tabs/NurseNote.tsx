@@ -98,6 +98,7 @@ import {
 
 import NurseNoteCard from "./nurse-note/NurseNoteCard";
 import { NurseNoteModal } from "./nurse-note/NurseNoteModal";
+import { ViewNurseNoteModal } from "./nurse-note/ViewNurseNoteModal";
 import { SectionWrapper } from "./common/SectionWrapper";
 import { SectionTitle } from "./common/SectionTitle";
 import { NurseNote } from "./nurse-note/NurseNote";
@@ -116,6 +117,8 @@ export default function NurseNotesSection({ patientId }: { patientId: string }) 
 
     const [open, setOpen] = useState(false);
     const [editing, setEditing] = useState<any>(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [viewing, setViewing] = useState<any>(null);
 
     return (
         <>
@@ -141,6 +144,10 @@ export default function NurseNotesSection({ patientId }: { patientId: string }) 
                         <NurseNoteCard
                             key={note.id}
                             data={note}
+                            onView={() => {
+                                setViewing(note);
+                                setViewOpen(true);
+                            }}
                             onEdit={() => {
                                 setEditing(note);
                                 setOpen(true);
@@ -205,6 +212,15 @@ export default function NurseNotesSection({ patientId }: { patientId: string }) 
                     } catch (err) {
                         // error toast already handled in hook
                     }
+                }}
+            />
+
+            <ViewNurseNoteModal
+                open={viewOpen}
+                note={viewing}
+                onClose={() => {
+                    setViewOpen(false);
+                    setViewing(null);
                 }}
             />
         </>

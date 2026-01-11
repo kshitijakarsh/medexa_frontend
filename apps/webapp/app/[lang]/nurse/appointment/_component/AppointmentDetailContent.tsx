@@ -46,10 +46,13 @@
 
 
 import { appointmentTabsConfig } from "./appointmentTabsConfig";
+import { useUserStore } from "@/store/useUserStore";
 
 export function AppointmentDetailContent({ activeTab, injectedProps }: any) {
+    const user = useUserStore((s) => s.user);
+  const userPermissions = user?.role?.permissions;
 
-  const tabs = appointmentTabsConfig(injectedProps); // turn config into function
+  const tabs = appointmentTabsConfig(injectedProps, userPermissions); // turn config into function
 
   const tab = tabs.find((t) => t.key === activeTab);
 
