@@ -166,6 +166,28 @@ interface Employee {
   created_by?: number
   updated_by?: number
   status?: "active" | "inactive"
+  // Nested relationship objects returned by the API
+  department?: {
+    id: number
+    department_name: string
+    status?: "active" | "inactive"
+  }
+  designation?: {
+    id: number
+    name: string
+    status?: "active" | "inactive"
+  }
+  specialisation?: {
+    id: number
+    name: string
+    status?: "active" | "inactive"
+  }
+  country?: {
+    id: number
+    name_en: string
+    name_ar?: string
+    code?: string
+  }
 }
 
 interface EmployeeResponse {

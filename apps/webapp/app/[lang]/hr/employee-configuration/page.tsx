@@ -742,6 +742,15 @@ export default function EmployeeConfigurationPage() {
           render: (r: any) => (
             <div className="flex items-center gap-2">
               <EmployeeConfigurationRowActions
+                onView={() => {
+                  if (r._raw) {
+                    router.push(
+                      withLocale(
+                        `${ROUTES.HR_EMPLOYEE_CONFIGURATION}/${r._raw.id}/view`
+                      )
+                    )
+                  }
+                }}
                 onEdit={() => {
                   if (r._raw) {
                     router.push(

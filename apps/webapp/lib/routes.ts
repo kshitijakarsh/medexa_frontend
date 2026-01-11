@@ -72,6 +72,16 @@ export const ROUTES = {
   HR_EMPLOYEE_CONFIGURATION: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
   HR_LEAVE_MANAGEMENT: `${HR}/leave-management`,
+
+  // HR Navigation helpers
+  hr: {
+    employeeConfiguration: {
+      list: `${HR}/employee-configuration`,
+      add: `${HR}/employee-configuration/add`,
+      edit: (id: number) => `${HR}/employee-configuration/${id}/edit`,
+      view: (id: number) => `${HR}/employee-configuration/${id}/view`,
+    },
+  },
   // Surgery
   SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
   SURGERY_OT_SCHEDULE: `${SURGERY_BASE}/ot-schedule`,
