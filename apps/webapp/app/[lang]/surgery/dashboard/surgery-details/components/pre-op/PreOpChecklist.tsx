@@ -36,6 +36,7 @@ export type AddOption = {
 };
 
 export type SectionConfig = {
+  id: string;
   title: string;
   count?: string;
   showChanged?: boolean;
@@ -46,6 +47,7 @@ export type SectionConfig = {
 
 export const INITIAL_SECTIONS: SectionConfig[] = [
   {
+    id: "procedures",
     title: "Procedures",
     showChanged: false,
     items: [
@@ -62,6 +64,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "investigations",
     title: "Required Investigations",
     showChanged: true,
     items: [
@@ -93,6 +96,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "clearances",
     title: "Medical Clearances",
     items: [
       { label: "Anaesthesia Clearance", status: "Pending", doctor: "Dr. Vinay" },
@@ -109,6 +113,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "consents",
     title: "Consents Required",
     items: [
       { label: "Surgical Consent", status: "Completed", subLabel: "Signed by patient & surgeon" },
@@ -123,6 +128,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "nursingOrders",
     title: "Nursing Orders (Pre-Op)",
     items: [
       { label: "NPO Status Check", status: "Completed", subLabel: "Confirmed NPO since 10 PM" },
@@ -137,6 +143,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "prep",
     title: "Patient Preparation Requirements",
     items: [
       { label: "Site Marking", status: "Completed", subLabel: "Marked by Dr. Vinay" },
@@ -151,6 +158,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "anesthesia",
     title: "Anaesthesia Requirements",
     items: [
       { label: "GA Machine Check", status: "Pending" },
@@ -165,6 +173,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "equipment",
     title: "Equipment & Instruments",
     items: [
       { label: "Laparoscopic Tower", subLabel: "Reserved for OR 2", status: "Ordered" },
@@ -179,6 +188,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "implants",
     title: "Implants & Consumables",
     items: [
       { label: "Prolene Mesh (15x15)", status: "Ordered", subLabel: "Size verification needed" },
@@ -193,6 +203,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "blood",
     title: "Blood & Resource Preparation",
     items: [
       { label: "Blood Grouping & Cross Matching", status: "Completed", subLabel: "O+ Confirmed" },

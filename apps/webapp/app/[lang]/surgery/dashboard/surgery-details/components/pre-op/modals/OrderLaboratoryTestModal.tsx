@@ -19,7 +19,7 @@ const orderLabSchema = z.object({
     notes: z.string().optional(),
 });
 
-type OrderLabData = z.infer<typeof orderLabSchema>;
+export type OrderLabData = z.infer<typeof orderLabSchema>;
 
 type OrderLaboratoryTestModalProps = {
     open: boolean;

@@ -19,7 +19,7 @@ const orderRadiologySchema = z.object({
     notes: z.string().optional(),
 });
 
-type OrderRadiologyData = z.infer<typeof orderRadiologySchema>;
+export type OrderRadiologyData = z.infer<typeof orderRadiologySchema>;
 
 type OrderRadiologyProcedureModalProps = {
     open: boolean;
