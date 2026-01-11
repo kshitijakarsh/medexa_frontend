@@ -12,14 +12,19 @@ import { z, zodResolver } from "@workspace/ui/lib/zod";
 import { useForm, Controller } from "@workspace/ui/hooks/use-form";
 import { Form, FormField, FormItem, FormControl, FormMessage } from "@workspace/ui/components/form";
 
+export interface OrderLabData {
+    test: string;
+    urgency: string;
+    isRequired: boolean;
+    notes?: string;
+}
+
 const orderLabSchema = z.object({
     test: z.string().min(1, "Required"),
     urgency: z.string().min(1, "Required"),
     isRequired: z.boolean(),
     notes: z.string().optional(),
 });
-
-export type OrderLabData = z.infer<typeof orderLabSchema>;
 
 type OrderLaboratoryTestModalProps = {
     open: boolean;
