@@ -26,6 +26,8 @@ interface AppSelectProps {
   searchable?: boolean;
   searchPlaceholder?: string;
   onSearchChange?: (search: string) => void;
+  /** When true, prevents Radix Select from calling onChange with empty values (fixes prefill issues) */
+  preventEmptyChange?: boolean;
 }
 
 export function AppSelect({
@@ -42,6 +44,7 @@ export function AppSelect({
   searchable = false,
   searchPlaceholder = "Search...",
   onSearchChange,
+  preventEmptyChange = false,
 }: AppSelectProps) {
   const hasError = !!error;
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,6 +81,10 @@ export function AppSelect({
 
   // Handle value change - only trigger onChange if the value is actually different
   const handleValueChange = (newValue: string) => {
+    // If preventEmptyChange is enabled, ignore empty/undefined values
+    if (preventEmptyChange && (!newValue || newValue.trim() === "")) {
+      return;
+    }
     // Only call onChange if the new value is different (case-insensitive comparison)
     if (newValue.toLowerCase() !== stringValue.toLowerCase()) {
       onChange(newValue);

@@ -241,13 +241,13 @@ export default function EditEmployeePage() {
         specialisation_id: (employeeData.specialisation_id && employeeData.specialisation_id !== 0) ? String(employeeData.specialisation_id) : "",
         country_id: (employeeData.country_id && employeeData.country_id !== 0) ? String(employeeData.country_id) : "",
         user_id: (employeeData.user_id && employeeData.user_id !== 0) ? String(employeeData.user_id) : "",
-        // Personal Details
-        gender: employeeData.gender || "",
+        // Personal Details - normalize to lowercase to match option values
+        gender: employeeData.gender?.toLowerCase() || "",
         date_of_birth: toDateString(employeeData.date_of_birth),
-        marital_status: employeeData.marital_status || "",
+        marital_status: employeeData.marital_status?.toLowerCase() || "",
         crp_nid: employeeData.crp_nid || "",
         crp_nid_expiry: toDateString(employeeData.crp_nid_expiry),
-        blood_group: employeeData.blood_group || "",
+        blood_group: employeeData.blood_group || "", // Keep as-is since blood group values like "A+" are case-sensitive
         // photo_url: employeeData.photo_url || undefined,
         photo_url: undefined,
 

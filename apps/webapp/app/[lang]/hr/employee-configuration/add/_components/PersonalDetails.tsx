@@ -67,6 +67,7 @@ export function PersonalDetails({ form, authToken, initialData }: PersonalDetail
                   value={field.value}
                   onChange={field.onChange}
                   options={genderOptions}
+                  preventEmptyChange
                 />
               </FormControl>
               <FormMessage />
@@ -98,6 +99,7 @@ export function PersonalDetails({ form, authToken, initialData }: PersonalDetail
                   value={field.value}
                   onChange={field.onChange}
                   options={maritalStatusOptions}
+                  preventEmptyChange
                 />
               </FormControl>
               <FormMessage />
@@ -116,6 +118,7 @@ export function PersonalDetails({ form, authToken, initialData }: PersonalDetail
                   value={field.value}
                   onChange={field.onChange}
                   options={countryOptions}
+                  preventEmptyChange
                 />
               </FormControl>
               <FormMessage />
@@ -163,6 +166,7 @@ export function PersonalDetails({ form, authToken, initialData }: PersonalDetail
                   value={field.value}
                   onChange={field.onChange}
                   options={bloodGroupOptions}
+                  preventEmptyChange
                 />
               </FormControl>
               <FormMessage />

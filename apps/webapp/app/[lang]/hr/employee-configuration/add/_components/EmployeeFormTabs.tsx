@@ -6,14 +6,15 @@ import { Employment } from "./Employment";
 import { VisaLicense } from "./VisaLicense";
 import { ContractPayroll } from "./ContractPayroll";
 import { Documents } from "./Documents";
+import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 
 const tabs = [
-  "Personal Details",
-  "Contact & Address",
-  "Employment",
-  "Visa & License",
-  "Contract & Payroll",
-  "Documents",
+  { key: "Personal Details", label: "Personal Details" },
+  { key: "Contact & Address", label: "Contact & Address" },
+  { key: "Employment", label: "Employment" },
+  { key: "Visa & License", label: "Visa & License" },
+  { key: "Contract & Payroll", label: "Contract & Payroll" },
+  { key: "Documents", label: "Documents" },
 ];
 
 interface EmployeeFormTabsProps {
@@ -39,22 +40,15 @@ export function EmployeeFormTabs({ form, activeTab, setActiveTab, authToken, ini
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-5 border-b pb-2">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-1.5 rounded-md text-sm font-medium ${activeTab === tab
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-blue-100"
-              }`}
-          >
-            {tab}
-          </button>
-        ))}
+      <div className="mb-5 border-b pb-2">
+        <DynamicTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+        />
       </div>
       <div>{renderTab()}</div>
     </div>
   );
 }
+
