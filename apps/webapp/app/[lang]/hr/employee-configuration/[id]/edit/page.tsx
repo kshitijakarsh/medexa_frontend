@@ -232,7 +232,7 @@ export default function EditEmployeePage() {
   // Populate form when employee data is loaded
   useEffect(() => {
     if (employeeData) {
-      console.log("Resetting form with:", employeeData)
+      // console.log("Resetting form with:", employeeData, String(employeeData.user_id))
       form.reset({
         first_name: employeeData.first_name || "",
         last_name: employeeData.last_name || "",
@@ -248,7 +248,9 @@ export default function EditEmployeePage() {
         crp_nid: employeeData.crp_nid || "",
         crp_nid_expiry: toDateString(employeeData.crp_nid_expiry),
         blood_group: employeeData.blood_group || "",
-        photo_url: employeeData.photo_url || undefined,
+        // photo_url: employeeData.photo_url || undefined,
+        photo_url: undefined,
+
         // Contact Details
         phone: employeeData.phone || "",
         office_email: employeeData.office_email || "",
@@ -287,11 +289,16 @@ export default function EditEmployeePage() {
         gosi: employeeData.gosi || undefined,
         housing_allowance: employeeData.housing_allowance || undefined,
         // Documents
-        qchp_document_url: employeeData.qchp_document_url || undefined,
-        passport_document_url: employeeData.passport_document_url || undefined,
-        id_proof_document_url: employeeData.id_proof_document_url || undefined,
-        contract_document_url: employeeData.contract_document_url || undefined,
-        signature_document_url: employeeData.signature_document_url || undefined,
+        qchp_document_url: undefined,
+        passport_document_url: undefined,
+        id_proof_document_url: undefined,
+        contract_document_url: undefined,
+        signature_document_url: undefined,
+        // qchp_document_url: employeeData.qchp_document_url || undefined,
+        // passport_document_url: employeeData.passport_document_url || undefined,
+        // id_proof_document_url: employeeData.id_proof_document_url || undefined,
+        // contract_document_url: employeeData.contract_document_url || undefined,
+        // signature_document_url: employeeData.signature_document_url || undefined,
       })
     }
   }, [employeeData, form])
@@ -539,16 +546,20 @@ export default function EditEmployeePage() {
                   variant="outline"
                   className="text-blue-600 border-blue-500"
                   onClick={() => router.push("/employee-configuration")}
-                  disabled={updateMutation.isPending}
+                  disabled={isUploading || updateMutation.isPending}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   className="bg-green-500 hover:bg-green-600"
-                  disabled={updateMutation.isPending}
+                  disabled={isUploading || updateMutation.isPending}
                 >
-                  {updateMutation.isPending ? "Saving..." : "Save"}
+                  {isUploading
+                    ? "Uploading files..."
+                    : updateMutation.isPending
+                      ? "Saving..."
+                      : "Save"}
                 </Button>
               </div>
             </form>

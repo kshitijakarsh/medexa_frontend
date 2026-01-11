@@ -32,7 +32,7 @@ export function EmployeeFormTabs({ form, activeTab, setActiveTab, authToken, ini
       case "Employment": return <Employment form={form} />;
       case "Visa & License": return <VisaLicense form={form} />;
       case "Contract & Payroll": return <ContractPayroll form={form} />;
-      case "Documents": return <Documents form={form} />;
+      case "Documents": return <Documents form={form} initialData={initialData} />;
       default: return null;
     }
   };
