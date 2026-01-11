@@ -3,8 +3,10 @@
 import Button from "@/components/ui/button";
 import { DataTable } from "@/components/common/data-table";
 import { Column } from "@/components/common/data-table/ResponsiveDataTable";
+import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
 import { useQuery } from "@tanstack/react-query";
 import { createMedicalHistoryApiClient } from "@/lib/api/surgery/medical-history";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface MedicationRow {
   name: string;
@@ -13,36 +15,39 @@ interface MedicationRow {
   duration: string;
 }
 
-const columns: Column<MedicationRow>[] = [
-  {
-    key: "id",
-    label: "Sl No",
-  },
-  {
-    key: "name",
-    label: "Current Medications",
-  },
-  {
-    key: "dose",
-    label: "Dose",
-  },
-  {
-    key: "frequency",
-    label: "Frequency",
-  },
-  {
-    key: "duration",
-    label: "Remaining Duration",
-    className: "text-right",
-  },
-];
-
-
 interface MedicalHistoryProps {
   patientId?: string;
 }
 
 export const MedicalHistory = ({ patientId }: MedicalHistoryProps) => {
+  const dict = useDictionary();
+  const anesthesia = dict.pages.surgery.surgeryDetails.anesthesia;
+  const medHistory = anesthesia.medicalHistory;
+
+  const columns: Column<MedicationRow>[] = [
+    {
+      key: "id",
+      label: medHistory.table.slNo,
+    },
+    {
+      key: "name",
+      label: medHistory.table.currentMedications,
+    },
+    {
+      key: "dose",
+      label: medHistory.table.dose,
+    },
+    {
+      key: "frequency",
+      label: medHistory.table.frequency,
+    },
+    {
+      key: "duration",
+      label: medHistory.table.remainingDuration,
+      className: "text-right",
+    },
+  ];
+
   const medicalHistoryApi = createMedicalHistoryApiClient({});
 
   const { data: response, isLoading } = useQuery({
@@ -59,58 +64,43 @@ export const MedicalHistory = ({ patientId }: MedicalHistoryProps) => {
 
   const pastSurgicalHistory = historyItem?.surgeries?.length
     ? historyItem.surgeries.map(s => `${s.name} in ${s.date}`).join(", ")
-    : "No surgical history recorded";
+    : medHistory.values.noSurgicalHistory;
 
   const diseasesHistory = historyItem?.conditions?.length
     ? historyItem.conditions.join(", ")
-    : "No disease history recorded";
+    : medHistory.values.noDiseaseHistory;
 
   const medicationsData: MedicationRow[] = historyItem?.medications?.length
     ? historyItem.medications.map((m) => ({
       name: m,
-      dose: "N/A",
-      frequency: "As prescribed",
-      duration: "Ongoing",
+      dose: medHistory.values.na,
+      frequency: medHistory.values.asPrescribed,
+      duration: medHistory.values.ongoing,
     }))
     : [];
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-xl border border-blue-100 p-4">
-        <label className="block text-sm text-slate-500 tracking-tight">
-          History of Present Illness
-        </label>
-        <p className="text-sm font-medium text-slate-400">
-          No illness summary recorded
-        </p>
-      </div>
+      <NoteField
+        label={medHistory.fields.historyOfPresentIllness}
+        value={medHistory.values.noIllnessSummary}
+        className="border-blue-50 bg-blue-50/30"
+      />
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-xl border border-blue-100 p-4">
-          <label className="block text-sm tracking-tight">
-            Past Surgical History
-          </label>
-          <p className="text-sm font-medium">
-            {pastSurgicalHistory}
-          </p>
-        </div>
-        <div className="rounded-xl border border-blue-100 p-4">
-          <label className="block text-sm tracking-tight">
-            Diseases History
-          </label>
-          <p className="text-sm font-medium">
-            {diseasesHistory}
-          </p>
-        </div>
+        <NoteField
+          label={medHistory.fields.pastSurgicalHistory}
+          value={pastSurgicalHistory}
+          className="border-blue-50 bg-blue-50/30"
+        />
+        <NoteField
+          label={medHistory.fields.diseasesHistory}
+          value={diseasesHistory}
+          className="border-blue-50 bg-blue-50/30"
+        />
       </div>
 
       <DataTable columns={columns} data={medicationsData} />
-
-      <div className="flex justify-end pt-4">
-        <Button className="bg-[#50C786] hover:bg-[#45ad74] text-white px-8 rounded-lg uppercase font-medium text-sm">
-          NEXT
-        </Button>
-      </div>
     </div>
   );
 };

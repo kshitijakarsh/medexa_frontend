@@ -182,3 +182,15 @@ export function useDeleteEquipmentUsageLog() {
         },
     });
 }
+
+// GET ALL WARDS
+
+export function useWards() {
+    return useQuery({
+        queryKey: ["wards"],
+        queryFn: async () => {
+            const res = await api.getWards();
+            return res.data;
+        },
+    });
+}

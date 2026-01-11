@@ -57,9 +57,9 @@ export function EquipmentUsageSection() {
                         <DynamicTabs
                             defaultTab={equipmentSubTab}
                             tabs={[
-                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.allEquipmentUsage, key: "All Equipment Usage" },
-                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.running, key: "Running" },
-                                { label: dict.pages.surgery.wardStore.mainTabs.consumptionLogSubItems.completed, key: "Completed" },
+                                { label: dict.pages.surgery.wardStore.subTabs.all, key: "All Equipment Usage" },
+                                { label: dict.pages.surgery.wardStore.subTabs.running, key: "Running" },
+                                { label: dict.pages.surgery.wardStore.subTabs.completed, key: "Completed" },
                             ]}
                             onChange={setEquipmentSubTab}
                         />
@@ -75,7 +75,7 @@ export function EquipmentUsageSection() {
                             className="rounded-lg bg-white border-none"
                         />
                         <NewButton
-                            name="Add Equipment Usage Logs"
+                            name={dict.pages.surgery.wardStore.actions.addEquipmentUsage}
                             handleClick={() => setShowAddModal(true)}
                         />
                     </div>

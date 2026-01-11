@@ -5,6 +5,7 @@ import { IntraOpEditMode } from "./IntraOpEditMode";
 import { IntraOpViewMode } from "./IntraOpViewMode";
 import { useQuery } from "@tanstack/react-query";
 import { createIntraopApiClient } from "@/lib/api/surgery/intraop";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 type IntraOpNotesProps = {
   isEditing?: boolean;
@@ -15,6 +16,8 @@ type IntraOpNotesProps = {
 
 export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId, patientId }: IntraOpNotesProps) {
   const intraopApi = createIntraopApiClient();
+  const dict = useDictionary();
+  const intraOp = dict.pages.surgery.surgeryDetails.intraOp.sidebar;
 
   const { data: intraopResponse, isLoading } = useQuery({
     queryKey: ["surgery-intraop", surgeryId],
@@ -38,13 +41,13 @@ export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId, patien
     const notesComplete = !!data?.surgeon_notes;
 
     const items = [
-      { label: "Surgery Timing", completed: !!timingComplete },
-      { label: "Procedure Details", completed: !!procedureComplete },
-      { label: "Complications", completed: !!complicationsComplete },
-      { label: "Blood Loss & Transfusion", completed: !!bloodLossComplete },
-      { label: "Implants Used and Consumables Used", completed: !!implantConsumableComplete },
-      { label: "Specimens & Other Details", completed: !!specimensComplete },
-      { label: "Surgeon's Additional Notes", completed: !!notesComplete },
+      { label: intraOp.surgeryTiming, completed: !!timingComplete },
+      { label: intraOp.procedureDetails, completed: !!procedureComplete },
+      { label: intraOp.complications, completed: !!complicationsComplete },
+      { label: intraOp.bloodLossTransfusion, completed: !!bloodLossComplete },
+      { label: intraOp.implantsConsumables, completed: !!implantConsumableComplete },
+      { label: intraOp.specimensOther, completed: !!specimensComplete },
+      { label: intraOp.surgeonNotes, completed: !!notesComplete },
     ];
 
     const sidebarItems = items.map(item => ({
@@ -58,7 +61,7 @@ export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId, patien
 
     return {
       header: {
-        title: "All Intra-Op Checklist",
+        title: intraOp.title,
         completedCount: totalCompleted,
         pendingCount: totalPending
       },

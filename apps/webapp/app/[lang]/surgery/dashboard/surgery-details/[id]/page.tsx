@@ -14,6 +14,7 @@ import { SurgeryDetailsTab } from "../components/surgery-details/SurgeryDetailsT
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const PATIENT_DATA: Patient = {
   id: "2",
@@ -33,6 +34,7 @@ const PATIENT_DATA: Patient = {
 export default function SurgeryDetailsPage() {
   const router = useRouter();
   const { id } = useParams();
+  const dict = useDictionary();
 
   const [activeTab, setActiveTab] = React.useState("Surgery Details");
   const [isEditing, setIsEditing] = React.useState(false);
@@ -62,22 +64,22 @@ export default function SurgeryDetailsPage() {
         <div className="flex gap-3 shrink-0 mb-1">
           <button className="flex items-center gap-2 border border-blue-500 text-blue-500 rounded-lg px-3 py-1.5 bg-white hover:bg-blue-50 font-medium text-sm">
             <Save size={16} />
-            Save Assessment
+            {dict.pages.surgery.surgeryDetails.actions.saveAssessment}
           </button>
           <div className="relative group">
             <button className="flex items-center gap-1 bg-blue-500 text-white rounded-lg px-3 py-1.5 text-sm">
               <div className="bg-blue-400 p-1 rounded-md">
                 <FilePlus2Icon size={16} />
               </div>
-              Submit Clearances
+              {dict.pages.surgery.surgeryDetails.actions.submitClearances}
             </button>
 
             <div className="absolute right-0 top-full hidden flex-col gap-1 rounded-lg bg-blue-50 p-1 shadow-lg group-hover:flex z-50">
               <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                Fit For Anesthesia
+                {dict.pages.surgery.surgeryDetails.actions.fitForAnesthesia}
               </button>
               <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                Not fit for anesthesia
+                {dict.pages.surgery.surgeryDetails.actions.notFitForAnesthesia}
               </button>
             </div>
           </div>
@@ -117,7 +119,7 @@ export default function SurgeryDetailsPage() {
         >
           <ArrowLeft size={16} />
         </button>
-        <h1 className="text-base font-bold text-slate-800">Surgery Details</h1>
+        <h1 className="text-base font-bold text-slate-800">{dict.pages.surgery.surgeryDetails.title}</h1>
       </div>
 
       <PatientBanner
@@ -130,12 +132,12 @@ export default function SurgeryDetailsPage() {
       <div className="overflow-x-auto">
         <DynamicTabs
           tabs={[
-            { key: "Surgery Details", label: "Surgery Details" },
-            { key: "Pre-Op Checklist", label: "Pre-Op Checklist" },
-            { key: "Anesthesia Plan", label: "Anesthesia Plan" },
-            { key: "Intra-Op Notes", label: "Intra-Op Notes" },
-            { key: "Nurse", label: "Nurse" },
-            { key: "Post-Op Care", label: "Post-Op Care" },
+            { key: "Surgery Details", label: dict.pages.surgery.surgeryDetails.tabs.details },
+            { key: "Pre-Op Checklist", label: dict.pages.surgery.surgeryDetails.tabs.preOpChecklist },
+            { key: "Anesthesia Plan", label: dict.pages.surgery.surgeryDetails.tabs.anesthesiaPlan },
+            { key: "Intra-Op Notes", label: dict.pages.surgery.surgeryDetails.tabs.intraOpNotes },
+            { key: "Nurse", label: dict.pages.surgery.surgeryDetails.tabs.nurse },
+            { key: "Post-Op Care", label: dict.pages.surgery.surgeryDetails.tabs.postOpCare },
           ]}
           defaultTab={activeTab}
           onChange={setActiveTab}

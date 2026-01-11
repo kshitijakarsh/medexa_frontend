@@ -23,9 +23,15 @@ import { WardStock } from "@/lib/api/surgery/ward";
 interface ConsumptionStockProps {
     data?: WardStock[];
     isLoading: boolean;
+    onViewItem: (item: WardStockItem) => void;
 }
 
-export const ConsumptionStock = ({ data, isLoading }: ConsumptionStockProps) => {
+import { useDictionary } from "@/i18n/use-dictionary";
+
+export const ConsumptionStock = ({ data, isLoading, onViewItem }: ConsumptionStockProps) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+
     // Map API data (snake_case) to table display format
     const tableData: WardStockItem[] = React.useMemo(() => {
         if (!data) return [];
@@ -44,69 +50,75 @@ export const ConsumptionStock = ({ data, isLoading }: ConsumptionStockProps) => 
     const columns = [
         {
             key: "itemName",
-            label: "Item Name",
+            label: wardStoreDict.columns.itemName,
         },
         {
             key: "category",
-            label: "Category",
+            label: wardStoreDict.columns.category,
         },
         {
             key: "currentQty",
-            label: "Current Qty",
+            label: wardStoreDict.columns.currentQty,
         },
         {
             key: "minQty",
-            label: "Minimum Qty",
+            label: wardStoreDict.columns.minQty,
         },
         {
             key: "store",
-            label: "Store",
+            label: wardStoreDict.columns.store,
         },
         {
             key: "expiry",
-            label: "Expiry",
+            label: wardStoreDict.columns.expiry,
         },
         {
             key: "status",
-            label: "Status",
+            label: wardStoreDict.columns.status,
             render: (row: WardStockItem) => {
                 let badgeClass = "";
+                let statusLabel: string = row.status;
+
                 switch (row.status) {
                     case "Available":
                         badgeClass = "bg-[#EEFBF3] text-[#34C759] border-[#D1F2DE] hover:bg-[#EEFBF3]";
+                        statusLabel = wardStoreDict.statuses.available;
                         break;
                     case "Low Stock":
                         badgeClass = "bg-[#FFF6E9] text-[#FBAD37] border-[#FFE7C8] hover:bg-[#FFF6E9]";
+                        statusLabel = wardStoreDict.statuses.lowStock;
                         break;
                     case "Out Of Stock":
                         badgeClass = "bg-[#FFF2F2] text-[#FF3B30] border-[#FFDADA] hover:bg-[#FFF2F2]";
+                        statusLabel = wardStoreDict.statuses.outOfStock;
                         break;
                 }
                 return (
                     <Badge variant="outline" className={`${badgeClass} font-normal px-4 py-1.5 rounded-full whitespace-nowrap text-xs`}>
-                        {row.status}
+                        {statusLabel}
                     </Badge>
                 );
             },
         },
         {
             key: "action",
-            label: "Action",
-            render: () => (
+            label: wardStoreDict.columns.action,
+            render: (row: WardStockItem) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: wardStoreDict.actions.view,
+                        onClick: () => onViewItem(row)
                     },
                     {
-                        label: "Edit",
+                        label: wardStoreDict.actions.edit,
                     },
                     {
-                        label: "Delete",
+                        label: wardStoreDict.actions.delete,
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
 
             ),
-        },
+        }
     ];
 
     return (

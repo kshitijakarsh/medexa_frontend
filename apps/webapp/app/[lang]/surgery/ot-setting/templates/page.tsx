@@ -23,7 +23,8 @@ import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeTogg
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
-import { createSurgeryTemplateApiClient, SurgeryTemplate } from "@/lib/api/surgery/templates";
+import { useSurgeryTemplates } from "@/app/[lang]/surgery/_hooks/useSurgeryTemplate";
+import { SurgeryTemplate } from "@/lib/api/surgery/templates";
 
 interface TemplateTableRow {
     id: string;
@@ -48,7 +49,7 @@ export default function TemplatesList() {
     const dict = useDictionary();
 
     // State
-    const [searchType, setSearchType] = useState({ label: "Template Name", value: "templateName" });
+    const [searchType, setSearchType] = useState({ label: dict.pages.surgery.otSetting.templates.searchLabels.templateName, value: "templateName" });
     const [searchValue, setSearchValue] = useState("");
     const [sortOrder, setSortOrder] = useState<"nearest" | "farthest">("nearest");
     const [isCalendarView, setIsCalendarView] = useState(false);
@@ -60,22 +61,14 @@ export default function TemplatesList() {
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
 
-    const templatesApi = createSurgeryTemplateApiClient({});
-
     const {
         data: templatesResponse,
         isLoading,
         error: templatesError,
         refetch,
-    } = useQuery({
-        queryKey: ["surgery-templates", searchValue, selectedStatus],
-        queryFn: async () => {
-            const response = await templatesApi.getTemplates({
-                search: searchValue.length >= 2 ? searchValue : undefined,
-                status: selectedStatus || undefined,
-            });
-            return response.data;
-        },
+    } = useSurgeryTemplates({
+        search: searchValue.length >= 2 ? searchValue : undefined,
+        status: selectedStatus || undefined,
     });
 
     const templatesData = templatesResponse?.data || [];
@@ -111,23 +104,23 @@ export default function TemplatesList() {
     }, [tableData]);
 
     const searchOptions = [
-        { label: "Template Name", value: "templateName" },
-        { label: "Procedure", value: "procedure" },
-        { label: "Surgeon", value: "surgeon" },
+        { label: dict.pages.surgery.otSetting.templates.searchLabels.templateName, value: "templateName" },
+        { label: dict.pages.surgery.otSetting.templates.searchLabels.procedure, value: "procedure" },
+        { label: dict.pages.surgery.otSetting.templates.searchLabels.surgeon, value: "surgeon" },
     ];
 
     const columns: Column<TemplateTableRow>[] = [
         {
             key: "templateName",
-            label: "Template Name",
+            label: dict.pages.surgery.otSetting.templates.columns.templateName,
         },
         {
             key: "procedure",
-            label: "Procedure",
+            label: dict.pages.surgery.otSetting.templates.columns.procedure,
         },
         {
             key: "leadSurgeon",
-            label: "Lead Surgeon",
+            label: dict.pages.surgery.otSetting.templates.columns.leadSurgeon,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
@@ -141,7 +134,7 @@ export default function TemplatesList() {
         },
         {
             key: "createdOn",
-            label: "Created On",
+            label: dict.pages.surgery.otSetting.templates.columns.createdOn,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm text-slate-700">{row.createdOn}</span>
@@ -150,7 +143,7 @@ export default function TemplatesList() {
         },
         {
             key: "createdBy",
-            label: "Created By",
+            label: dict.pages.surgery.otSetting.templates.columns.createdBy,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
@@ -164,7 +157,7 @@ export default function TemplatesList() {
         },
         {
             key: "status",
-            label: "Status",
+            label: dict.pages.surgery.otSetting.templates.columns.status,
             render: (row) => (
                 <span
                     className={`
@@ -174,29 +167,29 @@ export default function TemplatesList() {
                   font-medium
                 `}
                 >
-                    {row.status}
+                    {row.status === 'Active' ? dict.pages.surgery.common.status.active : dict.pages.surgery.common.status.inactive}
                 </span>
             )
         },
         {
             key: "actions",
-            label: "Action",
+            label: dict.pages.surgery.common.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: dict.pages.surgery.common.view,
                         // onClick: () => {
                         //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}`);
                         // }
                     },
                     {
-                        label: "Edit",
+                        label: dict.pages.surgery.common.edit,
                         // onClick: () => {
                         //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}/edit`);
                         // }
                     },
                     {
-                        label: "Delete",
+                        label: dict.pages.surgery.common.delete,
                         // onClick: () => {
                         //     // Handle delete
                         // }
@@ -209,7 +202,7 @@ export default function TemplatesList() {
     return (
         <div>
             <div className="flex flex-col gap-4">
-                <h1 className="font-medium text-base text-slate-800">Templates</h1>
+                <h1 className="font-medium text-base text-slate-800">{dict.pages.surgery.otSetting.templates.title}</h1>
 
                 {/* Filters + Calendar toggle */}
                 <div className="flex items-center justify-between gap-4">
@@ -236,7 +229,7 @@ export default function TemplatesList() {
                         <FilterDropdown
                             icon={<Ellipsis size={16} />}
                             label={dict.common.status}
-                            options={["Active", "Inactive"]}
+                            options={[dict.pages.surgery.common.status.active, dict.pages.surgery.common.status.inactive]}
                             value={selectedStatus}
                             onSelect={setSelectedStatus}
                         />
@@ -250,7 +243,7 @@ export default function TemplatesList() {
                         label={
                             <>
                                 <CalendarDays size={18} className="text-blue-500" />
-                                Calendar View
+                                {dict.pages.surgery.common.calendarView}
                             </>
                         }
                     />
@@ -273,7 +266,7 @@ export default function TemplatesList() {
                             onOptionSelect={setSearchType}
                             searchValue={searchValue}
                             onSearchChange={setSearchValue}
-                            placeholder="Search Templates"
+                            placeholder={dict.pages.surgery.otSetting.templates.searchTemplates}
                         />
                     </div>
 
@@ -285,7 +278,7 @@ export default function TemplatesList() {
 
                     {/* Add Button */}
                     <NewButton
-                        name="Create Template"
+                        name={dict.pages.surgery.otSetting.templates.addTemplate}
                         className="h-9 text-sm"
                         handleClick={() => {
                             router.push(`/${lang}/surgery/ot-setting/templates/new`);

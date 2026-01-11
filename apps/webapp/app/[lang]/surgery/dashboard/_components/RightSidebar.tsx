@@ -6,9 +6,9 @@ import PatientCard from "./UI/PatientCard";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import { ROUTES } from "@/lib/routes";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
+import { Surgery } from "@/lib/api/surgery/surgeries";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { useSurgeries } from "../../_hooks/useSurgery";
 
 const RightSidebar: React.FC = () => {
   const router = useRouter();
@@ -70,34 +70,25 @@ const RightSidebar: React.FC = () => {
     </div>
   );
 
-  const surgeryApi = createSurgeryApiClient({});
-
-  const { data: surgeriesResponse, isLoading } = useQuery({
-    queryKey: ["surgeries-sidebar"],
-    queryFn: async () => {
-      const res = await surgeryApi.getAll({ limit: 50 });
-      return res.data;
-    },
-  });
+  const { data: surgeriesResponse, isLoading } = useSurgeries({ limit: 50 });
 
   const allSurgeries: Surgery[] = Array.isArray(surgeriesResponse?.data)
     ? surgeriesResponse.data
     : (Array.isArray(surgeriesResponse) ? surgeriesResponse : []);
 
-  // Upcoming: status is scheduled, sort by scheduled_date ASC
   const upcomingSurgeries = allSurgeries
-    .filter(s => s.status?.toLowerCase() === "scheduled")
+    .filter(s => {
+      const status = s.status?.toLowerCase();
+      return !status || status === "scheduled";
+    })
     .sort((a, b) => {
-      if (!a.scheduled_date) return 1;
-      if (!b.scheduled_date) return -1;
-      return new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+      const dateA = new Date(a.date || a.scheduled_date || 0).getTime();
+      const dateB = new Date(b.date || b.scheduled_date || 0).getTime();
+      return dateA - dateB;
     })
     .slice(0, 5);
 
-  // Surgery Requests: statuses that are not scheduled or in_progress (e.g. pre_op, pending)
-  const surgeryRequests = allSurgeries
-    .filter(s => s.status?.toLowerCase() !== "scheduled" && s.status?.toLowerCase() !== "in_progress")
-    .slice(0, 5);
+  const surgeryRequests = allSurgeries.slice(0, 5);
 
 
   return (
@@ -138,12 +129,16 @@ const RightSidebar: React.FC = () => {
         ) : upcomingSurgeries.map((item) => (
           <PatientCard
             key={item.id}
-            avatar="/images/avatars/1.png"
+            id={item.id}
+            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
             name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.id} // or mrn if available
-            procedure={item.surgery_type || "N/A"}
-            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
-            room={(item as any).ot_room || "N/A"}
+            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
+            procedure={item.procedure?.name || item.surgery_type || "—"}
+            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit"
+            }) : "—"}
+            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
             status={item.status}
           />
         ))}
@@ -162,12 +157,16 @@ const RightSidebar: React.FC = () => {
         ) : surgeryRequests.map((item) => (
           <PatientCard
             key={item.id}
-            avatar="/images/avatars/1.png"
+            id={item.id}
+            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
             name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.id}
-            procedure={item.surgery_type || "N/A"}
-            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
-            room={(item as any).ot_room || "N/A"}
+            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
+            procedure={item.procedure?.name || item.surgery_type || "—"}
+            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit"
+            }) : "—"}
+            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
             status={item.status}
           />
         ))}

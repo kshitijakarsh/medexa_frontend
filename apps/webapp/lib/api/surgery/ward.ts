@@ -122,6 +122,19 @@ export interface WardTypeListResponse {
     data: WardType[];
 }
 
+export interface Ward {
+    id: string;
+    name: string;
+    description?: string;
+    code?: string;
+    status?: string;
+}
+
+export interface WardListResponse {
+    success: boolean;
+    data: Ward[];
+}
+
 export interface CreateConsumptionLogParams {
     usage_type: "patient" | "ward";
     patient_id?: string;
@@ -317,11 +330,11 @@ class WardApiClient {
     }
 
     /* ---------------------------------------------------
-       GET: All Ward Types
+       GET: All Wards
     --------------------------------------------------- */
-    async getWardTypes() {
+    async getWards() {
         const config = await this.getConfig();
-        return axios.get(`${this.baseUrl}/api/v1/ward-types`, {
+        return axios.get<WardListResponse>(`${this.baseUrl}/api/v1/wards`, {
             ...config,
         });
     }

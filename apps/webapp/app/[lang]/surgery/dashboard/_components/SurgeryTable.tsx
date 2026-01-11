@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { SurgeryStatus } from "../../_lib/types";
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
+import { SurgeryStatus } from "@/app/[lang]/surgery/_lib/types";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import Image from "next/image";
 
@@ -13,7 +14,6 @@ import { Button } from "@workspace/ui/components/button";
 import { useRouter, useParams } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import ActionMenu from "@/components/common/action-menu";
-import { useDictionary } from "@/i18n/use-dictionary";
 
 // Table row interface for display
 interface SurgeryRow {
@@ -32,64 +32,62 @@ interface SurgeryRow {
   status: SurgeryStatus;
 }
 
-const SurgeryTable: React.FC = () => {
+interface SurgeryTableProps {
+  initialData?: Surgery[];
+}
+
+export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
   const router = useRouter();
   const { lang } = useParams();
   const dict = useDictionary();
   const surgeryTableDict = dict.pages.surgery.dashboard;
   const [activeTab, setActiveTab] = React.useState("Surgeries");
-  // API Client
-  const surgeryApi = createSurgeryApiClient({});
-
-  // Fetch surgeries with React Query
   const {
     data: surgeriesData,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["surgeries", activeTab],
-    queryFn: async () => {
-      const statusFilter = activeTab === "Ongoing"
-        ? "in_progress"
-        : activeTab === "Upcoming"
-          ? "scheduled"
-          : undefined;
-      const response = await surgeryApi.getAll({ status: statusFilter });
-      console.log("Surgeries API Response:", response.data);
-      return response.data;
-    },
+  } = useSurgeries({
+    status: activeTab === "Ongoing"
+      ? "in_progress"
+      : activeTab === "Upcoming"
+        ? "scheduled"
+        : undefined
   });
 
   // Extract surgeries from response
   const extractSurgeries = (): Surgery[] => {
+    if (initialData) return initialData; // Use initialData if provided
     if (!surgeriesData) return [];
     if (Array.isArray(surgeriesData)) return surgeriesData;
-    if (Array.isArray(surgeriesData.data)) return surgeriesData.data;
+    if (Array.isArray((surgeriesData as any).data)) return (surgeriesData as any).data;
     return [];
   };
 
+  const surgeries = extractSurgeries();
+
   // Map API data to table rows
-  const tableData: SurgeryRow[] = extractSurgeries().map((surgery: Surgery) => ({
+  const tableData: SurgeryRow[] = surgeries.map((surgery: Surgery) => ({
     id: surgery.id,
-    otRoom: (surgery as any).ot_room || "OT-1",
+    otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "OT-1"),
     patient: {
       id: surgery.patient?.id || surgery.patient_id || "",
       name: surgery.patient
         ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
-        : "Unknown Patient",
-      mrn: (surgery as any).patient?.mrn || "MRN-0000",
-      avatarUrl: (surgery as any).patient?.photo_url || "/images/avatars/1.png",
+        : dict.pages.surgery.common.fallbacks.unknownPatient,
+      mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
+      avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+      vip: surgery.patient?.vip,
     },
-    time: surgery.scheduled_date
-      ? new Date(surgery.scheduled_date).toLocaleTimeString("en-US", {
+    time: (surgery.date || surgery.scheduled_date)
+      ? new Date(surgery.date || (surgery.scheduled_date as string)).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit"
       })
       : "—",
-    procedure: surgery.surgery_type || "—",
+    procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
     surgeon: surgery.doctor
-      ? `Dr. ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
-      : "Not Assigned",
+      ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
+      : dict.pages.surgery.common.fallbacks.notAssigned,
     specialty: surgery.department || "General",
     status: mapStatus(surgery.status),
   }));
@@ -105,6 +103,8 @@ const SurgeryTable: React.FC = () => {
         return SurgeryStatus.PRE_OP;
       case "scheduled":
         return SurgeryStatus.SCHEDULED;
+      case "completed":
+        return SurgeryStatus.COMPLETED;
       default:
         return SurgeryStatus.SCHEDULED;
     }

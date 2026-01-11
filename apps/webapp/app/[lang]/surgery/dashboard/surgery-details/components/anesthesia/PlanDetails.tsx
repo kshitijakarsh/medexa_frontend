@@ -5,66 +5,72 @@ import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Label } from "@workspace/ui/components/label";
 import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
-
-const ANESTHESIA_TYPES = [
-  { value: "general", label: "General Anesthesia" },
-  { value: "regional", label: "Regional Anesthesia" },
-  { value: "local", label: "Local Anesthesia" },
-  { value: "spinal", label: "Spinal Anesthesia" },
-  { value: "epidural", label: "Epidural Anesthesia" },
-  { value: "sedation_mac", label: "Sedation / MAC" },
-];
-
-const MONITORING_OPTIONS = [
-  { value: "ecg", label: "ECG" },
-  { value: "spo2", label: "SpO₂" },
-  { value: "nibp", label: "NIBP" },
-  { value: "invasive_bp", label: "Invasive BP (Arterial Line)" },
-  { value: "cvp", label: "CVP" },
-  { value: "bis", label: "BIS" },
-  { value: "etco2", label: "EtCO₂" },
-  { value: "temperature", label: "Temperature" },
-];
-
-const VENTILATION_OPTIONS = [
-  { value: "not_required", label: "Not Required" },
-  { value: "short_term", label: "Short-term Ventilation" },
-  { value: "prolonged", label: "Prolonged Ventilation" },
-];
-
-const ICU_OPTIONS = [
-  { value: "not_required", label: "Not Required" },
-  { value: "standby", label: "Standby" },
-  { value: "planned_admission", label: "Planned ICU Admission" },
-];
-
-const MultiSelectField = ({
-  label,
-  options,
-}: {
-  label: string;
-  options: { value: string; label: string }[];
-}) => (
-  <div className="space-y-1.5">
-    <label className="text-xs font-medium text-slate-800">{label}</label>
-    <div className="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
-      {options.map((option) => (
-        <div key={option.value} className="flex items-center space-x-2">
-          <Checkbox id={option.value} />
-          <Label htmlFor={option.value} className="text-sm text-slate-600 font-normal cursor-pointer">
-            {option.label}
-          </Label>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface PlanDetailsProps {
   isEditing?: boolean;
 }
 
 export const PlanDetails = ({ isEditing = false }: PlanDetailsProps) => {
+  const dict = useDictionary();
+  const anesthesia = dict.pages.surgery.surgeryDetails.anesthesia;
+  const plan = anesthesia.planDetails;
+
+  const ANESTHESIA_TYPES = [
+    { value: "general", label: plan.options.anesthesiaType.general },
+    { value: "regional", label: plan.options.anesthesiaType.regional },
+    { value: "local", label: plan.options.anesthesiaType.local },
+    { value: "spinal", label: plan.options.anesthesiaType.spinal },
+    { value: "epidural", label: plan.options.anesthesiaType.epidural },
+    { value: "sedation_mac", label: plan.options.anesthesiaType.sedationMac },
+  ];
+
+  const MONITORING_OPTIONS = [
+    { value: "ecg", label: plan.options.monitoring.ecg },
+    { value: "spo2", label: plan.options.monitoring.spo2 },
+    { value: "nibp", label: plan.options.monitoring.nibp },
+    { value: "invasive_bp", label: plan.options.monitoring.invasiveBp },
+    { value: "cvp", label: plan.options.monitoring.cvp },
+    { value: "bis", label: plan.options.monitoring.bis },
+    { value: "etco2", label: plan.options.monitoring.etco2 },
+    { value: "temperature", label: plan.options.monitoring.temperature },
+  ];
+
+  const VENTILATION_OPTIONS = [
+    { value: "not_required", label: plan.options.ventilation.notRequired },
+    { value: "short_term", label: plan.options.ventilation.shortTerm },
+    { value: "prolonged", label: plan.options.ventilation.prolonged },
+  ];
+
+  const ICU_OPTIONS = [
+    { value: "not_required", label: plan.options.icu.notRequired },
+    { value: "standby", label: plan.options.icu.standby },
+    { value: "planned_admission", label: plan.options.icu.plannedAdmission },
+  ];
+
+  const MultiSelectField = ({
+    label,
+    options,
+  }: {
+    label: string;
+    options: { value: string; label: string }[];
+  }) => (
+    <div className="space-y-1.5">
+      <label className="text-xs font-medium text-slate-800">{label}</label>
+      <div className="bg-white border border-slate-200 rounded-lg p-3 space-y-2">
+        {options.map((option) => (
+          <div key={option.value} className="flex items-center space-x-2">
+            <Checkbox id={option.value} />
+            <Label htmlFor={option.value} className="text-sm text-slate-600 font-normal cursor-pointer">
+              {option.label}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex flex-col gap-6">
       {isEditing ? (
@@ -72,22 +78,22 @@ export const PlanDetails = ({ isEditing = false }: PlanDetailsProps) => {
           {/* Form Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectField
-              label="Anesthesia Type"
-              placeholder="Select Anesthesia Type"
+              label={plan.fields.anesthesiaType}
+              placeholder={plan.fields.selectAnesthesiaType}
               options={ANESTHESIA_TYPES}
             />
             <MultiSelectField
-              label="Monitoring Required"
+              label={plan.fields.monitoringRequired}
               options={MONITORING_OPTIONS}
             />
             <SelectField
-              label="Post-operative Ventilation Needed"
-              placeholder="Select Post-operative Ventilation Needed"
+              label={plan.fields.postOpVentilation}
+              placeholder={plan.fields.selectPostOpVentilation}
               options={VENTILATION_OPTIONS}
             />
             <SelectField
-              label="ICU Requirement"
-              placeholder="Select ICU Requirement"
+              label={plan.fields.icuRequirement}
+              placeholder={plan.fields.selectIcuRequirement}
               options={ICU_OPTIONS}
             />
           </div>
@@ -95,10 +101,10 @@ export const PlanDetails = ({ isEditing = false }: PlanDetailsProps) => {
           {/* Airway Management Plan */}
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-slate-800">
-              Airway Management Plan
+              {plan.fields.airwayManagementPlan}
             </label>
             <Textarea
-              placeholder="Plan for endotracheal intubation under general anesthesia. Standard laryngoscopy anticipated. Difficult airway equipment to be kept ready as precaution."
+              placeholder={plan.fields.airwayManagementPlanPlaceholder}
               className="min-h-[160px] resize-none bg-white border-slate-200 text-sm focus-visible:ring-blue-500"
             />
           </div>
@@ -107,23 +113,17 @@ export const PlanDetails = ({ isEditing = false }: PlanDetailsProps) => {
         <>
           {/* Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InfoField label="Anesthesia Type" value="Regional Anesthesia" />
-            <InfoField label="Monitoring Required" value="ECG, SpO₂, NIBP" />
-            <InfoField label="Post-operative Ventilation Needed" value="Not Required" />
-            <InfoField label="ICU Requirement" value="Standby" />
+            <InfoField label={plan.fields.anesthesiaType} value={plan.options.anesthesiaType.regional} />
+            <InfoField label={plan.fields.monitoringRequired} value={`${plan.options.monitoring.ecg}, ${plan.options.monitoring.spo2}, ${plan.options.monitoring.nibp}`} />
+            <InfoField label={plan.fields.postOpVentilation} value={plan.options.ventilation.notRequired} />
+            <InfoField label={plan.fields.icuRequirement} value={plan.options.icu.standby} />
           </div>
 
           {/* Airway Management Plan */}
-          <div className="rounded-xl bg-blue-50 p-4">
-            <label className="mb-2 block text-sm font-medium tracking-tight">
-              Airway Management Plan
-            </label>
-            <div className="text-[13px] space-y-0.5">
-              <p>Plan for endotracheal intubation under general anesthesia.</p>
-              <p>Standard laryngoscopy anticipated.</p>
-              <p>Difficult airway equipment to be kept ready as precaution.</p>
-            </div>
-          </div>
+          <NoteField
+            label={plan.fields.airwayManagementPlan}
+            value={plan.fields.airwayManagementPlanPlaceholder}
+          />
         </>
       )}
     </div>

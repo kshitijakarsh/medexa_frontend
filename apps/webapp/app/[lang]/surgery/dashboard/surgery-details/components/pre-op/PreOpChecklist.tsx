@@ -2,6 +2,8 @@
 
 import React from "react";
 import ChecklistSidebar from "../shared/ChecklistSidebar";
+import { useDictionary } from "@/i18n/use-dictionary";
+
 
 export type ItemStatus = "Completed" | "Ordered" | "Pending" | "Processing" | "Due" | "N/A";
 
@@ -233,12 +235,48 @@ const MOCK_METRICS: PreOpMetric[] = [
   { title: "OT & Resource Readiness", completed: 6, total: 7 },
 ];
 
+
 export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgeryId, patientId }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void; surgeryId?: string; patientId?: string }) {
+  const dict = useDictionary();
   const [sectionsData, setSectionsData] = React.useState<SectionConfig[]>(INITIAL_SECTIONS);
 
+  // Map of title to dictionary key for localization
+  const titleMap: Record<string, string> = {
+    "Procedures": dict.pages.surgery.surgeryDetails.preOp.sections.procedures,
+    "Required Investigations": dict.pages.surgery.surgeryDetails.preOp.sections.investigations,
+    "Medical Clearances": dict.pages.surgery.surgeryDetails.preOp.sections.clearances,
+    "Consents Required": dict.pages.surgery.surgeryDetails.preOp.sections.consents,
+    "Nursing Orders (Pre-Op)": dict.pages.surgery.surgeryDetails.preOp.sections.nursingOrders,
+    "Patient Preparation Requirements": dict.pages.surgery.surgeryDetails.preOp.sections.prep,
+    "Anaesthesia Requirements": dict.pages.surgery.surgeryDetails.preOp.sections.anesthesia,
+    "Equipment & Instruments": dict.pages.surgery.surgeryDetails.preOp.sections.equipment,
+    "Implants & Consumables": dict.pages.surgery.surgeryDetails.preOp.sections.implants,
+    "Blood & Resource Preparation": dict.pages.surgery.surgeryDetails.preOp.sections.blood,
+  };
+
+  const addLabelMap: Record<string, string> = {
+    "Add Procedure": dict.pages.surgery.surgeryDetails.preOp.addLabels.procedure,
+    "Add Investigation": dict.pages.surgery.surgeryDetails.preOp.addLabels.investigation,
+    "Add Clearance": dict.pages.surgery.surgeryDetails.preOp.addLabels.clearance,
+    "Add Consent": dict.pages.surgery.surgeryDetails.preOp.addLabels.consent,
+    "Add Nursing Order": dict.pages.surgery.surgeryDetails.preOp.addLabels.nursingOrder,
+    "Add Prep Requirement": dict.pages.surgery.surgeryDetails.preOp.addLabels.prep,
+    "Add Anaesthesia Req": dict.pages.surgery.surgeryDetails.preOp.addLabels.anesthesia,
+    "Add Equipment": dict.pages.surgery.surgeryDetails.preOp.addLabels.equipment,
+    "Add Implant/Consumable": dict.pages.surgery.surgeryDetails.preOp.addLabels.implant,
+    "Add Blood/Resource": dict.pages.surgery.surgeryDetails.preOp.addLabels.blood,
+  };
+
+  // Localized sections for display
+  const localizedSections = sectionsData.map(section => ({
+    ...section,
+    title: titleMap[section.title] || section.title,
+    addLabel: addLabelMap[section.addLabel] || section.addLabel
+  }));
+
   // Calculate sidebar counts dynamically
-  const sidebarItems = sectionsData
-    .filter(section => section.title !== "Procedures")
+  const sidebarItems = localizedSections
+    .filter(section => section.title !== dict.pages.surgery.surgeryDetails.preOp.sections.procedures)
     .map(section => ({
       label: section.title,
       completedCount: section.items.filter(item => item.status === "Completed").length,
@@ -249,7 +287,7 @@ export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgery
   const totalPending = sidebarItems.reduce((acc, item) => acc + item.pendingCount, 0);
 
   const sidebarHeader = {
-    title: "All Pre-Op Checklist",
+    title: dict.pages.surgery.surgeryDetails.preOp.sidebar.title,
     completedCount: totalCompleted,
     pendingCount: totalPending
   };
@@ -263,13 +301,13 @@ export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgery
       <div className="lg:col-span-3">
         {isEditing ? (
           <PreOpEditMode
-            sections={sectionsData}
+            sections={localizedSections}
             setSections={setSectionsData}
             onSaveDraft={onSaveDraft}
           />
         ) : (
           <PreOpViewMode
-            sectionsData={sectionsData}
+            sectionsData={localizedSections}
             setSectionsData={setSectionsData}
             onEdit={onEdit}
             metrics={MOCK_METRICS}

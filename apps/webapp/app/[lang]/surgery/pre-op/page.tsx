@@ -6,23 +6,14 @@ import {
 } from "lucide-react";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { useRouter, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
+import { SurgeryRow } from "@/app/[lang]/surgery/_lib/types";
+import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import { useDictionary } from "@/i18n/use-dictionary";
-// import type { Column } from "@/components/common/data-table";
-
-interface Column<T> {
-  key: keyof T | string;
-  label: string;
-  render?: (row: T, index?: number) => React.ReactNode;
-  className?: string;
-}
-
 import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
-import NewButton from "@/components/common/new-button";
 import ActionMenu from "@/components/common/action-menu";
 import FilterButton from "@/components/common/filter-button";
 import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
@@ -30,52 +21,40 @@ import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusTogg
 import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
 import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
 
-type PreOpRow = {
-  id: string;
-  patient: {
-    name: string;
-    mrn: string;
-    avatar?: string;
-    vip?: boolean;
-  };
-  procedure: string;
-  doctor: string;
-  time: string;
-  room: string;
-  status: "PreOp" | "IntraOp" | "PostOp";
-};
 
-const PRE_OP_DATA: PreOpRow[] = [
+const PRE_OP_DATA_MOCK: SurgeryRow[] = [
   {
     id: "1",
+    otRoom: "OT-12",
     patient: {
+      id: "p1",
       name: "Fatima Al-Sabah",
       mrn: "MRN-2501",
-      avatar: "/images/avatars/1.png",
+      avatarUrl: "/images/avatars/1.png",
       vip: true,
     },
     procedure: "Doctor Consultation",
-    doctor: "Dr. Ahmed Khan",
+    surgeon: "Dr. Ahmed Khan",
+    specialty: "General",
     time: "10:30 AM",
-    room: "OT-12",
     status: "PreOp",
   },
   {
     id: "2",
+    otRoom: "OT-08",
     patient: {
+      id: "p2",
       name: "John Mathew",
       mrn: "MRN-2502",
-      avatar: "/images/avatars/1.png",
+      avatarUrl: "/images/avatars/1.png",
     },
     procedure: "Pre Surgery Check",
-    doctor: "Dr. Sarah Lee",
+    surgeon: "Dr. Sarah Lee",
+    specialty: "General",
     time: "11:15 AM",
-    room: "OT-08",
     status: "IntraOp",
   },
 ];
-
-
 
 export default function PreOpList() {
   const [activeTab, setActiveTab] = React.useState("All Surgeries");
@@ -89,49 +68,68 @@ export default function PreOpList() {
   const [searchValue, setSearchValue] = React.useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const surgeryApi = createSurgeryApiClient({});
-
   const {
     data: responseData,
     isLoading,
-    error,
     refetch,
-  } = useQuery({
-    queryKey: ["surgeries-preop", searchQuery, activeTab],
-    queryFn: async () => {
+  } = useSurgeries({
+    search: searchQuery || undefined,
+    status: (() => {
       const statusMap: Record<string, string> = {
         "Pre-op": "PreOp",
         "Intra Op": "IntraOp",
         "Post-op": "PostOp",
       };
-      const resp = await surgeryApi.getAll({
-        search: searchQuery || undefined,
-        status: statusMap[activeTab] || undefined,
-      });
-      return resp.data;
-    },
+      return statusMap[activeTab];
+    })(),
   });
 
-  const USE_MOCK_DATA = true;
+  const USE_MOCK_DATA = false; // Turned off primarily, but maintained for structure
 
-  const surgeries = React.useMemo(() => {
-    const actualData = responseData?.data || [];
-    if (USE_MOCK_DATA) {
-      // Filter mock data based on active tab locally for now
-      const filteredMock = activeTab === "All Surgeries"
-        ? PRE_OP_DATA
-        : PRE_OP_DATA.filter(d => {
-          const statusMap: Record<string, string> = {
-            "Pre-op": "PreOp",
-            "Intra Op": "IntraOp",
-            "Post-op": "PostOp",
-          };
-          return d.status === statusMap[activeTab];
-        });
-      return [...filteredMock, ...actualData];
+  const tableData: SurgeryRow[] = React.useMemo(() => {
+    const actualSurgeries = responseData?.data || [];
+
+    // Map API data to table rows
+    const mappedActual: SurgeryRow[] = actualSurgeries.map((surgery: Surgery) => ({
+      id: surgery.id,
+      otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "—"),
+      patient: {
+        id: surgery.patient?.id || surgery.patient_id || "",
+        name: surgery.patient
+          ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
+          : dict.pages.surgery.common.fallbacks.unknownPatient,
+        mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
+        avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+        vip: surgery.patient?.vip,
+      },
+      time: (surgery.date || surgery.scheduled_date)
+        ? new Date(surgery.date || (surgery.scheduled_date as string)).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+        : "—",
+      procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
+      surgeon: surgery.doctor
+        ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
+        : dict.pages.surgery.common.fallbacks.notAssigned,
+      specialty: surgery.department || "General",
+      status: surgery.status || "scheduled",
+    }));
+
+    if (USE_MOCK_DATA && mappedActual.length === 0) {
+      return PRE_OP_DATA_MOCK.filter(d => {
+        if (activeTab === "All Surgeries") return true;
+        const statusMap: Record<string, string> = {
+          "Pre-op": "PreOp",
+          "Intra Op": "IntraOp",
+          "Post-op": "PostOp",
+        };
+        return d.status === statusMap[activeTab];
+      });
     }
-    return actualData;
-  }, [responseData, activeTab]);
+
+    return mappedActual;
+  }, [responseData, activeTab, USE_MOCK_DATA]);
 
   const searchOptions = [
     { label: "MRN", value: "mrn" },
@@ -139,9 +137,9 @@ export default function PreOpList() {
     { label: "Status", value: "status" },
   ];
 
-  const columns = React.useMemo<Column<PreOpRow>[]>(() => [
+  const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
-      key: "room",
+      key: "otRoom",
       label: "OT Room",
     },
     {
@@ -151,7 +149,7 @@ export default function PreOpList() {
         <AppointmentPatientCell
           name={row.patient.name}
           mrn={row.patient.mrn}
-          avatar={row.patient.avatar}
+          avatar={row.patient.avatarUrl}
           vip={row.patient.vip}
         />
       ),
@@ -166,7 +164,7 @@ export default function PreOpList() {
       label: "Procedure",
     },
     {
-      key: "doctor",
+      key: "surgeon",
       label: "Surgeon",
     },
     {
@@ -176,7 +174,7 @@ export default function PreOpList() {
     },
     {
       key: "action",
-      label: "Action",
+      label: dict.pages.surgery.common.action,
       render: (row) => (
         <ActionMenu actions={[
           {
@@ -193,23 +191,18 @@ export default function PreOpList() {
           },
           {
             label: dict.common.delete,
-            // onClick: () => {
-            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-            // }
           }
         ]} className="bg-transparent hover:bg-transparent text-blue-500" />
       ),
     },
-  ], []);
+  ], [dict, lang, router]);
 
   const counts = React.useMemo(() => ({
-    all: PRE_OP_DATA.length,
-    preOp: PRE_OP_DATA.filter((d) => d.status === "PreOp").length,
-    intraOp: PRE_OP_DATA.filter((d) => d.status === "IntraOp").length,
-    postOp: PRE_OP_DATA.filter((d) => d.status === "PostOp").length,
-  }), []);
-
-  const filteredData = surgeries;
+    all: tableData.length,
+    preOp: tableData.filter((d) => d.status.toLowerCase() === "preop").length,
+    intraOp: tableData.filter((d) => d.status.toLowerCase() === "intraop").length,
+    postOp: tableData.filter((d) => d.status.toLowerCase() === "postop").length,
+  }), [tableData]);
 
   return (
     <div>
@@ -274,14 +267,6 @@ export default function PreOpList() {
             onSortChange={setSortOrder}
           />
 
-          {/* <NewButton
-            name={dict.pages.surgery.otSchedule.addSurgery}
-            className="h-9 text-sm"
-            handleClick={() => {
-              router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
-            }}
-          ></NewButton> */}
-
           <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
         </div>
       </div>
@@ -290,7 +275,7 @@ export default function PreOpList() {
       <div className="mt-4">
         <ResponsiveDataTable
           columns={columns}
-          data={filteredData}
+          data={tableData}
           loading={isLoading}
           striped
         />

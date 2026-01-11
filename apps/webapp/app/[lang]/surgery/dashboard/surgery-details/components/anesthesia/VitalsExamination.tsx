@@ -6,6 +6,7 @@ import Button from "@/components/ui/button";
 import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
 import { useLatestVitalsByPatientId } from "@/app/[lang]/surgery/_hooks/useVitals";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface VitalsExaminationProps {
   patientId?: string;
@@ -38,75 +39,79 @@ const VitalCard = ({
 export const VitalsExamination = ({
   patientId,
 }: VitalsExaminationProps) => {
+  const dict = useDictionary();
+  const anesthesia = dict.pages.surgery.surgeryDetails.anesthesia;
+  const vitals = anesthesia.vitals;
+
   const { data: vitalsData, isLoading } = useLatestVitalsByPatientId(patientId);
 
   const vitalsConfig = [
     {
       icon: <Heart size={18} />,
-      label: "Blood Pressure",
+      label: vitals.fields.bloodPressure,
       value: vitalsData?.blood_pressure_systolic ? `${vitalsData.blood_pressure_systolic} / ${vitalsData.blood_pressure_diastolic} mmHg` : "--- / --- mmHg",
       placeholder: "e.g. 118 / 76 mmHg",
       iconBgClass: "bg-red-50 text-red-500",
     },
     {
       icon: <Activity size={18} />,
-      label: "Pulse Rate",
+      label: vitals.fields.pulseRate,
       value: vitalsData?.heart_rate ? `${vitalsData.heart_rate} bpm` : "--- bpm",
       placeholder: "e.g. 82 bpm",
       iconBgClass: "bg-blue-50 text-blue-500",
     },
     {
       icon: <Wind size={18} />,
-      label: "Respiration Rate",
+      label: vitals.fields.respirationRate,
       value: vitalsData?.respiratory_rate ? `${vitalsData.respiratory_rate} breaths/min` : "--- breaths/min",
       placeholder: "e.g. 18 breaths/min",
       iconBgClass: "bg-sky-50 text-sky-500",
     },
     {
       icon: <Droplets size={18} />,
-      label: "Spo2(%)",
+      label: vitals.fields.spo2,
       value: vitalsData?.oxygen_saturation ? `${vitalsData.oxygen_saturation}%` : "---%",
       placeholder: "e.g. 97%",
       iconBgClass: "bg-yellow-50 text-yellow-500",
     },
     {
       icon: <Thermometer size={18} />,
-      label: "Temperature",
+      label: vitals.fields.temperature,
       value: vitalsData?.temperature ? `${vitalsData.temperature}°F` : "---°F",
       placeholder: "e.g. 98.4°F",
       iconBgClass: "bg-orange-50 text-orange-500",
     },
     {
       icon: <Ruler size={18} />,
-      label: "Height",
+      label: vitals.fields.height,
       value: vitalsData?.height ? `${vitalsData.height} cm` : "--- cm",
       placeholder: "e.g. 165 cm",
       iconBgClass: "bg-purple-50 text-purple-500",
     },
     {
       icon: <Weight size={18} />,
-      label: "Weight",
+      label: vitals.fields.weight,
       value: vitalsData?.weight ? `${vitalsData.weight} kg` : "--- kg",
       placeholder: "e.g. 68 kg",
       iconBgClass: "bg-emerald-50 text-emerald-500",
     },
     {
       icon: <User size={18} />,
-      label: "BMI",
+      label: vitals.fields.bmi,
       value: vitalsData?.bmi ? `${vitalsData.bmi}` : "---",
       placeholder: "e.g. 24.9",
       iconBgClass: "bg-pink-50 text-pink-500",
     },
     {
       icon: <Droplets size={18} />,
-      label: "Blood Glucose",
+      label: vitals.fields.bloodGlucose,
       value: vitalsData?.blood_glucose ? `${vitalsData.blood_glucose} mg/dL` : "--- mg/dL",
       placeholder: "e.g. 124 mg/dL",
       iconBgClass: "bg-blue-50 text-blue-500",
     },
     {
       icon: <Activity size={18} />,
-      label: "Pain Score",
+      label: vitals.fields.painScore,
       value: vitalsData?.pain_score ? `${vitalsData.pain_score}/10` : "---/10",
       placeholder: "e.g. 2/10",
       iconBgClass: "bg-red-50 text-red-500",
@@ -139,18 +144,9 @@ export const VitalsExamination = ({
       </div>
 
       <NoteField
-        label="Additional Note"
+        label={vitals.fields.additionalNote}
         value={vitalsData?.additional_note || ""}
       />
-
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-        <Button variant="outline" className="border-blue-200 text-slate-600 hover:bg-blue-50 uppercase text-xs font-bold tracking-wider px-6">
-          Previous
-        </Button>
-        <Button className="bg-[#50C786] hover:bg-[#45ad74] text-white uppercase text-xs font-bold tracking-wider px-8">
-          Next
-        </Button>
-      </div>
     </div>
   );
 };

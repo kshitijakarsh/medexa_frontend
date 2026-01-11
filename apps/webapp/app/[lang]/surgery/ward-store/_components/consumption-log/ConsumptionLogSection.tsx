@@ -54,9 +54,9 @@ export function ConsumptionLogSection() {
                         <DynamicTabs
                             defaultTab={logSubTab}
                             tabs={[
-                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.all, key: "All" },
-                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.ward, key: "Ward" },
-                                { label: dict.pages.surgery.wardStore.mainTabs.equipmentUsageSubItems.patient, key: "Patient" },
+                                { label: dict.pages.surgery.wardStore.subTabs.all, key: "All" },
+                                { label: dict.pages.surgery.wardStore.subTabs.ward, key: "Ward" },
+                                { label: dict.pages.surgery.wardStore.subTabs.patient, key: "Patient" },
                             ]}
                             onChange={setLogSubTab}
                         />
@@ -72,7 +72,7 @@ export function ConsumptionLogSection() {
                             className="rounded-lg bg-white border-none"
                         />
                         <NewButton
-                            name="Add Consumption Log"
+                            name={dict.pages.surgery.wardStore.actions.addConsumptionLog}
                             handleClick={() => setShowAddLogModal(true)}
                         />
                     </div>

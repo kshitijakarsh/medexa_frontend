@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createWardApiClient, WardType } from "@/lib/api/surgery/ward";
+import { useWards } from "@/app/[lang]/surgery/_hooks/useWard";
+import { Ward } from "@/lib/api/surgery/ward";
 import { WardStockSection } from "./_components/ward-stock/WardStockSection";
 import { ConsumptionLogSection } from "./_components/consumption-log/ConsumptionLogSection";
 import { EquipmentUsageSection } from "./_components/equipment-usage/EquipmentUsageSection";
@@ -16,28 +16,19 @@ export default function WardStorePage() {
     const [mainTab, setMainTab] = useState("Ward Stock");
     const [selectedWardId, setSelectedWardId] = useState<string | undefined>(undefined);
 
-    // API Client
-    const wardApi = createWardApiClient({});
+    // Fetch wards
+    const { data: wardsResponse } = useWards();
 
-    // Fetch ward types
-    const { data: wardTypesResponse } = useQuery({
-        queryKey: ["ward-types"],
-        queryFn: async () => {
-            const response = await wardApi.getWardTypes();
-            return response.data;
-        },
-    });
-
-    const wardTypes = (wardTypesResponse?.data as WardType[]) || [];
+    const wards = (wardsResponse?.data as Ward[]) || [];
 
     // Set default ward if not selected
     useEffect(() => {
-        if (!selectedWardId && wardTypes.length > 0) {
-            setSelectedWardId(wardTypes[0]?.id);
+        if (!selectedWardId && wards.length > 0) {
+            setSelectedWardId(wards[0]?.id);
         }
-    }, [wardTypes, selectedWardId]);
+    }, [wards, selectedWardId]);
 
-    const selectedWardName = wardTypes.find((w: WardType) => w.id === selectedWardId)?.name || "Select Ward";
+    const selectedWardName = wards.find((w: Ward) => w.id === selectedWardId)?.name || "Select Ward";
 
     return (
         < div >
@@ -51,7 +42,7 @@ export default function WardStorePage() {
                             </SelectValue>
                         </SelectTrigger>
                         <SelectContent>
-                            {wardTypes.map((ward: WardType) => (
+                            {wards.map((ward: Ward) => (
                                 <SelectItem key={ward.id} value={ward.id}>
                                     {ward.name}
                                 </SelectItem>

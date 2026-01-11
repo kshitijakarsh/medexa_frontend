@@ -2,9 +2,10 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
+import { SurgeryRow } from "@/app/[lang]/surgery/_lib/types";
+import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
 import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
@@ -27,20 +28,13 @@ import { AppointmentPatientCell } from "@/components/common/pasient-card/appoint
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 
-interface Column<T> {
-    key: keyof T | string;
-    label: string;
-    render?: (row: T) => React.ReactNode;
-    className?: string;
-}
-
-
 
 export default function SurgeryList() {
     const router = useRouter();
     const { lang } = useParams();
     const dict = useDictionary();
     const scheduleDict = dict.pages.surgery.otSchedule;
+    const surgeryTableDict = dict.pages.surgery.dashboard;
     const [selectedTeam, setSelectedTeam] = useState("");
     const [searchType, setSearchType] = useState({ label: "MRN", value: "mrn" });
     const [searchValue, setSearchValue] = useState("");
@@ -58,26 +52,17 @@ export default function SurgeryList() {
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
 
-    const surgeryApi = createSurgeryApiClient({});
-
     const {
         data: responseData,
         isLoading,
         error,
         refetch,
-    } = useQuery({
-        queryKey: ["surgeries", page, searchQuery, selectedStatus, selectedDept, selectedDoctor],
-        queryFn: async () => {
-            const resp = await surgeryApi.getAll({
-                page,
-                limit,
-                search: searchQuery || undefined,
-                status: selectedStatus || undefined,
-                department: selectedDept || undefined,
-                // doctor_id: selectedDoctor || undefined, // API client doesn't have doctor_id param yet but we can pass it if needed
-            });
-            return resp.data;
-        },
+    } = useSurgeries({
+        page,
+        limit,
+        search: searchQuery || undefined,
+        status: selectedStatus || undefined,
+        department: selectedDept || undefined,
     });
 
     const surgeries = useMemo(() => {
@@ -101,39 +86,70 @@ export default function SurgeryList() {
         { label: "Status", value: "status" },
     ];
 
-    const columns: Column<Surgery>[] = [
+    // Map API data to table rows
+    const tableData: SurgeryRow[] = surgeries.map((surgery: Surgery) => ({
+        id: surgery.id,
+        otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "OT-1"),
+        patient: {
+            id: surgery.patient?.id || surgery.patient_id || "",
+            name: surgery.patient
+                ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
+                : dict.pages.surgery.common.fallbacks.unknownPatient,
+            mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
+            avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+            vip: surgery.patient?.vip,
+        },
+        time: (surgery.date || surgery.scheduled_date)
+            ? new Date(surgery.date || (surgery.scheduled_date as string)).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit"
+            })
+            : "—",
+        procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
+        surgeon: surgery.doctor
+            ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
+            : dict.pages.surgery.common.fallbacks.notAssigned,
+        specialty: surgery.department || "General",
+        status: surgery.status || "scheduled",
+    }));
+
+    const columns: Column<SurgeryRow>[] = [
+        {
+            key: "otRoom",
+            label: scheduleDict.columns.otRoom || "OT Room",
+        },
         {
             key: "patient",
-            label: dict.pages.surgery.otSchedule.columns.patient,
+            label: scheduleDict.columns.patient,
             render: (row) => (
                 <AppointmentPatientCell
-                    name={`${row.patient?.first_name || ""} ${row.patient?.last_name || ""}`}
-                    mrn={row.patient?.civil_id || `ID: ${row.patient_id}`}
-                    avatar={undefined}
-                    vip={row.patient?.vip}
+                    name={row.patient.name}
+                    mrn={row.patient.mrn}
+                    avatar={row.patient.avatarUrl}
+                    vip={row.patient.vip}
                 />
             )
         },
-        {
-            key: "requestedDoctor",
-            label: scheduleDict.columns.requestedDoctor,
-            render: (row) => (
-                <div className="flex flex-col">
-                    <span className="text-sm font-medium text-slate-700">
-                        {row.doctor?.first_name} {row.doctor?.last_name}
-                    </span>
-                    <span className="text-xs text-slate-500">
-                        {row.department}
-                    </span>
-                </div>
-            )
-        },
+        // {
+        //     key: "requestedDoctor",
+        //     label: scheduleDict.columns.requestedDoctor,
+        //     render: (row) => (
+        //         <div className="flex flex-col">
+        //             <span className="text-sm font-medium text-slate-700">
+        //                 {row.doctor?.first_name} {row.doctor?.last_name}
+        //             </span>
+        //             <span className="text-xs text-slate-500">
+        //                 {row.department}
+        //             </span>
+        //         </div>
+        //     )
+        // },
         {
             key: "procedure",
             label: scheduleDict.columns.procedure,
             render: (row) => (
                 <span className="text-sm text-slate-700 font-medium">
-                    {row.surgery_type || "N/A"}
+                    {row.procedure}
                 </span>
             )
         },
@@ -143,39 +159,28 @@ export default function SurgeryList() {
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
-                        {row.doctor?.first_name} {row.doctor?.last_name}
+                        {row.surgeon}
                     </span>
                     <span className="text-xs text-slate-500">
-                        {row.department}
+                        {row.specialty}
                     </span>
                 </div>
             )
         },
         {
-            key: "requestedFor",
+            key: "time",
             label: scheduleDict.columns.requestedFor,
             render: (row) => (
                 <TimeRoomInfo
-                    time={row.date ? new Date(row.date).toLocaleTimeString() : (row.scheduled_date ? new Date(row.scheduled_date).toLocaleTimeString() : "—")}
+                    time={row.time}
                 />
             )
         },
         {
-            key: "urgency",
-            label: scheduleDict.columns.urgency,
+            key: "status",
+            label: scheduleDict.columns.status || "Status",
             render: (row) => (
-                <span
-                    className={`
-                  ${row.urgency === 'emergency'
-                            ? 'text-rose-600'
-                            : row.urgency === 'urgent'
-                                ? 'text-orange-600'
-                                : 'text-emerald-600'}
-                  text-xs capitalize
-                `}
-                >
-                    {row.urgency}
-                </span>
+                <StatusPill status={row.status} />
             )
         },
         {
@@ -309,7 +314,7 @@ export default function SurgeryList() {
             ) : (
                 <ResponsiveDataTable
                     columns={columns}
-                    data={surgeries}
+                    data={tableData}
                     loading={isLoading}
                     striped
                     pagination={

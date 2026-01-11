@@ -5,6 +5,7 @@ import { NurseCareEditMode } from "./NurseCareEditMode";
 import { NurseCareViewMode } from "./NurseCareViewMode";
 import { useQuery } from "@tanstack/react-query";
 import { createNurseNotesApiClient } from "@/lib/api/surgery/nurse-notes";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 type NurseCareProps = {
   isEditing?: boolean;
@@ -15,6 +16,8 @@ type NurseCareProps = {
 
 export default function NurseCare({ isEditing, onSaveDraft, surgeryId, patientId }: NurseCareProps) {
   const nurseNotesApi = createNurseNotesApiClient();
+  const dict = useDictionary();
+  const nurseCare = dict.pages.surgery.surgeryDetails.nurseCare.sidebar;
 
   const { data: nurseNotesResponse, isLoading } = useQuery({
     queryKey: ["surgery-nurse-notes", surgeryId],
@@ -48,14 +51,14 @@ export default function NurseCare({ isEditing, onSaveDraft, surgeryId, patientId
     const notesComplete = !!data?.nursing_notes;
 
     const items = [
-      { label: "Patient Reception in OT", completed: !!receptionComplete },
-      { label: "Surgical Safety Checklist", completed: !!safetyComplete },
-      { label: "Patient Positioning & Preparation", completed: !!positioningComplete },
-      { label: "Time Out (Before Skin Incision)", completed: !!timeoutComplete },
-      { label: "Sign Out (Before Patient Leaves OT)", completed: !!signoutComplete },
-      { label: "Implants Used", completed: !!implantsComplete },
-      { label: "Consumables Used", completed: !!consumablesComplete },
-      { label: "Additional Nursing Notes", completed: !!notesComplete },
+      { label: nurseCare.patientReception, completed: !!receptionComplete },
+      { label: nurseCare.safetyChecklist, completed: !!safetyComplete },
+      { label: nurseCare.positioning, completed: !!positioningComplete },
+      { label: nurseCare.timeOut, completed: !!timeoutComplete },
+      { label: nurseCare.signOut, completed: !!signoutComplete },
+      { label: nurseCare.implantsUsed, completed: !!implantsComplete },
+      { label: nurseCare.consumablesUsed, completed: !!consumablesComplete },
+      { label: nurseCare.additionalNotes, completed: !!notesComplete },
     ];
 
     const sidebarItems = items.map(item => ({
@@ -69,7 +72,7 @@ export default function NurseCare({ isEditing, onSaveDraft, surgeryId, patientId
 
     return {
       header: {
-        title: "All Nurse Care Checklist",
+        title: nurseCare.title,
         completedCount: totalCompleted,
         pendingCount: totalPending
       },

@@ -11,6 +11,7 @@ import NewButton from "@/components/common/new-button";
 import { FormInput } from "@/components/ui/form-input";
 import { FormSelect } from "@/components/ui/form-select";
 import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // Constants
 const DISEASE_OPTIONS = [
@@ -44,14 +45,18 @@ export const NewMedicalHistory = ({
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }) => {
+    const dict = useDictionary();
+    const anesthesia = dict.pages.surgery.surgeryDetails.anesthesia;
+    const medHistory = anesthesia.medicalHistory;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent showCloseButton={false} className="max-w-2xl gap-0 p-0 overflow-hidden border-none shadow-none bg-transparent">
                 <div className="w-full h-full rounded-2xl bg-white p-3 shadow-sm">
                     <div className="flex items-start justify-between mb-2">
                         <div>
-                            <h2 className="text-base font-medium">Medical History</h2>
-                            <p className="text-sm font-light text-slate-600">Add Medical History</p>
+                            <h2 className="text-base font-medium">{medHistory.title}</h2>
+                            <p className="text-sm font-light text-slate-600">{medHistory.subtitle}</p>
                         </div>
                         <button
                             onClick={() => onOpenChange(false)}
@@ -65,49 +70,49 @@ export const NewMedicalHistory = ({
 
                     <div className="space-y-4">
                         <FormTextarea
-                            label="History of Present Illness"
-                            placeholder="Enter Additional Note"
+                            label={medHistory.fields.historyOfPresentIllness}
+                            placeholder={medHistory.placeholders.enterAdditionalNote}
                         />
 
                         <FormInput
-                            label="Past Surgical History"
-                            placeholder="Enter Pulse Rate"
+                            label={medHistory.fields.pastSurgicalHistory}
+                            placeholder={medHistory.placeholders.enterPulseRate}
                         />
 
                         <FormSelect
-                            label="Diseases History"
-                            placeholder="Enter RR"
+                            label={medHistory.fields.diseasesHistory}
+                            placeholder={medHistory.placeholders.enterRR}
                             options={DISEASE_OPTIONS}
                         />
 
                         <div className="grid grid-cols-2 gap-2 bg-blue-50 p-2 rounded-lg">
                             <FormSelect
-                                label="Current Medications"
-                                placeholder="Select Medications"
+                                label={medHistory.fields.currentMedications}
+                                placeholder={medHistory.placeholders.selectMedications}
                                 options={MEDICATION_OPTIONS}
                             />
 
                             <FormSelect
-                                label="Dose"
-                                placeholder="Select Dose"
+                                label={medHistory.fields.dose}
+                                placeholder={medHistory.placeholders.selectDose}
                                 options={DOSE_OPTIONS}
                             />
 
                             <FormSelect
-                                label="Frequency"
-                                placeholder="Select Frequency"
+                                label={medHistory.fields.frequency}
+                                placeholder={medHistory.placeholders.selectFrequency}
                                 options={FREQUENCY_OPTIONS}
                             />
 
                             <div className="space-y-2">
-                                <label className="text-sm font-medium">Remaining Duration(days)</label>
+                                <label className="text-sm font-medium">{medHistory.fields.remainingDurationDays}</label>
                                 <div className="flex gap-2">
                                     <Input
-                                        placeholder="Enter Remaining Duration"
+                                        placeholder={medHistory.placeholders.enterRemainingDuration}
                                         className="border-blue-100 bg-white placeholder:text-slate-400 focus-visible:ring-blue-500"
                                     />
                                     <NewButton
-                                        name="Add"
+                                        name={anesthesia.actions.add}
                                         handleClick={() => { }}
                                     />
                                 </div>
@@ -122,12 +127,12 @@ export const NewMedicalHistory = ({
                             onClick={() => onOpenChange(false)}
                             className="min-w-[100px] border-blue-500 text-blue-500 hover:bg-blue-50 font-medium"
                         >
-                            CANCEL
+                            {anesthesia.actions.cancel}
                         </Button>
                         <Button
                             className="min-w-[100px] bg-green-500 hover:bg-green-600 text-white font-medium"
                         >
-                            SAVE
+                            {anesthesia.actions.save}
                         </Button>
                     </div>
                 </div>

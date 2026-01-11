@@ -22,6 +22,8 @@ export type ConsumptionLogItem = {
 
 import { ConsumptionLog as ConsumptionLogType } from "@/lib/api/surgery/ward";
 
+import { useDictionary } from "@/i18n/use-dictionary";
+
 export const ConsumptionLog = ({
     data,
     isLoading,
@@ -33,6 +35,10 @@ export const ConsumptionLog = ({
     onEdit?: (id: string) => void;
     onDelete?: (id: string) => void;
 }) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+    const commonDict = dict.pages.surgery.common;
+
     // Map API data (snake_case) to table display format
     const tableData: ConsumptionLogItem[] = React.useMemo(() => {
         if (!data) return [];
@@ -58,23 +64,23 @@ export const ConsumptionLog = ({
     const columns = [
         {
             key: "date",
-            label: "Date",
+            label: wardStoreDict.columns.date,
         },
         {
             key: "itemName",
-            label: "Item Name",
+            label: wardStoreDict.columns.itemName,
         },
         {
             key: "quantity",
-            label: "Quantity",
+            label: wardStoreDict.columns.quantity,
         },
         {
             key: "usageType",
-            label: "Usage Type",
+            label: wardStoreDict.columns.usageType,
         },
         {
             key: "patient",
-            label: "Patient",
+            label: wardStoreDict.columns.patient,
             render: (row: ConsumptionLogItem) => {
                 if (row.patient) {
                     return (
@@ -89,29 +95,29 @@ export const ConsumptionLog = ({
         },
         {
             key: "loggedBy",
-            label: "Logged By",
+            label: wardStoreDict.columns.loggedBy,
         },
         {
             key: "note",
-            label: "Note",
+            label: wardStoreDict.columns.note,
         },
         {
             key: "action",
-            label: "Action",
+            label: wardStoreDict.columns.action,
             render: (row: ConsumptionLogItem) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: wardStoreDict.actions.view,
 
                     },
                     {
-                        label: "Edit",
+                        label: wardStoreDict.actions.edit,
                         onClick: () => {
                             if (onEdit) onEdit(row.id);
                         }
                     },
                     {
-                        label: "Delete",
+                        label: wardStoreDict.actions.delete,
                         onClick: () => {
                             if (onDelete) onDelete(row.id);
                         }

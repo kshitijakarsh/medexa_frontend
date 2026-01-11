@@ -6,6 +6,7 @@ import { PostOpEditMode } from "./PostOpEditMode";
 import { PostOpViewMode } from "./PostOpViewMode";
 import { useQuery } from "@tanstack/react-query";
 import { createPostopApiClient } from "@/lib/api/surgery/post-op";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 type PostOpCareProps = {
   isEditing?: boolean;
@@ -16,6 +17,8 @@ type PostOpCareProps = {
 
 export default function PostOpCare({ isEditing, onSaveDraft, surgeryId, patientId }: PostOpCareProps) {
   const postopApi = createPostopApiClient();
+  const dict = useDictionary();
+  const postOp = dict.pages.surgery.surgeryDetails.postOp.sidebar;
 
   const { data: postopResponse, isLoading } = useQuery({
     queryKey: ["surgery-postop", surgeryId],
@@ -41,15 +44,15 @@ export default function PostOpCare({ isEditing, onSaveDraft, surgeryId, patientI
     const followupComplete = !!data?.follow_up?.doctor;
 
     const items = [
-      { label: "Disposition / Transfer", completed: !!dispositionComplete },
-      { label: "Vital Signs Monitoring", completed: !!monitoringComplete },
-      { label: "Activity & Mobilization", completed: !!activityComplete },
-      { label: "Diet & Oral Fluids", completed: !!dietComplete },
-      { label: "Nurse Order", completed: !!notesComplete },
-      { label: "Pain Management", completed: !!painComplete },
-      { label: "Drains, Tubes & Catheters", completed: !!drainsComplete },
-      { label: "Special Instructions", completed: !!instructionsComplete },
-      { label: "Follow-Up & Reviews", completed: !!followupComplete },
+      { label: postOp.disposition, completed: !!dispositionComplete },
+      { label: postOp.vitalSigns, completed: !!monitoringComplete },
+      { label: postOp.activity, completed: !!activityComplete },
+      { label: postOp.diet, completed: !!dietComplete },
+      { label: postOp.nurseOrder, completed: !!notesComplete },
+      { label: postOp.painManagement, completed: !!painComplete },
+      { label: postOp.drains, completed: !!drainsComplete },
+      { label: postOp.specialInstructions, completed: !!instructionsComplete },
+      { label: postOp.followUp, completed: !!followupComplete },
     ];
 
     const sidebarItems = items.map(item => ({
@@ -63,7 +66,7 @@ export default function PostOpCare({ isEditing, onSaveDraft, surgeryId, patientI
 
     return {
       header: {
-        title: "All Post-Op Care Checklist",
+        title: postOp.title,
         completedCount: totalCompleted,
         pendingCount: totalPending
       },

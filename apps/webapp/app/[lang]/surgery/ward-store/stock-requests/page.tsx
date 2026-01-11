@@ -33,6 +33,7 @@ export default function StockRequestsPage() {
     const dict = useDictionary();
     const { lang } = useParams();
     const router = useRouter();
+    const wardStoreDict = dict.pages.surgery.wardStore;
     const [statusFilter, setStatusFilter] = useState("Stock Requests");
     const [search, setSearch] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,50 +83,50 @@ export default function StockRequestsPage() {
     const columns: Column<StockRequest>[] = [
         {
             key: "requestId",
-            label: dict.pages.surgery.wardStore.stockRequests.table.requestId
+            label: wardStoreDict.columns.requestId
         },
         {
             key: "itemName",
-            label: dict.pages.surgery.wardStore.stockRequests.table.itemName
+            label: wardStoreDict.columns.itemName
         },
         {
             key: "quantity",
-            label: dict.pages.surgery.wardStore.stockRequests.table.quantity
+            label: wardStoreDict.columns.quantity
         },
         {
             key: "requestedDate",
-            label: dict.pages.surgery.wardStore.stockRequests.table.requestedDate
+            label: wardStoreDict.columns.requestedDate
         },
         {
             key: "requestedBy",
-            label: dict.pages.surgery.wardStore.stockRequests.table.requestedBy
+            label: wardStoreDict.columns.requestedBy
         },
         {
             key: "status",
-            label: dict.pages.surgery.wardStore.stockRequests.table.status,
+            label: wardStoreDict.columns.status,
             render: (row) => {
                 let badgeClass = "";
                 let label = "";
                 switch (row.status) {
                     case "Issued":
                         badgeClass = "bg-[#EEFBF3] text-[#34C759] border-[#D1F2DE] hover:bg-[#EEFBF3]";
-                        label = dict.pages.surgery.wardStore.stockRequests.tabs.issued;
+                        label = wardStoreDict.subTabs.issued;
                         break;
                     case "Pending":
                         badgeClass = "bg-[#FFF6E9] text-[#FBAD37] border-[#FFE7C8] hover:bg-[#FFF6E9]";
-                        label = dict.pages.surgery.wardStore.stockRequests.tabs.pending;
+                        label = wardStoreDict.subTabs.pending;
                         break;
                     case "Approved":
                         badgeClass = "bg-[#EEFBF3] text-[#34C759] border-[#D1F2DE] hover:bg-[#EEFBF3]";
-                        label = dict.pages.surgery.wardStore.stockRequests.tabs.approved;
+                        label = wardStoreDict.subTabs.approved;
                         break;
                     case "Partially Approved":
                         badgeClass = "bg-[#EBF5FF] text-[#007AFF] border-[#CDE5FF] hover:bg-[#EBF5FF]";
-                        label = dict.pages.surgery.wardStore.stockRequests.tabs.partiallyApproved;
+                        label = wardStoreDict.subTabs.partiallyApproved;
                         break;
                     case "Rejected":
                         badgeClass = "bg-[#FFF2F2] text-[#FF3B30] border-[#FFDADA] hover:bg-[#FFF2F2]";
-                        label = dict.pages.surgery.wardStore.stockRequests.tabs.rejected;
+                        label = wardStoreDict.subTabs.rejected;
                         break;
                 }
                 return (
@@ -137,24 +138,24 @@ export default function StockRequestsPage() {
         },
         {
             key: "storeRemarks",
-            label: dict.pages.surgery.wardStore.stockRequests.table.storeRemarks
+            label: wardStoreDict.columns.storeRemarks
         },
         {
             key: "action",
-            label: dict.pages.surgery.wardStore.stockRequests.table.action,
+            label: wardStoreDict.columns.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: wardStoreDict.actions.view,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
-                        label: "Edit",
+                        label: wardStoreDict.actions.edit,
                     },
                     {
-                        label: "Delete",
+                        label: wardStoreDict.actions.delete,
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             ),
@@ -181,12 +182,12 @@ export default function StockRequestsPage() {
                         <DynamicTabs
                             defaultTab={statusFilter}
                             tabs={[
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.all, key: "Stock Requests" },
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.issued, key: "Issued" },
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.pending, key: "Pending" },
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.approved, key: "Approved" },
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.rejected, key: "Rejected" },
-                                { label: dict.pages.surgery.wardStore.stockRequests.tabs.partiallyApproved, key: "Partially Approved" },
+                                { label: wardStoreDict.subTabs.all, key: "Stock Requests" },
+                                { label: wardStoreDict.subTabs.issued, key: "Issued" },
+                                { label: wardStoreDict.subTabs.pending, key: "Pending" },
+                                { label: wardStoreDict.subTabs.approved, key: "Approved" },
+                                { label: wardStoreDict.subTabs.rejected, key: "Rejected" },
+                                { label: wardStoreDict.subTabs.partiallyApproved, key: "Partially Approved" },
                             ]}
                             onChange={setStatusFilter}
                         />

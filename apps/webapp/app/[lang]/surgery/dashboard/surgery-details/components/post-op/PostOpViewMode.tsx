@@ -12,6 +12,7 @@ import {
     TableHeader,
     TableRow
 } from "@workspace/ui/components/table";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // --- Local SurgeryDataTable Component (View Version) ---
 
@@ -29,6 +30,7 @@ interface SurgeryDataTableProps<T> {
     data: T[];
     className?: string;
     striped?: boolean;
+    noRecordsText?: string;
 }
 
 const SurgeryDataTable = <T,>({
@@ -37,6 +39,7 @@ const SurgeryDataTable = <T,>({
     data,
     className,
     striped = true,
+    noRecordsText = "No records found",
 }: SurgeryDataTableProps<T>) => {
     return (
         <Card className={`shadow-none border-0 overflow-hidden ${className || ""}`}>
@@ -69,7 +72,7 @@ const SurgeryDataTable = <T,>({
                                     colSpan={columns.length}
                                     className="text-center py-8 text-xs"
                                 >
-                                    No records found
+                                    {noRecordsText}
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -134,41 +137,44 @@ const MOCK_NURSE_ORDER_DATA = [
     },
 ];
 
-const NURSE_ORDER_COLUMNS: TableColumn<any>[] = [
-    { key: "orderType", label: "Order Type" },
-    { key: "details", label: "Details / Instructions" },
-    {
-        key: "urgency",
-        label: "Urgency",
-        render: (row) => {
-            let color = "text-slate-500";
-            if (row.urgency === "Stat") color = "text-red-500";
-            else if (row.urgency === "Urgent") color = "text-orange-500";
-            return <span className={`font-medium ${color}`}>{row.urgency}</span>;
-        },
-    },
-    { key: "frequency", label: "Frequency" },
-    { key: "startDateTime", label: "Start Date Time" },
-    { key: "orderedBy", label: "Ordered By" },
-    {
-        key: "status",
-        label: "Status",
-        render: (row) => (
-            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-medium border border-orange-200">
-                {row.status}
-            </span>
-        ),
-    },
-];
-
 interface PostOpViewModeProps {
     data: any;
     isLoading: boolean;
 }
 
 export const PostOpViewMode = ({ data, isLoading }: PostOpViewModeProps) => {
+    const dict = useDictionary();
+    const postOp = dict.pages.surgery.surgeryDetails.postOp;
+
+    const NURSE_ORDER_COLUMNS: TableColumn<any>[] = [
+        { key: "orderType", label: postOp.table.orderType },
+        { key: "details", label: postOp.table.details },
+        {
+            key: "urgency",
+            label: postOp.table.urgency,
+            render: (row) => {
+                let color = "text-slate-500";
+                if (row.urgency === "Stat") color = "text-red-500";
+                else if (row.urgency === "Urgent") color = "text-orange-500";
+                return <span className={`font-medium ${color}`}>{row.urgency}</span>;
+            },
+        },
+        { key: "frequency", label: postOp.table.frequency },
+        { key: "startDateTime", label: postOp.table.startDateTime },
+        { key: "orderedBy", label: postOp.table.orderedBy },
+        {
+            key: "status",
+            label: postOp.table.status,
+            render: (row) => (
+                <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-medium border border-orange-200">
+                    {row.status}
+                </span>
+            ),
+        },
+    ];
+
     if (isLoading) {
-        return <div className="p-8 text-center text-slate-500">Loading post-op details...</div>;
+        return <div className="p-8 text-center text-slate-500">{postOp.loading}</div>;
     }
 
     const displayData = {
@@ -218,84 +224,85 @@ export const PostOpViewMode = ({ data, isLoading }: PostOpViewModeProps) => {
     return (
         <div className="space-y-4">
             {/* Disposition / Transfer */}
-            <DetailSection title="Disposition / Transfer">
+            <DetailSection title={postOp.sections.disposition}>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <InfoField label="Transfer To" value={displayData.disposition.transferTo} />
-                    <InfoField label="Floor" value={displayData.disposition.floor} />
-                    <InfoField label="Ward / Unit" value={displayData.disposition.wardUnit} />
+                    <InfoField label={postOp.fields.transferTo} value={displayData.disposition.transferTo} />
+                    <InfoField label={postOp.fields.floor} value={displayData.disposition.floor} />
+                    <InfoField label={postOp.fields.wardUnit} value={displayData.disposition.wardUnit} />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Bed Number" value={displayData.disposition.bedNumber} />
-                    <InfoField label="Transfer Time" value={displayData.disposition.transferTime} />
-                    <InfoField label="Nurse" value={displayData.disposition.nurse} />
+                    <InfoField label={postOp.fields.bedNumber} value={displayData.disposition.bedNumber} />
+                    <InfoField label={postOp.fields.transferTime} value={displayData.disposition.transferTime} />
+                    <InfoField label={postOp.fields.nurse} value={displayData.disposition.nurse} />
                 </div>
             </DetailSection>
 
             {/* Vital Signs Monitoring */}
-            <DetailSection title="Vital Signs Monitoring">
+            <DetailSection title={postOp.sections.vitalSigns}>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Monitoring Frequency" value={displayData.monitoring.frequency} />
-                    <InfoField label="Duration" value={displayData.monitoring.duration} />
-                    <InfoField label="Special Monitoring" value={displayData.monitoring.special} />
+                    <InfoField label={postOp.fields.monitoringFrequency} value={displayData.monitoring.frequency} />
+                    <InfoField label={postOp.fields.duration} value={displayData.monitoring.duration} />
+                    <InfoField label={postOp.fields.specialMonitoring} value={displayData.monitoring.special} />
                 </div>
             </DetailSection>
 
             {/* Activity & Mobilization */}
-            <DetailSection title="Activity & Mobilization">
+            <DetailSection title={postOp.sections.activity}>
                 <div className="space-y-4">
-                    <InfoField label="Activity Level" value={displayData.activity.level} />
-                    <InfoField label="Mobilization Plan" value={displayData.activity.plan} />
+                    <InfoField label={postOp.fields.activityLevel} value={displayData.activity.level} />
+                    <InfoField label={postOp.fields.mobilizationPlan} value={displayData.activity.plan} />
                 </div>
             </DetailSection>
 
             {/* Diet & Oral Fluids */}
-            <DetailSection title="Diet & Oral Fluids">
+            <DetailSection title={postOp.sections.diet}>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    <InfoField label="Diet Orders" value={displayData.diet.orders} />
-                    <InfoField label="Time (Hour)" value={displayData.diet.time} />
+                    <InfoField label={postOp.fields.dietOrders} value={displayData.diet.orders} />
+                    <InfoField label={postOp.fields.timeHour} value={displayData.diet.time} />
                 </div>
                 <div className="space-y-4">
-                    <InfoField label="Fluid Restriction" value={displayData.diet.fluidRestriction} />
-                    <InfoField label="Instructions" value={displayData.diet.instructions} />
+                    <InfoField label={postOp.fields.fluidRestriction} value={displayData.diet.fluidRestriction} />
+                    <InfoField label={postOp.fields.instructions} value={displayData.diet.instructions} />
                 </div>
             </DetailSection>
 
             {/* Nurse Order Section */}
             <SurgeryDataTable
-                title="Nurse Order"
+                title={postOp.sections.nurseOrder}
                 columns={NURSE_ORDER_COLUMNS}
                 data={nurseOrders}
+                noRecordsText={postOp.noRecords}
             />
 
             {/* Pain Management */}
-            <DetailSection title="Pain Management">
+            <DetailSection title={postOp.sections.painManagement}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <InfoField label="Pain Assessment Frequency" value={displayData.pain.frequency} />
-                    <InfoField label="Target Pain Score (0-10)" value={displayData.pain.targetScore} />
+                    <InfoField label={postOp.fields.painAssessmentFrequency} value={displayData.pain.frequency} />
+                    <InfoField label={postOp.fields.targetPainScore} value={displayData.pain.targetScore} />
                 </div>
             </DetailSection>
 
             {/* Drains, Tubes & Catheters */}
-            <DetailSection title="Drains, Tubes & Catheters">
+            <DetailSection title={postOp.sections.drains}>
                 <div className="space-y-4">
-                    <InfoField label="Urinary Catheter in situ" value={displayData.drains.catheterInSitu} />
-                    <InfoField label="Catheter Removal Plan" value={displayData.drains.catheterPlan} />
-                    <InfoField label="NGT (Nasogastric Tube) in situ" value={displayData.drains.ngtInSitu} />
-                    <InfoField label="NGT Management" value={displayData.drains.ngtManagement} />
+                    <InfoField label={postOp.fields.urinaryCatheter} value={displayData.drains.catheterInSitu} />
+                    <InfoField label={postOp.fields.catheterRemovalPlan} value={displayData.drains.catheterPlan} />
+                    <InfoField label={postOp.fields.ngt} value={displayData.drains.ngtInSitu} />
+                    <InfoField label={postOp.fields.ngtManagement} value={displayData.drains.ngtManagement} />
                 </div>
             </DetailSection>
 
             {/* Special Instructions */}
-            <DetailSection title="Special Instructions">
-                <InfoField label="Additional Special Instructions" value={displayData.specialInstructions} />
+            <DetailSection title={postOp.sections.specialInstructions}>
+                <InfoField label={postOp.fields.additionalSpecialInstructions} value={displayData.specialInstructions} />
             </DetailSection>
 
             {/* Follow-Up & Reviews */}
-            <DetailSection title="Follow-Up & Reviews">
+            <DetailSection title={postOp.sections.followUp}>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <InfoField label="Doctor" value={displayData.followUp.doctor} />
-                    <InfoField label="Date" value={displayData.followUp.date} />
-                    <InfoField label="Time" value={displayData.followUp.time} />
+                    <InfoField label={postOp.fields.doctor} value={displayData.followUp.doctor} />
+                    <InfoField label={postOp.fields.date} value={displayData.followUp.date} />
+                    <InfoField label={postOp.fields.time} value={displayData.followUp.time} />
                 </div>
             </DetailSection>
         </div>

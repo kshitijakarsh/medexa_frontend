@@ -41,6 +41,7 @@ import NurseOrdersModal from "../modals/NurseOrdersModal";
 import ImplantsConsumablesModal from "../modals/ImplantsConsumablesModal";
 import BloodRequirementModal from "../modals/BloodRequirementModal";
 import MedicalClearanceModal from "../modals/MedicalClearanceModal";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 import {
     SectionConfig,
@@ -71,16 +72,19 @@ type SectionCardProps = {
     onRemoveItem: (index: number) => void;
 };
 
+
+
 const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, onOrderImplant, onOrderBlood, onOrderClearance, onRemoveItem }: SectionCardProps) => {
 
     const { title, items, addLabel, addOptions } = config;
     const [selectedValue, setSelectedValue] = React.useState<string>("");
     const [error, setError] = React.useState<string>("");
     const [openPopover, setOpenPopover] = React.useState(false);
+    const dict = useDictionary();
 
     const validateSelection = (): boolean => {
         if (!selectedValue) {
-            setError(`${addLabel.replace("Add ", "")} is required`);
+            setError(`${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")} ${dict.pages.surgery.surgeryDetails.preOp.fields.required}`);
             return false;
         }
         return true;
@@ -98,7 +102,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
 
                     {items.length > 0 && (
                         <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
-                            {items.filter((i: ChecklistItem) => i.status === "Completed" || i.status === "Ordered").length}/{items.length} Completed
+                            {items.filter((i: ChecklistItem) => i.status === "Completed" || i.status === "Ordered").length}/{items.length} {dict.pages.surgery.surgeryDetails.common.completed}
                         </span>
                     )}
                 </div>
@@ -119,7 +123,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-sm font-medium text-slate-800">{item.label}</span>
-                                    {title !== "Medical Clearances" && (item.category || title === "Required Investigations") && (
+                                    {title !== dict.pages.surgery.surgeryDetails.preOp.sections.clearances && (item.category || title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations) && (
                                         <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                                             {item.category || "Laboratory Test"}
                                         </span>
@@ -131,7 +135,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-                                    {title === "Required Investigations" && (
+                                    {title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations && (
                                         <>
                                             <span>Biochemistry</span>
                                             <span>|</span>
@@ -141,14 +145,13 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     {item.status === "Completed" && (
                                         <span className="flex items-center gap-1 text-green-600 px-2 py-0.5">
                                             <SquareCheckBig size={12} />
-                                            Completed using previous result
+                                            {dict.pages.surgery.surgeryDetails.preOp.status.completedPrev}
                                         </span>
                                     )}
                                 </div>
-                                {/* Ordered by (only for Completed/Ordered and Required Investigations) */}
-                                {(item.status === "Completed" || item.status === "Ordered") && item.orderedBy && title === "Required Investigations" && (
+                                {(item.status === "Completed" || item.status === "Ordered") && item.orderedBy && title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations && (
                                     <p className="text-xs text-blue-500 mt-2 flex items-center gap-1 font-medium">
-                                        <Stethoscope size={14} /> Ordered By {item.orderedBy}
+                                        <Stethoscope size={14} /> {dict.pages.surgery.surgeryDetails.common.orderedBy} {item.orderedBy}
                                     </p>
                                 )}
                             </div>
@@ -158,9 +161,12 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                 <span
                                     className={`text-xs font-medium px-3 py-1.5 rounded-full ${item.status ? STATUS_STYLES[item.status] : "bg-slate-200 text-slate-500"}`}
                                 >
-                                    {item.status || "Pending"}
+                                    {item.status === "Completed" ? dict.pages.surgery.surgeryDetails.common.completed :
+                                        item.status === "Ordered" ? dict.pages.surgery.surgeryDetails.common.ordered :
+                                            item.status === "Pending" ? dict.pages.surgery.surgeryDetails.common.pending :
+                                                item.status || dict.pages.surgery.surgeryDetails.common.pending}
                                 </span>
-                                {title !== "Required Investigations" ? (
+                                {title !== dict.pages.surgery.surgeryDetails.preOp.sections.investigations ? (
                                     <button
                                         onClick={() => onRemoveItem(index)}
                                         className="p-2 bg-red-100 text-red-400 rounded-sm transition-colors hover:bg-red-200"
@@ -171,7 +177,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button className="flex items-center gap-1 text-xs text-blue-500 font-medium px-2 py-1 rounded-sm transition-colors bg-white hover:bg-slate-50">
-                                                Action
+                                                {dict.pages.surgery.surgeryDetails.common.action}
                                                 <MoreVertical size={14} className="text-green-500" />
                                             </button>
                                         </DropdownMenuTrigger>
@@ -179,31 +185,31 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                             {item.status === "Completed" ? (
                                                 <>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        Create New Order <FilePlus size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.preOp.actions.createNewOrder} <FilePlus size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        View <Eye size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => onRemoveItem(index)}
                                                         className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
                                                     >
-                                                        Delete <Trash2 size={14} />
+                                                        {dict.pages.surgery.surgeryDetails.common.delete} <Trash2 size={14} />
                                                     </DropdownMenuItem>
                                                 </>
                                             ) : (
                                                 <>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        View <Eye size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        Edit <Pencil size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.edit} <Pencil size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => onRemoveItem(index)}
                                                         className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
                                                     >
-                                                        Delete <Trash2 size={14} />
+                                                        {dict.pages.surgery.surgeryDetails.common.delete} <Trash2 size={14} />
                                                     </DropdownMenuItem>
                                                 </>
                                             )}
@@ -224,13 +230,13 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                             <line x1="12" y1="8" x2="12.01" y2="8"></line>
                                         </svg>
                                     </span>
-                                    Previous result available: {item.previousResult.date} ({item.previousResult.count} results)
+                                    {dict.pages.surgery.surgeryDetails.preOp.status.prevAvailable}: {item.previousResult.date} ({item.previousResult.count} {dict.pages.surgery.surgeryDetails.preOp.status.results})
                                 </p>
                                 <Button
                                     size="sm"
                                     className="h-7 text-xs bg-blue-500 hover:bg-blue-600 text-white gap-1.5 rounded-full px-3"
                                 >
-                                    Use Previous Result
+                                    {dict.pages.surgery.surgeryDetails.preOp.status.usePrev}
                                     <FileSearch size={12} />
                                 </Button>
                             </div>
@@ -245,7 +251,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                             <Label className="text-xs font-medium text-slate-700">
                                 {addLabel}
                             </Label>
-                            {title === "Consents Required" ? (
+                            {title === dict.pages.surgery.surgeryDetails.preOp.sections.consents ? (
                                 <Popover open={openPopover} onOpenChange={setOpenPopover}>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -256,15 +262,15 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                         >
                                             {selectedValue
                                                 ? addOptions.find((opt) => opt.value === selectedValue)?.label
-                                                : `Select ${addLabel.replace("Add ", "")}`}
+                                                : `${dict.pages.surgery.surgeryDetails.preOp.fields.select} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}`}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
                                         <Command>
-                                            <CommandInput placeholder={`Search ${addLabel.replace("Add ", "")}...`} className="h-9 text-xs" />
+                                            <CommandInput placeholder={`${dict.pages.surgery.surgeryDetails.preOp.fields.search} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}...`} className="h-9 text-xs" />
                                             <CommandList>
-                                                <CommandEmpty className="text-xs">No forms found.</CommandEmpty>
+                                                <CommandEmpty className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.fields.noForms}</CommandEmpty>
                                                 <CommandGroup>
                                                     {addOptions.map((opt) => (
                                                         <CommandItem
@@ -301,7 +307,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     setError("");
                                 }}>
                                     <SelectTrigger className={`h-10 w-full ${error ? "border-red-500" : ""}`}>
-                                        <SelectValue placeholder={`Select ${addLabel.replace("Add ", "")}`} />
+                                        <SelectValue placeholder={`${dict.pages.surgery.surgeryDetails.preOp.fields.select} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}`} />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-[300px]">
 
@@ -317,7 +323,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                 <p className="text-xs text-red-500 mt-1">{error}</p>
                             )}
                         </div>
-                        {title === "Required Investigations" ? (
+                        {title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
@@ -328,7 +334,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                         }}
                                         className="bg-green-500 hover:bg-green-600 text-white font-medium flex items-center gap-2 pr-0 rounded-[5.6rem] cursor-pointer transition-colors duration-200"
                                     >
-                                        Add
+                                        {dict.pages.surgery.surgeryDetails.common.add}
                                         <span className="p-2 bg-green-600 rounded-full">
                                             <Plus className="text-green-600 w-4 h-4 bg-white rounded-full" />
                                         </span>
@@ -344,14 +350,14 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                                 onAddItem({
                                                     label,
                                                     status: "Ordered",
-                                                    subLabel: "Just added",
+                                                    subLabel: dict.pages.surgery.surgeryDetails.common.justNow,
                                                     category: "Laboratory Test"
                                                 });
                                             }
                                             setSelectedValue("");
                                         }
                                     }}>
-                                        Order Laboratory Test
+                                        {dict.pages.surgery.surgeryDetails.preOp.actions.orderLab}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => {
                                         if (validateSelection()) {
@@ -362,18 +368,18 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                                 onAddItem({
                                                     label,
                                                     status: "Ordered",
-                                                    subLabel: "Just added",
+                                                    subLabel: dict.pages.surgery.surgeryDetails.common.justNow,
                                                     category: "Radiology & Imaging"
                                                 });
                                             }
                                             setSelectedValue("");
                                         }
                                     }}>
-                                        Order Radiology Procedure
+                                        {dict.pages.surgery.surgeryDetails.preOp.actions.orderRad}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                        ) : title === "Patient Preparation Requirements" ? (
+                        ) : title === dict.pages.surgery.surgeryDetails.preOp.sections.prep ? (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
                                     if (onOrderNurse) {
@@ -381,8 +387,8 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     }
                                     setSelectedValue("");
                                 }
-                            }} name="Add" />
-                        ) : title === "Implants & Consumables" ? (
+                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
+                        ) : title === dict.pages.surgery.surgeryDetails.preOp.sections.implants ? (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
                                     if (onOrderImplant) {
@@ -390,8 +396,8 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     }
                                     setSelectedValue("");
                                 }
-                            }} name="Add" />
-                        ) : title === "Medical Clearances" ? (
+                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
+                        ) : title === dict.pages.surgery.surgeryDetails.preOp.sections.clearances ? (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
                                     if (onOrderClearance) {
@@ -399,8 +405,8 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     }
                                     setSelectedValue("");
                                 }
-                            }} name="Add" />
-                        ) : title === "Blood & Resource Preparation" ? (
+                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
+                        ) : title === dict.pages.surgery.surgeryDetails.preOp.sections.blood ? (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
                                     if (onOrderBlood) {
@@ -408,7 +414,7 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     }
                                     setSelectedValue("");
                                 }
-                            }} name="Add" />
+                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
                         ) : (
                             <NewButton handleClick={() => {
                                 if (validateSelection()) {
@@ -416,12 +422,12 @@ const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, 
                                     onAddItem({
                                         label,
                                         status: "Ordered",
-                                        subLabel: "Just added",
+                                        subLabel: dict.pages.surgery.surgeryDetails.common.justNow,
                                         category: sectionTypeMapping[title] || "Requirement"
                                     });
                                     setSelectedValue("");
                                 }
-                            }} name="Add" />
+                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
                         )}
                     </div>
                 </div>
@@ -441,6 +447,7 @@ export type PreOpEditModeProps = {
 };
 
 export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditModeProps) => {
+    const dict = useDictionary();
     const [isLabModalOpen, setIsLabModalOpen] = React.useState(false);
     const [selectedLabTest, setSelectedLabTest] = React.useState("");
     const [isRadModalOpen, setIsRadModalOpen] = React.useState(false);
@@ -482,14 +489,14 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleLabSave = (data: { test: string; urgency: string; isRequired: boolean; notes: string }) => {
-        const section = sections.find(s => s.title === "Required Investigations");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations);
         const label = section?.addOptions.find(o => o.value === data.test)?.label || data.test;
 
-        let subLabel = "Just added";
+        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
         // removed urgency from subLabel as it is now a badge
         if (data.notes) subLabel += ` | Note: ${data.notes}`;
 
-        handleAddItem("Required Investigations", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.investigations, {
             label,
             status: "Ordered",
             category: "Laboratory Test",
@@ -504,14 +511,14 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleRadSave = (data: { procedure: string; urgency: string; isRequired: boolean; notes: string }) => {
-        const section = sections.find(s => s.title === "Required Investigations");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations);
         const label = section?.addOptions.find(o => o.value === data.procedure)?.label || data.procedure;
 
-        let subLabel = "Just added";
+        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
         // removed urgency from subLabel as it is now a badge
         if (data.notes) subLabel += ` | Note: ${data.notes}`;
 
-        handleAddItem("Required Investigations", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.investigations, {
             label,
             status: "Ordered",
             category: "Radiology & Imaging",
@@ -526,13 +533,13 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleNurseSave = (data: any) => {
-        const section = sections.find(s => s.title === "Patient Preparation Requirements");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.nursingOrders);
         const label = section?.addOptions.find(o => o.value === data.orderType)?.label || data.orderType;
 
-        let subLabel = "Just added";
+        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
         if (data.notes) subLabel += ` | ${data.notes}`;
 
-        handleAddItem("Patient Preparation Requirements", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.nursingOrders, {
             label: data.orderType === 'iv_fluids' ? `IV Fluids: ${data.fluidType} ${data.volume}mL` : label,
             status: "Ordered",
             subLabel
@@ -546,7 +553,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleImplantSave = (data: any) => {
-        const section = sections.find(s => s.title === "Implants & Consumables");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.implants);
         const label = section?.addOptions.find(o => o.value === data.implantType)?.label || data.implantType;
 
         // Construct sublabel from details
@@ -559,7 +566,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
         if (data.quantity) details.push(`Qty: ${data.quantity}`);
         if (data.notes) details.push(data.notes);
 
-        handleAddItem("Implants & Consumables", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.implants, {
             label,
             status: "Ordered",
             subLabel: details.join(" | ") || "Details recorded"
@@ -574,7 +581,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleBloodSave = (data: any) => {
-        const section = sections.find(s => s.title === "Blood & Resource Preparation");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.blood);
         const label = section?.addOptions.find(o => o.value === data.component)?.label || data.component;
 
         // Construct sublabel from details
@@ -586,7 +593,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
         if (data.time) details.push(`Time: ${data.time}`);
         if (data.notes) details.push(data.notes);
 
-        handleAddItem("Blood & Resource Preparation", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.blood, {
             label,
             status: "Ordered",
             subLabel: details.join(" | ") || "Details recorded",
@@ -599,10 +606,10 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
     };
 
     const handleClearanceSave = (data: any) => {
-        const section = sections.find(s => s.title === "Medical Clearances");
+        const section = sections.find(s => s.title === dict.pages.surgery.surgeryDetails.preOp.sections.clearances);
         const label = section?.addOptions.find(o => o.value === data.clearanceType)?.label || data.clearanceType;
 
-        handleAddItem("Medical Clearances", {
+        handleAddItem(dict.pages.surgery.surgeryDetails.preOp.sections.clearances, {
             label,
             status: "Pending",
             doctor: data.doctor,
@@ -629,18 +636,18 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
             <Card className="shadow-none border-0 mb-4 bg-white">
                 <CardHeader>
                     <CardTitle className="text-base font-medium text-slate-800">
-                        Surgery Requirement
+                        {dict.pages.surgery.surgeryDetails.preOp.fields.surgeryRequirement}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-end gap-4">
                         <div className="flex-1 space-y-1.5">
                             <Label className="text-xs font-medium text-slate-700">
-                                Surgery Template
+                                {dict.pages.surgery.surgeryDetails.preOp.fields.surgeryTemplate}
                             </Label>
                             <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
                                 <SelectTrigger className="h-10 w-full">
-                                    <SelectValue placeholder="Select Surgery Template" />
+                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.fields.selectTemplate} />
                                 </SelectTrigger>
                                 <SelectContent className="z-[100]">
                                     <SelectItem value="appendectomy">Appendectomy</SelectItem>
@@ -657,7 +664,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
                             <div className="flex items-center bg-green-400 p-1 rounded-sm">
                                 <ArchiveRestore size={16} strokeWidth={2} />
                             </div>
-                            Load Templates
+                            {dict.pages.surgery.surgeryDetails.preOp.actions.loadTemplates}
                         </Button>
                     </div>
                 </CardContent>
@@ -670,12 +677,12 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
                     config={section}
                     onAddItem={(item) => handleAddItem(section.title, item)}
                     onRemoveItem={(index) => handleRemoveItem(section.title, index)}
-                    onOrderLab={section.title === "Required Investigations" ? handleOrderLab : undefined}
-                    onOrderRad={section.title === "Required Investigations" ? handleOrderRad : undefined}
-                    onOrderNurse={section.title === "Patient Preparation Requirements" ? handleOrderNurse : undefined}
-                    onOrderImplant={section.title === "Implants & Consumables" ? handleOrderImplant : undefined}
-                    onOrderBlood={section.title === "Blood & Resource Preparation" ? handleOrderBlood : undefined}
-                    onOrderClearance={section.title === "Medical Clearances" ? handleOrderClearance : undefined}
+                    onOrderLab={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations ? handleOrderLab : undefined}
+                    onOrderRad={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations ? handleOrderRad : undefined}
+                    onOrderNurse={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.prep ? handleOrderNurse : undefined}
+                    onOrderImplant={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.implants ? handleOrderImplant : undefined}
+                    onOrderBlood={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.blood ? handleOrderBlood : undefined}
+                    onOrderClearance={section.title === dict.pages.surgery.surgeryDetails.preOp.sections.clearances ? handleOrderClearance : undefined}
                 />
             ))}
 
@@ -686,10 +693,10 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
                     className="border-blue-500 text-blue-500 hover:bg-white hover:text-blue-500"
                     onClick={handleSaveDraft}
                 >
-                    SAVE AS DRAFT
+                    {dict.pages.surgery.surgeryDetails.preOp.actions.saveDraft}
                 </Button>
                 <Button className="bg-green-600 hover:bg-green-600">
-                    <Send size={16} className="mr-2" /> MARK AS COMPLETED
+                    <Send size={16} className="mr-2" /> {dict.pages.surgery.surgeryDetails.preOp.actions.markCompleted}
                 </Button>
             </div>
 
