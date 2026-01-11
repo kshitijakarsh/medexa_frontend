@@ -236,6 +236,7 @@ import { PERMISSIONS } from "@/app/utils/permissions"
 import FilterButton from "@/components/common/filter-button"
 import { Can } from "@/components/common/app-can"
 import { ROUTES } from "@/lib/routes"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 
 const employeeConfigurationSection = [
   { key: "humanResources", label: "Employee" },
@@ -253,6 +254,7 @@ const PERMISSION_MAP = {
 export default function EmployeeConfigurationPage() {
   const userPermissions = useUserStore((s) => s.user?.role.permissions)
   const router = useRouter()
+  const { withLocale } = useLocaleRoute()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
@@ -742,7 +744,11 @@ export default function EmployeeConfigurationPage() {
               <EmployeeConfigurationRowActions
                 onEdit={() => {
                   if (r._raw) {
-                    router.push(`/employee-configuration/${r._raw.id}/edit`)
+                    router.push(
+                      withLocale(
+                        `${ROUTES.HR_EMPLOYEE_CONFIGURATION}/${r._raw.id}/edit`
+                      )
+                    )
                   }
                 }}
                 onDelete={() => {
@@ -860,7 +866,7 @@ export default function EmployeeConfigurationPage() {
 
   const handleNew = () => {
     if (activeTab === "humanResources") {
-      router.push(ROUTES.HR_EMPLOYEE_ADD)
+      router.push(withLocale(ROUTES.HR_EMPLOYEE_ADD))
     } else {
       setIsAddDialogOpen(true)
     }

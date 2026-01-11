@@ -14,6 +14,7 @@ import { AppSelect } from "@/components/common/app-select"
 interface PersonalDetailsProps {
   form: any
   authToken: string
+  initialData?: any
 }
 
 const genderOptions = [
@@ -50,7 +51,7 @@ const countryOptions = [
   { value: "6", label: "Oman" },
 ]
 
-export function PersonalDetails({ form, authToken }: PersonalDetailsProps) {
+export function PersonalDetails({ form, authToken, initialData }: PersonalDetailsProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -181,14 +182,8 @@ export function PersonalDetails({ form, authToken }: PersonalDetailsProps) {
                 <UploadCard
                   title="Employee Photo"
                   value={field.value}
-                  onFileSelect={(file) => {
-                    // For now, store the file object. In production, you'd upload and get a URL
-                    if (file) {
-                      // Create a temporary URL for preview
-                      const url = URL.createObjectURL(file)
-                      field.onChange(url)
-                    }
-                  }}
+                  onFileSelect={field.onChange}
+                  previewUrl={initialData?.photo_url}
                 />
               </FormControl>
               <FormMessage />

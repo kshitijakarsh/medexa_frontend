@@ -14,6 +14,8 @@ import { Header } from "@/components/header"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { createEmployeeApiClient } from "@/lib/api/employees"
 import { getAuthToken } from "@/app/utils/onboarding"
+import { ROUTES } from "@/lib/routes"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
 
 // Helper for optional number fields that handles empty strings
 const optionalNumber = z
@@ -113,6 +115,7 @@ const employeeSchema = z.object({
 export default function EditEmployeePage() {
   const { id } = useParams()
   const router = useRouter()
+  const { withLocale } = useLocaleRoute()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState("Personal Details")
   const [authToken, setAuthToken] = useState<string>("")
@@ -142,15 +145,9 @@ export default function EditEmployeePage() {
     queryKey: ["employee", id],
     queryFn: async () => {
       if (!employeeClient || !id) throw new Error("API client not initialized")
-      // Note: The API doesn't have GET by ID, so we'll need to fetch from list
-      // For now, we'll handle this differently - fetch all and filter
-      const response = await employeeClient.getEmployees({
-        page: 1,
-        limit: 1000,
-      })
-      const employee = response.data.data.find((emp) => emp.id === Number(id))
-      if (!employee) throw new Error("Employee not found")
-      return employee
+
+      const response = await employeeClient.getEmployee(Number(id))
+      return response.data.data
     },
     enabled: !!employeeClient && !!id,
   })
@@ -164,6 +161,64 @@ export default function EditEmployeePage() {
       designation_id: "",
       specialisation_id: "",
       country_id: "",
+
+      // Personal Details
+      gender: "",
+      date_of_birth: "",
+      marital_status: "",
+      crp_nid: "",
+      crp_nid_expiry: "",
+      blood_group: "",
+      photo_url: undefined,
+
+      // Contact Details
+      phone: "",
+      office_email: "",
+      local_address: "",
+      permanent_address: "",
+      emergency_contact: "",
+      language: "",
+
+      // Employment
+      qualification: "",
+      year_of_experience: "",
+
+      // Visa / License
+      visa_start: "",
+      visa_end: "",
+      passport_no: "",
+      passport_expiry: "",
+      license_no: "",
+      license_expiry: "",
+
+      // Contract Details
+      joining_date: "",
+      last_working_date: "",
+      contract_renewal_date: "",
+      contract_expiry_date: "",
+      notice_period: "",
+
+      // Bank Details
+      bank_name: "",
+      iban: "",
+      account_name: "",
+      account_no: "",
+      swift_code: "",
+
+      // Payroll
+      date_from: "",
+      date_to: "",
+      basic_salary: "",
+      gosi_deduction_percentage: "",
+      gosi: "",
+      housing_allowance: "",
+
+      // Documents
+      qchp_document_url: undefined,
+      passport_document_url: undefined,
+      id_proof_document_url: undefined,
+      contract_document_url: undefined,
+      signature_document_url: undefined,
     },
   })
 
@@ -342,7 +397,7 @@ export default function EditEmployeePage() {
                 : "Failed to load employee"}
             </div>
             <div className="flex justify-center">
-              <Button onClick={() => router.push("/employee-configuration")}>
+              <Button onClick={() => router.push(withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION))}>
                 Go Back
               </Button>
             </div>

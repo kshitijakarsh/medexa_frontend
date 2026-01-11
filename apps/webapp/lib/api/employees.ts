@@ -236,6 +236,25 @@ class EmployeeApiClient {
     }
   }
 
+  async getEmployee(id: number): Promise<AxiosResponse<EmployeeResponse>> {
+    try {
+      return await axios.get<EmployeeResponse>(
+        `${this.baseUrl}/api/v1/employees/${id}`,
+        this.getJsonRequestConfig()
+      )
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 401) {
+          throw new Error("Authentication failed. Please Log In again.")
+        }
+        throw new Error(
+          `Get employee error: ${error.response?.data?.message || error.message}`
+        )
+      }
+      throw error
+    }
+  }
+
   async createEmployee(
     params: CreateEmployeeParams
   ): Promise<AxiosResponse<EmployeeResponse>> {

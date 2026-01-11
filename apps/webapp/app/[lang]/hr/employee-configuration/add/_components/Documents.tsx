@@ -30,14 +30,8 @@ export function Documents({ form }: DocumentsProps) {
                 <UploadCard
                   title={doc.label}
                   value={field.value}
-                  onFileSelect={(file) => {
-                    if (file) {
-                      // Create a temporary URL for preview
-                      // In production, you'd upload to a server and store the returned URL
-                      const url = URL.createObjectURL(file)
-                      field.onChange(url)
-                    }
-                  }}
+                  onFileSelect={field.onChange}
+                  previewUrl={typeof field.value === 'string' ? field.value : undefined}
                 />
               </FormControl>
               <FormMessage />
