@@ -26,7 +26,18 @@
     "exportExcel": "Export Excel",
     "bulkAddDepartment": "Bulk Add Department",
     "noData": "No data available",
-    "Addnew": "Add New"
+    "Addnew": "Add New",
+    "date": "Date",
+    "quantity": "Quantity",
+    "notes": "Notes",
+    "note": "Note",
+    "description": "Description",
+    "category": "Category",
+    "add": "Add",
+    "completed": "Completed",
+    "pending": "Pending",
+    "ordered": "Ordered",
+    "justNow": "Just now"
   },
   "dashboard": {
     "todayOverview": "Today's Overview",
@@ -61,7 +72,12 @@
     "time": "Time",
     "diagnosis": "Diagnosis",
     "types": "Types",
-    "status": "Status"
+    "status": "Status",
+    "action": "Action",
+    "createdOn": "Created On",
+    "addedBy": "Added By",
+    "sno": "S.No",
+    "orderedBy": "Ordered By"
   },
   "actions": {
     "add": "Add",
@@ -1273,8 +1289,6 @@
           "notAssigned": "Not Assigned",
           "unknownPatient": "Unknown Patient"
         },
-        "add": "Add",
-        "action": "Action",
         "calendarView": "Calendar View",
         "sort": {
           "label": "Sort",
@@ -1290,14 +1304,10 @@
         },
         "department": "Department",
         "doctor": "Doctor",
-        "view": "View",
-        "edit": "Edit",
-        "delete": "Delete",
         "completed": "Completed"
       },
       "dashboard": {
         "emergencySurgeries": "Emergency Surgeries",
-        "viewAll": "View All",
         "surgeriesToday": "Surgeries Today",
         "totalSurgeries": "Total Surgeries",
         "completed": "Completed",
@@ -1315,21 +1325,11 @@
         },
         "table": {
           "otRoom": "OT Room",
-          "patient": "Patient",
-          "time": "Time",
           "procedure": "Procedure",
-          "surgeon": "Surgeon",
-          "status": "Status",
-          "action": "Action",
-          "actions": {
-            "view": "View",
-            "edit": "Edit",
-            "delete": "Delete"
-          }
+          "surgeon": "Surgeon"
         },
         "alerts": {
           "title": "OT Critical Alerts & Actions",
-          "loading": "Loading...",
           "noUpcoming": "No upcoming surgeries",
           "noRequests": "No surgery requests",
           "upcomingSurgeries": "Upcoming Surgeries",
@@ -1605,21 +1605,8 @@
           "viewDetails": "View Details"
         },
         "common": {
-          "action": "Action",
-          "view": "View",
-          "edit": "Edit",
-          "delete": "Delete",
           "print": "Print",
           "download": "Download",
-          "add": "Add",
-          "save": "Save",
-          "cancel": "Cancel",
-          "completed": "Completed",
-          "pending": "Pending",
-          "ordered": "Ordered",
-          "orderedBy": "Ordered By",
-          "justNow": "Just now",
-          "noRecords": "No records found",
           "sections": {
             "implantsUsed": "Implants Used",
             "consumablesUsed": "Consumables Used"

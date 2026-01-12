@@ -58,7 +58,7 @@ export const SelectField = ({
                 </Select>
                 {showAddButton && (
                     <NewButton
-                        name={common.add}
+                        name={dict.common.add}
                         handleClick={() => {
                             if (onAddClick) {
                                 onAddClick();

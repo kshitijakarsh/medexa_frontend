@@ -109,7 +109,7 @@ export const DynamicSection = ({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <NewButton handleClick={handleAdd} name={common.add} />
+                        <NewButton handleClick={handleAdd} name={dict.common.add} />
                     </div>
                 )}
             </div>

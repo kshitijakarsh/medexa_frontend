@@ -12,10 +12,9 @@ type PostOpCareProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
   surgeryId?: string;
-  patientId?: string;
 };
 
-export default function PostOpCare({ isEditing, onSaveDraft, surgeryId, patientId }: PostOpCareProps) {
+export default function PostOpCare({ isEditing, onSaveDraft, surgeryId }: PostOpCareProps) {
   const postopApi = createPostopApiClient();
   const dict = useDictionary();
   const postOp = dict.pages.surgery.surgeryDetails.postOp.sidebar;

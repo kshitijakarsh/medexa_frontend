@@ -110,7 +110,7 @@ export const IntraOpViewMode = ({ data, isLoading }: IntraOpViewModeProps) => {
                     <InfoField label={common.fields.size} value={displayData.implants.size} />
                     <InfoField label={common.fields.batchLotNo} value={displayData.implants.batchNo} />
                     <InfoField label={common.fields.manufacturer} value={displayData.implants.manufacturer} />
-                    <InfoField label={common.fields.quantity} value={displayData.implants.quantity} />
+                    <InfoField label={dict.common.quantity} value={displayData.implants.quantity} />
                 </div>
             </DetailSection>
 
@@ -118,8 +118,8 @@ export const IntraOpViewMode = ({ data, isLoading }: IntraOpViewModeProps) => {
             <DetailSection title={common.sections.consumablesUsed}>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <InfoField label={common.fields.itemName} value={displayData.consumables.itemName} />
-                    <InfoField label={common.fields.quantity} value={displayData.consumables.quantity} />
-                    <InfoField label={common.fields.note} value={displayData.consumables.note} />
+                    <InfoField label={dict.common.quantity} value={displayData.consumables.quantity} />
+                    <InfoField label={dict.common.note} value={displayData.consumables.note} />
                 </div>
             </DetailSection>
 
@@ -148,7 +148,7 @@ export const IntraOpViewMode = ({ data, isLoading }: IntraOpViewModeProps) => {
 
             {/* View Mode - Surgeon's Notes */}
             <DetailSection title={intraOp.sections.surgeonNotes}>
-                <InfoField label={common.fields.notes} value={displayData.surgeonNotes} />
+                <InfoField label={dict.common.notes} value={displayData.surgeonNotes} />
             </DetailSection>
         </>
     );

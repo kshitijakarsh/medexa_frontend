@@ -130,7 +130,7 @@ export default function ConsentUploadModal({
                                 className="flex-1 h-12 border-blue-500 text-blue-500 hover:bg-blue-50 font-semibold rounded-xl text-md"
                                 onClick={() => onOpenChange(false)}
                             >
-                                {dict.pages.surgery.surgeryDetails.common.cancel}
+                                {dict.common.cancel}
                             </Button>
                             <Button
                                 type="submit"

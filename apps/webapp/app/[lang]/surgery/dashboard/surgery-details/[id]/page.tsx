@@ -16,31 +16,16 @@ import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { useDictionary } from "@/i18n/use-dictionary";
 
-const PATIENT_DATA: Patient = {
-  id: "2",
-  name: "Sarah Williams",
-  mrn: "00324891",
-  age: 55,
-  gender: "Male",
-  phone: "284-104123567",
-  email: "sarah.williams@example.com",
-  randomNumber: "APP-0539-17",
-  insuranceProvider: "Gulf Insurance",
-  insuranceStatus: "Active",
-  imageUrl: "/images/avatars/1.png",
-  avatarUrl: "/images/avatars/1.png",
-};
-
 export default function SurgeryDetailsPage() {
   const router = useRouter();
-  const { id } = useParams();
+  const { id: surgeryId } = useParams() as { id: string };
   const dict = useDictionary();
 
   const [activeTab, setActiveTab] = React.useState("Surgery Details");
   const [isEditing, setIsEditing] = React.useState(false);
   const [anesthesiaActiveTab, setAnesthesiaActiveTab] = React.useState("Medical History");
 
-  const { data: surgeryData, isLoading } = useSurgeryById(id as string);
+  const { data: surgeryData, isLoading } = useSurgeryById(surgeryId);
 
   // Map surgeryData to Patient interface for common banner
   const patientData: Patient | undefined = surgeryData?.patient ? {
@@ -123,7 +108,7 @@ export default function SurgeryDetailsPage() {
       </div>
 
       <PatientBanner
-        patient={patientData || PATIENT_DATA}
+        patient={patientData}
         customAction={getBannerAction()}
         onViewDetails={!getBannerAction() ? () => setIsEditing(true) : undefined}
         isEditing={isEditing}
@@ -149,22 +134,19 @@ export default function SurgeryDetailsPage() {
         <PostOpCare
           isEditing={isEditing}
           onSaveDraft={() => setIsEditing(false)}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
+          surgeryId={surgeryId}
         />
       ) : activeTab === "Nurse" ? (
         <NurseCare
           isEditing={isEditing}
           onSaveDraft={() => setIsEditing(false)}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
+          surgeryId={surgeryId}
         />
       ) : activeTab === "Intra-Op Notes" ? (
         <IntraOpNotes
           isEditing={isEditing}
           onSaveDraft={() => setIsEditing(false)}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
+          surgeryId={surgeryId}
         />
       ) : activeTab === "Anesthesia Plan" ? (
         <AnesthesiaPlan
@@ -172,23 +154,19 @@ export default function SurgeryDetailsPage() {
           onTabChange={setAnesthesiaActiveTab}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
+          surgeryId={surgeryId}
         />
       ) : activeTab === "Pre-Op Checklist" ? (
         <PreOpChecklist
           isEditing={isEditing}
           onSaveDraft={() => setIsEditing(false)}
           onEdit={() => setIsEditing(true)}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
+          surgeryId={surgeryId}
         />
       ) : (
         <SurgeryDetailsTab
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          surgeryId={id as string}
-          patientId={surgeryData?.patient_id}
           surgeryData={surgeryData}
         />
       )}

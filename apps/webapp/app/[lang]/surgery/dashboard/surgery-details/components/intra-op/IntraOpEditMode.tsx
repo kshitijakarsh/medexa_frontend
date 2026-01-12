@@ -163,7 +163,7 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <ProcedureFormCard index={1} initialData={initialData?.procedure} intraOp={intraOp} options={options} />
-                    
+
                     <ProcedureFormCard index={2} intraOp={intraOp} options={options} />
                 </CardContent>
             </Card>
@@ -253,7 +253,7 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                         />
                     </div>
                     <SelectField
-                        label={intraOp.fields.quantity}
+                        label={dict.common.quantity}
                         placeholder={intraOp.fields.selectQuantity}
                         options={options.quantities}
                         value={initialData?.implants?.quantity?.toString()}
@@ -275,12 +275,12 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                             value={initialData?.consumables?.item_name}
                         />
                         <div className="space-y-1.5">
-                            <Label className="text-sm">{intraOp.fields.quantity}</Label>
+                            <Label className="text-sm">{dict.common.quantity}</Label>
                             <Input type="number" placeholder={intraOp.fields.enterQuantity} className="h-10" defaultValue={initialData?.consumables?.quantity} />
                         </div>
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm">{intraOp.fields.note}</Label>
+                        <Label className="text-sm">{dict.common.note}</Label>
                         <Input type="text" placeholder={intraOp.fields.enterNote} className="h-10" defaultValue={initialData?.consumables?.note} />
                     </div>
                 </CardContent>

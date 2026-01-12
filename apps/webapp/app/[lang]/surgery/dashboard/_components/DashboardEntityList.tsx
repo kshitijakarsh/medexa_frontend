@@ -1,8 +1,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { DataTable } from "@/components/common/data-table";
-
 import { SurgeryRequest } from "./../../_lib/types";
-import { StatusBadge } from "../../_components/common/StatusBadge";
+import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import {
     SlidersHorizontal,
     Search,
@@ -32,7 +31,7 @@ interface DashboardEntityListProps {
     title: string;
     addButtonText: string;
     onAddClick: () => void;
-    data: any[];
+    data: SurgeryRequest[];
     searchPlaceholder?: string;
 }
 
@@ -119,7 +118,7 @@ export const DashboardEntityList = ({
         {
             key: "urgency",
             label: "Urgency",
-            render: (row) => <StatusBadge status={row.urgency} />
+            render: (row) => <StatusPill status={row.urgency} />
         },
         {
             key: "actions",

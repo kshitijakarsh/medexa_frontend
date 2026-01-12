@@ -31,8 +31,11 @@ export interface Surgery {
         first_name: string;
         last_name: string;
         civil_id?: string;
+        mrn?: string;
         mobile_number?: string;
         vip?: boolean;
+        photo_url?: string;
+        avatarUrl?: string;
     };
     procedure?: {
         id: string;
@@ -49,6 +52,7 @@ export interface Surgery {
     department?: string;
     status?: string;
     notes?: string;
+    ot_room?: string;
     surgery_type?: string; // Backward compatibility
     scheduled_date?: string; // Backward compatibility
     createdBy?: {

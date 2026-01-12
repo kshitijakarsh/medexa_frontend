@@ -111,6 +111,19 @@ export interface SurgeryRequest {
   urgency: UrgencyLevel;
 }
 
+
+export interface SurgeryResponse {
+  success: boolean;
+  data: SurgeryRequest[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
 /**
  * Scheduled surgery information
  */

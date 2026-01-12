@@ -10,8 +10,9 @@ import { NewVitals } from "./NewVitals";
 import { PlanDetails } from "./PlanDetails";
 import NewButton from "@/components/common/new-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-import { AnesthesiaPlan as AnesthesiaPlanType, createAnesthesiaApiClient } from "@/lib/api/surgery/anesthesia";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { AnesthesiaPlan as AnesthesiaPlanType } from "@/lib/api/surgery/anesthesia";
+import { useAnesthesia, useCreateAnesthesia, useUpdateAnesthesia } from "@/app/[lang]/surgery/_hooks/useAnesthesia";
+import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
 
 import { toast } from "@workspace/ui/lib/sonner";
 import { Info } from "lucide-react";
@@ -33,10 +34,10 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   isEditing,
   setIsEditing,
   surgeryId,
-  patientId,
 }) => {
   const dict = useDictionary();
-  const anesthesiaApi = createAnesthesiaApiClient();
+  const { data: surgeryData } = useSurgeryById(surgeryId as string);
+  const patientId = surgeryData?.patient_id;
 
   const TABS_CONFIG = [
     { key: "Medical History", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.medicalHistory },
@@ -46,33 +47,34 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
     { key: "Anesthesia Plan", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.planDetails },
   ];
 
-  const { data: anesthesiaResponse, isLoading } = useQuery({
-    queryKey: ["surgery-anesthesia", surgeryId],
-    queryFn: async () => {
-      const response = await anesthesiaApi.getAnesthesiaPlans(surgeryId as string);
-      return response.data;
-    },
-    enabled: !!surgeryId,
-  });
+  const { data: anesthesiaData, isLoading } = useAnesthesia(surgeryId);
 
-  const queryClient = useQueryClient();
+  const updateMutation = useUpdateAnesthesia();
+  const createMutation = useCreateAnesthesia();
 
-  const saveMutation = useMutation({
-    mutationFn: async (payload: Partial<AnesthesiaPlanType>) => {
-      const response = await anesthesiaApi.saveAnesthesiaPlan(surgeryId as string, payload);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["surgery-anesthesia", surgeryId] });
-      toast.success("Anesthesia plan saved successfully");
-      setIsEditing(false);
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to save anesthesia plan");
-    },
-  });
+  const handleSave = (payload: Partial<AnesthesiaPlanType>) => {
+    if (anesthesiaData?.id) {
+      updateMutation.mutate(
+        { surgeryId: surgeryId as string, data: payload },
+        {
+          onSuccess: () => {
+            setIsEditing(false);
+          }
+        }
+      );
+    } else {
+      createMutation.mutate(
+        { surgeryId: surgeryId as string, data: payload },
+        {
+          onSuccess: () => {
+            setIsEditing(false);
+          }
+        }
+      );
+    }
+  };
 
-  const data = anesthesiaResponse?.data;
+  const data = anesthesiaData;
   const [internalActiveTab, setInternalActiveTab] = React.useState("Medical History");
 
   const activeTab = propActiveTab || internalActiveTab;
@@ -168,8 +170,8 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
             neckMobility={data?.neck_mobility}
             difficultAirwayRisk={data?.diffult_airway_risk}
             airwayManagementPlan={data?.airway_management_plan}
-            onSave={(payload) => saveMutation.mutate(payload)}
-            isSaving={saveMutation.isPending}
+            onSave={(payload) => handleSave(payload)}
+            isSaving={updateMutation.isPending || createMutation.isPending}
           />
         ) : activeTab === "Vitals Examination" ? (
           <VitalsExamination
@@ -181,19 +183,19 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
             asaStatusClassification={data?.asa_status_classification}
             surgeryRiskLevel={data?.surgery_risk_level}
             asaAndRiskAdditionalNote={data?.asa_and_risk_additional_note}
-            onSave={(payload) => saveMutation.mutate(payload)}
-            isSaving={saveMutation.isPending}
+            onSave={(payload) => handleSave(payload)}
+            isSaving={updateMutation.isPending || createMutation.isPending}
           />
         ) : activeTab === "Anesthesia Plan" ? (
           <PlanDetails
             isEditing={isEditing}
-          // anaesthesiaType={data?.anaesthesia_type}
-          // monitoringRequired={data?.monitoring_required}
-          // postOperativeVentilationRequired={data?.post_operative_ventilation_required}
-          // icuRequired={data?.icu_required}
-          // airwayManagementPlan={data?.airway_management_plan}
-          // onSave={(payload) => saveMutation.mutate(payload)}
-          // isSaving={saveMutation.isPending}
+            anaesthesiaType={data?.anaesthesia_type}
+            monitoringRequired={data?.monitoring_required}
+            postOperativeVentilationRequired={data?.post_operative_ventilation_required}
+            icuRequired={data?.icu_required}
+            airwayManagementPlan={data?.airway_management_plan}
+            onSave={(payload) => handleSave(payload)}
+            isSaving={updateMutation.isPending || createMutation.isPending}
           />
         ) : (
           <div className="flex w-full h-48 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">

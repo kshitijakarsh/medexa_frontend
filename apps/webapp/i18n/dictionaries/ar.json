@@ -26,7 +26,18 @@
     "exportExcel": "تصدير اكسل",
     "bulkAddDepartment": "إضافة جماعية للأقسام",
     "noData": "لا توجد بيانات متاحة",
-    "Addnew": "إضافة جديد"
+    "Addnew": "إضافة جديد",
+    "date": "التاريخ",
+    "quantity": "الكمية",
+    "notes": "ملاحظات",
+    "note": "ملاحظة",
+    "description": "الوصف",
+    "category": "الفئة",
+    "add": "إضافة",
+    "completed": "مكتمل",
+    "pending": "قيد الانتظار",
+    "ordered": "مطلوب",
+    "justNow": "الآن"
   },
   "dashboard": {
     "todayOverview": "نظرة عامة اليوم",
@@ -61,7 +72,12 @@
     "time": "الوقت",
     "diagnosis": "التشخيص",
     "types": "الأنواع",
-    "status": "الحالة"
+    "status": "الحالة",
+    "action": "الإجراء",
+    "createdOn": "تم الإنشاء في",
+    "addedBy": "أضيف بواسطة",
+    "sno": "م.",
+    "orderedBy": "مطلوب بواسطة"
   },
   "actions": {
     "add": "إضافة",
@@ -1273,8 +1289,6 @@
           "notAssigned": "غير محدد",
           "unknownPatient": "مريض غير معروف"
         },
-        "add": "إضافة",
-        "action": "الإجراء",
         "calendarView": "عرض التقويم",
         "sort": {
           "label": "فرز",
@@ -1290,14 +1304,10 @@
         },
         "department": "القسم",
         "doctor": "الطبيب",
-        "view": "عرض",
-        "edit": "تعديل",
-        "delete": "حذف",
         "completed": "مكتمل"
       },
       "dashboard": {
         "emergencySurgeries": "جراحات الطوارئ",
-        "viewAll": "عرض الكل",
         "surgeriesToday": "جراحات اليوم",
         "totalSurgeries": "إجمالي الجراحات",
         "completed": "مكتمل",
@@ -1315,21 +1325,11 @@
         },
         "table": {
           "otRoom": "غرفة العمليات",
-          "patient": "المريض",
-          "time": "الوقت",
           "procedure": "الإجراء",
-          "surgeon": "الجراح",
-          "status": "الحالة",
-          "action": "الإجراء",
-          "actions": {
-            "view": "عرض",
-            "edit": "تعديل",
-            "delete": "حذف"
-          }
+          "surgeon": "الجراح"
         },
         "alerts": {
           "title": "تنبيهات وإجراءات غرفة العمليات الحرجة",
-          "loading": "جاري التحميل...",
           "noUpcoming": "لا توجد جراحات قادمة",
           "noRequests": "لا توجد طلبات جراحة",
           "upcomingSurgeries": "الجراحات القادمة",
@@ -1605,21 +1605,8 @@
           "viewDetails": "عرض التفاصيل"
         },
         "common": {
-          "action": "الإجراء",
-          "view": "عرض",
-          "edit": "تعديل",
-          "delete": "حذف",
           "print": "طباعة",
           "download": "تحميل",
-          "add": "إضافة",
-          "save": "حفظ",
-          "cancel": "إلغاء",
-          "completed": "مكتمل",
-          "pending": "قيد الانتظار",
-          "ordered": "مطلوب",
-          "orderedBy": "مطلوب بواسطة",
-          "justNow": "الآن",
-          "noRecords": "لم يتم العثور على سجلات",
           "sections": {
             "implantsUsed": "الغرسات المستخدمة",
             "consumablesUsed": "المستهلكات المستخدمة"

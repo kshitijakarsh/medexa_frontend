@@ -11,10 +11,9 @@ type IntraOpNotesProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
   surgeryId?: string;
-  patientId?: string;
 };
 
-export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId, patientId }: IntraOpNotesProps) {
+export default function IntraOpNotes({ isEditing, onSaveDraft, surgeryId }: IntraOpNotesProps) {
   const intraopApi = createIntraopApiClient();
   const dict = useDictionary();
   const intraOp = dict.pages.surgery.surgeryDetails.intraOp.sidebar;

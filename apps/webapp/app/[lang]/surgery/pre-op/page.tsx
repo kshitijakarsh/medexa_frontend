@@ -22,40 +22,6 @@ import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeTogg
 import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
 
 
-const PRE_OP_DATA_MOCK: SurgeryRow[] = [
-  {
-    id: "1",
-    otRoom: "OT-12",
-    patient: {
-      id: "p1",
-      name: "Fatima Al-Sabah",
-      mrn: "MRN-2501",
-      avatarUrl: "/images/avatars/1.png",
-      vip: true,
-    },
-    procedure: "Doctor Consultation",
-    surgeon: "Dr. Ahmed Khan",
-    specialty: "General",
-    time: "10:30 AM",
-    status: "PreOp",
-  },
-  {
-    id: "2",
-    otRoom: "OT-08",
-    patient: {
-      id: "p2",
-      name: "John Mathew",
-      mrn: "MRN-2502",
-      avatarUrl: "/images/avatars/1.png",
-    },
-    procedure: "Pre Surgery Check",
-    surgeon: "Dr. Sarah Lee",
-    specialty: "General",
-    time: "11:15 AM",
-    status: "IntraOp",
-  },
-];
-
 export default function PreOpList() {
   const [activeTab, setActiveTab] = React.useState("All Surgeries");
   const router = useRouter();
@@ -83,8 +49,6 @@ export default function PreOpList() {
       return statusMap[activeTab];
     })(),
   });
-
-  const USE_MOCK_DATA = false; // Turned off primarily, but maintained for structure
 
   const tableData: SurgeryRow[] = React.useMemo(() => {
     const actualSurgeries = responseData?.data || [];
@@ -116,20 +80,8 @@ export default function PreOpList() {
       status: surgery.status || "scheduled",
     }));
 
-    if (USE_MOCK_DATA && mappedActual.length === 0) {
-      return PRE_OP_DATA_MOCK.filter(d => {
-        if (activeTab === "All Surgeries") return true;
-        const statusMap: Record<string, string> = {
-          "Pre-op": "PreOp",
-          "Intra Op": "IntraOp",
-          "Post-op": "PostOp",
-        };
-        return d.status === statusMap[activeTab];
-      });
-    }
-
     return mappedActual;
-  }, [responseData, activeTab, USE_MOCK_DATA]);
+  }, [responseData, activeTab, dict.pages.surgery.common.prefixes.otRoom, dict.pages.surgery.common.fallbacks.unknownPatient, dict.pages.surgery.common.prefixes.doctor, dict.pages.surgery.common.fallbacks.notAssigned]);
 
   const searchOptions = [
     { label: "MRN", value: "mrn" },
@@ -174,7 +126,7 @@ export default function PreOpList() {
     },
     {
       key: "action",
-      label: dict.pages.surgery.common.action,
+      label: dict.table.action,
       render: (row) => (
         <ActionMenu actions={[
           {
