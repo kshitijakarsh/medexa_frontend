@@ -1,103 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import { Button } from "@workspace/ui/components/button";
-
-// interface DynamicTabsProps {
-//   tabs: { key: string; label: string }[];
-//   defaultTab?: string;
-//   onChange?: (key: string) => void;
-// }
-
-// export function DynamicTabs({
-//   tabs,
-//   defaultTab,
-//   onChange,
-// }: DynamicTabsProps) {
-//   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.key);
-
-//   const handleClick = (key: string) => {
-//     setActiveTab(key);
-//     onChange?.(key);
-//   };
-
-//   return (
-//     <div className="flex flex-wrap gap-2">
-//       {tabs.map((tab) => (
-//         <Button
-//           key={tab.key}
-//           type="button"
-//           onClick={() => handleClick(tab.key)}
-//           className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointer ${
-//             activeTab === tab.key
-//               ? "bg-blue-600 text-white hover:bg-blue-600"
-//               : "bg-white text-gray-600 hover:bg-blue-100"
-//           }`}
-//         >
-//           {tab.label}
-//         </Button>
-//       ))}
-//     </div>
-//   );
-// }
-
-
-
-// "use client";
-
-// import { useState } from "react";
-// import { Button } from "@workspace/ui/components/button";
-
-// interface DynamicTabsProps {
-//   tabs: { key: string; label: string }[];
-//   defaultTab?: string;
-//   onChange?: (key: string) => void;
-//   variant?: "scroll" | "wrap";   // 👈 NEW
-// }
-
-// export function DynamicTabs({
-//   tabs,
-//   defaultTab,
-//   onChange,
-//   variant = "wrap",
-// }: DynamicTabsProps) {
-//   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.key);
-
-//   const handleClick = (key: string) => {
-//     setActiveTab(key);
-//     onChange?.(key);
-//   };
-
-//   return (
-//     <div
-//       className={
-//         variant === "scroll"
-//           ? "w-full overflow-x-auto whitespace-nowrap scrollbar-hide pb-2"
-//           : "flex flex-wrap gap-2"
-//       }
-//     >
-//       <div className={variant === "scroll" ? "flex gap-2" : "flex flex-wrap gap-2"}>
-//         {tabs.map((tab) => (
-//           <Button
-//             key={tab.key}
-//             type="button"
-//             onClick={() => handleClick(tab.key)}
-//             className={`px-4 py-1.5 rounded-full text-sm border border-gray-200 cursor-pointrer
-//                ${activeTab === tab.key
-//                 ? "bg-blue-600 text-white hover:bg-blue-600"
-//                 : "bg-white text-gray-600 hover:bg-blue-100"
-//               }`}
-//           >
-//             {tab.label}
-//           </Button>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -105,34 +5,48 @@ import { Button } from "@workspace/ui/components/button";
 
 interface DynamicTabsProps {
   tabs: { key: string; label: string; count?: number }[];
+  /** Default tab for uncontrolled mode */
   defaultTab?: string;
+  /** Controlled mode: external active tab state */
+  activeTab?: string;
   onChange?: (key: string) => void;
   variant?: "scroll" | "wrap";
+  className?: string;
 }
 
 export function DynamicTabs({
   tabs,
   defaultTab,
+  activeTab: controlledActiveTab,
   onChange,
   variant = "wrap",
+  className = "",
 }: DynamicTabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultTab || tabs[0]?.key);
+  // Internal state for uncontrolled mode
+  const [internalActiveTab, setInternalActiveTab] = useState(defaultTab || tabs[0]?.key);
 
+  // Use controlled value if provided, otherwise use internal state
+  const isControlled = controlledActiveTab !== undefined;
+  const activeTab = isControlled ? controlledActiveTab : internalActiveTab;
+
+  // Sync internal state with defaultTab changes (for uncontrolled mode)
   useEffect(() => {
-    if (defaultTab) {
-      setActiveTab(defaultTab);
+    if (!isControlled && defaultTab) {
+      setInternalActiveTab(defaultTab);
     }
-  }, [defaultTab]);
+  }, [defaultTab, isControlled]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
 
   const handleClick = (key: string) => {
-    setActiveTab(key);
+    if (!isControlled) {
+      setInternalActiveTab(key);
+    }
     onChange?.(key);
   };
 
-  // 🔥 Auto-scroll active tab into view
+  // Auto-scroll active tab into view
   useEffect(() => {
     if (variant === "scroll" && activeTab && tabRefs.current[activeTab]) {
       tabRefs.current[activeTab]?.scrollIntoView({
@@ -146,11 +60,10 @@ export function DynamicTabs({
   return (
     <div
       ref={scrollRef}
-      className={
-        variant === "scroll"
+      className={`${variant === "scroll"
           ? "w-full overflow-x-auto whitespace-nowrap scrollbar-none pb-2"
           : "flex flex-wrap gap-2"
-      }
+        } ${className}`}
     >
       <div className={variant === "scroll" ? "flex gap-2" : "flex flex-wrap gap-2"}>
         {tabs.map((tab) => (
@@ -179,4 +92,3 @@ export function DynamicTabs({
     </div>
   );
 }
-

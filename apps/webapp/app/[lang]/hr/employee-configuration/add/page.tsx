@@ -14,6 +14,9 @@ import { Header } from "@/components/header"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createEmployeeApiClient } from "@/lib/api/employees"
 import { getAuthToken } from "@/app/utils/onboarding"
+import { ROUTES } from "@/lib/routes"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { useFileUpload } from "@/app/hooks/useFileUpload"
 
 // Helper for optional number fields that handles empty strings
 const optionalNumber = z
@@ -49,7 +52,7 @@ const employeeSchema = z.object({
   crp_nid: z.string().optional(),
   crp_nid_expiry: z.string().optional(),
   blood_group: z.string().optional(),
-  photo_url: z.string().optional(),
+  photo_url: z.any().optional(),
 
   // Contact Details
   phone: z.string().optional(),
@@ -98,16 +101,18 @@ const employeeSchema = z.object({
   housing_allowance: optionalNumber,
 
   // Documents
-  qchp_document_url: z.string().optional(),
-  passport_document_url: z.string().optional(),
-  id_proof_document_url: z.string().optional(),
-  contract_document_url: z.string().optional(),
-  signature_document_url: z.string().optional(),
+  qchp_document_url: z.any().optional(),
+  passport_document_url: z.any().optional(),
+  id_proof_document_url: z.any().optional(),
+  contract_document_url: z.any().optional(),
+  signature_document_url: z.any().optional(),
 })
 
 export default function AddEmployeePage() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { withLocale } = useLocaleRoute()
+  const { uploadFile, isUploading } = useFileUpload()
   const [activeTab, setActiveTab] = useState("Personal Details")
   const [authToken, setAuthToken] = useState<string>("")
 
@@ -149,7 +154,7 @@ export default function AddEmployeePage() {
       crp_nid: "",
       crp_nid_expiry: "",
       blood_group: "",
-      photo_url: "",
+      photo_url: undefined,
 
       // Contact Details
       phone: "",
@@ -194,11 +199,11 @@ export default function AddEmployeePage() {
       housing_allowance: "",
 
       // Documents
-      qchp_document_url: "",
-      passport_document_url: "",
-      id_proof_document_url: "",
-      contract_document_url: "",
-      signature_document_url: "",
+      qchp_document_url: undefined,
+      passport_document_url: undefined,
+      id_proof_document_url: undefined,
+      contract_document_url: undefined,
+      signature_document_url: undefined,
     },
   })
 
@@ -275,13 +280,38 @@ export default function AddEmployeePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] })
-      router.push("/hr/employee-configuration")
+      router.push(withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION))
     },
   })
 
   const handleSave = async (values: any) => {
     try {
-      await createMutation.mutateAsync(values)
+      const uploadPromises: Promise<void>[] = []
+      const newValues = { ...values }
+
+      // Helper to upload if it's a file
+      const checkAndUpload = (key: string) => {
+        if (values[key] instanceof File) {
+          uploadPromises.push(
+            uploadFile(values[key], "employees").then((url) => {
+              newValues[key] = url
+            })
+          )
+        }
+      }
+
+      checkAndUpload("photo_url")
+      checkAndUpload("qchp_document_url")
+      checkAndUpload("passport_document_url")
+      checkAndUpload("id_proof_document_url")
+      checkAndUpload("contract_document_url")
+      checkAndUpload("signature_document_url")
+
+      if (uploadPromises.length > 0) {
+        await Promise.all(uploadPromises)
+      }
+
+      await createMutation.mutateAsync(newValues)
     } catch (error) {
       console.error("Failed to create employee:", error)
     }
@@ -309,6 +339,7 @@ export default function AddEmployeePage() {
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 authToken={authToken}
+                initialData={{}}
               />
 
               {/* Save/Cancel */}

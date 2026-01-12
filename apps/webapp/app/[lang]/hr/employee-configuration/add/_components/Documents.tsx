@@ -5,6 +5,7 @@ import { UploadCard } from "@/components/common/upload-card"
 
 interface DocumentsProps {
   form: any
+  initialData: any
 }
 
 const documentFields = [
@@ -15,7 +16,7 @@ const documentFields = [
   { name: "signature_document_url", label: "Signature" },
 ]
 
-export function Documents({ form }: DocumentsProps) {
+export function Documents({ form, initialData }: DocumentsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {documentFields.map((doc) => (
@@ -30,14 +31,8 @@ export function Documents({ form }: DocumentsProps) {
                 <UploadCard
                   title={doc.label}
                   value={field.value}
-                  onFileSelect={(file) => {
-                    if (file) {
-                      // Create a temporary URL for preview
-                      // In production, you'd upload to a server and store the returned URL
-                      const url = URL.createObjectURL(file)
-                      field.onChange(url)
-                    }
-                  }}
+                  onFileSelect={field.onChange}
+                  previewUrl={initialData?.[doc.name]}
                 />
               </FormControl>
               <FormMessage />

@@ -26,6 +26,8 @@ interface AppSelectProps {
   searchable?: boolean;
   searchPlaceholder?: string;
   onSearchChange?: (search: string) => void;
+  /** When true, prevents Radix Select from calling onChange with empty values (fixes prefill issues) */
+  preventEmptyChange?: boolean;
 }
 
 export function AppSelect({
@@ -42,20 +44,32 @@ export function AppSelect({
   searchable = false,
   searchPlaceholder = "Search...",
   onSearchChange,
+  preventEmptyChange = false,
 }: AppSelectProps) {
   const hasError = !!error;
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Get the selected option label
-  const selectedOption = options.find((opt) => opt.value === value);
+  // Ensure value is handled as a string
+  const stringValue = value !== null && value !== undefined ? String(value) : "";
+
+  // Get the selected option label - try exact match first, then loose match
+  const selectedOption =
+    options.find((opt) => opt.value === stringValue) ||
+    options.find(
+      (opt) => String(opt.value).toLowerCase() === stringValue.toLowerCase()
+    );
+
   const displayText = selectedOption?.label || placeholder;
+  // Use the option's value if found (to ensure case matching for Select), otherwise original stringValue
+  const renderValue = selectedOption ? selectedOption.value : stringValue;
 
   // Filter options based on search query
-  const filteredOptions = searchable && searchQuery
-    ? options.filter((opt) =>
-      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : options;
+  const filteredOptions =
+    searchable && searchQuery
+      ? options.filter((opt) =>
+        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      : options;
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSearch = e.target.value;
@@ -65,8 +79,20 @@ export function AppSelect({
     }
   };
 
+  // Handle value change - only trigger onChange if the value is actually different
+  const handleValueChange = (newValue: string) => {
+    // If preventEmptyChange is enabled, ignore empty/undefined values
+    if (preventEmptyChange && (!newValue || newValue.trim() === "")) {
+      return;
+    }
+    // Only call onChange if the new value is different (case-insensitive comparison)
+    if (newValue.toLowerCase() !== stringValue.toLowerCase()) {
+      onChange(newValue);
+    }
+  };
+
   return (
-    <Select onValueChange={onChange} value={value} disabled={disabled}>
+    <Select onValueChange={handleValueChange} value={renderValue} disabled={disabled}>
       <SelectTrigger
         className={`w-full text-sm rounded-md ${hasError ? "border-red-500 focus:ring-red-500" : ""
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${triggerClassName}`}

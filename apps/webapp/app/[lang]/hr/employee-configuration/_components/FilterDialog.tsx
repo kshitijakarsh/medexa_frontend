@@ -372,7 +372,7 @@ type FilterForm = z.infer<typeof filterSchema>
 interface FilterDialogProps {
   open: boolean
   onClose: () => void
-  mode: "humanResources" | "designation" | "specialization" | "roles"
+  mode: "humanResources" | "designation" | "specialization" | "userRoles"
   onApply: (values: FilterForm) => void
   isLoading: boolean
 }
@@ -407,7 +407,7 @@ export function FilterDialog({
   const isHR = mode === "humanResources"
   const isDesignation = mode === "designation"
   const isSpecialization = mode === "specialization"
-  const isRoles = mode === "roles"
+  const isRoles = mode === "userRoles"
 
   return (
     <AppDialog
@@ -569,13 +569,12 @@ export function FilterDialog({
                     </FormLabel>
                     <FormControl>
                       <AppSelect
-                        placeholder={`Select ${
-                          isDesignation
-                            ? "Designation"
-                            : isSpecialization
-                              ? "Specialization"
-                              : "Role"
-                        }`}
+                        placeholder={`Select ${isDesignation
+                          ? "Designation"
+                          : isSpecialization
+                            ? "Specialization"
+                            : "Role"
+                          }`}
                         value={field.value}
                         onChange={field.onChange}
                         error={fieldState.error}
