@@ -6,9 +6,10 @@ import { AppointmentPatientCell } from "@/components/common/pasient-card/appoint
 
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
 import { TypeBadge } from "@/components/common/pasient-card/type-badge";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 type PatientCardProps = {
+  id: string;
   avatar: string;
   name: string;
   mrn: string;
@@ -20,6 +21,7 @@ type PatientCardProps = {
 };
 
 export default function PatientCard({
+  id,
   avatar,
   name,
   mrn,
@@ -30,14 +32,13 @@ export default function PatientCard({
   vip = false,
 }: PatientCardProps) {
   const router = useRouter();
+  const { lang } = useParams();
 
   return (
     <CardBlock
       className="
         flex h-28 w-full flex-col justify-between
-        rounded-xl bg-background p-3
-        shadow-soft
-      "
+        rounded-xl bg-background p-3"
     >
       {/* TOP — Patient */}
       <AppointmentPatientCell
@@ -59,8 +60,9 @@ export default function PatientCard({
 
         <div
           onClick={() => {
-            router.push(`/surgery/dashboard/surgery-details/${mrn}`);
+            router.push(`/${lang}/surgery/dashboard/surgery-details/${id}`);
           }}
+          className="cursor-pointer"
         >
           <span className="text-xs font-medium text-blue-500">
             Schedule

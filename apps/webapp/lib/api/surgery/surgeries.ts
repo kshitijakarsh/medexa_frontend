@@ -32,6 +32,7 @@ export interface Surgery {
         last_name: string;
         civil_id?: string;
         mobile_number?: string;
+        vip?: boolean;
     };
     procedure?: {
         id: string;

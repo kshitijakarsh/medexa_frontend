@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
-import { SurgeryStatus } from "../../_lib/types";
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
+import { SurgeryStatus } from "@/app/[lang]/surgery/_lib/types";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import Image from "next/image";
 
@@ -31,62 +32,62 @@ interface SurgeryRow {
   status: SurgeryStatus;
 }
 
-const SurgeryTable: React.FC = () => {
+interface SurgeryTableProps {
+  initialData?: Surgery[];
+}
+
+export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const surgeryTableDict = dict.pages.surgery.dashboard;
   const [activeTab, setActiveTab] = React.useState("Surgeries");
-  // API Client
-  const surgeryApi = createSurgeryApiClient({});
-
-  // Fetch surgeries with React Query
   const {
     data: surgeriesData,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["surgeries", activeTab],
-    queryFn: async () => {
-      const statusFilter = activeTab === "Ongoing"
-        ? "in_progress"
-        : activeTab === "Upcoming"
-          ? "scheduled"
-          : undefined;
-      const response = await surgeryApi.getAll({ status: statusFilter });
-      console.log("Surgeries API Response:", response.data);
-      return response.data;
-    },
+  } = useSurgeries({
+    status: activeTab === "Ongoing"
+      ? "in_progress"
+      : activeTab === "Upcoming"
+        ? "scheduled"
+        : undefined
   });
 
   // Extract surgeries from response
   const extractSurgeries = (): Surgery[] => {
+    if (initialData) return initialData; // Use initialData if provided
     if (!surgeriesData) return [];
     if (Array.isArray(surgeriesData)) return surgeriesData;
-    if (Array.isArray(surgeriesData.data)) return surgeriesData.data;
+    if (Array.isArray((surgeriesData as any).data)) return (surgeriesData as any).data;
     return [];
   };
 
+  const surgeries = extractSurgeries();
+
   // Map API data to table rows
-  const tableData: SurgeryRow[] = extractSurgeries().map((surgery: Surgery) => ({
+  const tableData: SurgeryRow[] = surgeries.map((surgery: Surgery) => ({
     id: surgery.id,
-    otRoom: (surgery as any).ot_room || "OT-1",
+    otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "OT-1"),
     patient: {
       id: surgery.patient?.id || surgery.patient_id || "",
       name: surgery.patient
         ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
-        : "Unknown Patient",
-      mrn: (surgery as any).patient?.mrn || "MRN-0000",
-      avatarUrl: (surgery as any).patient?.photo_url || "/images/avatars/1.png",
+        : dict.pages.surgery.common.fallbacks.unknownPatient,
+      mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
+      avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+      vip: surgery.patient?.vip,
     },
-    time: surgery.scheduled_date
-      ? new Date(surgery.scheduled_date).toLocaleTimeString("en-US", {
+    time: (surgery.date || surgery.scheduled_date)
+      ? new Date(surgery.date || (surgery.scheduled_date as string)).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit"
       })
       : "—",
-    procedure: surgery.surgery_type || "—",
+    procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
     surgeon: surgery.doctor
-      ? `Dr. ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
-      : "Not Assigned",
+      ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
+      : dict.pages.surgery.common.fallbacks.notAssigned,
     specialty: surgery.department || "General",
     status: mapStatus(surgery.status),
   }));
@@ -102,6 +103,8 @@ const SurgeryTable: React.FC = () => {
         return SurgeryStatus.PRE_OP;
       case "scheduled":
         return SurgeryStatus.SCHEDULED;
+      case "completed":
+        return SurgeryStatus.COMPLETED;
       default:
         return SurgeryStatus.SCHEDULED;
     }
@@ -123,11 +126,11 @@ const SurgeryTable: React.FC = () => {
   const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
       key: "otRoom",
-      label: "OT Room",
+      label: surgeryTableDict.table.otRoom,
     },
     {
       key: "patient",
-      label: "Patient",
+      label: surgeryTableDict.table.patient,
       render: (row) => (
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -155,15 +158,15 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "time",
-      label: "Time",
+      label: surgeryTableDict.table.time,
     },
     {
       key: "procedure",
-      label: "Procedure",
+      label: surgeryTableDict.table.procedure,
     },
     {
       key: "surgeon",
-      label: "Surgeon",
+      label: surgeryTableDict.table.surgeon,
       render: (row) => (
         <>
           <div className="text-sm font-medium text-gray-900">
@@ -175,7 +178,7 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "status",
-      label: "Status",
+      label: surgeryTableDict.table.status,
       render: (row) => (
         <span
           className={`rounded-full border px-4 py-1 text-xs font-medium ${getStatusStyle(
@@ -188,24 +191,24 @@ const SurgeryTable: React.FC = () => {
     },
     {
       key: "action",
-      label: "Action",
+      label: surgeryTableDict.table.action,
       className: "text-right",
       render: (row) => (
         <ActionMenu actions={[
           {
-            label: "View",
+            label: surgeryTableDict.table.actions.view,
             onClick: () => {
-              router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
             }
           },
           {
-            label: "Edit",
-            // onClick: () => {
-            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-            // }
+            label: surgeryTableDict.table.actions.edit,
+            onClick: () => {
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
+            }
           },
           {
-            label: "Delete",
+            label: surgeryTableDict.table.actions.delete,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
@@ -213,18 +216,18 @@ const SurgeryTable: React.FC = () => {
         ]} className="bg-transparent hover:bg-transparent text-blue-500" />
       ),
     },
-  ], []);
+  ], [dict, lang, router]);
 
   return (
-    <div className="mb-8 overflow-hidden rounded-3xl bg-background shadow-soft">
+    <div className="mb-8 overflow-hidden rounded-3xl bg-background">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border-light px-2 py-5">
-        <div className="flex gap-2 rounded-2xl py-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-4 px-2 pt-4">
+        <div className="flex gap-2 rounded-2xl">
           <DynamicTabs
             tabs={[
-              { key: "Surgeries", label: "Surgeries" },
-              { key: "Ongoing", label: "Ongoing" },
-              { key: "Upcoming", label: "Upcoming" },
+              { key: "Surgeries", label: surgeryTableDict.tabs.all },
+              { key: "Ongoing", label: surgeryTableDict.tabs.ongoing },
+              { key: "Upcoming", label: surgeryTableDict.tabs.upcoming },
             ]}
             defaultTab={activeTab}
             onChange={(v) => setActiveTab(v)}
@@ -237,7 +240,7 @@ const SurgeryTable: React.FC = () => {
           className="text-blue-500 text-sm"
           onClick={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
         >
-          View All
+          {surgeryTableDict.viewAll}
         </Button>
       </div>
 

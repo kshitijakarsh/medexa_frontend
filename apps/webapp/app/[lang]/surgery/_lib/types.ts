@@ -221,3 +221,23 @@ export interface Medication {
   detail?: string;
   category?: string;
 }
+
+/**
+ * Standardized surgery row for table views
+ */
+export interface SurgeryRow {
+  id: string;
+  otRoom: string;
+  patient: {
+    id: string;
+    name: string;
+    mrn: string;
+    avatarUrl?: string;
+    vip?: boolean;
+  };
+  time: string;
+  procedure: string;
+  surgeon: string;
+  specialty: string;
+  status: string;
+}

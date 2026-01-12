@@ -1,120 +1,109 @@
 "use client";
 
 import React from "react";
-import { MoreVertical } from "lucide-react";
 import { Badge } from "@workspace/ui/components/badge";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { WardStockItem } from "./ConsumptionStock";
 import ActionMenu from "@/components/common/action-menu";
 
-// --- Mock Data ---
-const EQUIPMENT_STOCK_DATA: WardStockItem[] = [
-    {
-        id: "e1",
-        itemName: "Vital Signs Monitor",
-        category: "Equipment",
-        currentQty: 5,
-        minQty: 2,
-        store: "Main Store",
-        expiry: "N/A",
-        status: "Available",
-    },
-    {
-        id: "e2",
-        itemName: "Defibrillator",
-        category: "Equipment",
-        currentQty: 2,
-        minQty: 1,
-        store: "Main Store",
-        expiry: "2026-01-01 12:00",
-        status: "Low Stock",
-    },
-    {
-        id: "e3",
-        itemName: "Surgical Laser",
-        category: "Equipment",
-        currentQty: 0,
-        minQty: 1,
-        store: "Main Store",
-        expiry: "N/A",
-        status: "Out Of Stock",
-    },
-];
+import { WardStock } from "@/lib/api/surgery/ward";
+import { useDictionary } from "@/i18n/use-dictionary";
 
-export const EquipmentStock = () => {
+interface EquipmentStockProps {
+    data?: WardStock[];
+    isLoading: boolean;
+    onViewItem: (item: WardStockItem) => void;
+}
+
+export const EquipmentStock = ({ data, isLoading, onViewItem }: EquipmentStockProps) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+
+    // Map API data (snake_case) to table display format
+    const tableData: WardStockItem[] = React.useMemo(() => {
+        if (!data) return [];
+        return data.map((item) => ({
+            id: item.id,
+            itemName: item.item_name,
+            category: item.category,
+            currentQty: item.current_qty,
+            minQty: item.min_qty,
+            store: item.store || "—",
+            expiry: item.expiry || "—",
+            status: item.status,
+        }));
+    }, [data]);
+
     const columns = [
         {
             key: "itemName",
-            label: "Item Name",
+            label: wardStoreDict.columns.itemName,
         },
         {
             key: "category",
-            label: "Category",
+            label: wardStoreDict.columns.category,
         },
         {
             key: "currentQty",
-            label: "Current Qty",
+            label: wardStoreDict.columns.currentQty,
         },
         {
             key: "minQty",
-            label: "Available",
+            label: wardStoreDict.columns.available,
         },
         {
             key: "store",
-            label: "Store",
+            label: wardStoreDict.columns.store,
         },
         {
             key: "expiry",
-            label: "Expiry",
+            label: wardStoreDict.columns.expiry,
         },
         {
             key: "status",
-            label: "Status",
+            label: wardStoreDict.columns.status,
             render: (row: WardStockItem) => {
                 let badgeClass = "";
+                let statusLabel: string = row.status;
+
                 switch (row.status) {
                     case "Available":
                         badgeClass = "bg-green-50 text-green-600 border-green-100 hover:bg-green-100";
+                        statusLabel = wardStoreDict.statuses.available;
                         break;
                     case "Low Stock":
                         badgeClass = "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100";
+                        statusLabel = wardStoreDict.statuses.lowStock;
                         break;
                     case "Out Of Stock":
                         badgeClass = "bg-red-50 text-red-600 border-red-100 hover:bg-red-100";
+                        statusLabel = wardStoreDict.statuses.outOfStock;
                         break;
                 }
                 return (
                     <Badge variant="outline" className={`${badgeClass} font-normal px-3 py-1 rounded-full whitespace-nowrap`}>
-                        {row.status}
+                        {statusLabel}
                     </Badge>
                 );
             },
         },
         {
             key: "action",
-            label: "Action",
-            render: () => (
+            label: wardStoreDict.columns.action,
+            render: (row: WardStockItem) => (
                 <ActionMenu actions={[
-                                    {
-                                        label: "View",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    },
-                                    {
-                                        label: "Edit",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    },
-                                    {
-                                        label: "Delete",
-                                        // onClick: () => {
-                                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                                        // }
-                                    }
-                                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
-                
+                    {
+                        label: wardStoreDict.actions.view,
+                        onClick: () => onViewItem(row)
+                    },
+                    {
+                        label: wardStoreDict.actions.edit,
+                    },
+                    {
+                        label: wardStoreDict.actions.delete,
+                    }
+                ]} className="bg-transparent hover:bg-transparent text-blue-500" />
+
             ),
         },
     ];
@@ -122,12 +111,13 @@ export const EquipmentStock = () => {
     return (
         <div className="flex flex-col h-full">
             {/* Data Table */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+            <div className="">
                 <div className="overflow-x-auto">
                     <ResponsiveDataTable
                         columns={columns}
-                        data={EQUIPMENT_STOCK_DATA}
+                        data={tableData}
                         striped
+                        loading={isLoading}
                     />
                 </div>
             </div>
