@@ -3,7 +3,6 @@
 import React from "react";
 import { ArrowLeft, Save, FilePlus2Icon } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Patient } from "../../../_lib/types";
 import PatientBanner from "../components/shared/PatientBanner";
 import PostOpCare from "../components/post-op/PostOpCare";
@@ -13,8 +12,9 @@ import PreOpChecklist from "../components/pre-op/PreOpChecklist";
 import { AnesthesiaPlan } from "../components/anesthesia/AnesthesiaPlan";
 import { SurgeryDetailsTab } from "../components/surgery-details/SurgeryDetailsTab";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
-import { createSurgeryApiClient } from "@/lib/api/surgery/surgeries";
+import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const PATIENT_DATA: Patient = {
   id: "2",
@@ -34,23 +34,13 @@ const PATIENT_DATA: Patient = {
 export default function SurgeryDetailsPage() {
   const router = useRouter();
   const { id } = useParams();
-  const surgeryApi = createSurgeryApiClient({});
+  const dict = useDictionary();
 
   const [activeTab, setActiveTab] = React.useState("Surgery Details");
   const [isEditing, setIsEditing] = React.useState(false);
   const [anesthesiaActiveTab, setAnesthesiaActiveTab] = React.useState("Medical History");
 
-  const { data: response, isLoading } = useQuery({
-    queryKey: ["surgery-details", id],
-    queryFn: async () => {
-      if (!id || id === "new") return null;
-      const resp = await surgeryApi.getById(id as string);
-      return resp.data;
-    },
-    enabled: !!id && id !== "new",
-  });
-
-  const surgeryData = response?.data;
+  const { data: surgeryData, isLoading } = useSurgeryById(id as string);
 
   // Map surgeryData to Patient interface for common banner
   const patientData: Patient | undefined = surgeryData?.patient ? {
@@ -74,22 +64,22 @@ export default function SurgeryDetailsPage() {
         <div className="flex gap-3 shrink-0 mb-1">
           <button className="flex items-center gap-2 border border-blue-500 text-blue-500 rounded-lg px-3 py-1.5 bg-white hover:bg-blue-50 font-medium text-sm">
             <Save size={16} />
-            Save Assessment
+            {dict.pages.surgery.surgeryDetails.actions.saveAssessment}
           </button>
           <div className="relative group">
             <button className="flex items-center gap-1 bg-blue-500 text-white rounded-lg px-3 py-1.5 text-sm">
               <div className="bg-blue-400 p-1 rounded-md">
                 <FilePlus2Icon size={16} />
               </div>
-              Submit Clearances
+              {dict.pages.surgery.surgeryDetails.actions.submitClearances}
             </button>
 
             <div className="absolute right-0 top-full hidden flex-col gap-1 rounded-lg bg-blue-50 p-1 shadow-lg group-hover:flex z-50">
               <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                Fit For Anesthesia
+                {dict.pages.surgery.surgeryDetails.actions.fitForAnesthesia}
               </button>
               <button className="flex w-full items-center px-3 py-2 text-sm font-medium text-slate-700 bg-white rounded-lg text-left">
-                Not fit for anesthesia
+                {dict.pages.surgery.surgeryDetails.actions.notFitForAnesthesia}
               </button>
             </div>
           </div>
@@ -97,6 +87,28 @@ export default function SurgeryDetailsPage() {
       );
     }
   };
+
+  // Show loading skeleton while surgery data is loading
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <Skeleton className="h-6 w-48" />
+        </div>
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-10 w-full" />
+        <div className="grid grid-cols-12 gap-4">
+          <div className="col-span-8">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+          <div className="col-span-4">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -107,7 +119,7 @@ export default function SurgeryDetailsPage() {
         >
           <ArrowLeft size={16} />
         </button>
-        <h1 className="text-base font-bold text-slate-800">Surgery Details</h1>
+        <h1 className="text-base font-bold text-slate-800">{dict.pages.surgery.surgeryDetails.title}</h1>
       </div>
 
       <PatientBanner
@@ -120,12 +132,12 @@ export default function SurgeryDetailsPage() {
       <div className="overflow-x-auto">
         <DynamicTabs
           tabs={[
-            { key: "Surgery Details", label: "Surgery Details" },
-            { key: "Pre-Op Checklist", label: "Pre-Op Checklist" },
-            { key: "Anesthesia Plan", label: "Anesthesia Plan" },
-            { key: "Intra-Op Notes", label: "Intra-Op Notes" },
-            { key: "Nurse", label: "Nurse" },
-            { key: "Post-Op Care", label: "Post-Op Care" },
+            { key: "Surgery Details", label: dict.pages.surgery.surgeryDetails.tabs.details },
+            { key: "Pre-Op Checklist", label: dict.pages.surgery.surgeryDetails.tabs.preOpChecklist },
+            { key: "Anesthesia Plan", label: dict.pages.surgery.surgeryDetails.tabs.anesthesiaPlan },
+            { key: "Intra-Op Notes", label: dict.pages.surgery.surgeryDetails.tabs.intraOpNotes },
+            { key: "Nurse", label: dict.pages.surgery.surgeryDetails.tabs.nurse },
+            { key: "Post-Op Care", label: dict.pages.surgery.surgeryDetails.tabs.postOpCare },
           ]}
           defaultTab={activeTab}
           onChange={setActiveTab}
@@ -134,23 +146,51 @@ export default function SurgeryDetailsPage() {
       </div>
 
       {activeTab === "Post-Op Care" ? (
-        <PostOpCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <PostOpCare
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Nurse" ? (
-        <NurseCare isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <NurseCare
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Intra-Op Notes" ? (
-        <IntraOpNotes isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} />
+        <IntraOpNotes
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : activeTab === "Anesthesia Plan" ? (
         <AnesthesiaPlan
           activeTab={anesthesiaActiveTab}
           onTabChange={setAnesthesiaActiveTab}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          surgeryId={id as string}
           patientId={surgeryData?.patient_id}
         />
       ) : activeTab === "Pre-Op Checklist" ? (
-        <PreOpChecklist isEditing={isEditing} onSaveDraft={() => setIsEditing(false)} onEdit={() => setIsEditing(true)} />
+        <PreOpChecklist
+          isEditing={isEditing}
+          onSaveDraft={() => setIsEditing(false)}
+          onEdit={() => setIsEditing(true)}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+        />
       ) : (
-        <SurgeryDetailsTab isEditing={isEditing} setIsEditing={setIsEditing} patientId={surgeryData?.patient_id} />
+        <SurgeryDetailsTab
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          surgeryId={id as string}
+          patientId={surgeryData?.patient_id}
+          surgeryData={surgeryData}
+        />
       )}
     </div>
   );

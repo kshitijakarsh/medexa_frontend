@@ -18,6 +18,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import DocumentViewModal, { DocumentData } from "../modals/DocumentViewModal";
@@ -56,6 +57,7 @@ const MetricCard = ({ metric }: { metric: PreOpMetric }) => {
     );
 };
 
+
 const ViewSectionCard = ({
     config,
     onViewDocument,
@@ -70,6 +72,7 @@ const ViewSectionCard = ({
     onApproveClearance?: (item: ChecklistItem) => void;
 }) => {
     const { title, count, items } = config;
+    const dict = useDictionary();
 
     return (
         <Card className="shadow-none border-0 mb-4 bg-white">
@@ -79,9 +82,9 @@ const ViewSectionCard = ({
                         {title}
                     </CardTitle>
 
-                    {items.length > 0 && title !== "Procedures" && (
+                    {items.length > 0 && title !== dict.pages.surgery.surgeryDetails.preOp.sections.procedures && (
                         <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
-                            {items.filter(i => i.status === "Completed").length}/{items.length} Completed
+                            {items.filter(i => i.status === "Completed").length}/{items.length} {dict.pages.surgery.surgeryDetails.common.completed}
                         </span>
                     )}
                 </div>
@@ -101,7 +104,7 @@ const ViewSectionCard = ({
                             <div className="flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <span className="text-sm font-medium text-slate-800">{item.label}</span>
-                                    {title !== "Medical Clearances" && (item.category || title === "Required Investigations") && (
+                                    {title !== dict.pages.surgery.surgeryDetails.preOp.sections.clearances && (item.category || title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations) && (
                                         <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
                                             {item.category || "Laboratory Test"}
                                         </span>
@@ -113,7 +116,7 @@ const ViewSectionCard = ({
                                     )}
                                 </div>
                                 <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-                                    {title === "Required Investigations" && (
+                                    {title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations && (
                                         <>
                                             <span>Biochemistry</span>
                                             <span>|</span>
@@ -123,14 +126,14 @@ const ViewSectionCard = ({
                                     {item.status === "Completed" && (
                                         <span className="flex items-center gap-1 text-green-600 px-2 py-0.5">
                                             <SquareCheckBig size={12} />
-                                            Completed using previous result
+                                            {dict.pages.surgery.surgeryDetails.preOp.status.completedPrev}
                                         </span>
                                     )}
                                 </div>
                                 {/* Ordered by */}
-                                {(item.status === "Completed" || item.status === "Ordered") && item.orderedBy && title === "Required Investigations" && (
+                                {(item.status === "Completed" || item.status === "Ordered") && item.orderedBy && title === dict.pages.surgery.surgeryDetails.preOp.sections.investigations && (
                                     <p className="text-xs text-blue-500 mt-2 flex items-center gap-1 font-medium">
-                                        <Stethoscope size={14} /> Ordered By {item.orderedBy}
+                                        <Stethoscope size={14} /> {dict.pages.surgery.surgeryDetails.common.orderedBy} {item.orderedBy}
                                     </p>
                                 )}
                             </div>
@@ -141,66 +144,69 @@ const ViewSectionCard = ({
                                     <span
                                         className={`text-xs font-medium px-3 py-1.5 rounded-full ${STATUS_STYLES[item.status]}`}
                                     >
-                                        {item.status}
+                                        {item.status === "Completed" ? dict.pages.surgery.surgeryDetails.common.completed :
+                                            item.status === "Ordered" ? dict.pages.surgery.surgeryDetails.common.ordered :
+                                                item.status === "Pending" ? dict.pages.surgery.surgeryDetails.common.pending :
+                                                    item.status}
                                     </span>
                                 )}
-                                {!["Procedures", "Patient Preparation Requirements", "Equipment & Instruments"].includes(title) && !(title === "Consents Required" && item.status === "Pending") && (
+                                {![dict.pages.surgery.surgeryDetails.preOp.sections.procedures, dict.pages.surgery.surgeryDetails.preOp.sections.prep, dict.pages.surgery.surgeryDetails.preOp.sections.equipment].includes(title) && !(title === dict.pages.surgery.surgeryDetails.preOp.sections.consents && item.status === "Pending") && (
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button
                                                 className="flex items-center gap-1 text-xs text-blue-500 font-medium px-2 py-1 rounded-sm transition-colors bg-white hover:bg-slate-50"
                                                 onClick={(e) => e.stopPropagation()}
                                             >
-                                                Action
+                                                {dict.pages.surgery.surgeryDetails.common.action}
                                                 <MoreVertical size={14} className="text-green-500" />
                                             </button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                                            {title !== "Medical Clearances" && (
+                                            {title !== dict.pages.surgery.surgeryDetails.preOp.sections.clearances && (
                                                 <DropdownMenuItem
                                                     className="gap-2 cursor-pointer justify-between"
                                                     onClick={() => {
-                                                        if (["Required Investigations", "Consents Required", "Nursing Orders (Pre-Op)", "Implants & Consumables", "Blood & Resource Preparation"].includes(title)) {
+                                                        if ([dict.pages.surgery.surgeryDetails.preOp.sections.investigations, dict.pages.surgery.surgeryDetails.preOp.sections.consents, dict.pages.surgery.surgeryDetails.preOp.sections.nursingOrders, dict.pages.surgery.surgeryDetails.preOp.sections.implants, dict.pages.surgery.surgeryDetails.preOp.sections.blood].includes(title)) {
                                                             onViewDocument(item, title);
                                                         }
                                                     }}
                                                 >
-                                                    View <Eye size={14} className="text-slate-500" />
+                                                    {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
                                                 </DropdownMenuItem>
                                             )}
-                                            {(!["Implants & Consumables", "Blood & Resource Preparation"].includes(title) && title !== "Medical Clearances") && (
+                                            {(![dict.pages.surgery.surgeryDetails.preOp.sections.implants, dict.pages.surgery.surgeryDetails.preOp.sections.blood].includes(title) && title !== dict.pages.surgery.surgeryDetails.preOp.sections.clearances) && (
                                                 <>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        Print <Printer size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.print} <Printer size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        Download <Download size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.download} <Download size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                 </>
                                             )}
-                                            {title === "Consents Required" && (
+                                            {title === dict.pages.surgery.surgeryDetails.preOp.sections.consents && (
                                                 <DropdownMenuItem
                                                     className="gap-2 cursor-pointer justify-between"
                                                     onClick={() => onDeleteItem?.(item, title)}
                                                 >
-                                                    Delete <Trash2 size={14} />
+                                                    {dict.pages.surgery.surgeryDetails.common.delete} <Trash2 size={14} />
                                                 </DropdownMenuItem>
                                             )}
-                                            {title === "Medical Clearances" && (
+                                            {title === dict.pages.surgery.surgeryDetails.preOp.sections.clearances && (
                                                 <>
                                                     {item.status === "Pending" && (
                                                         <DropdownMenuItem
                                                             className="gap-2 cursor-pointer justify-between"
                                                             onClick={() => onApproveClearance?.(item)}
                                                         >
-                                                            Approve Clearances <Printer size={14} className="text-slate-500" />
+                                                            {dict.pages.surgery.surgeryDetails.preOp.actions.approveClearance} <Printer size={14} className="text-slate-500" />
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem
                                                         className="gap-2 cursor-pointer justify-between"
                                                         onClick={() => onViewDocument(item, title)}
                                                     >
-                                                        View <Eye size={14} className="text-slate-500" />
+                                                        {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
                                                     </DropdownMenuItem>
                                                 </>
                                             )}
@@ -221,7 +227,7 @@ const ViewSectionCard = ({
                                     </svg>
                                 </span>
                                 <p className="text-xs text-slate-600">
-                                    Previous result available: {item.previousResult.date} ({item.previousResult.count} results)
+                                    {dict.pages.surgery.surgeryDetails.preOp.status.prevAvailable}: {item.previousResult.date} ({item.previousResult.count} {dict.pages.surgery.surgeryDetails.preOp.status.results})
                                 </p>
                             </div>
                         )}
@@ -356,7 +362,7 @@ export const PreOpViewMode = ({ sectionsData, setSectionsData, onEdit, metrics =
         }));
     };
 
-    const handleClearanceApprove = (data: { status: string; notes: string; doctor: string }) => {
+    const handleClearanceApprove = (data: { status: string; notes?: string; doctor: string }) => {
         if (!selectedClearanceItem) return;
 
         setSectionsData(prev => prev.map(section => {
@@ -381,6 +387,8 @@ export const PreOpViewMode = ({ sectionsData, setSectionsData, onEdit, metrics =
             return section;
         }));
     };
+
+    const dict = useDictionary();
 
     return (
         <div className="space-y-4">
@@ -437,14 +445,14 @@ export const PreOpViewMode = ({ sectionsData, setSectionsData, onEdit, metrics =
             <ConsentUploadModal
                 open={isConsentUploadModalOpen}
                 onOpenChange={setIsConsentUploadModalOpen}
-                title={selectedConsentItem?.label || "Upload Consent"}
+                title={selectedConsentItem?.label || dict.pages.surgery.surgeryDetails.preOp.actions.uploadConsent}
                 onUpload={handleConsentUpload}
             />
 
             <ApproveClearanceModal
                 open={isApproveModalOpen}
                 onOpenChange={setIsApproveModalOpen}
-                title={selectedClearanceItem?.label || "Approve Clearance"}
+                title={selectedClearanceItem?.label || dict.pages.surgery.surgeryDetails.preOp.actions.approveClearanceOne}
                 onApprove={handleClearanceApprove}
                 mode={approveModalMode}
                 itemData={selectedClearanceItem}

@@ -12,23 +12,18 @@ import NewButton from "@/components/common/new-button";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { AnesthesiaPlan as AnesthesiaPlanType, createAnesthesiaApiClient } from "@/lib/api/surgery/anesthesia";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+
 import { toast } from "@workspace/ui/lib/sonner";
 import { Info } from "lucide-react";
 
-const TABS = [
-  "Medical History",
-  "Airway Assessment",
-  "Vitals Examination",
-  "ASA & Risk",
-  "Anesthesia Plan",
-];
+import { useDictionary } from "@/i18n/use-dictionary";
 
 interface AnesthesiaPlanProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  surgeryId?: string;
   patientId?: string;
 }
 
@@ -37,10 +32,19 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   onTabChange,
   isEditing,
   setIsEditing,
+  surgeryId,
   patientId,
 }) => {
-  const { id: surgeryId } = useParams();
+  const dict = useDictionary();
   const anesthesiaApi = createAnesthesiaApiClient();
+
+  const TABS_CONFIG = [
+    { key: "Medical History", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.medicalHistory },
+    { key: "Airway Assessment", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.airwayAssessment },
+    { key: "Vitals Examination", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.vitalsExamination },
+    { key: "ASA & Risk", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.asaRisk },
+    { key: "Anesthesia Plan", label: dict.pages.surgery.surgeryDetails.anesthesia.tabs.planDetails },
+  ];
 
   const { data: anesthesiaResponse, isLoading } = useQuery({
     queryKey: ["surgery-anesthesia", surgeryId],
@@ -98,13 +102,14 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
       <NewVitals
         open={isVitalsModalOpen}
         onOpenChange={setIsVitalsModalOpen}
+        patientId={patientId}
       />
 
       <div className="flex items-center justify-between mb-2 px-3">
         <div className="w-full flex justify-between gap-4">
           <div className="flex-1 overflow-hidden">
             <DynamicTabs
-              tabs={TABS.map((tab) => ({ key: tab, label: tab }))}
+              tabs={TABS_CONFIG}
               defaultTab={activeTab}
               onChange={setActiveTab}
               variant="scroll"
@@ -113,17 +118,17 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
 
           {activeTab === "Vitals Examination" ? (
             <NewButton
-              name="Add Vitals"
+              name={dict.pages.surgery.surgeryDetails.anesthesia.actions.addVitals}
               handleClick={() => setIsVitalsModalOpen(true)}
             />
           ) : activeTab === "Medical History" ? (
             <NewButton
-              name="Add New"
+              name={dict.pages.surgery.surgeryDetails.anesthesia.actions.addNew}
               handleClick={() => setIsMedicalHistoryModalOpen(true)}
             />
           ) : (
             <NewButton
-              name="Add New"
+              name={dict.pages.surgery.surgeryDetails.anesthesia.actions.addNew}
               handleClick={() => { }}
             />
           )}
@@ -136,14 +141,14 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
       <div className="w-full bg-slate-200 h-px"></div>
 
       <div className="py-2">
-        <div className="flex justify-end items-center gap-1">
-          <div className="flex items-center rounded-full bg-slate-50 px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
+        <div className="flex justify-end items-center gap-1 mr-2">
+          <div className="flex items-center rounded-full px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
             {/* {updatedAt ? (
                 <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
               ) : */}
 
             {/* ( */}
-            <>Last Edited by Anesthesia Sarah on November 14, 2024, at 8:45 AM.</>
+            <>{dict.pages.surgery.surgeryDetails.anesthesia.status.lastEditedBy} Anesthesia Sarah {dict.pages.surgery.surgeryDetails.anesthesia.status.on} November 14, 2024, {dict.pages.surgery.surgeryDetails.anesthesia.status.at} 8:45 AM.</>
             {/* )} */}
           </div>
           <Info size={18} className="text-blue-400" />
@@ -152,7 +157,7 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
 
       <div className="px-3 pb-6 pt-1">
         {isLoading ? (
-          <div className="p-8 text-center text-slate-500">Loading anesthesia plan...</div>
+          <div className="p-8 text-center text-slate-500">{dict.pages.surgery.surgeryDetails.anesthesia.status.loading}</div>
         ) : activeTab === "Medical History" ? (
           <MedicalHistory patientId={patientId} />
         ) : activeTab === "Airway Assessment" ? (
@@ -168,7 +173,6 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
           />
         ) : activeTab === "Vitals Examination" ? (
           <VitalsExamination
-            isEditing={isEditing}
             patientId={patientId}
           />
         ) : activeTab === "ASA & Risk" ? (
@@ -193,7 +197,7 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
           />
         ) : (
           <div className="flex w-full h-48 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50">
-            <p className="text-slate-400 font-medium">To be implemented</p>
+            <p className="text-slate-400 font-medium">{dict.pages.surgery.surgeryDetails.anesthesia.status.toBeImplemented}</p>
           </div>
         )}
       </div>

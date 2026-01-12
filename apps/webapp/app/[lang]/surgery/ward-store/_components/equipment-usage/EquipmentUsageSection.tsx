@@ -1,39 +1,52 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { createWardApiClient } from "@/lib/api/surgery/ward";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import SearchInput from "@/components/common/search-input";
 import NewButton from "@/components/common/new-button";
-import { SlidersHorizontal } from "lucide-react";
+import FilterButton from "@/components/common/filter-button";
+import { useDeleteEquipmentUsageLog, useEquipmentUsageLogs } from "@/app/[lang]/surgery/_hooks/useWard";
 import { EquipmentUsageLogs } from "./EquipmentUsageLogs";
 import { AddEquipmentUsageModal } from "./AddEquipmentUsageModal";
 
 export function EquipmentUsageSection() {
+    const dict = useDictionary();
     const [equipmentSubTab, setEquipmentSubTab] = useState("All Equipment Usage");
     const [search, setSearch] = useState("");
     const [showAddModal, setShowAddModal] = useState(false);
+    const [selectedLogId, setSelectedLogId] = useState<string | undefined>(undefined);
 
-    const wardApi = createWardApiClient({});
+    const deleteLogMutation = useDeleteEquipmentUsageLog();
+
+    const handleEdit = (id: string) => {
+        setSelectedLogId(id);
+        setShowAddModal(true);
+    };
+
+    const handleDelete = (id: string) => {
+        deleteLogMutation.mutate(id);
+    };
+
+    const handleModalClose = (open: boolean) => {
+        setShowAddModal(open);
+        if (!open) {
+            setSelectedLogId(undefined);
+        }
+    };
+
+    const statusFilter =
+        equipmentSubTab === "Running"
+            ? "Running"
+            : equipmentSubTab === "Completed"
+                ? "Completed"
+                : undefined;
 
     const {
         data: logsResponse,
         isLoading,
-    } = useQuery({
-        queryKey: ["equipment-usage-logs", equipmentSubTab, search],
-        queryFn: async () => {
-            const statusFilter =
-                equipmentSubTab === "Running"
-                    ? "Running"
-                    : equipmentSubTab === "Completed"
-                        ? "Completed"
-                        : undefined;
-
-            const response = await wardApi.getEquipmentUsageLogs({
-                status: statusFilter,
-                search: search || undefined,
-            });
-            return response.data;
-        },
+        refetch,
+    } = useEquipmentUsageLogs({
+        status: statusFilter,
+        search: search || undefined,
     });
 
     return (
@@ -44,18 +57,16 @@ export function EquipmentUsageSection() {
                         <DynamicTabs
                             defaultTab={equipmentSubTab}
                             tabs={[
-                                { label: "All Equipment Usage", key: "All Equipment Usage" },
-                                { label: "Running", key: "Running" },
-                                { label: "Completed", key: "Completed" },
+                                { label: dict.pages.surgery.wardStore.subTabs.all, key: "All Equipment Usage" },
+                                { label: dict.pages.surgery.wardStore.subTabs.running, key: "Running" },
+                                { label: dict.pages.surgery.wardStore.subTabs.completed, key: "Completed" },
                             ]}
                             onChange={setEquipmentSubTab}
                         />
                     </div>
 
                     <div className="flex items-center gap-3 ml-auto">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-full text-sm font-medium transition-colors hover:bg-blue-50/50">
-                            Filter <SlidersHorizontal size={16} />
-                        </button>
+                        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                         <SearchInput
                             value={search}
                             onChange={setSearch}
@@ -64,7 +75,7 @@ export function EquipmentUsageSection() {
                             className="rounded-lg bg-white border-none"
                         />
                         <NewButton
-                            name="Add Equipment Usage Logs"
+                            name={dict.pages.surgery.wardStore.actions.addEquipmentUsage}
                             handleClick={() => setShowAddModal(true)}
                         />
                     </div>
@@ -74,14 +85,18 @@ export function EquipmentUsageSection() {
             <EquipmentUsageLogs
                 data={logsResponse?.data}
                 isLoading={isLoading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
             />
 
             <AddEquipmentUsageModal
                 open={showAddModal}
-                onOpenChange={setShowAddModal}
-                onSave={(data) => {
+                onOpenChange={handleModalClose}
+                editId={selectedLogId}
+                onSave={(data: any) => {
                     console.log("Saving equipment usage:", data);
                     setShowAddModal(false);
+                    setSelectedLogId(undefined);
                 }}
             />
         </>

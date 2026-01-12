@@ -18,174 +18,116 @@ export type WardStockItem = {
     status: "Available" | "Low Stock" | "Out Of Stock";
 };
 
-// --- Mock Data ---
-const WARD_STOCK_DATA: WardStockItem[] = [
-    {
-        id: "1",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 20,
-        store: "Pharmacy 4",
-        expiry: "2025-09-27 19:30",
-        status: "Low Stock",
-    },
-    {
-        id: "2",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 45,
-        minQty: 10,
-        store: "Store 2",
-        expiry: "2025-09-27 19:30",
-        status: "Low Stock",
-    },
-    {
-        id: "3",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 5,
-        minQty: 2,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "4",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "5",
-        itemName: "Surgical Gloves (M)",
-        category: "Equipment",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "6",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-    {
-        id: "7",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Out Of Stock",
-    },
-    {
-        id: "8",
-        itemName: "Surgical Gloves (M)",
-        category: "Consumables",
-        currentQty: 45,
-        minQty: 50,
-        store: "Pharmacy 1",
-        expiry: "2025-09-27 19:30",
-        status: "Available",
-    },
-];
+import { WardStock } from "@/lib/api/surgery/ward";
 
-export const ConsumptionStock = () => {
+interface ConsumptionStockProps {
+    data?: WardStock[];
+    isLoading: boolean;
+    onViewItem: (item: WardStockItem) => void;
+}
+
+import { useDictionary } from "@/i18n/use-dictionary";
+
+export const ConsumptionStock = ({ data, isLoading, onViewItem }: ConsumptionStockProps) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+
+    // Map API data (snake_case) to table display format
+    const tableData: WardStockItem[] = React.useMemo(() => {
+        if (!data) return [];
+        return data.map((item) => ({
+            id: item.id,
+            itemName: item.item_name,
+            category: item.category,
+            currentQty: item.current_qty,
+            minQty: item.min_qty,
+            store: item.store || "—",
+            expiry: item.expiry || "—",
+            status: item.status,
+        }));
+    }, [data]);
+
     const columns = [
         {
             key: "itemName",
-            label: "Item Name",
+            label: wardStoreDict.columns.itemName,
         },
         {
             key: "category",
-            label: "Category",
+            label: wardStoreDict.columns.category,
         },
         {
             key: "currentQty",
-            label: "Current Qty",
+            label: wardStoreDict.columns.currentQty,
         },
         {
             key: "minQty",
-            label: "Minimum Qty",
+            label: wardStoreDict.columns.minQty,
         },
         {
             key: "store",
-            label: "Store",
+            label: wardStoreDict.columns.store,
         },
         {
             key: "expiry",
-            label: "Expiry",
+            label: wardStoreDict.columns.expiry,
         },
         {
             key: "status",
-            label: "Status",
+            label: wardStoreDict.columns.status,
             render: (row: WardStockItem) => {
                 let badgeClass = "";
+                let statusLabel: string = row.status;
+
                 switch (row.status) {
                     case "Available":
                         badgeClass = "bg-[#EEFBF3] text-[#34C759] border-[#D1F2DE] hover:bg-[#EEFBF3]";
+                        statusLabel = wardStoreDict.statuses.available;
                         break;
                     case "Low Stock":
                         badgeClass = "bg-[#FFF6E9] text-[#FBAD37] border-[#FFE7C8] hover:bg-[#FFF6E9]";
+                        statusLabel = wardStoreDict.statuses.lowStock;
                         break;
                     case "Out Of Stock":
                         badgeClass = "bg-[#FFF2F2] text-[#FF3B30] border-[#FFDADA] hover:bg-[#FFF2F2]";
+                        statusLabel = wardStoreDict.statuses.outOfStock;
                         break;
                 }
                 return (
                     <Badge variant="outline" className={`${badgeClass} font-normal px-4 py-1.5 rounded-full whitespace-nowrap text-xs`}>
-                        {row.status}
+                        {statusLabel}
                     </Badge>
                 );
             },
         },
         {
             key: "action",
-            label: "Action",
-            render: () => (
+            label: wardStoreDict.columns.action,
+            render: (row: WardStockItem) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.view,
+                        onClick: () => onViewItem(row)
                     },
                     {
-                        label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.edit,
                     },
                     {
-                        label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.delete,
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
 
             ),
-        },
+        }
     ];
 
     return (
         <div className="flex flex-col h-full mt-2">
             <ResponsiveDataTable
                 columns={columns}
-                data={WARD_STOCK_DATA}
+                data={tableData}
                 striped
+                loading={isLoading}
             />
         </div>
     );

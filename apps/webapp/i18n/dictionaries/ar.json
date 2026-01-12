@@ -5,15 +5,15 @@
     "edit": "تعديل",
     "delete": "حذف",
     "update": "تحديث",
-    "view": "عرض",
     "status": "الحالة",
+    "view": "عرض",
     "search": "بحث...",
     "loading": "جاري التحميل...",
-    "saving": "جارٍ الحفظ...",
-    "applying": "جارٍ التطبيق...",
+    "saving": "جاري الحفظ...",
+    "applying": "جاري التطبيق...",
     "back": "رجوع",
-    "quickActions": "إجراءات سريعة",
-    "appplyfilters": "تطبيق التصفية",
+    "quickActions": "سريع",
+    "appplyfilters": "تطبيق الفلتر",
     "viewProfile": "عرض الملف الشخصي",
     "changePassword": "تغيير كلمة المرور",
     "accountStatus": "حالة الحساب",
@@ -21,11 +21,11 @@
     "logout": "تسجيل الخروج",
     "active": "نشط",
     "inactive": "غير نشط",
-    "employeeId": "المعرّف",
-    "importExcel": "استيراد إكسل",
-    "exportExcel": "تصدير إكسل",
-    "bulkAddDepartment": "إضافة الأقسام دفعة واحدة",
-    "noData": "لا توجد بيانات",
+    "employeeId": "المعرف",
+    "importExcel": "استيراد اكسل",
+    "exportExcel": "تصدير اكسل",
+    "bulkAddDepartment": "إضافة جماعية للأقسام",
+    "noData": "لا توجد بيانات متاحة",
     "Addnew": "إضافة جديد",
     "addRow": "إضافة صف"
   },
@@ -34,43 +34,35 @@
     "totalAppointments": "إجمالي المواعيد",
     "completed": "مكتمل",
     "pending": "قيد الانتظار",
-    "recentPatients": "المرضى المتأخرين",
+    "recentPatients": "المرضى الأخيرون",
     "visits": "الزيارات",
-    "allVisits": "كل الزيارات",
+    "allVisits": "جميع الزيارات",
     "viewAll": "عرض الكل",
-    "noAppointments": "لا توجد مواعيد",
+    "noAppointments": "لم يتم العثور على مواعيد",
     "tabs": {
-      "all": "كل المواعيد",
-      "vip": "المرضى VIP",
-      "follow": "متابعة المرضى"
+      "all": "جميع المواعيد",
+      "vip": "مرضى VIP",
+      "follow": "مرضى المتابعة"
     },
     "patientTypes": "أنواع المرضى",
     "newPatients": "مرضى جدد",
-    "followUps": "متابعات",
+    "followUps": "المتابعات",
     "workloadStats": "إحصائيات عبء العمل",
     "pendingResults": "نتائج معلقة",
-    "prescriptionsIssued": "وصفات طبية صادرة",
-    "alerts": "تنبيهات",
-    "vipPatients": "المرضى VIP",
-    "noVipFound": "لا يوجد مرضى VIP.",
-    "followUpPatients": "متابعة المرضى",
-    "noFollowUpFound": "لا يوجد متابعة للمرضى."
+    "prescriptionsIssued": "الوصفات الصادرة",
+    "alerts": "التنبيهات",
+    "vipPatients": "مرضى VIP",
+    "noVipFound": "لم يتم العثور على مرضى VIP.",
+    "followUpPatients": "مرضى المتابعة",
+    "noFollowUpFound": "لم يتم العثور على مرضى متابعة."
   },
   "table": {
-    "token": "رمز",
+    "token": "الرمز",
     "patient": "المريض",
     "time": "الوقت",
     "diagnosis": "التشخيص",
-    "types": "النوع",
-    "status": "الحالة",
-    "doctor": "الطبيب",
-    "date": "التاريخ",
-    "slot": "الوقت المحجوز",
-    "serviceType": "نوع الخدمة",
-    "visitType": "نوع الزيارة",
-    "payment": "الدفع",
-    "contact": "الاتصال",
-    "action": "الإجراء"
+    "types": "الأنواع",
+    "status": "الحالة"
   },
   "actions": {
     "add": "إضافة",
@@ -97,8 +89,8 @@
   "modules": {
     "administration": "الإدارة",
     "doctor": "طبيب",
-    "nurse": "ممرضة",
-    "frontoffice": "الاستقبال",
+    "nurse": "ممرض",
+    "frontoffice": "المكتب الأمامي",
     "appointment": "المواعيد",
     "patient_mgmt": "المرضى",
     "billing": "الفواتير",
@@ -107,16 +99,16 @@
     "inventory": "المخزون",
     "analytics": "التحليلات",
     "hr": "الموارد البشرية",
-    "surgery": "جراحة"
+    "surgery": "الجراحة"
   },
   "nav": {
-    "organizationSetup": "إعدادات المؤسسة",
-    "dashboard": "لوحة التحكم",
+    "organizationSetup": "إعداد المنظمة",
+    "dashboard": "لوحة القيادة",
     "settings": "الإعدادات"
   },
   "pages": {
     "dashboard": {
-      "title": "لوحة التحكم"
+      "title": "لوحة القيادة"
     },
     "login": {
       "title": "تسجيل الدخول"
@@ -125,38 +117,38 @@
       "title": "التهيئة"
     },
     "organizationSetup": {
-      "title": "إعدادات المؤسسة"
+      "title": "إعداد المنظمة"
     },
     "roles": {
-      "title": "إعداد أدوار المستخدمين",
-      "noResults": "لا توجد أدوار",
+      "title": "تكوين أدوار المستخدمين",
+      "noResults": "لم يتم العثور على أدوار",
       "columns": {
         "role": "الدور",
         "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
+        "createdOn": "تم الإنشاء في",
         "action": "الإجراء",
         "table": {
-          "sno": "رقم"
+          "sno": "م."
         }
       },
       "filters": {
         "title": "تصفية أدوار المستخدمين",
-        "search": "ابحث عن الأدوار...",
+        "search": "البحث عن الأدوار...",
         "status": "اختر الحالة",
-        "applying": "جارٍ التطبيق...",
-        "apply": "تطبيق التصفية"
+        "applying": "جاري التطبيق...",
+        "apply": "تطبيق الفلاتر"
       }
     },
     "charges": {
       "title": "الرسوم",
       "tabs": {
-        "service": "الخدمات والرسوم",
+        "service": "الخدمة والرسوم",
         "category": "فئات الرسوم",
         "tax": "فئات الضرائب",
         "unit": "أنواع الوحدات"
       },
       "columns": {
-        "srNo": "رقم",
+        "srNo": "م.",
         "serviceName": "اسم الخدمة",
         "chargeCategory": "فئة الرسوم",
         "unit": "الوحدة",
@@ -167,23 +159,23 @@
         "taxName": "اسم الضريبة",
         "chargeName": "اسم الرسوم",
         "unitType": "نوع الوحدة",
-        "createdOn": "تاريخ الإنشاء",
-        "percentage": "النسبة (%)"
+        "createdOn": "تم الإنشاء في",
+        "percentage": "النسبة المئوية (%)"
       },
       "actions": {
         "add": "إضافة",
-        "bulk": "رفع جماعي",
+        "bulk": "تحميل جماعي",
         "clear": "مسح",
         "apply": "تطبيق"
       },
       "dialogs": {
         "filterTitle": "تصفية الرسوم",
         "addSingle": "إضافة عنصر",
-        "addBulk": "رفع جماعي"
+        "addBulk": "تحميل جماعي"
       },
       "filters": {
         "title": "تصفية",
-        "searchPlaceholder": "ابحث بالاسم",
+        "searchPlaceholder": "البحث بالاسم",
         "search": "بحث",
         "category": "الفئة",
         "unit": "الوحدة",
@@ -195,112 +187,112 @@
     },
     "organizationSetupCards": {
       "categories": {
-        "organizationSetup": "إعدادات المؤسسة",
-        "staffRoles": "الطاقم والأدوار",
+        "organizationSetup": "إعداد المنظمة",
+        "staffRoles": "الموظفون والأدوار",
         "servicesProcedure": "الخدمات والإجراءات",
-        "inventoryPharmacy": "المخزون والصيدلية"
+        "inventoryPharmacy": "المخزون والصيدلية الرئيسية"
       },
       "items": {
         "departments": {
           "title": "الأقسام",
-          "subtitle": "مثل: القلب، الأعصاب، العظام، إلخ."
+          "subtitle": "مثلاً: القلب، الأعصاب، العظام، إلخ."
         },
         "wardsBeds": {
-          "title": "الأجنحة / الأسرّة",
-          "subtitle": "العناية المركزة، جناح عام، جناح الولادة، إلخ."
+          "title": "الأجنحة / الأسرة",
+          "subtitle": "العناية المركزة، الجناح العام، جناح الولادة، إلخ."
         },
         "operationTheatres": {
-          "title": "غرف العمليات / الإجراءات",
-          "subtitle": "OT1، OT2، غرف إجراءات صغيرة، إلخ."
+          "title": "غرف العمليات / غرف الإجراءات",
+          "subtitle": "غرفة العمليات 1، غرفة العمليات 2، غرف الإجراءات الصغرى، إلخ."
         },
         "users": {
-          "title": "المستخدمون",
-          "subtitle": "إنشاء المستخدمين، إلخ."
+          "title": "المستخدم",
+          "subtitle": "إنشاء المستخدم، إلخ."
         },
         "employees": {
-          "title": "الموظفون",
+          "title": "الموظفين",
           "subtitle": "إنشاء الموظفين، إلخ."
         },
         "charges": {
           "title": "الرسوم",
-          "subtitle": "إضافة الرسوم والضرائب والوحدات والفئات"
+          "subtitle": "إضافة الرسوم ووحدات الضرائب والفئات"
         },
         "patients": {
           "title": "المرضى",
-          "subtitle": "مثل: كبار الشخصيات، العادي"
+          "subtitle": "مثلاً: VIP، قياسي"
         },
         "operationCategory": {
-          "title": "العمليات / فئات العمليات",
-          "subtitle": "OT1، OT2، غرف إجراءات صغيرة، إلخ."
+          "title": "العملية / فئة العملية",
+          "subtitle": "غرفة العمليات 1، غرفة العمليات 2، غرف الإجراءات الصغرى، إلخ."
         },
         "humanResource": {
           "title": "الموارد البشرية",
-          "subtitle": "مثل: طبيب، ممرضة، مسمى وظيفي، إلخ."
+          "subtitle": "مثلاً: طبيب، ممرض، مسمى وظيفي، إلخ."
         },
         "roles": {
           "title": "الأدوار",
-          "subtitle": "مثل: الأدوار، إلخ."
+          "subtitle": "مثلاً: الأدوار، إلخ."
         },
         "shiftsAttendance": {
-          "title": "إعداد المناوبات والحضور",
-          "subtitle": "مثل: جناح عام، جناح الولادة، إلخ."
+          "title": "تكوين الورديات والحضور",
+          "subtitle": "مثلاً: الجناح العام، جناح الولادة، إلخ."
         },
         "insurance": {
           "title": "التأمين",
-          "subtitle": "التأمين الصحي، تأمين الحياة، إلخ."
+          "subtitle": "التأمين الصحي، التأمين على الحياة، إلخ."
         },
         "medicalProcedure": {
-          "title": "الإجراءات الطبية / العلاج",
+          "title": "الإجراء الطبي / سجل العلاج الرئيسي",
           "subtitle": "القلب، الأعصاب، العظام، إلخ."
         },
         "labTest": {
-          "title": "تحاليل المختبر",
-          "subtitle": "CBC، دهون الدم، فيدال، الأمومة، إلخ."
+          "title": "سجل فحوصات المختبر الرئيسي",
+          "subtitle": "CBC، ملف الدهون، Widal، أمومة إلخ."
         },
         "radiology": {
-          "title": "الأشعة / التصوير الطبي",
-          "subtitle": "أشعة سينية، رنين مغناطيسي، أشعة مقطعية، إلخ."
+          "title": "الأشعة / سجل صور الأشعة الرئيسي",
+          "subtitle": "الأشعة السينية، الرنين المغناطيسي، الأشعة المقطعية، إلخ."
         },
         "packageScheme": {
-          "title": "الحزم / السياسات",
-          "subtitle": "خارجي، داخلي، إجراءات بسيطة، إلخ."
+          "title": "إعداد الحزمة / المخطط / السياسة",
+          "subtitle": "العيادات الخارجية، التنويم، إجراءات صغرى إلخ."
         },
         "tariffPricing": {
-          "title": "التسعير / رسوم الخدمات",
+          "title": "التعرفة / التسعير / رسوم الخدمة",
           "subtitle": "القلب، الأعصاب، العظام، إلخ."
         },
         "inventory": {
-          "title": "المخزون / المستهلكات",
-          "subtitle": "مثل: محقنة، شاش، قطن، إلخ."
+          "title": "المخزون / سجل المستهلكات الرئيسي",
+          "subtitle": "مثلاً: حقنة، شاش، قطن، إلخ."
         },
         "equipment": {
-          "title": "المعدات / الأصول",
-          "subtitle": "مثل: جهاز تخطيط القلب، الرنين، جهاز التنفس، إلخ."
+          "title": "المعدات / سجل الأصول الرئيسي",
+          "subtitle": "مثلاً: تخطيط القلب، الرنين المغناطيسي، جهاز التنفس، إلخ."
         },
         "medicine": {
-          "title": "الأدوية",
-          "subtitle": "مثل: باراسيتامول، أسبرين، إلخ."
+          "title": "الدواء / سجل الأدوية الرئيسي",
+          "subtitle": "مثلاً: باراسيتامول، أسبرين، إلخ."
         },
         "supplier": {
-          "title": "المورد / البائع",
-          "subtitle": "مثل: أبولو، ميدبلس، إلخ."
+          "title": "المورد / سجل البائعين الرئيسي",
+          "subtitle": "مثلاً: أبولو، ميد بلس، إلخ."
         }
       }
     },
     "permissions": {
       "title": "الأذونات للدور:",
-      "all": "تحديد الكل",
+      "all": "الكل",
       "modules": {
         "administration": "الإدارة",
         "patient_management": "إدارة المرضى",
         "appointment": "إدارة المواعيد",
-        "billing": "الفوترة",
+        "billing": "الفواتير",
         "pharmacy": "الصيدلية",
         "laboratory": "المختبر",
         "hr": "الموارد البشرية",
         "analytics": "التحليلات",
-        "doctor": "الطبيب",
-        "frontoffice": "الاستقبال"
+        "doctor": "طبيب",
+        "frontoffice": "المكتب الأمامي"
       },
       "submodules": {
         "department": "الأقسام",
@@ -309,15 +301,15 @@
         "bedType": "نوع السرير",
         "floor": "الطابق",
         "role": "أدوار المستخدمين",
-        "user": "المستخدمون",
+        "user": "المستخدمين",
         "operationTheatres": "غرف العمليات",
         "insurance": "التأمين",
         "charges": "الرسوم",
-        "patientCategory": "فئات المرضى",
-        "tax": "الضرائب",
+        "patientCategory": "المرضى",
+        "tax": "الضريبة",
         "category": "الفئة",
         "unit": "الوحدة",
-        "operation": "العمليات",
+        "operation": "العملية",
         "operationCategory": "فئة العملية",
         "reception": "الاستقبال",
         "appointments": "إدارة المواعيد",
@@ -328,8 +320,8 @@
         "employee": "إدارة الموظفين",
         "designation": "المسمى الوظيفي",
         "specialisation": "إدارة التخصصات",
-        "visit": "الزيارة",
-        "visit_purpose": "سبب الزيارة",
+        "visit": "زيارة",
+        "visit_purpose": "غرض الزيارة",
         "prescription": "إدارة الوصفات الطبية",
         "patient": "سجلات المرضى",
         "labReports": "تقارير المختبر",
@@ -341,23 +333,23 @@
         "create": "إنشاء",
         "edit": "تعديل",
         "delete": "حذف",
-        "viewOne": "عرض مفصل",
+        "viewOne": "عرض واحد",
         "export_pdf": "تصدير PDF",
-        "import_excel": "استيراد إكسل",
-        "approve": "موافقة",
+        "import_excel": "استيراد اكسل",
+        "approve": "اعتماد",
         "cancel": "إلغاء",
         "export": "تصدير"
       }
     },
     "department": {
-      "title": "القسم",
-      "Search departments…": "ابحث عن الأقسام...",
+      "title": "الأقسام",
+      "Search departments…": "البحث في الأقسام...",
       "table": {
-        "sno": "الرقم",
+        "sno": "م.",
         "departmentName": "اسم القسم",
         "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
-        "addedBy": "أُضيف بواسطة",
+        "createdOn": "تم الإنشاء في",
+        "addedBy": "أضيف بواسطة",
         "action": "الإجراء"
       },
       "addDepartment": {
@@ -371,82 +363,82 @@
       }
     },
     "unitsWardsBeds": {
-      "title": "الوحدات والأجنحة والأسِرّة",
+      "title": "الوحدات والأجنحة والأسرة",
       "tabs": {
-        "ward": "جناح",
+        "ward": "الجناح",
         "bedType": "نوع السرير",
         "wardType": "نوع الجناح",
         "floor": "الطابق"
       },
       "columns": {
-        "id": "المعرّف",
+        "id": "المعرف",
         "wardNumber": "رقم الجناح",
         "name": "الاسم",
         "wardType": "نوع الجناح",
         "floor": "الطابق",
         "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
+        "createdOn": "تم الإنشاء في",
         "action": "الإجراء"
       },
       "dialog": {
         "ward": {
           "addTitle": "إضافة جناح",
-          "editTitle": "تعديل الجناح"
+          "editTitle": "تعديل جناح"
         },
         "bed": {
           "addTitle": "إضافة نوع سرير",
-          "editTitle": "تعديل نوع السرير"
+          "editTitle": "تعديل نوع سرير"
         },
         "wardType": {
           "addTitle": "إضافة نوع جناح",
-          "editTitle": "تعديل نوع الجناح"
+          "editTitle": "تعديل نوع جناح"
         },
         "floor": {
           "addTitle": "إضافة طابق",
-          "editTitle": "تعديل الطابق"
+          "editTitle": "تعديل طابق"
         },
         "fields": {
           "wardNumber": "رقم الجناح",
           "wardType": "نوع الجناح",
           "bedType": "نوع السرير",
           "wardName": "اسم الجناح",
-          "floor": "الطابق",
+          "floor": "اسم الطابق",
           "status": "الحالة"
         },
         "placeholders": {
           "wardNumber": "أدخل رقم الجناح",
           "wardType": "اختر نوع الجناح",
-          "floor": "أدخل اسم الطابق",
-          "bedType": "اختر نوع السرير",
-          "wardName": "أدخل اسم الجناح"
+          "floor": "اختر الطابق",
+          "bedType": "",
+          "wardName": "اسم الجناح"
         }
       }
     },
     "operationTheatres": {
-      "title": "غرف العمليات",
+      "title": "",
       "table": {
-        "sno": "رقم",
-        "operationroom": "غرفة العمليات",
-        "otRoomName": "اسم غرفة العمليات",
-        "floor": "الطابق",
-        "createdOn": "تاريخ الإنشاء",
-        "addedBy": "أُضيف بواسطة",
-        "action": "الإجراء"
+        "sno": "",
+        "operationroom": "أدخل رقم غرفة العمليات",
+        "otRoomName": "",
+        "floor": "",
+        "createdOn": "",
+        "addedBy": "",
+        "action": ""
       },
       "dialog": {
-        "addTitle": "غرف العمليات",
-        "filterTitle": "تصفية غرف العمليات",
+        "addTitle": "",
+        "filterTitle": "تصفية الرسوم",
         "fields": {
-          "operationroom": "رقم غرفة العمليات",
-          "operationroomName": "اسم غرفة العمليات",
-          "floor": "اختر الطابق",
-          "addedBy": "اختر المستخدم"
+          "operationroom": "أدخل رقم غرفة العمليات",
+          "operationroomName": "أدخل اسم غرفة العمليات",
+          "floor": "",
+          "addedBy": ""
         },
         "placeholders": {
           "operationroom": "أدخل رقم غرفة العمليات",
           "operationroomName": "أدخل اسم غرفة العمليات",
-          "floor": "اختر الطابق",
-          "addedBy": "اختر المستخدم"
+          "floor": "",
+          "addedBy": ""
         }
       }
     },
@@ -455,18 +447,17 @@
       "patientTypes": "نوع المريض",
       "addPatientType": "إضافة نوع مريض",
       "table": {
-        "sno": "الرقم",
-        "categoryName": "نوع المريض",
-        "addedBy": "أُضيف بواسطة",
-        "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
+        "sno": "م.",
+        "addedBy": "أضيف بواسطة",
+        "status": "حالة العملية",
+        "createdOn": "تم الإنشاء في",
         "action": "الإجراء"
       }
     },
     "insurance": {
       "title": "قائمة الشركات",
       "table": {
-        "sno": "الرقم",
+        "sno": "م.",
         "providerName": "اسم المزود",
         "insuranceCompanyName": "اسم شركة التأمين",
         "approvalURL": "رابط الموافقة",
@@ -474,12 +465,12 @@
         "trn": "الرقم الضريبي (TRN)",
         "status": "الحالة",
         "action": "الإجراء",
-        "placeholderSearch": "ابحث باسم المزود أو الشركة..."
+        "placeholderSearch": "البحث باسم المزود أو الشركة..."
       },
       "filterdialog": {
         "title": "تصفية",
         "providerName": "اسم المزود",
-        "companyName": "اسم شركة التأمين",
+        "companyName": "اسم الشركة",
         "trn": "الرقم الضريبي (TRN)",
         "status": "الحالة",
         "city": "المدينة",
@@ -488,24 +479,24 @@
         "placeholderInsuranceCompanyName": "أدخل اسم الشركة",
         "placeholderStatus": "اختر الحالة",
         "placeholderCreatedDate": "اختر تاريخ الإنشاء",
-        "placeholderTRN": "أدخل رقم TRN",
+        "placeholderTRN": "أدخل الرقم الضريبي (TRN)",
         "placeholderCity": "اختر المدينة"
       }
     },
     "tpaProvider": {
-      "title": "مزود الطرف الثالث"
+      "title": "مزود TPA"
     },
     "operation": {
       "title": "إدارة العمليات",
       "table": {
-        "sno": "الرقم",
+        "sno": "م.",
         "category": "فئة العملية",
-        "addedBy": "أُضيف بواسطة",
-        "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
+        "addedBy": "أضيف بواسطة",
+        "status": "حالة الوحدة",
+        "createdOn": "تم الإنشاء في",
         "action": "الإجراء",
         "operationName": "اسم العملية",
-        "operationCode": "رمز العملية",
+        "operationCode": "فئة العملية",
         "operationStatus": "حالة العملية"
       },
       "tabs": {
@@ -513,18 +504,18 @@
         "operationCategory": "فئة العملية"
       },
       "dialogs": {
-        "Title": "فئة العملية",
+        "Title": "اسم العملية",
         "placeholder": "اختر فئة العملية",
         "placeholder1": "أدخل اسم العملية",
-        "createdOn": "تاريخ الإنشاء",
+        "createdOn": "تم الإنشاء في",
         "placeholderCreatedOn": "اختر تاريخ الإنشاء",
         "placeholderStatus": "اختر الحالة",
-        "addedBy": "أُضيف بواسطة",
+        "addedBy": "أضيف بواسطة",
         "placeholderAddedBy": "اختر المستخدم",
         "addOperation": "إضافة عملية",
         "addOperationCategory": "إضافة فئة عملية",
-        "createdBy": "أُنشئ بواسطة",
-        "placeholderCreatedBy": "اختر المُنشئ",
+        "createdBy": "أنشئ بواسطة",
+        "placeholderCreatedBy": "اختر المنشئ",
         "dateRange": "نطاق التاريخ",
         "placeholderDateRange": "اختر نطاق التاريخ"
       }
@@ -538,10 +529,10 @@
         "role": "الدور",
         "email": "البريد الإلكتروني",
         "status": "الحالة",
-        "createdOn": "تاريخ الإنشاء",
+        "createdOn": "تم الإنشاء في",
         "action": "الإجراء",
-        "addedBy": "أُضيف بواسطة",
-        "placeholderSearch": "ابحث باسم الموظف أو اسم المستخدم أو البريد الإلكتروني..."
+        "addedBy": "أضيف بواسطة",
+        "placeholderSearch": "البحث باسم الموظف، اسم المستخدم أو البريد الإلكتروني..."
       },
       "filterdialog": {
         "title": "تصفية المستخدمين",
@@ -550,7 +541,6 @@
         "phone": "الهاتف",
         "status": "الحالة",
         "createdDate": "تاريخ الإنشاء",
-        "addedBy": "أُضيف بواسطة",
         "placeholderRole": "اختر الدور",
         "placeholderEmail": "أدخل البريد الإلكتروني",
         "placeholderStatus": "اختر الحالة",
@@ -566,13 +556,13 @@
         "phone": "الهاتف",
         "password": "كلمة المرور",
         "passwordReq": "متطلبات كلمة المرور:",
-        "req1": "ثمانية أحرف على الأقل",
+        "req1": "8 أحرف على الأقل",
         "req2": "حرف كبير واحد على الأقل (A-Z)",
-        "req3": "حرف خاص واحد على الأقل (!@#$%^&*)",
+        "req3": "رمز خاص واحد على الأقل (!@#$%^&*)",
         "req4": "رقم واحد على الأقل (0-9)",
-        "alert": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد وحرف خاص واحد.",
+        "alert": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل مع حرف كبير واحد، ورقم واحد، ورمز خاص واحد.",
         "placeholderRole": "اختر الدور",
-        "placeholderRole1": "جارٍ تحميل الأدوار...",
+        "placeholderRole1": "جاري تحميل الأدوار...",
         "placeholderName": "أدخل الاسم",
         "placeholderEmail": "أدخل البريد الإلكتروني",
         "placeholderPhone": "أدخل رقم الهاتف",
@@ -618,15 +608,57 @@
         "addSpecialization": "إضافة تخصص"
       }
     },
+    "settings": {
+      "title": "الإعدادات"
+    },
+    "employeeConfiguration": {
+      "title": "إعداد الموظفين",
+      "tabs": {
+        "humanResources": "الموظف",
+        "designation": "إدارة المسميات الوظيفية",
+        "specialization": "التخصص",
+        "userRoles": "أدوار المستخدمين"
+      },
+      "table": {
+        "sno": "الرقم",
+        "name": "الاسم",
+        "designation": "المسمى الوظيفي",
+        "department": "القسم",
+        "contact": "الاتصال",
+        "createdOn": "تاريخ الإنشاء",
+        "addedBy": "أُضيف بواسطة",
+        "status": "الحالة",
+        "action": "الإجراء",
+        "userRole": "دور المستخدم",
+        "specialization": "التخصص",
+        "designationName": "اسم المسمى الوظيفي",
+        "searchPlaceholder": "بحث..."
+      },
+      "actions": {
+        "add": "إضافة جديد",
+        "filter": "تصفية",
+        "view": "عرض",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الموظف؟",
+        "addBulkDesignation": "إضافة مسميات وظيفية بالجملة",
+        "addBulkSpecialization": "إضافة تخصصات بالجملة",
+        "addUserRole": "إضافة دور مستخدم",
+        "addRow": "إضافة صف",
+        "addNewEmployee": "إضافة موظف جديد",
+        "addDesignation": "إضافة مسمى وظيفي",
+        "addSpecialization": "إضافة تخصص"
+      }
+    },
     "frontoffice": {
       "dashboard": {
-        "appointmentBook": "حجز المواعيد",
+        "appointmentBook": "دفتر المواعيد",
         "bookNewAppointments": "حجز مواعيد جديدة",
         "patient": "المريض",
         "managePatients": "إدارة المرضى"
       },
       "schedule": {
-        "title": "الجدول الزمني",
+        "title": "الجدول",
         "allDepartments": "جميع الأقسام",
         "allDoctors": "جميع الأطباء",
         "year": "السنة",
@@ -640,12 +672,12 @@
         "session": "الجلسة",
         "step": "الخطوة",
         "createdOn": "تم الإنشاء في",
-        "addedBy": "تمت الإضافة بواسطة",
+        "addedBy": "أضيف بواسطة",
         "action": "الإجراء",
         "view": "عرض",
         "edit": "تعديل",
         "delete": "حذف",
-        "searchDepartment": "بحث في القسم",
+        "searchDepartment": "بحث عن قسم",
         "searchDoctor": "بحث عن طبيب",
         "to": "إلى",
         "january": "يناير",
@@ -662,30 +694,30 @@
         "december": "ديسمبر"
       },
       "timeSlots": {
-        "title": "أوقات مواعيد الطبيب",
+        "title": "فترات مواعيد الطبيب",
         "department": "القسم",
         "doctor": "الطبيب",
         "selectDoctor": "اختر الطبيب",
         "selectDateRange": "اختر نطاق التاريخ",
         "selectDateRangeLabel": "اختر نطاق التاريخ *",
         "new": "جديد",
-        "noShiftsAdded": "لم تتم إضافة أي نوبات بعد. انقر على \"جديد\" لإضافة نوبة.",
-        "searchDepartment": "بحث في القسم",
+        "noShiftsAdded": "لم يتم إضافة ورديات بعد. انقر فوق \"جديد\" لإضافة وردية.",
+        "searchDepartment": "بحث عن قسم",
         "searchDoctor": "بحث عن طبيب"
       },
       "opd": {
-        "title": "العيادات الخارجية",
+        "title": "قسم العيادات الخارجية",
         "queueView": "عرض قائمة الانتظار",
-        "completedView": "المواعيد المنتهية",
+        "completedView": "عرض المكتملة",
         "instructionsView": "تعليمات الطبيب",
         "overviewToday": "نظرة عامة اليوم",
         "attendanceView": "عرض الحضور",
-        "unknownDoctor": "طبيب غير معروف",
-        "unknownPatient": "مريض غير معروف",
-        "tokenNo": "رقم التوكن",
+        "unknownDoctor": "طبيب مجهول",
+        "unknownPatient": "مريض مجهول",
+        "tokenNo": "رقم الرمز",
         "patientName": "اسم المريض",
-        "mrn": "رقم السجل الطبي",
-        "visitId": "رقم الزيارة",
+        "mrn": "رقم السجل الطبي (MRN)",
+        "visitId": "معرف الزيارة",
         "doctorName": "اسم الطبيب",
         "specialty": "التخصص",
         "date": "التاريخ",
@@ -706,29 +738,29 @@
         "consultation": "استشارة"
       },
       "ipd": {
-        "title": "المرضى الداخليون",
-        "admittedPatients": "المرضى المنومون",
+        "title": "قسم التنويم",
+        "admittedPatients": "المرضى المنومين",
         "bedManagement": "إدارة الأسرة والأجنحة",
-        "dischargedPatients": "المرضى المخرجون",
+        "dischargedPatients": "المرضى الذين خرجوا",
         "doctorInstructions": "تعليمات الطبيب",
-        "admissionForm": "نموذج القبول",
+        "admissionForm": "نموذج التنويم",
         "patientDetails": "تفاصيل المريض",
         "bedAllocation": "تخصيص السرير",
-        "wardAllocation": "تخصيص الجناح",
-        "admissionDate": "تاريخ القبول",
+        "wardAllocation": "تخصص الجناح",
+        "admissionDate": "تاريخ التنويم",
         "expectedDischarge": "التاريخ المتوقع للخروج",
         "bedStatus": "حالة السرير",
         "occupied": "مشغول",
         "vacant": "شاغر",
         "reserved": "محجوز",
         "blocked": "محظور",
-        "cleaning": "قيد التنظيف",
+        "cleaning": "جاري التنظيف",
         "wardNumber": "رقم الجناح",
         "bedNumber": "رقم السرير",
         "floorNumber": "رقم الطابق",
         "bedNo": "رقم السرير",
         "patientName": "اسم المريض",
-        "admissionProvider": "مزود القبول",
+        "admissionProvider": "مزود خدمة التنويم",
         "time": "الوقت",
         "location": "الموقع",
         "bill": "الفاتورة",
@@ -745,33 +777,33 @@
         "underObservation": "تحت الملاحظة",
         "preOperative": "قبل العملية",
         "postOperative": "بعد العملية",
-        "discharged": "مخرج",
+        "discharged": "خرج",
         "floor": "الطابق",
         "ward": "الجناح",
-        "allStatus": "كل الحالات",
+        "allStatus": "جميع الحالات",
         "all": "الكل",
-        "icu": "العناية المركزة",
-        "searchMRN": "بحث برقم السجل الطبي",
+        "icu": "العناية المركزة (ICU)",
+        "searchMRN": "البحث برقم السجل الطبي (MRN)",
         "reviewReports": "مراجعة التقارير",
         "completed": "مكتمل",
-        "unknownPatient": "مريض غير معروف",
+        "unknownPatient": "مريض مجهول",
         "generalMedicine": "الطب العام",
-        "generalWard": "جناح عام",
-        "bookNewAdmission": "حجز قبول جديد",
-        "failedToFetchIPDData": "فشل في جلب بيانات المرضى الداخليين",
-        "errorOccurredFetchingIPDData": "حدث خطأ أثناء جلب بيانات المرضى الداخليين",
-        "opd": "عيادات خارجية",
-        "ipd": "المرضى الداخليون"
+        "generalWard": "الجناح العام",
+        "bookNewAdmission": "حجز تنويم جديد",
+        "failedToFetchIPDData": "فشل جلب بيانات قسم التنويم",
+        "errorOccurredFetchingIPDData": "حدث خطأ أثناء جلب بيانات قسم التنويم",
+        "opd": "العيادات الخارجية (OPD)",
+        "ipd": "التنويم (IPD)"
       },
       "patientRegistration": {
-        "title": "تسجيل المرضى",
+        "title": "تسجيل المريض",
         "addNewPatient": "إضافة مريض جديد",
         "patientList": "قائمة المرضى",
-        "searchPatient": "بحث عن مريض",
+        "searchPatient": "البحث عن مريض",
         "personalInfo": "المعلومات الشخصية",
         "contactInfo": "معلومات الاتصال",
         "medicalHistory": "التاريخ الطبي",
-        "emergencyContact": "جهة اتصال الطوارئ",
+        "emergencyContact": "جهة الاتصال في حالات الطوارئ",
         "firstName": "الاسم الأول",
         "lastName": "اسم العائلة",
         "dateOfBirth": "تاريخ الميلاد",
@@ -783,7 +815,7 @@
         "email": "البريد الإلكتروني",
         "address": "العنوان",
         "city": "المدينة",
-        "state": "الولاية",
+        "state": "الولاية/المحافظة",
         "country": "البلد",
         "postalCode": "الرمز البريدي",
         "bloodGroup": "فصيلة الدم",
@@ -791,65 +823,62 @@
         "chronicDiseases": "الأمراض المزمنة",
         "previousSurgeries": "العمليات الجراحية السابقة",
         "currentMedications": "الأدوية الحالية",
-        "emergencyContactName": "اسم جهة اتصال الطوارئ",
-        "emergencyContactPhone": "هاتف جهة اتصال الطوارئ",
+        "emergencyContactName": "اسم جهة الاتصال في حالات الطوارئ",
+        "emergencyContactPhone": "رقم هاتف جهة الاتصال في حالات الطوارئ",
         "relationship": "العلاقة",
         "insuranceInfo": "معلومات التأمين",
         "insuranceProvider": "مزود التأمين",
-        "policyNumber": "رقم البوليصة",
+        "policyNumber": "رقم السياسة/البوليصة",
         "validUntil": "صالح حتى"
       },
       "appointment": {
-        "title": "المواعيد",
+        "title": "",
         "bookAppointment": "حجز موعد",
         "appointmentList": "قائمة المواعيد",
-        "completedLog": "سجل المواعيد المنتهية",
+        "completedLog": "سجل المكتملة",
         "appointmentSchedule": "جدول المواعيد",
         "selectPatient": "اختر المريض",
-        "selectDoctor": "اختر الطبيب",
+        "selectDoctor": "",
         "selectDepartment": "اختر القسم",
         "selectDate": "اختر التاريخ",
         "selectTime": "اختر الوقت",
         "appointmentType": "نوع الموعد",
         "visitType": "نوع الزيارة",
-        "standard": "عادي",
-        "emergency": "طوارئ",
+        "standard": "قياسي",
+        "emergency": "",
         "followUp": "متابعة",
-        "notes": "ملاحظات",
+        "notes": "",
         "confirmAppointment": "تأكيد الموعد",
         "cancelAppointment": "إلغاء الموعد",
         "rescheduleAppointment": "إعادة جدولة الموعد",
-        "pending": "قيد الانتظار",
+        "pending": "",
         "confirmed": "مؤكد",
-        "completed": "منتهي",
-        "cancelled": "ملغى",
-        "noShow": "لم يحضر",
+        "completed": "",
+        "cancelled": "ملغي",
+        "noShow": "عدم حضور",
         "bookNewAppointment": "حجز موعد جديد",
-        "cancel": "إلغاء",
+        "cancel": "",
         "addVisit": "إضافة زيارة",
-        "generateER": "إنشاء سجل طوارئ",
-        "bookAppointmentButton": "حجز موعد",
+        "generateER": "إنشاء طوارئ (ER)",
+        "bookAppointmentButton": "حجز الموعد",
         "consultationFee": "رسوم الاستشارة",
         "doctorCharge": "رسوم الطبيب",
         "procedureFee": "رسوم الإجراء",
-        "contrastCharge": "رسوم المواد الملونة",
+        "contrastCharge": "رسوم التباين",
         "teleconsultationFee": "رسوم الاستشارة عن بعد",
         "homeVisitFee": "رسوم الزيارة المنزلية",
-        "multiDoctorConsultationFee": "رسوم استشارة عدة أطباء",
-        "multiProcedureFee": "رسوم عدة إجراءات",
-        "mriScan": "فحص الرنين المغناطيسي",
-        "ctScan": "فحص الأشعة المقطعية",
-        "bloodTest": "تحليل دم",
+        "multiDoctorConsultationFee": "رسوم استشارة أطباء متعددين",
+        "multiProcedureFee": "رسوم إجراءات متعددة",
+        "mriScan": "رنين مغناطيسي (MRI)",
+        "ctScan": "أشعة مقطعية (CT)",
+        "bloodTest": "فحص دم",
         "physiotherapySession": "جلسة علاج طبيعي",
-        "pleaseFillAllRequiredFields": "الرجاء ملء جميع الحقول المطلوبة",
-        "pleaseSelectPatient": "الرجاء اختيار مريض",
-        "invalidSlotFormat": "تنسيق الفترة الزمنية غير صحيح",
-        "invalidTimeFormat": "تنسيق الوقت غير صحيح",
-        "failedToCreateVisit": "فشل في إنشاء الزيارة"
+        "pleaseFillAllRequiredFields": "يرجى ملء جميع الحقول المطلوبة",
+        "pleaseSelectPatient": "يرجى اختيار مريض",
+        "invalidSlotFormat": "تنسيق الفترة غير صالح",
+        "invalidTimeFormat": "تنسيق الوقت غير صالح",
+        "failedToCreateVisit": "فشل إنشاء الزيارة"
       }
-    },
-    "settings": {
-      "title": "الإعدادات"
     },
     "doctor": {
       "appointment": {
@@ -858,10 +887,10 @@
           "SOAP Notes": "ملاحظات SOAP",
           "Vitals": "العلامات الحيوية",
           "Prescription": "الوصفة الطبية",
-          "Diagnostic Orders": "طلبات التشخيص",
+          "Diagnostic Orders": "الطلبات التشخيصية",
           "Attachments": "المرفقات",
-          "Nurse Note": "ملاحظات الممرضة",
-          "Nurse Orders": "أوامر الممرضة"
+          "Nurse Note": "ملاحظة الممرض",
+          "Nurse Orders": "أوامر الممرض"
         },
         "header": {
           "startConsultation": "بدء الاستشارة",
@@ -869,10 +898,10 @@
           "finishConsultation": "إنهاء الاستشارة",
           "finishing": "جاري الإنهاء...",
           "viewDetails": "عرض التفاصيل",
-          "referDoctor": "إحالة إلى طبيب"
+          "referDoctor": "إحالة لطبيب"
         },
         "actions": {
-          "saveDraft": "حفظ المسودة",
+          "saveDraft": "حفظ كمسودة",
           "saving": "جاري الحفظ..."
         },
         "messages": {
@@ -889,7 +918,7 @@
               "labelTitle": "عنوان المرفق",
               "placeholderTitle": "تقرير المختبر",
               "labelFile": "تحميل ملف",
-              "dropText": "انقر للتحميل أو اسحب وأفلت",
+              "dropText": "انقر للتحميل أو اسحب وأفلت هنا",
               "fileTypes": "PDF, PNG, JPG",
               "upload": "تحميل",
               "uploading": "جاري التحميل..."
@@ -902,9 +931,9 @@
               "download": "تحميل المستند"
             },
             "history": {
-              "title": "سجل المرفقات السابق",
-              "empty": "لا توجد مرفقات.",
-              "uploadedBy": "تم الرفع بواسطة",
+              "title": "السجل السابق للمرفقات",
+              "empty": "لم يتم العثور على مرفقات.",
+              "uploadedBy": "تم التحميل بواسطة",
               "at": "في"
             }
           },
@@ -916,34 +945,34 @@
             "noRadiology": "لم يتم إجراء فحوصات أشعة أو تصوير."
           },
           "nurseNote": {
-            "title": "ملاحظة الممرضة",
-            "empty": "لم يتم تسجيل أي ملاحظات تمريضية لهذه الزيارة.",
+            "title": "ملاحظة الممرض",
+            "empty": "لا توجد ملاحظات ممرض مسجلة لهذه الزيارة.",
             "card": {
-              "fallbackName": "ممرضة"
+              "fallbackName": "ممرض"
             },
             "history": {
-              "title": "سجل ملاحظات الممرضة السابق",
-              "empty": "لم يتم العثور على ملاحظات تمريض سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
+              "title": "السجل السابق لملاحظات الممرض",
+              "empty": "لم يتم العثور على ملاحظات ممرض سابقة.",
+              "recordedBy": "سجل بواسطة",
               "at": "في"
             }
           },
           "nurseOrders": {
-            "title": "أوامر الممرضة",
-            "add": "إضافة أمر ممرضة",
-            "empty": "لم يتم تسجيل أي أوامر ممرضة.",
+            "title": "أوامر الممرض",
+            "add": "إضافة أمر ممرض",
+            "empty": "لا توجد أوامر ممرض مسجلة.",
             "orderTypes": {
               "iv_fluids": "سوائل وريدية",
               "medication": "دواء",
-              "wound_dressing": "تضميد الجروح",
-              "oxygen_therapy": "العلاج بالأكسجين",
+              "wound_dressing": "غيار على الجرح",
+              "oxygen_therapy": "علاج بالأكسجين",
               "special_notes": "ملاحظات خاصة",
               "monitoring": "مراقبة",
               "catheter_care": "العناية بالقسطرة"
             },
             "table": {
               "slNo": "م.",
-              "orderType": "نوع الطلب",
+              "orderType": "نوع الأمر",
               "details": "التفاصيل",
               "urgency": "الاستعجال",
               "frequencyTime": "التكرار/الوقت",
@@ -954,21 +983,21 @@
               "view": "عرض",
               "edit": "تعديل",
               "delete": "حذف",
-              "action": "إجراء"
+              "action": "الإجراء"
             },
             "modal": {
-              "title": "إضافة أوامر ممرضة",
-              "orderType": "نوع الطلب",
-              "selectOrderType": "اختر نوع الطلب"
+              "title": "إضافة أوامر ممرض",
+              "orderType": "نوع الأمر",
+              "selectOrderType": "اختر نوع الأمر"
             },
             "editModal": {
-              "title": "تعديل أمر الممرضة"
+              "title": "تعديل أمر الممرض"
             },
             "form": {
               "options": {
                 "urgent": "عاجل",
                 "routine": "روتيني",
-                "stat": "فوري",
+                "stat": "فوراً (STAT)",
                 "pending": "قيد الانتظار",
                 "completed": "مكتمل",
                 "in_progress": "قيد التنفيذ",
@@ -992,21 +1021,21 @@
               },
               "common": {
                 "cancel": "إلغاء",
-                "add": "إضافة طلب",
+                "add": "إضافة أمر",
                 "adding": "جاري الإضافة...",
                 "update": "تحديث",
                 "updating": "جاري التحديث...",
                 "urgency": "الاستعجال",
-                "selectUrgency": "اختر الاستعجال",
+                "selectUrgency": "اختر درجة الاستعجال",
                 "status": "الحالة",
-                "notes": "تعليمات / ملاحظات",
+                "notes": "التعليمات / الملاحظات",
                 "enterNotes": "أدخل التعليمات / الملاحظات",
                 "clinicalNotes": "ملاحظات سريرية (اختياري)",
                 "enterClinicalNotes": "أدخل الملاحظات السريرية",
                 "startDate": "تاريخ البدء",
                 "startTime": "وقت البدء",
                 "selectFrequency": "اختر التكرار",
-                "duration": "المدة (ساعات)",
+                "duration": "المدة (بالساعات)",
                 "selectDuration": "اختر المدة"
               },
               "ivFluids": {
@@ -1016,13 +1045,13 @@
                 "selectVolume": "اختر الحجم",
                 "rate": "المعدل (مل/ساعة)",
                 "selectRate": "اختر المعدل",
-                "totalVolume": "الحجم الكلي",
+                "totalVolume": "إجمالي الحجم",
                 "totalBottles": "إجمالي الزجاجات",
                 "injection": "الحقن",
                 "selectInjection": "اختر الحقن",
                 "dose": "الجرعة",
                 "selectDose": "اختر الجرعة",
-                "duration": "المدة (ساعات / أيام)",
+                "duration": "المدة (ساعات/أيام)",
                 "selectDuration": "اختر المدة"
               },
               "medication": {
@@ -1030,101 +1059,101 @@
                 "selectMedication": "اختر الدواء",
                 "dose": "الجرعة",
                 "selectDose": "اختر الجرعة",
-                "route": "الطريق",
-                "selectRoute": "اختر الطريق",
+                "route": "طريقة الإعطاء",
+                "selectRoute": "اختر طريقة الإعطاء",
                 "frequency": "التكرار",
                 "duration": "المدة"
               },
               "woundDressing": {
                 "woundLocation": "موقع الجرح",
                 "enterWoundLocation": "أدخل موقع الجرح",
-                "dressingType": "نوع الضمادات",
-                "selectDressingType": "اختر نوع الضمادات",
+                "dressingType": "نوع الغيار",
+                "selectDressingType": "اختر نوع الغيار",
                 "frequency": "التكرار"
               },
               "oxygenTherapy": {
-                "deliveryType": "نوع التوصيل",
+                "deliveryType": "نوع توصيل الأكسجين",
                 "selectDeliveryType": "اختر نوع التوصيل",
                 "flowRate": "معدل التدفق",
                 "selectFlowRate": "اختر معدل التدفق",
-                "frequencyMode": "نط التكرار",
-                "selectFrequencyMode": "اختر نط التكرار"
+                "frequencyMode": "التكرار / الوضع",
+                "selectFrequencyMode": "اختر التكرار / الوضع"
               },
               "specialNotes": {
                 "noteType": "نوع الملاحظة",
                 "enterNoteType": "أدخل نوع الملاحظة"
               },
               "monitoring": {
-                "parameter": "المعلمة للمراقبة",
-                "enterParameter": "أدخل المعلمة للمراقبة",
+                "parameter": "المعلمة المراد مراقبتها",
+                "enterParameter": "أدخل المعلمة المراد مراقبتها",
                 "frequency": "التكرار"
               },
               "catheterCare": {
                 "catheterType": "نوع القسطرة",
                 "selectCatheterType": "اختر نوع القسطرة",
-                "careType": "نوع الرعاية",
-                "selectCareType": "اختر نوع الرعاية",
+                "careType": "نوع العناية",
+                "selectCareType": "اختر نوع العناية",
                 "frequency": "التكرار"
               }
             },
             "viewModal": {
-              "title": "عرض أمر الممرضة",
-              "orderDetails": "تفاصيل الطلب",
+              "title": "عرض أمر ممرض",
+              "orderDetails": "تفاصيل الأمر",
               "notes": "الملاحظات",
-              "orderedBy": "تم الطلب بواسطة",
+              "orderedBy": "طلب بواسطة",
               "close": "إغلاق",
               "fields": {
                 "fluidType": "نوع السائل",
                 "volume": "الحجم (مل)",
                 "rate": "المعدل (مل/ساعة)",
-                "duration": "المدة (ساعات)",
-                "totalVolume": "الحجم الكلي",
+                "duration": "المدة (بالساعات)",
+                "totalVolume": "إجمالي الحجم",
                 "totalBottles": "إجمالي الزجاجات",
                 "injection": "الحقن",
                 "dose": "الجرعة",
                 "startDate": "تاريخ البدء",
                 "startTime": "وقت البدء",
                 "medicationName": "اسم الدواء",
-                "route": "الطريق",
+                "route": "طريقة الإعطاء",
                 "frequency": "التكرار",
                 "woundLocation": "موقع الجرح",
-                "dressingType": "نوع الضمادات",
+                "dressingType": "نوع الغيار",
                 "deliveryType": "نوع التوصيل",
                 "flowRate": "معدل التدفق",
-                "frequencyMode": "نط التكرار",
-                "clinicalNotes": "ملاحظات سريرية",
+                "frequencyMode": "وضع التكرار",
+                "clinicalNotes": "الملاحظات السريرية",
                 "noteType": "نوع الملاحظة",
-                "parameter": "المعلمة للمراقبة",
+                "parameter": "المعلمة المراد مراقبتها",
                 "catheterType": "نوع القسطرة",
-                "careType": "نوع الرعاية"
+                "careType": "نوع العناية"
               }
             }
           },
           "prescription": {
             "title": "الوصفة الطبية",
-            "autoSaved": "حفظ تلقائي",
+            "autoSaved": "تم الحفظ تلقائياً",
             "add": "إضافة دواء",
-            "sendPharmacy": "أرسل للصيدلية",
+            "sendPharmacy": "إرسال إلى الصيدلية",
             "printRx": "طباعة الوصفة",
-            "empty": "لم يتم وصف أي أدوية بعد"
+            "empty": "لم يتم وصف أدوية بعد"
           },
           "soapNotes": {
             "title": "ملاحظات SOAP",
-            "autoSaved": "حفظ تلقائي",
-            "loadTemplate": "تحميل النموذج",
-            "subjective": "ذاتي (قصة المريض)",
+            "autoSaved": "تم الحفظ تلقائياً",
+            "loadTemplate": "تحميل نموذج",
+            "subjective": "شخصي (قصة المريض)",
             "objective": "موضوعي (النتائج السريرية)",
             "assessment": "التقييم (التشخيص)",
             "plan": "الخطة (العلاج والمتابعة)",
-            "empty": "الرجاء تحديد نموذج لبدء ملاحظات SOAP.",
+            "empty": "يرجى اختيار نموذج لبدء ملاحظات SOAP.",
             "templateModal": {
-              "title": "اختر نموذج سريري",
-              "subtitle": "اختر نموذج تخصص لملء حقول ملاحظات SOAP تلقائيًا."
+              "title": "اختر نموذجاً سريرياً",
+              "subtitle": "اختر نموذج تخصص لملء حقول ملاحظات SOAP تلقائياً."
             },
             "history": {
-              "title": "سجل ملاحظات SOAP السابق",
+              "title": "السجل السابق لملاحظات SOAP",
               "empty": "لم يتم العثور على ملاحظات SOAP سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
+              "recordedBy": "سجل بواسطة",
               "at": "في"
             }
           },
@@ -1133,7 +1162,7 @@
             "form": {
               "chiefComplaint": "الشكوى الرئيسية",
               "history": "تاريخ المرض الحالي",
-              "onset": "البداية",
+              "onset": "بداية الأعراض",
               "duration": "المدة",
               "severity": "الشدة",
               "additionalNotes": "ملاحظات إضافية",
@@ -1141,13 +1170,13 @@
               "enterHistory": "أدخل تاريخ المرض الحالي",
               "select": "اختر",
               "enterNotes": "أدخل ملاحظات إضافية",
-              "viewOnly": "لديك حق العرض فقط.",
-              "noPermission": "ليس لديك صلاحية لعرض غرض الزيارة."
+              "viewOnly": "لديك صلاحية العرض فقط.",
+              "noPermission": "ليس لديك إذن لعرض غرض الزيارة."
             },
             "history": {
-              "title": "سجل غرض الزيارة السابق",
+              "title": "السجل السابق لغرض الزيارة",
               "empty": "لم يتم العثور على غرض زيارة سابق.",
-              "recordedBy": "تم التسجيل بواسطة"
+              "recordedBy": "سجل بواسطة"
             }
           },
           "vitals": {
@@ -1171,41 +1200,41 @@
               "diastolicR": "الانبساطي (يمين)",
               "temp": "درجة الحرارة",
               "grbs": "GRBS",
-              "hb": "الهيموجلوبين",
+              "hb": "الهيموغلوبين (HB)",
               "height": "الطول",
               "weight": "الوزن",
-              "bmi": "مؤشر كتلة الجسم",
-              "ibw": "IBW",
-              "rbs": "RBS",
+              "bmi": "مؤشر كتلة الجسم (BMI)",
+              "ibw": "الوزن المثالي (IBW)",
+              "rbs": "سكر الدم العشوائي (RBS)",
               "note": "ملاحظة إضافية"
             },
             "placeholders": {
               "bp": "أدخل ضغط الدم",
               "pulse": "أدخل معدل النبض",
               "respiration": "أدخل معدل التنفس",
-              "spo2": "أدخل SpO₂",
+              "spo2": "أدخل تشبع الأكسجين",
               "systolicL": "أدخل الانقباضي (يسار)",
               "diastolicL": "أدخل الانبساطي (يسار)",
               "systolicR": "أدخل الانقباضي (يمين)",
               "diastolicR": "أدخل الانبساطي (يمين)",
               "temp": "أدخل درجة الحرارة",
               "grbs": "أدخل GRBS",
-              "hb": "أدخل الهيموجلوبين",
+              "hb": "أدخل الهيموغلوبين",
               "height": "أدخل الطول",
               "weight": "أدخل الوزن",
               "bmi": "أدخل مؤشر كتلة الجسم",
-              "ibw": "أدخل IBW",
-              "rbs": "أدخل RBS",
+              "ibw": "أدخل الوزن المثالي",
+              "rbs": "أدخل سكر الدم",
               "note": "أدخل ملاحظة إضافية"
             },
             "history": {
-              "title": "سجل العلامات الحيوية السابق",
+              "title": "السجل السابق للعلامات الحيوية",
               "empty": "لم يتم العثور على زيارات سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
+              "recordedBy": "سجل بواسطة",
               "at": "في"
             },
             "grid": {
-              "title": "آخر العلامات الحيوية",
+              "title": "آخر العلامات الحيوية المسجلة",
               "on": "في"
             }
           }
@@ -1219,8 +1248,8 @@
           "specialty": "التخصص",
           "selectSpecialty": "اختر التخصص",
           "dataTitle": "بيانات نماذج SOAP",
-          "subjective": "ذاتي",
-          "enterSubjective": "أدخل ذاتي",
+          "subjective": "شخصي",
+          "enterSubjective": "أدخل البيانات الشخصية",
           "objective": "موضوعي",
           "enterObjective": "أدخل الملاحظات السريرية",
           "assessment": "التقييم",
@@ -1231,25 +1260,25 @@
           "saving": "جاري الحفظ...",
           "cancel": "إلغاء",
           "success": "تم إنشاء نموذج SOAP بنجاح",
-          "error": "فشل إنشاء نموذج SOAP",
+          "error": "فشل في إنشاء نموذج SOAP",
           "createTemplate": "إنشاء نموذج",
           "edit": "تعديل",
           "delete": "حذف",
           "deleteTitle": "حذف نموذج SOAP؟",
-          "deleteDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم إزالة نموذج SOAP بشكل دائم.",
+          "deleteDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم حذف نموذج SOAP بشكل دائم.",
           "deleteSuccess": "تم حذف نموذج SOAP",
-          "deleteError": "فشل حذف نموذج SOAP",
+          "deleteError": "فشل في حذف نموذج SOAP",
           "update": "تحديث النماذج",
           "updating": "جاري التحديث...",
           "updateSuccess": "تم تحديث نموذج SOAP بنجاح",
-          "updateError": "فشل تحديث نموذج SOAP"
+          "updateError": "فشل في تحديث نموذج SOAP"
         },
         "tabs": {
           "overview": "نظرة عامة",
           "soapTemplates": "نماذج SOAP",
           "allAppointments": "جميع المواعيد",
           "newPatients": "مرضى جدد",
-          "followUpPatients": "متابعة المرضى"
+          "followUpPatients": "مرضى المتابعة"
         },
         "components": {
           "table": {
@@ -1274,10 +1303,10 @@
             "years": "سنوات"
           },
           "overview": {
-            "totalPatientsTreated": "إجمالي المرضى المعالجين",
+            "totalPatientsTreated": "إجمالي المرضى الذين تم علاجهم",
             "todayAppointments": "مواعيد اليوم",
             "completedAppointments": "المواعيد المكتملة",
-            "followUps": "المتابعة"
+            "followUps": "المتابعات"
           }
         }
       }
@@ -1289,496 +1318,1301 @@
           "SOAP Notes": "ملاحظات SOAP",
           "Vitals": "العلامات الحيوية",
           "Attachments": "المرفقات",
-          "Nurse Note": "ملاحظات الممرضة",
-          "Nurse Orders": "طلبات الممرضة",
+          "Nurse Note": "ملاحظة الممرض",
+          "Nurse Orders": "أوامر الممرض",
           "Consumables": "المستهلكات",
           "Equipment": "المعدات"
-        },
-        "messages": {
-          "noContent": "لا يوجد محتوى",
-          "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
-        }
-      },
-      "recentPatients": {
-        "title": "جميع المرضى الأخيرين",
-        "subtitle": "عرض جميع زيارات المرضى",
-        "visits": "الزيارات",
-        "allVisits": "كل الزيارات",
-        "noPatients": "لم يتم العثور على مرضى",
-        "noPatientsDesc": "لا توجد زيارات مرضى للعرض.",
-        "loading": "جاري التحميل..."
-      }
-    },
-    "settings": {
-      "title": "الإعدادات"
-    },
-    "doctor": {
-      "appointment": {
-        "tabs": {
-          "Visit purpose": "غرض الزيارة",
-          "SOAP Notes": "ملاحظات SOAP",
-          "Vitals": "العلامات الحيوية",
-          "Prescription": "الوصفة الطبية",
-          "Diagnostic Orders": "طلبات التشخيص",
-          "Attachments": "المرفقات",
-          "Nurse Note": "ملاحظات الممرضة",
-          "Nurse Orders": "أوامر الممرضة"
-        },
-        "header": {
-          "startConsultation": "بدء الاستشارة",
-          "starting": "جاري البدء...",
-          "finishConsultation": "إنهاء الاستشارة",
-          "finishing": "جاري الإنهاء...",
-          "viewDetails": "عرض التفاصيل",
-          "referDoctor": "إحالة إلى طبيب"
-        },
-        "actions": {
-          "saveDraft": "حفظ المسودة",
-          "saving": "جاري الحفظ..."
         },
         "messages": {
           "noContent": "لم يتم العثور على محتوى",
           "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
-        },
-        "tabsContent": {
-          "attachments": {
-            "title": "المرفقات",
-            "add": "إضافة مرفقات",
-            "empty": "لا توجد ملفات مرفقة.",
-            "modal": {
-              "title": "إضافة مرفق",
-              "labelTitle": "عنوان المرفق",
-              "placeholderTitle": "تقرير المختبر",
-              "labelFile": "تحميل ملف",
-              "dropText": "انقر للتحميل أو اسحب وأفلت",
-              "fileTypes": "PDF, PNG, JPG",
-              "upload": "تحميل",
-              "uploading": "جاري التحميل..."
-            },
-            "card": {
-              "view": "عرض",
-              "delete": "حذف"
-            },
-            "preview": {
-              "download": "تحميل المستند"
-            },
-            "history": {
-              "title": "سجل المرفقات السابق",
-              "empty": "لا توجد مرفقات.",
-              "uploadedBy": "تم الرفع بواسطة",
-              "at": "في"
-            }
-          },
-          "diagnosticOrders": {
-            "labTests": "فحوصات المختبر",
-            "radiology": "الأشعة والتصوير",
-            "radiologyProcedure": "إجراء الأشعة",
-            "noLabTests": "لم يتم إجراء فحوصات مخبرية.",
-            "noRadiology": "لم يتم إجراء فحوصات أشعة أو تصوير."
-          },
-          "nurseNote": {
-            "title": "ملاحظة الممرضة",
-            "empty": "لم يتم تسجيل أي ملاحظات تمريضية لهذه الزيارة.",
-            "card": {
-              "fallbackName": "ممرضة"
-            },
-            "history": {
-              "title": "سجل ملاحظات الممرضة السابق",
-              "empty": "لم يتم العثور على ملاحظات تمريض سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
-              "at": "في"
-            }
-          },
-          "nurseOrders": {
-            "title": "أوامر الممرضة",
-            "add": "إضافة أمر ممرضة",
-            "empty": "لم يتم تسجيل أي أوامر ممرضة.",
-            "orderTypes": {
-              "iv_fluids": "سوائل وريدية",
-              "medication": "دواء",
-              "wound_dressing": "تضميد الجروح",
-              "oxygen_therapy": "العلاج بالأكسجين",
-              "special_notes": "ملاحظات خاصة",
-              "monitoring": "مراقبة",
-              "catheter_care": "العناية بالقسطرة"
-            },
-            "table": {
-              "slNo": "م.",
-              "orderType": "نوع الطلب",
-              "details": "التفاصيل",
-              "urgency": "الاستعجال",
-              "frequencyTime": "التكرار/الوقت",
-              "dateTime": "التاريخ والوقت",
-              "doctor": "الطبيب",
-              "status": "الحالة",
-              "actions": "الإجراءات",
-              "view": "عرض",
-              "edit": "تعديل",
-              "delete": "حذف",
-              "action": "إجراء"
-            },
-            "modal": {
-              "title": "إضافة أوامر ممرضة",
-              "orderType": "نوع الطلب",
-              "selectOrderType": "اختر نوع الطلب"
-            },
-            "editModal": {
-              "title": "تعديل أمر الممرضة"
-            },
-            "form": {
-              "options": {
-                "urgent": "عاجل",
-                "routine": "روتيني",
-                "stat": "فوري",
-                "pending": "قيد الانتظار",
-                "completed": "مكتمل",
-                "in_progress": "قيد التنفيذ",
-                "ordered": "تم الطلب"
-              },
-              "frequencies": {
-                "onceDaily": "مرة واحدة يومياً",
-                "twiceDaily": "مرتين يومياً",
-                "threeTimesDaily": "ثلاث مرات يومياً",
-                "every15Minutes": "كل 15 دقيقة",
-                "every30Minutes": "كل 30 دقيقة",
-                "everyHour": "كل ساعة",
-                "every2Hours": "كل ساعتين",
-                "every4Hours": "كل 4 ساعات",
-                "every6Hours": "كل 6 ساعات",
-                "every8Hours": "كل 8 ساعات",
-                "asNeeded": "عند الحاجة",
-                "continuous": "مستمر",
-                "intermittent": "متقطع",
-                "prn": "عند الحاجة (PRN)"
-              },
-              "common": {
-                "cancel": "إلغاء",
-                "add": "إضافة طلب",
-                "adding": "جاري الإضافة...",
-                "update": "تحديث",
-                "updating": "جاري التحديث...",
-                "urgency": "الاستعجال",
-                "selectUrgency": "اختر الاستعجال",
-                "status": "الحالة",
-                "notes": "تعليمات / ملاحظات",
-                "enterNotes": "أدخل التعليمات / الملاحظات",
-                "clinicalNotes": "ملاحظات سريرية (اختياري)",
-                "enterClinicalNotes": "أدخل الملاحظات السريرية",
-                "startDate": "تاريخ البدء",
-                "startTime": "وقت البدء",
-                "selectFrequency": "اختر التكرار",
-                "duration": "المدة (ساعات)",
-                "selectDuration": "اختر المدة"
-              },
-              "ivFluids": {
-                "fluidType": "نوع السائل",
-                "selectFluidType": "اختر نوع السائل",
-                "volume": "الحجم (مل)",
-                "selectVolume": "اختر الحجم",
-                "rate": "المعدل (مل/ساعة)",
-                "selectRate": "اختر المعدل",
-                "totalVolume": "الحجم الكلي",
-                "totalBottles": "إجمالي الزجاجات",
-                "injection": "الحقن",
-                "selectInjection": "اختر الحقن",
-                "dose": "الجرعة",
-                "selectDose": "اختر الجرعة",
-                "duration": "المدة (ساعات / أيام)",
-                "selectDuration": "اختر المدة"
-              },
-              "medication": {
-                "medicationName": "اسم الدواء",
-                "selectMedication": "اختر الدواء",
-                "dose": "الجرعة",
-                "selectDose": "اختر الجرعة",
-                "route": "الطريق",
-                "selectRoute": "اختر الطريق",
-                "frequency": "التكرار",
-                "duration": "المدة"
-              },
-              "woundDressing": {
-                "woundLocation": "موقع الجرح",
-                "enterWoundLocation": "أدخل موقع الجرح",
-                "dressingType": "نوع الضمادات",
-                "selectDressingType": "اختر نوع الضمادات",
-                "frequency": "التكرار"
-              },
-              "oxygenTherapy": {
-                "deliveryType": "نوع التوصيل",
-                "selectDeliveryType": "اختر نوع التوصيل",
-                "flowRate": "معدل التدفق",
-                "selectFlowRate": "اختر معدل التدفق",
-                "frequencyMode": "نط التكرار",
-                "selectFrequencyMode": "اختر نط التكرار"
-              },
-              "specialNotes": {
-                "noteType": "نوع الملاحظة",
-                "enterNoteType": "أدخل نوع الملاحظة"
-              },
-              "monitoring": {
-                "parameter": "المعلمة للمراقبة",
-                "enterParameter": "أدخل المعلمة للمراقبة",
-                "frequency": "التكرار"
-              },
-              "catheterCare": {
-                "catheterType": "نوع القسطرة",
-                "selectCatheterType": "اختر نوع القسطرة",
-                "careType": "نوع الرعاية",
-                "selectCareType": "اختر نوع الرعاية",
-                "frequency": "التكرار"
-              }
-            },
-            "viewModal": {
-              "title": "عرض أمر الممرضة",
-              "orderDetails": "تفاصيل الطلب",
-              "notes": "الملاحظات",
-              "orderedBy": "تم الطلب بواسطة",
-              "close": "إغلاق",
-              "fields": {
-                "fluidType": "نوع السائل",
-                "volume": "الحجم (مل)",
-                "rate": "المعدل (مل/ساعة)",
-                "duration": "المدة (ساعات)",
-                "totalVolume": "الحجم الكلي",
-                "totalBottles": "إجمالي الزجاجات",
-                "injection": "الحقن",
-                "dose": "الجرعة",
-                "startDate": "تاريخ البدء",
-                "startTime": "وقت البدء",
-                "medicationName": "اسم الدواء",
-                "route": "الطريق",
-                "frequency": "التكرار",
-                "woundLocation": "موقع الجرح",
-                "dressingType": "نوع الضمادات",
-                "deliveryType": "نوع التوصيل",
-                "flowRate": "معدل التدفق",
-                "frequencyMode": "نط التكرار",
-                "clinicalNotes": "ملاحظات سريرية",
-                "noteType": "نوع الملاحظة",
-                "parameter": "المعلمة للمراقبة",
-                "catheterType": "نوع القسطرة",
-                "careType": "نوع الرعاية"
-              }
-            }
-          },
-          "prescription": {
-            "title": "الوصفة الطبية",
-            "autoSaved": "حفظ تلقائي",
-            "add": "إضافة دواء",
-            "sendPharmacy": "أرسل للصيدلية",
-            "printRx": "طباعة الوصفة",
-            "empty": "لم يتم وصف أي أدوية بعد"
-          },
-          "soapNotes": {
-            "title": "ملاحظات SOAP",
-            "autoSaved": "حفظ تلقائي",
-            "loadTemplate": "تحميل النموذج",
-            "subjective": "ذاتي (قصة المريض)",
-            "objective": "موضوعي (النتائج السريرية)",
-            "assessment": "التقييم (التشخيص)",
-            "plan": "الخطة (العلاج والمتابعة)",
-            "empty": "الرجاء تحديد نموذج لبدء ملاحظات SOAP.",
-            "templateModal": {
-              "title": "اختر نموذج سريري",
-              "subtitle": "اختر نموذج تخصص لملء حقول ملاحظات SOAP تلقائيًا."
-            },
-            "history": {
-              "title": "سجل ملاحظات SOAP السابق",
-              "empty": "لم يتم العثور على ملاحظات SOAP سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
-              "at": "في"
-            }
-          },
-          "visitPurpose": {
-            "title": "غرض الزيارة",
-            "form": {
-              "chiefComplaint": "الشكوى الرئيسية",
-              "history": "تاريخ المرض الحالي",
-              "onset": "البداية",
-              "duration": "المدة",
-              "severity": "الشدة",
-              "additionalNotes": "ملاحظات إضافية",
-              "enterChiefComplaint": "أدخل الشكوى الرئيسية",
-              "enterHistory": "أدخل تاريخ المرض الحالي",
-              "select": "اختر",
-              "enterNotes": "أدخل ملاحظات إضافية",
-              "viewOnly": "لديك حق العرض فقط.",
-              "noPermission": "ليس لديك صلاحية لعرض غرض الزيارة."
-            },
-            "history": {
-              "title": "سجل غرض الزيارة السابق",
-              "empty": "لم يتم العثور على غرض زيارة سابق.",
-              "recordedBy": "تم التسجيل بواسطة"
-            }
-          },
-          "vitals": {
-            "title": "العلامات الحيوية",
-            "graph": "رسم بياني للعلامات الحيوية",
-            "add": "إضافة علامات حيوية",
-            "modal": {
-              "title": "إضافة علامة حيوية",
-              "cancel": "إلغاء",
-              "save": "حفظ",
-              "saving": "جاري الحفظ..."
-            },
-            "fields": {
-              "bp": "ضغط الدم",
-              "pulse": "معدل النبض",
-              "respiration": "معدل التنفس",
-              "spo2": "تشبع الأكسجين (%)",
-              "systolicL": "الانقباضي (يسار)",
-              "diastolicL": "الانبساطي (يسار)",
-              "systolicR": "الانقباضي (يمين)",
-              "diastolicR": "الانبساطي (يمين)",
-              "temp": "درجة الحرارة",
-              "grbs": "GRBS",
-              "hb": "الهيموجلوبين",
-              "height": "الطول",
-              "weight": "الوزن",
-              "bmi": "مؤشر كتلة الجسم",
-              "ibw": "IBW",
-              "rbs": "RBS",
-              "note": "ملاحظة إضافية"
-            },
-            "placeholders": {
-              "bp": "أدخل ضغط الدم",
-              "pulse": "أدخل معدل النبض",
-              "respiration": "أدخل معدل التنفس",
-              "spo2": "أدخل SpO₂",
-              "systolicL": "أدخل الانقباضي (يسار)",
-              "diastolicL": "أدخل الانبساطي (يسار)",
-              "systolicR": "أدخل الانقباضي (يمين)",
-              "diastolicR": "أدخل الانبساطي (يمين)",
-              "temp": "أدخل درجة الحرارة",
-              "grbs": "أدخل GRBS",
-              "hb": "أدخل الهيموجلوبين",
-              "height": "أدخل الطول",
-              "weight": "أدخل الوزن",
-              "bmi": "أدخل مؤشر كتلة الجسم",
-              "ibw": "أدخل IBW",
-              "rbs": "أدخل RBS",
-              "note": "أدخل ملاحظة إضافية"
-            },
-            "history": {
-              "title": "سجل العلامات الحيوية السابق",
-              "empty": "لم يتم العثور على زيارات سابقة.",
-              "recordedBy": "تم التسجيل بواسطة",
-              "at": "في"
-            },
-            "grid": {
-              "title": "آخر العلامات الحيوية",
-              "on": "في"
-            }
-          }
-        }
-      },
-      "profile": {
-        "soapTemplates": {
-          "title": "نماذج SOAP",
-          "templateName": "اسم النموذج",
-          "enterTemplateName": "أدخل اسم النموذج",
-          "specialty": "التخصص",
-          "selectSpecialty": "اختر التخصص",
-          "dataTitle": "بيانات نماذج SOAP",
-          "subjective": "ذاتي",
-          "enterSubjective": "أدخل ذاتي",
-          "objective": "موضوعي",
-          "enterObjective": "أدخل الملاحظات السريرية",
-          "assessment": "التقييم",
-          "enterAssessment": "أدخل نموذج التقييم",
-          "plan": "الخطة",
-          "enterPlan": "أدخل نموذج الخطة",
-          "save": "حفظ النماذج",
-          "saving": "جاري الحفظ...",
-          "cancel": "إلغاء",
-          "success": "تم إنشاء نموذج SOAP بنجاح",
-          "error": "فشل إنشاء نموذج SOAP",
-          "createTemplate": "إنشاء نموذج",
-          "edit": "تعديل",
-          "delete": "حذف",
-          "deleteTitle": "حذف نموذج SOAP؟",
-          "deleteDesc": "لا يمكن التراجع عن هذا الإجراء. سيتم إزالة نموذج SOAP بشكل دائم.",
-          "deleteSuccess": "تم حذف نموذج SOAP",
-          "deleteError": "فشل حذف نموذج SOAP",
-          "update": "تحديث النماذج",
-          "updating": "جاري التحديث...",
-          "updateSuccess": "تم تحديث نموذج SOAP بنجاح",
-          "updateError": "فشل تحديث نموذج SOAP"
-        },
-        "tabs": {
-          "overview": "نظرة عامة",
-          "soapTemplates": "نماذج SOAP",
-          "allAppointments": "جميع المواعيد",
-          "newPatients": "مرضى جدد",
-          "followUpPatients": "متابعة المرضى"
-        },
-        "components": {
-          "table": {
-            "token": "الرمز",
-            "patient": "المريض",
-            "date": "التاريخ",
-            "diagnosis": "التشخيص",
-            "type": "النوع",
-            "status": "الحالة",
-            "loading": "جاري تحميل المواعيد...",
-            "empty": "لم يتم العثور على مواعيد."
-          },
-          "header": {
-            "licenseNumber": "رقم الترخيص",
-            "email": "البريد الإلكتروني",
-            "opdTimings": "أوقات العيادات الخارجية",
-            "experience": "الخبرة",
-            "contactNumber": "رقم الاتصال",
-            "workingDays": "أيام العمل",
-            "active": "نشط",
-            "specialist": "أخصائي",
-            "years": "سنوات"
-          },
-          "overview": {
-            "totalPatientsTreated": "إجمالي المرضى المعالجين",
-            "todayAppointments": "مواعيد اليوم",
-            "completedAppointments": "المواعيد المكتملة",
-            "followUps": "المتابعة"
-          }
-        }
-      }
-    },
-    "nurse": {
-      "appointment": {
-        "tabs": {
-          "Visit purpose": "غرض الزيارة",
-          "SOAP Notes": "ملاحظات SOAP",
-          "Vitals": "العلامات الحيوية",
-          "Attachments": "المرفقات",
-          "Nurse Note": "ملاحظات الممرضة",
-          "Nurse Orders": "طلبات الممرضة",
-          "Consumables": "المستهلكات",
-          "Equipment": "المعدات"
-        },
-        "messages": {
-          "noContent": "لا يوجد محتوى",
-          "startConsultationPrompt": "يرجى بدء الاستشارة للوصول إلى تفاصيل المريض."
         }
       },
       "recentPatients": {
         "title": "جميع المرضى الأخيرين",
         "subtitle": "عرض جميع زيارات المرضى",
         "visits": "الزيارات",
-        "allVisits": "كل الزيارات",
+        "allVisits": "جميع الزيارات",
         "noPatients": "لم يتم العثور على مرضى",
-        "noPatientsDesc": "لا توجد زيارات مرضى للعرض.",
+        "noPatientsDesc": "لا توجد زيارات مرضى لعرضها.",
         "loading": "جاري التحميل..."
       }
     },
     "surgery": {
-      "tabs": {
-        "surgery": "جراحة",
-        "Surgeries Today": "العمليات الجراحية اليوم"
+      "common": {
+        "dynamicSection": {
+          "items": "أصناف",
+          "noOptions": "لا توجد خيارات متاحة"
+        },
+        "prefixes": {
+          "doctor": "د.",
+          "otRoom": "OT-"
+        },
+        "fallbacks": {
+          "notAssigned": "غير محدد",
+          "unknownPatient": "مريض غير معروف"
+        },
+        "add": "إضافة",
+        "action": "الإجراء",
+        "calendarView": "عرض التقويم",
+        "sort": {
+          "label": "فرز",
+          "nearestDate": "أقرب تاريخ",
+          "farthestDate": "أبعد تاريخ",
+          "routine": "روتيني",
+          "urgent": "عاجل",
+          "stat": "فوري"
+        },
+        "status": {
+          "active": "نشط",
+          "inactive": "غير نشط"
+        },
+        "department": "القسم",
+        "doctor": "الطبيب",
+        "view": "عرض",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "completed": "مكتمل"
+      },
+      "dashboard": {
+        "emergencySurgeries": "جراحات الطوارئ",
+        "viewAll": "عرض الكل",
+        "surgeriesToday": "جراحات اليوم",
+        "totalSurgeries": "إجمالي الجراحات",
+        "completed": "مكتمل",
+        "pending": "قيد الانتظار",
+        "patientTypes": "أنواع المرضى",
+        "ipdPatients": "مرضى التنويم",
+        "emergency": "طوارئ",
+        "surgeryRequest": "طلب جراحة",
+        "pendingRequest": "طلب معلق",
+        "prescriptionsIssued": "الوصفات الصادرة",
+        "tabs": {
+          "all": "الجراحات",
+          "ongoing": "جارية",
+          "upcoming": "قادمة"
+        },
+        "table": {
+          "otRoom": "غرفة العمليات",
+          "patient": "المريض",
+          "time": "الوقت",
+          "procedure": "الإجراء",
+          "surgeon": "الجراح",
+          "status": "الحالة",
+          "action": "الإجراء",
+          "actions": {
+            "view": "عرض",
+            "edit": "تعديل",
+            "delete": "حذف"
+          }
+        },
+        "alerts": {
+          "title": "تنبيهات وإجراءات غرفة العمليات الحرجة",
+          "loading": "جاري التحميل...",
+          "noUpcoming": "لا توجد جراحات قادمة",
+          "noRequests": "لا توجد طلبات جراحة",
+          "upcomingSurgeries": "الجراحات القادمة",
+          "surgeryRequests": "طلبات الجراحة"
+        }
+      },
+      "otSchedule": {
+        "surgeryList": "قائمة الجراحات",
+        "addSurgery": "إضافة جراحة",
+        "dateRange": "نطاق التاريخ",
+        "columns": {
+          "otRoom": "غرفة العمليات",
+          "patient": "المريض",
+          "requestedDoctor": "الطبيب الطالب",
+          "procedure": "الإجراء",
+          "surgeon": "الجراح",
+          "requestedFor": "مطلوب لـ",
+          "urgency": "الاستعجال",
+          "status": "الحالة"
+        }
+      },
+      "preOp": {
+        "surgeriesRequestList": "قائمة طلبات الجراحات",
+        "tabs": {
+          "allSurgeries": "جميع الجراحات",
+          "preOp": "قبل العملية",
+          "intraOp": "أثناء العملية",
+          "postOp": "بعد العملية"
+        }
+      },
+      "wardStore": {
+        "wardStore": "مخزن الجناح",
+        "selectWard": "اختر الجناح",
+        "mainTabs": {
+          "consumptionLogSection": "سجل الاستهلاك",
+          "consumptionLogSubItems": {
+            "allEquipmentUsage": "كافة الاستهلاك",
+            "running": "استهلاك الجناح",
+            "completed": "استهلاك المريض"
+          },
+          "equipmentUsageSection": "سجلات استخدام المعدات",
+          "equipmentUsageSubItems": {
+            "all": "الكل",
+            "ward": "الجناح",
+            "patient": "المريض"
+          },
+          "wardStockSection": "مخزون الجناح",
+          "wardStockSubItems": {
+            "consumptionStock": "مخزون الاستهلاك",
+            "equipmentStock": "مخزون المعدات"
+          }
+        },
+        "actions": {
+          "view": "عرض",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "addRequestStock": "إضافة طلب مخزون",
+          "addConsumptionLog": "إضافة سجل استهلاك",
+          "addEquipmentUsage": "إضافة سجل استخدام المعدات"
+        },
+        "columns": {
+          "date": "التاريخ",
+          "dateTime": "التاريخ والوقت",
+          "itemName": "اسم الصنف",
+          "equipmentName": "اسم المعدات",
+          "category": "الفئة",
+          "assetId": "رقم الأصول",
+          "quantity": "الكمية",
+          "currentQty": "الكمية الحالية",
+          "minQty": "الحد الأدنى للكمية",
+          "totalItems": "إجمالي العناصر",
+          "available": "المتاح",
+          "inUse": "قيد الاستخدام",
+          "maintenance": "الصيانة",
+          "store": "المخزن",
+          "expiry": "تاريخ الانتهاء",
+          "usageType": "نوع الاستخدام",
+          "patient": "المريض",
+          "loggedBy": "سجل بواسطة",
+          "recordedBy": "سجل بواسطة",
+          "note": "ملاحظة",
+          "notes": "الملاحظات",
+          "action": "الإجراء",
+          "timeRange": "وقت البدء - وقت الانتهاء",
+          "duration": "المدة",
+          "status": "الحالة",
+          "running": "جاري...",
+          "requestId": "رقم الطلب",
+          "requestedDate": "تاريخ الطلب",
+          "requestedBy": "طلب بواسطة",
+          "storeRemarks": "ملاحظات المتجر"
+        },
+        "statuses": {
+          "available": "متوفر",
+          "lowStock": "مخزون منخفض",
+          "outOfStock": "غير متوفر",
+          "running": "جاري",
+          "completed": "مكتمل"
+        },
+        "subTabs": {
+          "wardStock": "مخزون الجناح",
+          "consumptionLog": "سجل الاستهلاك",
+          "equipmentUsage": "سجلات استخدام المعدات",
+          "all": "الكل",
+          "ward": "الجناح",
+          "patient": "المريض",
+          "running": "جاري",
+          "completed": "مكتمل",
+          "consumptionStock": "مخزون الاستهلاك",
+          "equipmentStock": "مخزون المعدات",
+          "issued": "تم الإصدار",
+          "pending": "قيد الانتظار",
+          "approved": "تمت الموافقة",
+          "rejected": "مرفوض",
+          "partiallyApproved": "موافق عليه جزئياً"
+        },
+        "consumptionLog": {
+          "modal": {
+            "title": "المستهلكات",
+            "subtitle": "إضافة أصناف المستهلكات",
+            "editTitle": "تعديل سجل الاستهلاك",
+            "editSubtitle": "تحديث تفاصيل الاستهلاك للمريض أو الجناح",
+            "usageType": "نوع الاستخدام",
+            "patient": "المريض",
+            "itemName": "اسم الصنف",
+            "quantity": "الكمية",
+            "reason": "السبب",
+            "notes": "ملاحظات",
+            "placeholders": {
+              "usageType": "اختر نوع الاستخدام",
+              "patient": "اختر المريض",
+              "itemName": "اختر اسم الصنف",
+              "quantity": "أدخل الكمية",
+              "reason": "اختر السبب",
+              "notes": "أدخل الملاحظات / التعليمات"
+            },
+            "notifications": {
+              "usageTypeRequired": "نوع الاستخدام مطلوب",
+              "patientRequired": "المريض مطلوب",
+              "itemNameRequired": "اسم العنصر مطلوب",
+              "quantityRequired": "الكمية مطلوبة",
+              "reasonRequired": "السبب مطلوب"
+            }
+          }
+        },
+        "equipmentUsage": {
+          "modal": {
+            "title": "المعدات",
+            "subtitle": "إضافة معدات للمريض",
+            "editTitle": "تعديل سجل استخدام المعدات",
+            "editSubtitle": "تحديث استخدام المعدات للمريض",
+            "patient": "المريض",
+            "itemName": "اسم الصنف",
+            "assetId": "معرف الأصل",
+            "condition": "الحالة قبل الاستخدام",
+            "startTime": "وقت البدء",
+            "endTime": "وقت الانتهاء (اختياري)",
+            "notes": "الملاحظات / التعليمات",
+            "placeholders": {
+              "patient": "اختر المريض",
+              "itemName": "اختر اسم الصنف",
+              "assetId": "اختر معرف الأصل",
+              "condition": "اختر الحالة",
+              "startTime": "اختر وقت البدء",
+              "endTime": "اختر وقت الانتهاء",
+              "notes": "أدخل الملاحظات / التعليمات"
+            },
+            "notifications": {
+              "itemNameRequired": "اسم العنصر مطلوب",
+              "assetIdRequired": "معرف الأصول مطلوب",
+              "startTimeRequired": "وقت البدء مطلوب"
+            }
+          }
+        },
+        "wardStock": {
+          "activityLog": {
+            "title": "سجل النشاط",
+            "stats": {
+              "currentQuantity": "الكمية الحالية",
+              "minimumQuantity": "الحد الأدنى للكمية",
+              "totalReceived": "إجمالي المستلم",
+              "totalConsumed": "إجمالي المستهلك"
+            },
+            "tabs": {
+              "all": "الكل",
+              "received": "المستلم",
+              "returned": "المرتجع",
+              "consumption": "الاستهلاك",
+              "damaged": "التالف"
+            }
+          },
+          "equipmentDetail": {
+            "title": "مخزون المعدات",
+            "stats": {
+              "totalEquipment": "إجمالي المعدات",
+              "available": "المتاح",
+              "inUse": "قيد الاستخدام",
+              "maintenance": "الصيانة"
+            }
+          }
+        },
+        "options": {
+          "categories": {
+            "consumables": "المستهلكات",
+            "equipment": "المعدات"
+          },
+          "usageTypes": {
+            "patient": "المريض",
+            "ward": "الجناح"
+          },
+          "urgency": {
+            "high": "عالية",
+            "medium": "متوسطة",
+            "low": "منخفضة"
+          },
+          "reasons": {
+            "stockDepletion": "نفاذ المخزون",
+            "emergencyRequirement": "متطلبات الطوارئ",
+            "routine": "روتيني",
+            "emergency": "طوارئ"
+          },
+          "conditions": {
+            "new": "جديد",
+            "good": "جيد",
+            "damaged": "تالف"
+          }
+        },
+        "stockRequests": {
+          "title": "مخزون الجناح",
+          "addRequest": "إضافة طلب مخزون",
+          "modal": {
+            "title": "طلب مخزون",
+            "subtitle": "إرسال طلب مخزون",
+            "category": "الفئة",
+            "itemName": "اسم الصنف",
+            "quantityNeeded": "الكمية المطلوبة",
+            "urgency": "درجة الأهمية",
+            "reason": "سبب الطلب",
+            "requiredByDate": "تاريخ الاستحقاق",
+            "notes": "ملاحظات",
+            "placeholders": {
+              "category": "اختر الفئة",
+              "itemName": "اختر اسم الصنف",
+              "quantity": "أدخل الكمية",
+              "urgency": "اختر درجة الأهمية",
+              "reason": "اختر سبب الطلب",
+              "date": "اختر التاريخ",
+              "notes": "أدخل الملاحظات / التعليمات"
+            }
+          }
+        }
+      },
+      "surgeryDetails": {
+        "title": "تفاصيل العملية",
+        "tabs": {
+          "details": "تفاصيل العملية",
+          "preOpChecklist": "قائمة التحقق قبل العملية",
+          "anesthesiaPlan": "خطة التخدير",
+          "intraOpNotes": "ملاحظات أثناء العملية",
+          "nurse": "الممرض",
+          "postOpCare": "رعاية ما بعد العملية"
+        },
+        "actions": {
+          "saveAssessment": "حفظ التقييم",
+          "submitClearances": "تقديم الموافقات",
+          "fitForAnesthesia": "لائق للتخدير",
+          "notFitForAnesthesia": "غير لائق للتخدير"
+        },
+        "banner": {
+          "insurance": "التأمين",
+          "printDocument": "طباعة المستند",
+          "downloadDocument": "تحميل المستند",
+          "viewDetails": "عرض التفاصيل"
+        },
+        "common": {
+          "action": "الإجراء",
+          "view": "عرض",
+          "edit": "تعديل",
+          "delete": "حذف",
+          "print": "طباعة",
+          "download": "تحميل",
+          "add": "إضافة",
+          "save": "حفظ",
+          "cancel": "إلغاء",
+          "completed": "مكتمل",
+          "pending": "قيد الانتظار",
+          "ordered": "مطلوب",
+          "orderedBy": "مطلوب بواسطة",
+          "justNow": "الآن",
+          "noRecords": "لم يتم العثور على سجلات",
+          "sections": {
+            "implantsUsed": "الغرسات المستخدمة",
+            "consumablesUsed": "المستهلكات المستخدمة"
+          },
+          "fields": {
+            "time": "الوقت",
+            "selectTime": "اختر الوقت",
+            "quantity": "الكمية",
+            "enterQuantity": "أدخل الكمية",
+            "size": "الحجم",
+            "selectSize": "اختر الحجم",
+            "manufacturer": "الشركة المصنعة",
+            "selectManufacturer": "اختر الشركة المصنعة",
+            "implantType": "نوع الغرسة",
+            "selectImplantType": "اختر نوع الغرسة",
+            "itemName": "اسم العنصر",
+            "selectItemName": "اختر اسم العنصر",
+            "note": "ملاحظة",
+            "enterNote": "أدخل ملاحظة",
+            "notes": "ملاحظات",
+            "enterNotes": "أدخل ملاحظات",
+            "batchLotNo": "رقم الدفعة / اللوت",
+            "enterBatchLotNo": "أدخل رقم الدفعة / اللوت",
+            "selectBatch": "اختر الدفعة",
+            "additionalNotes": "ملاحظات إضافية",
+            "enterAdditionalNotes": "أدخل ملاحظات إضافية"
+          },
+          "actions": {
+            "saveDraft": "حفظ كمسودة",
+            "markCompleted": "تحديد كمكتمل",
+            "submitOrders": "إرسال الطلبات",
+            "addImplant": "إضافة غرسة",
+            "addConsumable": "إضافة مستهلك"
+          }
+        },
+        "preOp": {
+          "sidebar": {
+            "title": "جميع قائمة التحقق قبل العملية"
+          },
+          "status": {
+            "completedPrev": "اكتمل باستخدام النتيجة السابقة",
+            "prevAvailable": "النتيجة السابقة متاحة",
+            "usePrev": "استخدام النتيجة السابقة",
+            "results": "نتائج"
+          },
+          "actions": {
+            "orderLab": "طلب فحص مختبري",
+            "orderRad": "طلب إجراء أشعة",
+            "approveClearance": "الموافقة على التصاريح",
+            "approveClearanceOne": "الموافقة على التصريح",
+            "uploadConsent": "رفع الموافقة",
+            "createNewOrder": "إنشاء طلب جديد",
+            "loadTemplates": "تحميل القوالب",
+            "saveDraft": "حفظ كمسودة",
+            "markCompleted": "تحديد كمكتمل"
+          },
+          "fields": {
+            "surgeryRequirement": "متطلبات العملية",
+            "surgeryTemplate": "قالب العملية",
+            "selectTemplate": "اختر قالب العملية",
+            "search": "بحث",
+            "noForms": "لم يتم العثور على نماذج",
+            "required": "مطلوب",
+            "select": "اختر"
+          },
+          "sections": {
+            "procedures": "الإجراءات",
+            "investigations": "الفحوصات المطلوبة",
+            "clearances": "الموافقات الطبية",
+            "consents": "الموافقات المطلوبة",
+            "nursingOrders": "أوامر التمريض (قبل العملية)",
+            "prep": "متطلبات تحضير المريض",
+            "anesthesia": "متطلبات التخدير",
+            "equipment": "المعدات والأدوات",
+            "implants": "الغرسات والمستهلكات",
+            "blood": "تحضير الدم والموارد"
+          },
+          "modals": {
+            "orderLab": {
+              "title": "طلب فحص مختبري",
+              "subtitle": "اختر الفحوصات المختبرية للمريض",
+              "selectTests": "اختر الفحوصات",
+              "urgency": "الاستعجال",
+              "selectUrgency": "اختر درجة الاستعجال",
+              "required": "مطلوب",
+              "requiredMessage": "لا يمكن للمريض الانتقال إلى الخطوة التالية حتى يتم الانتهاء من هذا الفحص.",
+              "notes": "ملاحظات سريرية (اختياري)",
+              "notesPlaceholder": "أدخل الملاحظات السريرية"
+            },
+            "orderRad": {
+              "title": "طلب إجراء أشعة",
+              "subtitle": "اختر إجراءات الأشعة للمريض",
+              "selectProcedures": "اختر الإجراءات",
+              "urgency": "الاستعجال",
+              "selectUrgency": "اختر درجة الاستعجال",
+              "required": "مطلوب",
+              "requiredMessage": "لا يمكن للمريض الانتقال إلى الخطوة التالية حتى يتم الانتهاء من هذا الإجراء.",
+              "notes": "ملاحظات سريرية (اختياري)",
+              "notesPlaceholder": "أدخل الملاحظات السريرية"
+            },
+            "medicalClearance": {
+              "title": "الموافقات الطبية",
+              "subtitle": "اختر الموافقات الطبية للمريض",
+              "clearanceType": "نوع الموافقة",
+              "doctor": "الطبيب",
+              "doctorPlaceholder": "اسم الطبيب",
+              "urgency": "الاستعجال",
+              "selectUrgency": "اختر درجة الاستعجال",
+              "required": "مطلوب",
+              "requiredMessage": "لا يمكن للمريض الانتقال إلى الخطوة التالية حتى يتم الانتهاء من هذا الفحص.",
+              "notes": "ملاحظات (اختياري)",
+              "notesPlaceholder": "أدخل الملاحظات"
+            },
+            "consentUpload": {
+              "acceptedFiles": "المقبول: PDF، JPG، PNG، DICOM",
+              "uploadPrompt": "انقر للتحميل أو اسحب وأفلت",
+              "maxSize": "الحد الأقصى 10 ميجابايت",
+              "capture": "التقاط التقاط",
+              "uploadDocument": "تحميل المستند",
+              "notes": "ملاحظات (اختياري)",
+              "notesPlaceholder": "أدخل الملاحظات"
+            },
+            "nurseOrders": {
+              "title": "أوامر التمريض",
+              "addOrder": "إضافة أوامر التمريض",
+              "orderType": "نوع الطلب",
+              "selectOrderType": "اختر نوع الطلب",
+              "types": {
+                "iv_fluids": "سوائل وريدية",
+                "medication": "علاج",
+                "monitoring": "مراقبة"
+              },
+              "required": "مطلوب",
+              "requiredMessage": "لا يمكن للمريض الانتقال إلى الخطوة التالية.",
+              "fluidType": "نوع السائل",
+              "selectFluidType": "اختر نوع السائل",
+              "volume": "الحجم (مل)",
+              "selectVolume": "اختر الحجم",
+              "rate": "المعدل (مل/ساعة)",
+              "selectRate": "اختر المعدل",
+              "duration": "المدة (ساعات/أيام)",
+              "selectDuration": "اختر المدة",
+              "urgency": "الاستعجال",
+              "selectUrgency": "اختر درجة الاستعجال",
+              "totalVolume": "الحجم الإجمالي",
+              "totalBottles": "إجمالي الزجاجات",
+              "startDate": "تاريخ البدء",
+              "pickDate": "اختر تاريخاً",
+              "startTime": "وقت البدء",
+              "selectTime": "اختر الوقت",
+              "injection": "حقنة",
+              "selectInjection": "اختر الحقنة",
+              "dose": "الجرعة",
+              "catheterType": "نوع القسطرة",
+              "careType": "نوع الرعاية",
+              "frequency": "التكرار",
+              "instructions": "التعليمات / الملاحظات",
+              "instructionsPlaceholder": "أدخل التعليمات / الملاحظات"
+            },
+            "bloodRequirement": {
+              "title": "إضافة متطلبات الدم",
+              "subtitle": "اختر متطلبات الدم للمريض",
+              "bloodComponent": "مكون الدم *",
+              "selectBloodComponent": "اختر مكون الدم",
+              "components": {
+                "prbc": "كرات الدم الحمراء المكثفة (PRBC)",
+                "ffp": "البلازما الطازجة المجمدة (FFP)",
+                "platelets": "الصفائح الدموية",
+                "whole_blood": "دم كامل",
+                "cryo": "الراسب القري"
+              },
+              "bloodGroup": "فصيلة الدم",
+              "units": "الوحدات",
+              "selectUnits": "اختر الوحدات",
+              "unitLabel": "وحدة",
+              "unitsLabel": "وحدات",
+              "urgency": "الاستعجال",
+              "selectUrgency": "اختر درجة الاستعجال",
+              "date": "التاريخ",
+              "pickDate": "اختر تاريخاً",
+              "time": "الوقت",
+              "selectTime": "اختر الوقت",
+              "clinicalNotes": "ملاحظات سريرية (اختياري)",
+              "clinicalNotesPlaceholder": "أدخل الملاحظات السريرية"
+            },
+            "approveClearance": {
+              "orderedBy": "طلب بواسطة",
+              "at": "في",
+              "forPatient": "للمريض",
+              "assignedTo": "مكلف إلى",
+              "notAssigned": "غير مكلف",
+              "physicianStatus": "حالة الطبيب",
+              "fitForSurgery": "لائق للجراحة",
+              "notFitForSurgery": "غير لائق للجراحة",
+              "status": "الحالة",
+              "instructions": "التعليمات / الملاحظات",
+              "noNotes": "لا توجد ملاحظات.",
+              "doctor": "طبيب",
+              "selectStatus": "اختر حالة الجراحة",
+              "notes": "ملاحظات (اختياري)",
+              "notesPlaceholder": "أدخل الملاحظات"
+            },
+            "bloodRequirementView": {
+              "title": "متطلبات الدم",
+              "subtitle": "طلب دم للمريض",
+              "bedAssignment": "تفاصيل تخصيص السرير"
+            },
+            "documentView": {
+              "print": "طباعة المستند",
+              "download": "تحميل المستند",
+              "conductedBy": "أجري بواسطة",
+              "placeholderPreview": "[معاينة المستند]",
+              "labName": "المختبرات، شركة",
+              "formTitle": "نموذج طلب الفحص ومواصفات الفحص"
+            },
+            "implantsConsumables": {
+              "title": "الغرسات والمستهلكات",
+              "subtitle": "اختر الغرسات والمستهلكات للمريض",
+              "orderedSubtitle": "الغرسات المطلوبة للمريض",
+              "implantType": "نوع الغرسة",
+              "selectImplantType": "اختر نوع الغرسة",
+              "types": {
+                "mesh": "شبكة برولين",
+                "fixation": "جهاز تثبيت",
+                "clip": "مشابك ربط",
+                "suture": "مادة خياطة"
+              },
+              "size": "المقاس",
+              "selectSize": "اختر المقاس",
+              "batchNo": "رقم التشغيلة/اللوت",
+              "selectBatchNo": "اختر رقم التشغيلة/اللوت",
+              "manufacturer": "الشركة المصنعة",
+              "selectManufacturer": "اختر الشركة المصنعة",
+              "quantity": "الكمية",
+              "enterQuantity": "أدخل الكمية",
+              "clinicalNotes": "ملاحظات سريرية (اختياري)",
+              "clinicalNotesPlaceholder": "أدخل الملاحظات السريرية"
+            }
+          },
+          "addLabels": {
+            "procedure": "إضافة إجراء",
+            "investigation": "إضافة فحص",
+            "clearance": "إضافة موافقة",
+            "consent": "إضافة موافقة خطية",
+            "nursingOrder": "إضافة أمر تمريض",
+            "prep": "إضافة متطلب تحضير",
+            "anesthesia": "إضافة متطلب تخدير",
+            "equipment": "إضافة معدات",
+            "implant": "إضافة غرسة/مستهلك",
+            "blood": "إضافة دم/مورد"
+          }
+        },
+        "anesthesia": {
+          "tabs": {
+            "medicalHistory": "التاريخ الطبي",
+            "airwayAssessment": "تقييم المجرى الهوائي",
+            "vitalsExamination": "فحص العلامات الحيوية",
+            "asaRisk": "تصنيف ASA والمخاطر",
+            "planDetails": "خطة التخدير"
+          },
+          "actions": {
+            "addVitals": "إضافة علامات حيوية",
+            "addNew": "إضافة جديد",
+            "saveChanges": "حفظ التغييرات",
+            "saving": "جاري الحفظ...",
+            "next": "التالي",
+            "previous": "السابق",
+            "cancel": "إلغاء",
+            "save": "حفظ",
+            "add": "إضافة"
+          },
+          "status": {
+            "lastEditedBy": "آخر تعديل بواسطة",
+            "on": "في",
+            "at": "عند",
+            "loading": "جاري تحميل خطة التخدير...",
+            "toBeImplemented": "سيتم تنفيذه"
+          },
+          "airwayAssessment": {
+            "fields": {
+              "mallampatiGrade": "درجة مالامباتي",
+              "selectMallampatiGrade": "اختر درجة مالامباتي",
+              "mouthOpening": "فتح الفم",
+              "selectMouthOpening": "اختر فتح الفم",
+              "neckMobility": "حركة الرقبة",
+              "selectNeckMobility": "اختر حركة الرقبة",
+              "difficultAirwayRisk": "خطر المجرى الهوائي الصعب",
+              "selectRisk": "اختر الخطر",
+              "additionalNotes": "ملاحظات إضافية",
+              "enterAdditionalNotes": "المريض لديه فتح فم كافي مع حركة رقبة طبيعية. لا يوجد تاريخ للتنبيب الصعب. التقييم يشير إلى خطر منخفض للتنبيب."
+            },
+            "values": {
+              "normal": "طبيعي",
+              "restricted": "مقيد",
+              "low": "منخفض",
+              "noNotesRecorded": "لم يتم تسجيل ملاحظات إضافية."
+            },
+            "options": {
+              "mallampati": {
+                "grade1": "الدرجة 1 - رؤية كاملة",
+                "grade2": "الدرجة 2 - رؤية جزئية",
+                "grade3": "الدرجة 3 - لسان المزمار فقط",
+                "grade4": "الدرجة 4 - لا رؤية"
+              },
+              "mouthOpening": {
+                "normal": "طبيعي (> 3 سم)",
+                "restricted": "مقيد (< 3 سم)"
+              },
+              "neckMobility": {
+                "normal": "طبيعي (> 35°)",
+                "restricted": "مقيد",
+                "severelyRestricted": "مقيد بشدة"
+              },
+              "airwayRisk": {
+                "low": "خطر منخفض",
+                "anticipated": "مجرى هوائي صعب متوقع",
+                "emergency": "مجرى هوائي طارئ"
+              }
+            }
+          },
+          "asaRisk": {
+            "fields": {
+              "asaClassification": "تصنيف الحالة الجسدية ASA",
+              "selectAsaClassification": "اختر تصنيف الحالة الجسدية ASA",
+              "surgeryRiskLevel": "مستوى مخاطر الجراحة",
+              "selectSurgeryRiskLevel": "اختر مستوى مخاطر الجراحة",
+              "riskNotes": "ملاحظات المخاطر",
+              "enterRiskNotes": "أدخل ملاحظات المخاطر",
+              "additionalNotes": "ملاحظات إضافية"
+            },
+            "values": {
+              "noNotesRecorded": "لم يتم تسجيل ملاحظات إضافية."
+            },
+            "options": {
+              "asa": {
+                "asa1": "ASA I - مريض صحي طبيعي",
+                "asa2": "ASA II - مرض جهازي خفيف",
+                "asa3": "ASA III - مرض جهازي شديد",
+                "asa4": "ASA IV - مرض مهدد للحياة",
+                "asa5": "ASA V - مريض محتضر"
+              },
+              "riskLevel": {
+                "low": "خطر منخفض",
+                "moderate": "خطر متوسط",
+                "high": "خطر عالي"
+              }
+            }
+          },
+          "medicalHistory": {
+            "title": "التاريخ الطبي",
+            "subtitle": "إضافة التاريخ الطبي",
+            "fields": {
+              "historyOfPresentIllness": "تاريخ المرض الحالي",
+              "pastSurgicalHistory": "التاريخ الجراحي السابق",
+              "diseasesHistory": "تاريخ الأمراض",
+              "currentMedications": "الأدوية الحالية",
+              "dose": "الجرعة",
+              "frequency": "التكرار",
+              "remainingDuration": "المدة المتبقية",
+              "remainingDurationDays": "المدة المتبقية (أيام)"
+            },
+            "placeholders": {
+              "enterAdditionalNote": "أدخل ملاحظة إضافية",
+              "enterPulseRate": "أدخل معدل النبض",
+              "enterRR": "أدخل معدل التنفس",
+              "selectMedications": "اختر الأدوية",
+              "selectDose": "اختر الجرعة",
+              "selectFrequency": "اختر التكرار",
+              "enterRemainingDuration": "أدخل المدة المتبقية"
+            },
+            "table": {
+              "slNo": "الرقم التسلسلي",
+              "currentMedications": "الأدوية الحالية",
+              "dose": "الجرعة",
+              "frequency": "التكرار",
+              "remainingDuration": "المدة المتبقية"
+            },
+            "values": {
+              "noIllnessSummary": "لم يتم تسجيل ملخص المرض",
+              "noSurgicalHistory": "لا يوجد تاريخ جراحي مسجل",
+              "noDiseaseHistory": "لا يوجد تاريخ مرضي مسجل",
+              "na": "غير متاح",
+              "asPrescribed": "حسب الوصفة",
+              "ongoing": "مستمر"
+            }
+          },
+          "vitals": {
+            "title": "العلامات الحيوية",
+            "subtitle": "إضافة علامات حيوية",
+            "fields": {
+              "bloodPressure": "ضغط الدم",
+              "pulseRate": "معدل النبض",
+              "respirationRate": "معدل التنفس",
+              "spo2": "تشبع الأكسجين (%)",
+              "systolicL": "الانقباضي (يسار)",
+              "diastolicL": "الانبساطي (يسار)",
+              "systolicR": "الانقباضي (يمين)",
+              "diastolicR": "الانبساطي (يمين)",
+              "temperature": "درجة الحرارة",
+              "grbs": "سكر الدم العشوائي",
+              "hb": "الهيموغلوبين",
+              "height": "الطول",
+              "weight": "الوزن",
+              "bmi": "مؤشر كتلة الجسم",
+              "ibw": "الوزن المثالي",
+              "rbs": "سكر الدم",
+              "bloodGlucose": "جلوكوز الدم",
+              "painScore": "درجة الألم",
+              "additionalNote": "ملاحظة إضافية"
+            },
+            "placeholders": {
+              "enterBP": "أدخل ضغط الدم",
+              "enterPulseRate": "أدخل معدل النبض",
+              "enterRR": "أدخل معدل التنفس",
+              "enterSpo2": "أدخل تشبع الأكسجين",
+              "enterSystolicL": "أدخل الانقباضي (يسار)",
+              "enterDiastolicL": "أدخل الانبساطي (يسار)",
+              "enterSystolicR": "أدخل الانقباضي (يمين)",
+              "enterDiastolicR": "أدخل الانبساطي (يمين)",
+              "enterTemperature": "أدخل درجة الحرارة",
+              "enterGRBS": "أدخل سكر الدم العشوائي",
+              "enterHB": "أدخل الهيموغلوبين",
+              "enterHeight": "أدخل الطول",
+              "enterWeight": "أدخل الوزن",
+              "enterBMI": "أدخل مؤشر كتلة الجسم",
+              "enterIBW": "أدخل الوزن المثالي",
+              "enterRBS": "أدخل سكر الدم",
+              "enterAdditionalNote": "أدخل ملاحظة إضافية"
+            }
+          },
+          "planDetails": {
+            "fields": {
+              "anesthesiaType": "نوع التخدير",
+              "selectAnesthesiaType": "اختر نوع التخدير",
+              "monitoringRequired": "المراقبة المطلوبة",
+              "postOpVentilation": "التهوية المطلوبة بعد العملية",
+              "selectPostOpVentilation": "اختر التهوية المطلوبة بعد العملية",
+              "icuRequirement": "متطلبات العناية المركزة",
+              "selectIcuRequirement": "اختر متطلبات العناية المركزة",
+              "airwayManagementPlan": "خطة إدارة المجرى الهوائي",
+              "airwayManagementPlanPlaceholder": "خطة للتنبيب الرغامي تحت التخدير العام. يتوقع تنظير الحنجرة القياسي. يجب الاحتفاظ بمعدات المجرى الهوائي الصعب كاحتياط."
+            },
+            "options": {
+              "anesthesiaType": {
+                "general": "تخدير عام",
+                "regional": "تخدير نطاقي",
+                "local": "تخدير موضعي",
+                "spinal": "تخدير شوكي",
+                "epidural": "تخدير فوق الجافية",
+                "sedationMac": "تهدئة / MAC"
+              },
+              "monitoring": {
+                "ecg": "تخطيط القلب",
+                "spo2": "تشبع الأكسجين",
+                "nibp": "ضغط الدم غير الغازي",
+                "invasiveBp": "ضغط الدم الغازي (خط شرياني)",
+                "cvp": "الضغط الوريدي المركزي",
+                "bis": "مؤشر BIS",
+                "etco2": "ثاني أكسيد الكربون الزفيري",
+                "temperature": "درجة الحرارة"
+              },
+              "ventilation": {
+                "notRequired": "غير مطلوب",
+                "shortTerm": "تهوية قصيرة المدى",
+                "prolonged": "تهوية مطولة"
+              },
+              "icu": {
+                "notRequired": "غير مطلوب",
+                "standby": "استعداد",
+                "plannedAdmission": "دخول مخطط للعناية المركزة"
+              }
+            }
+          }
+        },
+        "details": {
+          "title": "جدولة العملية",
+          "surgicalTeam": "الفريق الجراحي",
+          "fields": {
+            "procedure": "الإجراء",
+            "department": "القسم",
+            "urgency": "درجة الأهمية",
+            "estimatedDuration": "المدة التقديرية (بالساعات)",
+            "surgeryDate": "تاريخ العملية",
+            "surgeryTime": "وقت العملية",
+            "otRoom": "غرفة العمليات",
+            "surgeonTeam": "اختر فريق الجراح",
+            "surgeon": "الجراح",
+            "assistantSurgeons": "مساعدو الجراحين",
+            "anaesthetist": "طبيب التخدير",
+            "scrubNurse": "ممرضة التعقيم",
+            "circulatingNurse": "ممرضة جارية",
+            "otTechnician": "فني غرف عمليات",
+            "surgicalDetails": "تفاصيل العملية"
+          },
+          "placeholders": {
+            "selectProcedure": "اختر اسم الإجراء",
+            "selectCategory": "اختر فئة الإجراء",
+            "enterUrgency": "أدخل درجة الأهمية",
+            "selectDuration": "اختر المدة المتوقعة",
+            "selectDate": "اختر التاريخ",
+            "selectTime": "اختر الوقت",
+            "selectOtRoom": "اختر غرفة العمليات",
+            "selectSurgeonTeam": "اختر فريق الجراحين",
+            "selectSurgeon": "اختر الجراح",
+            "selectAssistantSurgeons": "اختر الجراحين المساعدين",
+            "selectAnaesthetist": "اختر طبيب التخدير",
+            "selectScrubNurse": "اختر ممرض التعقيم",
+            "selectCirculatingNurse": "اختر الممرض المساعد",
+            "selectOtTechnician": "اختر فني غرف عمليات"
+          },
+          "actions": {
+            "cancel": "إلغاء",
+            "updateRequest": "تحديث الطلب"
+          }
+        },
+        "clinicalSidebar": {
+          "activeProblems": "المشكلات النشطة",
+          "allergies": "الحساسية",
+          "ongoingMedications": "الأدوية المستمرة",
+          "activeCondition": "حالة نشطة",
+          "ongoingMedication": "دواء مستمر",
+          "surgeryIn": "عملية في",
+          "at": "في",
+          "noRecords": "لم يتم العثور على سجلات"
+        },
+        "intraOp": {
+          "sidebar": {
+            "title": "جميع قائمة تحقق أثناء العملية",
+            "surgeryTiming": "توقيت الجراحة",
+            "procedureDetails": "تفاصيل الإجراء",
+            "complications": "المضاعفات",
+            "bloodLossTransfusion": "فقدان الدم ونقل الدم",
+            "implantsConsumables": "الغرسات المستخدمة والمستهلكات",
+            "specimensOther": "العينات وتفاصيل أخرى",
+            "surgeonNotes": "ملاحظات الجراح الإضافية"
+          },
+          "loading": "جاري تحميل تفاصيل أثناء العملية...",
+          "sections": {
+            "surgeryTiming": "توقيت الجراحة",
+            "procedureDetails": "تفاصيل الإجراء",
+            "complications": "المضاعفات",
+            "bloodLossTransfusion": "فقدان الدم ونقل الدم",
+            "implantsUsed": "الغرسات المستخدمة",
+            "consumablesUsed": "المستهلكات المستخدمة",
+            "specimensOther": "العينات وتفاصيل أخرى",
+            "surgeonNotes": "ملاحظات الجراح الإضافية"
+          },
+          "fields": {
+            "patientInTime": "وقت دخول المريض",
+            "anesthesiaStart": "بداية التخدير",
+            "surgeryStartIncision": "بداية الجراحة (الشق)",
+            "surgeryEndClosure": "انتهاء الجراحة (الإغلاق)",
+            "actualProcedure": "الإجراء الفعلي المنفذ",
+            "selectProcedure": "اختر الإجراء",
+            "sideSite": "الجانب / الموقع",
+            "selectSideSite": "اختر الجانب / الموقع",
+            "approachAccess": "النهج / الوصول",
+            "selectApproach": "اختر النهج / الوصول",
+            "intraOpFindings": "النتائج أثناء العملية",
+            "enterFindings": "أدخل النتائج",
+            "operativeSteps": "ملخص خطوات العملية",
+            "enterOperativeSteps": "أدخل خطوات العملية",
+            "intraOpComplications": "المضاعفات أثناء العملية",
+            "enterComplications": "أدخل المضاعفات أثناء العملية",
+            "estimatedBloodLoss": "فقدان الدم المقدر (مل)",
+            "selectBloodLoss": "اختر فقدان الدم",
+            "prbcUnits": "كريات الدم الحمراء المركزة (وحدات)",
+            "ffpUnits": "البلازما الطازجة المجمدة (وحدات)",
+            "plateletsUnits": "الصفائح الدموية (وحدات)",
+            "selectUnits": "اختر الوحدات",
+            "implantType": "نوع الغرسة",
+            "selectImplantType": "اختر نوع الغرسة",
+            "size": "الحجم",
+            "selectSize": "اختر الحجم",
+            "batchLotNo": "رقم الدفعة / اللوت",
+            "enterBatchLotNo": "أدخل رقم الدفعة / اللوت",
+            "manufacturer": "الشركة المصنعة",
+            "selectManufacturer": "اختر الشركة المصنعة",
+            "quantity": "الكمية",
+            "selectQuantity": "اختر الكمية",
+            "enterQuantity": "أدخل الكمية",
+            "itemName": "اسم العنصر",
+            "selectItemName": "اختر المستهلك",
+            "note": "ملاحظة",
+            "enterNote": "أدخل تفاصيل إضافية",
+            "specimensHistopathology": "العينات المرسلة للفحص النسيجي",
+            "enterSpecimenDetails": "أدخل تفاصيل العينة",
+            "drainsPlaced": "الأنابيب الموضوعة",
+            "enterDrainDetails": "أدخل تفاصيل الأنبوب",
+            "catheterPlaced": "القسطرة الموضوعة",
+            "enterCatheterDetails": "أدخل تفاصيل القسطرة",
+            "specimenDetails": "تفاصيل العينة",
+            "notes": "ملاحظات",
+            "enterAdditionalNotes": "أدخل ملاحظات إضافية",
+            "procedure": "الإجراء"
+          },
+          "actions": {
+            "saveDraft": "حفظ كمسودة",
+            "markCompleted": "تحديد كمكتمل"
+          }
+        },
+        "nurseCare": {
+          "sidebar": {
+            "title": "جميع قائمة تحقق رعاية التمريض",
+            "patientReception": "استقبال المريض في غرفة العمليات",
+            "safetyChecklist": "قائمة تحقق السلامة الجراحية",
+            "positioning": "وضعية المريض والتحضير",
+            "timeOut": "التوقف (قبل شق الجلد)",
+            "signOut": "التوقيع (قبل مغادرة المريض غرفة العمليات)",
+            "implantsUsed": "الغرسات المستخدمة",
+            "consumablesUsed": "المستهلكات المستخدمة",
+            "additionalNotes": "ملاحظات التمريض الإضافية"
+          },
+          "loading": "جاري تحميل ملاحظات التمريض...",
+          "sections": {
+            "patientReception": "استقبال المريض في غرفة العمليات",
+            "safetyChecklist": "قائمة تحقق السلامة الجراحية",
+            "positioning": "وضعية المريض والتحضير",
+            "timeOut": "التوقف (قبل شق الجلد)",
+            "signOut": "التوقيع (قبل مغادرة المريض غرفة العمليات)",
+            "implantsUsed": "الغرسات المستخدمة",
+            "consumablesUsed": "المستهلكات المستخدمة",
+            "additionalNotes": "ملاحظات التمريض الإضافية"
+          },
+          "fields": {
+            "patientReceivedTime": "وقت استقبال المريض",
+            "selectTime": "اختر الوقت",
+            "patientIdentityVerified": "تم التحقق من هوية المريض",
+            "consentFormVerified": "تم التحقق من نموذج الموافقة",
+            "surgicalSiteMarked": "تم تحديد موقع الجراحة",
+            "fastingStatusConfirmed": "تم تأكيد حالة الصيام (NPO)",
+            "patientConfirmsIdentity": "المريض يؤكد الهوية والموقع والإجراء والموافقة",
+            "siteMarkedNotApplicable": "الموقع محدد / غير قابل للتطبيق",
+            "consentFormComplete": "نموذج الموافقة مكتمل",
+            "pulseOximeterFunctioning": "مقياس التأكسج على المريض ويعمل",
+            "knownAllergiesConfirmed": "تم تأكيد الحساسية المعروفة",
+            "difficultAirwayAssessed": "تم تقييم صعوبة مجرى الهواء / خطر الشفط",
+            "bloodLossRiskAssessed": "تم تقييم خطر فقدان أكثر من 500 مل من الدم",
+            "additionalNotes": "ملاحظات إضافية",
+            "enterAdditionalNotes": "أدخل ملاحظات إضافية",
+            "patientPosition": "وضعية المريض",
+            "enterPatientPosition": "أدخل وضعية المريض",
+            "pressurePointsPadded": "جميع نقاط الضغط مبطنة بشكل كافٍ",
+            "allTeamMembersIntroduced": "تم تقديم جميع أعضاء الفريق بالاسم والدور",
+            "teamConfirmsPatient": "الجراح وأخصائي التخدير والممرض يؤكدون المريض والموقع والإجراء",
+            "antibioticProphylaxis": "تم إعطاء المضاد الحيوي الوقائي خلال 60 دقيقة",
+            "essentialImagingDisplayed": "تم عرض التصوير الأساسي",
+            "sterilityConfirmed": "تم تأكيد التعقيم (بما في ذلك نتائج المؤشر)",
+            "procedureRecordedCorrectly": "تم تسجيل اسم الإجراء بشكل صحيح",
+            "instrumentCountsCorrect": "عدد الأدوات والإسفنج والإبر صحيح",
+            "specimenLabeled": "العينة معنونة (بما في ذلك اسم المريض)",
+            "equipmentProblemsAddressed": "تمت معالجة مشاكل المعدات",
+            "time": "الوقت",
+            "implantType": "نوع الغرسة",
+            "selectType": "اختر النوع",
+            "size": "الحجم",
+            "selectSize": "اختر الحجم",
+            "batchLotNo": "رقم الدفعة / اللوت",
+            "selectBatch": "اختر الدفعة",
+            "manufacturer": "الشركة المصنعة",
+            "selectManufacturer": "اختر الشركة المصنعة",
+            "quantity": "الكمية",
+            "qty": "الكمية",
+            "itemName": "اسم العنصر",
+            "selectItemName": "اختر اسم العنصر",
+            "enterQuantity": "أدخل الكمية",
+            "note": "ملاحظة",
+            "enterNote": "أدخل ملاحظة",
+            "nursingNotes": "ملاحظات التمريض",
+            "enterNursingNotes": "أدخل ملاحظات التمريض"
+          },
+          "actions": {
+            "addImplant": "إضافة غرسة",
+            "addConsumable": "إضافة مستهلك",
+            "saveDraft": "حفظ كمسودة",
+            "markCompleted": "تحديد كمكتمل"
+          }
+        },
+        "postOp": {
+          "sidebar": {
+            "title": "جميع قائمة تحقق رعاية ما بعد العملية",
+            "disposition": "التصرف / النقل",
+            "vitalSigns": "مراقبة العلامات الحيوية",
+            "activity": "النشاط والحركة",
+            "diet": "الحمية والسوائل الفموية",
+            "nurseOrder": "أمر التمريض",
+            "painManagement": "إدارة الألم",
+            "drains": "الأنابيب والقساطر",
+            "specialInstructions": "التعليمات الخاصة",
+            "followUp": "المتابعة والمراجعات"
+          },
+          "loading": "جاري تحميل تفاصيل ما بعد العملية...",
+          "noRecords": "لم يتم العثور على سجلات",
+          "sections": {
+            "disposition": "التصرف / النقل",
+            "vitalSigns": "مراقبة العلامات الحيوية",
+            "activity": "النشاط والحركة",
+            "diet": "الحمية والسوائل الفموية",
+            "nurseOrder": "أمر التمريض",
+            "painManagement": "إدارة الألم",
+            "drains": "الأنابيب والقساطر",
+            "specialInstructions": "التعليمات الخاصة",
+            "followUp": "المتابعة والمراجعات"
+          },
+          "fields": {
+            "transferTo": "نقل إلى",
+            "selectTransferTo": "اختر النقل إلى",
+            "floor": "الطابق",
+            "selectFloor": "اختر الطابق",
+            "wardUnit": "الجناح / الوحدة",
+            "selectWardUnit": "اختر الجناح / الوحدة",
+            "bedNumber": "رقم السرير",
+            "selectBedNumber": "اختر رقم السرير",
+            "transferTime": "وقت النقل",
+            "selectTime": "اختر الوقت",
+            "nurse": "الممرض",
+            "selectNurse": "اختر الممرض",
+            "monitoringFrequency": "تكرار المراقبة",
+            "selectFrequency": "اختر التكرار",
+            "duration": "المدة",
+            "selectDuration": "اختر المدة",
+            "specialMonitoring": "المراقبة الخاصة",
+            "selectMonitoring": "اختر المراقبة",
+            "activityLevel": "مستوى النشاط",
+            "selectActivityLevel": "اختر مستوى النشاط",
+            "mobilizationPlan": "خطة الحركة",
+            "enterMobilizationPlan": "أدخل تفاصيل خطة الحركة",
+            "dietOrders": "أوامر الحمية",
+            "selectDiet": "اختر الحمية",
+            "timeHour": "الوقت (ساعة)",
+            "selectTimeHour": "اختر الوقت",
+            "fluidRestriction": "تقييد السوائل",
+            "fluidRestrictionInstructions": "تعليمات تقييد السوائل",
+            "enterFluidRestriction": "تفاصيل الحد الأقصى المسموح به من السوائل",
+            "instructions": "التعليمات",
+            "painAssessmentFrequency": "تكرار تقييم الألم",
+            "targetPainScore": "درجة الألم المستهدفة (0-10)",
+            "selectTargetScore": "اختر الدرجة المستهدفة",
+            "urinaryCatheter": "القسطرة البولية موجودة",
+            "catheterRemovalPlan": "خطة إزالة القسطرة",
+            "enterPostOpInstructions": "أدخل تعليمات ما بعد العملية",
+            "ngt": "الأنبوب الأنفي المعدي موجود",
+            "ngtManagement": "إدارة الأنبوب الأنفي المعدي",
+            "additionalSpecialInstructions": "التعليمات الخاصة الإضافية",
+            "enterSpecialInstructions": "أدخل التعليمات الخاصة لما بعد العملية",
+            "doctor": "الطبيب",
+            "selectDoctor": "اختر الطبيب",
+            "date": "التاريخ",
+            "selectFollowUpDate": "اختر تاريخ المتابعة",
+            "time": "الوقت"
+          },
+          "table": {
+            "orderType": "نوع الأمر",
+            "details": "التفاصيل / التعليمات",
+            "urgency": "الاستعجال",
+            "frequency": "التكرار",
+            "startDateTime": "تاريخ ووقت البدء",
+            "orderedBy": "طلب بواسطة",
+            "status": "الحالة",
+            "actions": "الإجراءات"
+          },
+          "actions": {
+            "addNurseNote": "إضافة ملاحظة تمريض",
+            "saveDraft": "حفظ كمسودة",
+            "submitOrders": "إرسال الأوامر"
+          }
+        }
+      },
+      "otSetting": {
+        "teams": {
+          "title": "الفرق",
+          "addTeam": "إضافة فريق",
+          "editTeam": "تعديل الفريق",
+          "searchTeams": "البحث عن الفرق",
+          "searchLabels": {
+            "mrn": "الرقم الطبي",
+            "name": "الاسم",
+            "team": "الفريق"
+          },
+          "columns": {
+            "teamName": "اسم الفريق",
+            "leadSurgeon": "الجراح الرائد",
+            "membersCount": "عدد الأعضاء",
+            "speciality": "التخصص",
+            "createdOn": "تاريخ الإنشاء",
+            "createdBy": "أنشئ بواسطة",
+            "status": "الحالة"
+          },
+          "actions": {
+            "view": "عرض",
+            "edit": "تعديل",
+            "delete": "حذف"
+          },
+          "memberRoles": {
+            "leadSurgeon": "الجراح الرئيسي",
+            "assistantSurgeon": "الجراح المساعد",
+            "anaesthetist": "طبيب التخدير",
+            "scrubNurse": "ممرضة العمليات",
+            "circulatingNurse": "ممرضة متجولة",
+            "otTechnician": "فني العمليات"
+          },
+          "createTeam": {
+            "title": "إنشاء فريق",
+            "teamName": "اسم الفريق",
+            "specialty": "التخصص",
+            "status": "الحالة",
+            "teamMember": "عضو الفريق",
+            "placeholders": {
+              "teamName": "أدخل اسم الفريق",
+              "specialty": "أدخل التخصص",
+              "selectSurgeon": "اختر الجراح",
+              "selectAssistantSurgeon": "اختر الجراح المساعد",
+              "selectAnaesthetist": "اختر طبيب التخدير",
+              "selectScrubNurse": "اختر ممرضة العمليات",
+              "selectCirculatingNurse": "اختر الممرضة المتجولة",
+              "selectOtTechnician": "اختر فني العمليات",
+              "loadingDoctors": "جاري تحميل الأطباء...",
+              "loadingNurses": "جاري تحميل الممرضات..."
+            },
+            "actions": {
+              "saveAsDraft": "حفظ كمسودة",
+              "completeAndSign": "إكمال وتوقيع",
+              "creating": "جاري الإنشاء..."
+            },
+            "notifications": {
+              "success": "تم إنشاء الفريق بنجاح",
+              "error": "فشل إنشاء الفريق",
+              "teamNameRequired": "اسم الفريق مطلوب",
+              "specialtyRequired": "التخصص مطلوب",
+              "leadSurgeonRequired": "الجراح الرئيسي مطلوب",
+              "assistantSurgeonRequired": "الجراح المساعد مطلوب",
+              "anaesthetistRequired": "طبيب التخدير مطلوب",
+              "scrubNurseRequired": "ممرضة العمليات مطلوبة",
+              "circulatingNurseRequired": "الممرضة المتجولة مطلوبة",
+              "otTechnicianRequired": "فني العمليات مطلوب"
+            }
+          },
+          "details": {
+            "title": "فريق العمليات",
+            "sectionTitle": "تفاصيل الفريق",
+            "metadata": "البيانات الوصفية",
+            "teamMember": "عضو الفريق",
+            "teamName": "اسم الفريق",
+            "specialty": "التخصص",
+            "status": "الحالة",
+            "createdBy": "أنشئ بواسطة",
+            "createdDate": "تاريخ الإنشاء",
+            "failedToLoad": "فشل تحميل تفاصيل الفريق.",
+            "goBack": "العودة"
+          }
+        },
+        "templates": {
+          "title": "القوالب",
+          "addTemplate": "إضافة قالب",
+          "searchTemplates": "البحث عن القوالب",
+          "searchLabels": {
+            "templateName": "اسم القالب",
+            "procedure": "الإجراء",
+            "surgeon": "الجراح"
+          },
+          "columns": {
+            "templateName": "اسم القالب",
+            "procedure": "الإجراء",
+            "leadSurgeon": "الجراح الرائد",
+            "createdBy": "أنشئ بواسطة",
+            "createdOn": "تاريخ الإنشاء",
+            "status": "الحالة"
+          },
+          "createTemplate": {
+            "title": "إنشاء قالب",
+            "sectionTitle": "متطلبات الجراحة",
+            "templateName": "اسم قالب الجراحة",
+            "status": "الحالة",
+            "placeholders": {
+              "templateName": "اختر اسم القالب",
+              "loadingProcedures": "جاري تحميل الإجراءات...",
+              "selectProcedure": "اختر الإجراء",
+              "selectItemName": "اختر اسم العنصر",
+              "loadingClearances": "جاري تحميل الموافقات...",
+              "addMedicalClearances": "إضافة الموافقات الطبية",
+              "loadingConsents": "جاري تحميل الموافقات...",
+              "addConsentsRequired": "إضافة الموافقات المطلوبة",
+              "addPreparationRequirements": "إضافة متطلبات تحضير المريض",
+              "addAnesthesiaRequirements": "إضافة متطلبات التخدير",
+              "addEquipmentInstruments": "إضافة المعدات والأدوات",
+              "addBloodResourcePreparation": "إضافة تحضير الدم والموارد"
+            },
+            "notifications": {
+              "templateNameRequired": "اسم القالب مطلوب"
+            },
+            "sections": {
+              "procedures": "الإجراءات",
+              "requiredInvestigations": "الفحوصات المطلوبة",
+              "medicalClearances": "الموافقات الطبية",
+              "consentsRequired": "الموافقات المطلوبة",
+              "nursingOrders": "أوامر التمريض (قبل العملية)",
+              "patientPreparation": "متطلبات تحضير المريض",
+              "anesthesiaRequirements": "متطلبات التخدير",
+              "equipmentInstruments": "المعدات والأدوات",
+              "implantsConsumables": "الغرسات والمستهلكات",
+              "bloodResourcePreparation": "تحضير الدم والموارد"
+            },
+            "actions": {
+              "saveAsDraft": "حفظ كمسودة",
+              "completeAndSign": "إكمال وتوقيع",
+              "saving": "جاري الحفظ..."
+            }
+          }
+        }
       }
     }
   },
   "metadata": {
-    "title": "MedExe - بوابة المستشفى",
+    "title": "ميديكس - بوابة المستشفى",
     "description": "بوابة المستشفى"
   }
 }

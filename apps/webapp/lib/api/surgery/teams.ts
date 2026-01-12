@@ -138,6 +138,27 @@ class SurgeryTeamApiClient {
             config
         );
     }
+
+    /* ---------------------------------------------------
+       PUT: Update Surgery Team
+    --------------------------------------------------- */
+    async update(id: string, payload: UpdateSurgeryTeamParams) {
+        return axios.put(
+            `${this.baseUrl}/api/v1/surgery-teams/${id}`,
+            payload,
+            await this.getConfig()
+        );
+    }
+
+    /* ---------------------------------------------------
+       DELETE: Delete Surgery Team
+    --------------------------------------------------- */
+    async delete(id: string) {
+        return axios.delete(
+            `${this.baseUrl}/api/v1/surgery-teams/${id}`,
+            await this.getConfig()
+        );
+    }
 }
 
 export const createSurgeryTeamApiClient = (config: ApiConfig) =>

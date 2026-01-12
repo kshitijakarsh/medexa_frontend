@@ -1,17 +1,20 @@
 "use client";
 
 import React from "react";
-import { AlertCircle, Zap, ShieldCheck, Clock } from "lucide-react";
+import { AlertCircle, Zap, ShieldCheck, Clock, Users, FlaskConical } from "lucide-react";
 import PatientCard from "./UI/PatientCard";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
 import { ROUTES } from "@/lib/routes";
-import { useQuery } from "@tanstack/react-query";
-import { createSurgeryApiClient, Surgery } from "@/lib/api/surgery/surgeries";
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useDictionary } from "@/i18n/use-dictionary";
+import { useSurgeries } from "../../_hooks/useSurgery";
 
 const RightSidebar: React.FC = () => {
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const rightSidebarDict = dict.pages.surgery.dashboard;
 
   const alerts = [
     {
@@ -22,13 +25,13 @@ const RightSidebar: React.FC = () => {
     },
     {
       id: 2,
-      icon: <Zap className="text-orange-500" size={20} />,
+      icon: <Users className="text-orange-500" size={20} />,
       title: "OT-5 equipment not sterilized",
       sub: "Yousef Al-Ghanim in ER-2",
     },
     {
       id: 3,
-      icon: <ShieldCheck className="text-blue-500" size={20} />,
+      icon: <FlaskConical className="text-blue-500" size={20} />,
       title: "Anesthesia clearance pending",
       sub: "Patient Manam Khan (MRN-2S03)",
     },
@@ -45,7 +48,7 @@ const RightSidebar: React.FC = () => {
     onViewAll: () => void;
     children: React.ReactNode;
   }) => (
-    <div className="bg-white rounded-3xl p-4 shadow-soft">
+    <div className="bg-white rounded-3xl p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Icon size={18} className="text-blue-500" />
@@ -58,7 +61,7 @@ const RightSidebar: React.FC = () => {
           className="text-xs font-medium text-blue-500 h-auto p-0"
           onClick={onViewAll}
         >
-          View All
+          {rightSidebarDict.viewAll}
         </Button>
       </div>
       <div className="flex flex-col gap-3">
@@ -67,44 +70,35 @@ const RightSidebar: React.FC = () => {
     </div>
   );
 
-  const surgeryApi = createSurgeryApiClient({});
-
-  const { data: surgeriesResponse, isLoading } = useQuery({
-    queryKey: ["surgeries-sidebar"],
-    queryFn: async () => {
-      const res = await surgeryApi.getAll({ limit: 50 });
-      return res.data;
-    },
-  });
+  const { data: surgeriesResponse, isLoading } = useSurgeries({ limit: 50 });
 
   const allSurgeries: Surgery[] = Array.isArray(surgeriesResponse?.data)
     ? surgeriesResponse.data
     : (Array.isArray(surgeriesResponse) ? surgeriesResponse : []);
 
-  // Upcoming: status is scheduled, sort by scheduled_date ASC
   const upcomingSurgeries = allSurgeries
-    .filter(s => s.status?.toLowerCase() === "scheduled")
+    .filter(s => {
+      const status = s.status?.toLowerCase();
+      return !status || status === "scheduled";
+    })
     .sort((a, b) => {
-      if (!a.scheduled_date) return 1;
-      if (!b.scheduled_date) return -1;
-      return new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime();
+      const dateA = new Date(a.date || a.scheduled_date || 0).getTime();
+      const dateB = new Date(b.date || b.scheduled_date || 0).getTime();
+      return dateA - dateB;
     })
     .slice(0, 5);
 
-  // Surgery Requests: statuses that are not scheduled or in_progress (e.g. pre_op, pending)
-  const surgeryRequests = allSurgeries
-    .filter(s => s.status?.toLowerCase() !== "scheduled" && s.status?.toLowerCase() !== "in_progress")
-    .slice(0, 5);
+  const surgeryRequests = allSurgeries.slice(0, 5);
 
 
   return (
     <aside className="flex w-full flex-col gap-3">
       {/* Critical Alerts */}
-      <div className="bg-white rounded-3xl p-4 shadow-soft">
+      <div className="bg-white rounded-3xl p-4">
         <div className="flex items-center gap-2 mb-4">
           <AlertCircle size={18} className="text-gray-500" />
           <h3 className="text-sm font-medium text-gray-700">
-            OT Critical Alerts & Actions
+            {rightSidebarDict.alerts.title}
           </h3>
         </div>
         <div className="space-y-4">
@@ -124,23 +118,27 @@ const RightSidebar: React.FC = () => {
 
       {/* Upcoming Surgeries */}
       <SidebarSection
-        title="Upcoming Surgeries"
+        title={rightSidebarDict.alerts.upcomingSurgeries}
         icon={Clock}
         onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
         {isLoading ? (
-          <div className="py-4 text-center text-xs text-gray-500">Loading...</div>
+          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.loading}</div>
         ) : upcomingSurgeries.length === 0 ? (
-          <div className="py-4 text-center text-xs text-gray-500">No upcoming surgeries</div>
+          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.noUpcoming}</div>
         ) : upcomingSurgeries.map((item) => (
           <PatientCard
             key={item.id}
-            avatar="/images/avatars/1.png"
+            id={item.id}
+            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
             name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.id} // or mrn if available
-            procedure={item.surgery_type || "N/A"}
-            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
-            room={(item as any).ot_room || "N/A"}
+            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
+            procedure={item.procedure?.name || item.surgery_type || "—"}
+            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit"
+            }) : "—"}
+            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
             status={item.status}
           />
         ))}
@@ -148,23 +146,27 @@ const RightSidebar: React.FC = () => {
 
       {/* Surgery Requests */}
       <SidebarSection
-        title="Surgery Requests"
+        title={rightSidebarDict.alerts.surgeryRequests}
         icon={Clock}
         onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
         {isLoading ? (
-          <div className="py-4 text-center text-xs text-gray-500">Loading...</div>
+          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.loading}</div>
         ) : surgeryRequests.length === 0 ? (
-          <div className="py-4 text-center text-xs text-gray-500">No surgery requests</div>
+          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.noRequests}</div>
         ) : surgeryRequests.map((item) => (
           <PatientCard
             key={item.id}
-            avatar="/images/avatars/1.png"
+            id={item.id}
+            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
             name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.id}
-            procedure={item.surgery_type || "N/A"}
-            time={item.scheduled_date ? new Date(item.scheduled_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "N/A"}
-            room={(item as any).ot_room || "N/A"}
+            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
+            procedure={item.procedure?.name || item.surgery_type || "—"}
+            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit"
+            }) : "—"}
+            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
             status={item.status}
           />
         ))}

@@ -6,6 +6,7 @@ import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDa
 import { cn } from "@workspace/ui/lib/utils";
 import { EquipmentUsageLog } from "@/lib/api/surgery/ward";
 import ActionMenu from "@/components/common/action-menu";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // --- Types ---
 export type EquipmentUsageItem = {
@@ -23,92 +24,27 @@ export type EquipmentUsageItem = {
     status: "Running" | "Completed";
 };
 
-// --- Mock Data ---
-const EQUIPMENT_USAGE_DATA: EquipmentUsageItem[] = [
-    {
-        id: "1",
-        equipmentName: "Oxygen Cylinder",
-        assetId: "Oxy-004",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        startTime: "Dec 1, 08:00 AM",
-        endTime: "Running...",
-        duration: "26h 0m",
-        status: "Running",
-    },
-    {
-        id: "2",
-        equipmentName: "Oxygen Cylinder",
-        assetId: "Oxy-004",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        startTime: "Dec 1, 08:00 AM",
-        endTime: "Running...",
-        duration: "26h 0m",
-        status: "Running",
-    },
-    {
-        id: "3",
-        equipmentName: "Oxygen Cylinder",
-        assetId: "Oxy-004",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        startTime: "Dec 1, 08:00 AM",
-        endTime: "Dec 2, 10:00 AM",
-        duration: "26h 0m",
-        status: "Completed",
-    },
-    {
-        id: "4",
-        equipmentName: "Oxygen Cylinder",
-        assetId: "Oxy-004",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        startTime: "Dec 1, 08:00 AM",
-        endTime: "Dec 2, 10:00 AM",
-        duration: "26h 0m",
-        status: "Completed",
-    },
-    {
-        id: "5",
-        equipmentName: "Oxygen Cylinder",
-        assetId: "Oxy-004",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        startTime: "Dec 1, 08:00 AM",
-        endTime: "Dec 2, 10:00 AM",
-        duration: "26h 0m",
-        status: "Completed",
-    },
-];
 
 export const EquipmentUsageLogs = ({
     data,
     isLoading,
+    onEdit,
+    onDelete,
 }: {
     data?: EquipmentUsageLog[];
     isLoading: boolean;
+    onEdit?: (id: string) => void;
+    onDelete?: (id: string) => void;
 }) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+    const commonDict = dict.pages.surgery.common;
+
     const tableData: EquipmentUsageItem[] = React.useMemo(() => {
         if (!data) return [];
         return data.map((log) => ({
             id: log.id,
-            equipmentName: log.equipment_name,
+            equipmentName: log.item_name,
             assetId: log.asset_id,
             patient: {
                 name: log.patient ? `${log.patient.first_name} ${log.patient.last_name}` : "Unknown Patient",
@@ -116,24 +52,24 @@ export const EquipmentUsageLogs = ({
             },
             loggedBy: log.logged_by ? `${log.logged_by.first_name} ${log.logged_by.last_name}` : "Unknown",
             startTime: log.start_time,
-            endTime: log.end_time || "Running...",
+            endTime: log.end_time || wardStoreDict.columns.running,
             duration: log.duration || "-",
             status: log.status,
         }));
-    }, [data]);
+    }, [data, wardStoreDict]);
 
     const columns = [
         {
             key: "equipmentName",
-            label: "Equipment Name",
+            label: wardStoreDict.columns.equipmentName,
         },
         {
             key: "assetId",
-            label: "Asset Id",
+            label: wardStoreDict.columns.assetId,
         },
         {
             key: "patient",
-            label: "Patient",
+            label: wardStoreDict.columns.patient,
             render: (row: EquipmentUsageItem) => (
                 <div className="flex flex-col">
                     <span className="font-semibold text-slate-700">{row.patient.name}</span>
@@ -143,16 +79,16 @@ export const EquipmentUsageLogs = ({
         },
         {
             key: "loggedBy",
-            label: "Logged By",
+            label: wardStoreDict.columns.loggedBy,
         },
         {
             key: "time",
-            label: "Start Time - End time",
+            label: wardStoreDict.columns.timeRange,
             render: (row: EquipmentUsageItem) => (
                 <div className="flex items-center gap-1 text-slate-500 text-sm">
                     <span>{row.startTime}</span>
                     <span>→</span>
-                    <span className={cn(row.endTime === "Running..." ? "text-green-500" : "")}>
+                    <span className={cn(row.endTime === wardStoreDict.columns.running ? "text-green-500" : "")}>
                         {row.endTime}
                     </span>
                 </div>
@@ -160,11 +96,11 @@ export const EquipmentUsageLogs = ({
         },
         {
             key: "duration",
-            label: "Duration",
+            label: wardStoreDict.columns.duration,
         },
         {
             key: "status",
-            label: "Status",
+            label: wardStoreDict.columns.status,
             render: (row: EquipmentUsageItem) => (
                 <div
                     className={cn(
@@ -174,32 +110,29 @@ export const EquipmentUsageLogs = ({
                             : "bg-slate-50 text-slate-500 border-slate-200"
                     )}
                 >
-                    {row.status}
+                    {row.status === "Running" ? wardStoreDict.statuses.running : wardStoreDict.statuses.completed}
                 </div>
             ),
         },
         {
             key: "action",
-            label: "Action",
-            render: () => (
+            label: wardStoreDict.columns.action,
+            render: (row: EquipmentUsageItem) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.view,
                     },
                     {
-                        label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.edit,
+                        onClick: () => {
+                            if (onEdit) onEdit(row.id);
+                        }
                     },
                     {
-                        label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: wardStoreDict.actions.delete,
+                        onClick: () => {
+                            if (onDelete) onDelete(row.id);
+                        }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
 
