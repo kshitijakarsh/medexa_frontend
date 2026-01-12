@@ -27,7 +27,18 @@
     "bulkAddDepartment": "Bulk Add Department",
     "noData": "No data available",
     "Addnew": "Add New",
-    "addRow": "Add Row"
+    "addRow": "Add Row",
+    "date": "Date",
+    "quantity": "Quantity",
+    "notes": "Notes",
+    "note": "Note",
+    "description": "Description",
+    "category": "Category",
+    "add": "Add",
+    "completed": "Completed",
+    "pending": "Pending",
+    "ordered": "Ordered",
+    "justNow": "Just now"
   },
   "dashboard": {
     "todayOverview": "Today's Overview",

@@ -27,7 +27,18 @@
     "bulkAddDepartment": "إضافة جماعية للأقسام",
     "noData": "لا توجد بيانات متاحة",
     "Addnew": "إضافة جديد",
-    "addRow": "إضافة صف"
+    "addRow": "إضافة صف",
+    "date": "التاريخ",
+    "quantity": "الكمية",
+    "notes": "ملاحظات",
+    "note": "ملاحظة",
+    "description": "الوصف",
+    "category": "الفئة",
+    "add": "إضافة",
+    "completed": "مكتمل",
+    "pending": "قيد الانتظار",
+    "ordered": "مطلوب",
+    "justNow": "الآن"
   },
   "dashboard": {
     "todayOverview": "نظرة عامة اليوم",
