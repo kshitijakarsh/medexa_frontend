@@ -26,7 +26,8 @@
     "exportExcel": "تصدير اكسل",
     "bulkAddDepartment": "إضافة جماعية للأقسام",
     "noData": "لا توجد بيانات متاحة",
-    "Addnew": "إضافة جديد"
+    "Addnew": "إضافة جديد",
+    "addRow": "إضافة صف"
   },
   "dashboard": {
     "todayOverview": "نظرة عامة اليوم",
@@ -566,6 +567,45 @@
         "placeholderEmail": "أدخل البريد الإلكتروني",
         "placeholderPhone": "أدخل رقم الهاتف",
         "placeholderPassword": "أدخل كلمة المرور"
+      }
+    },
+    "employeeConfiguration": {
+      "title": "إعداد الموظفين",
+      "tabs": {
+        "humanResources": "الموظف",
+        "designation": "إدارة المسميات الوظيفية",
+        "specialization": "التخصص",
+        "userRoles": "أدوار المستخدمين"
+      },
+      "table": {
+        "sno": "الرقم",
+        "name": "الاسم",
+        "designation": "المسمى الوظيفي",
+        "department": "القسم",
+        "contact": "الاتصال",
+        "createdOn": "تاريخ الإنشاء",
+        "addedBy": "أُضيف بواسطة",
+        "status": "الحالة",
+        "action": "الإجراء",
+        "userRole": "دور المستخدم",
+        "specialization": "التخصص",
+        "designationName": "اسم المسمى الوظيفي",
+        "searchPlaceholder": "بحث..."
+      },
+      "actions": {
+        "add": "إضافة جديد",
+        "filter": "تصفية",
+        "view": "عرض",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا الموظف؟",
+        "addBulkDesignation": "إضافة مسميات وظيفية بالجملة",
+        "addBulkSpecialization": "إضافة تخصصات بالجملة",
+        "addUserRole": "إضافة دور مستخدم",
+        "addRow": "إضافة صف",
+        "addNewEmployee": "إضافة موظف جديد",
+        "addDesignation": "إضافة مسمى وظيفي",
+        "addSpecialization": "إضافة تخصص"
       }
     },
     "settings": {

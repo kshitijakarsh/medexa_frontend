@@ -326,13 +326,14 @@ export function UploadCard({
   }, []);
 
   useEffect(() => {
-  // Only set preview from API when:
-  // - no local file is selected
-  // - and external preview exists
-  if (!value && externalPreviewUrl) {
-    setPreviewUrl(externalPreviewUrl);
-  }
-}, [externalPreviewUrl, value]);
+    if (value && value instanceof File) {
+      const objectUrl = URL.createObjectURL(value);
+      setPreviewUrl(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    } else if (!value && externalPreviewUrl) {
+      setPreviewUrl(externalPreviewUrl);
+    }
+  }, [externalPreviewUrl, value]);
 
 
   return (
