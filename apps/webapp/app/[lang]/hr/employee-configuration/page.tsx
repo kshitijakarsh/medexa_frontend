@@ -220,7 +220,7 @@ import SearchInput from "@/components/common/search-input"
 import NewButton from "@/components/common/new-button"
 import { getMockEmployees } from "./_components/api"
 import { PageHeader } from "@/components/common/page-header"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { createSpecialisationApiClient } from "@/lib/api/specialisations"
@@ -236,30 +236,47 @@ import { PERMISSIONS } from "@/app/utils/permissions"
 import FilterButton from "@/components/common/filter-button"
 import { Can } from "@/components/common/app-can"
 import { ROUTES } from "@/lib/routes"
+import { useLocaleRoute } from "@/app/hooks/use-locale-route"
+import { useDictionary } from "@/i18n/dictionary-context"
 
-const employeeConfigurationSection = [
-  { key: "humanResources", label: "Employee" },
-  { key: "designation", label: "Designation Master" },
-  { key: "specialization", label: "Specialization" },
-  { key: "roles", label: "User Roles" },
-]
+const employeeConfigurationTabs = [
+  "humanResources",
+  "designation",
+  "specialization",
+  "userRoles",
+] as const
 const PERMISSION_MAP = {
   humanResources: PERMISSIONS.EMPLOYEE,
   designation: PERMISSIONS.DESIGNATION,
   specialization: PERMISSIONS.SPECIALISATION,
-  roles: PERMISSIONS.ROLE,
+  userRoles: PERMISSIONS.ROLE,
 }
 
 export default function EmployeeConfigurationPage() {
+  const dict = useDictionary()
   const userPermissions = useUserStore((s) => s.user?.role.permissions)
   const router = useRouter()
+  const { withLocale } = useLocaleRoute()
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<any[]>([])
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<
-    "humanResources" | "designation" | "specialization" | "roles"
-  >("humanResources")
+    "humanResources" | "designation" | "specialization" | "userRoles"
+  >((searchParams.get("tab") as any) || "humanResources")
+
+  useEffect(() => {
+    const tabParam = searchParams.get("tab")
+    if (
+      tabParam &&
+      ["humanResources", "designation", "specialization", "userRoles"].includes(
+        tabParam
+      )
+    ) {
+      setActiveTab(tabParam as any)
+    }
+  }, [searchParams])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false)
   const [filters, setFilters] = useState<any>({})
@@ -286,10 +303,15 @@ export default function EmployeeConfigurationPage() {
   const permissionStrings =
     userPermissions?.map((p: any) => (typeof p === "string" ? p : p.name)) ?? []
 
-  const filteredTabs = employeeConfigurationSection.filter((t) => {
-    const perm = PERMISSION_MAP[t.key as keyof typeof PERMISSION_MAP]
-    return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false
-  })
+  const filteredTabs = employeeConfigurationTabs
+    .filter((key) => {
+      const perm = PERMISSION_MAP[key]
+      return perm?.VIEW ? permissionStrings.includes(perm.VIEW) : false
+    })
+    .map((key) => ({
+      key,
+      label: dict.pages.employeeConfiguration.tabs[key],
+    }))
 
   // Debounce search input
   useEffect(() => {
@@ -379,7 +401,7 @@ export default function EmployeeConfigurationPage() {
       })
       return response.data
     },
-    enabled: activeTab === "roles" && !!roleClient,
+    enabled: activeTab === "userRoles" && !!roleClient,
   })
 
   const {
@@ -582,7 +604,7 @@ export default function EmployeeConfigurationPage() {
           contact: item.phone || "N/A",
           createdOn: formattedDate,
           addedBy: item.created_by ? `User ${item.created_by}` : "N/A",
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           avatar:
             item.photo_url || "https://i.pravatar.cc/100?img=" + (index + 1),
           _raw: item, // Store raw data for mutations
@@ -592,7 +614,7 @@ export default function EmployeeConfigurationPage() {
       setLoading(false)
     } else if (
       activeTab !== "specialization" &&
-      activeTab !== "roles" &&
+      activeTab !== "userRoles" &&
       activeTab !== "designation" &&
       activeTab !== "humanResources"
     ) {
@@ -611,7 +633,7 @@ export default function EmployeeConfigurationPage() {
           sno: (page - 1) * limit + index + 1,
           id: item.id,
           name: item.name,
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           createdOn: formattedDate,
           addedBy: `User ${item.created_by}`,
           _raw: item, // Store raw data for mutations
@@ -624,7 +646,7 @@ export default function EmployeeConfigurationPage() {
 
   // Map roles data to table format
   useEffect(() => {
-    if (activeTab === "roles" && rolesData) {
+    if (activeTab === "userRoles" && rolesData) {
       const mappedData = rolesData.data.map((item, index) => {
         const date = new Date(item.created_at)
         const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
@@ -633,7 +655,7 @@ export default function EmployeeConfigurationPage() {
           sno: (page - 1) * limit + index + 1,
           id: item.id,
           name: item.name,
-          status: item.status === "active" ? "Active" : "Inactive",
+          status: item.status === "active" ? dict.common.active : dict.common.inactive,
           createdOn: formattedDate,
           addedBy: `User ${item.created_by}`,
           _raw: item, // Store raw data for mutations
@@ -672,7 +694,7 @@ export default function EmployeeConfigurationPage() {
       return [
         {
           key: "humanResources",
-          label: "Human Resources",
+          label: dict.pages.employeeConfiguration.tabs.humanResources,
           render: (row: any) => (
             <div className="flex items-center gap-3">
               <img
@@ -689,32 +711,32 @@ export default function EmployeeConfigurationPage() {
         },
         {
           key: "designation",
-          label: "Designation",
+          label: dict.pages.employeeConfiguration.table.designation,
           render: (row: any) => row.designation,
         },
         {
           key: "department",
-          label: "Department",
+          label: dict.pages.employeeConfiguration.table.department,
           render: (row: any) => row.department,
         },
-        { key: "contact", label: "Contact", render: (row: any) => row.contact },
+        { key: "contact", label: dict.pages.employeeConfiguration.table.contact, render: (row: any) => row.contact },
         {
           key: "createdOn",
-          label: "Created On",
+          label: dict.pages.employeeConfiguration.table.createdOn,
           render: (row: any) => row.createdOn,
         },
         {
           key: "addedBy",
-          label: "Added By",
+          label: dict.pages.employeeConfiguration.table.addedBy,
           render: (row: any) => row.addedBy,
         },
         {
           key: "status",
-          label: "Status",
+          label: dict.pages.employeeConfiguration.table.status,
           render: (row: any) => (
             <span
               className={
-                row.status === "Active" ? "text-green-600" : "text-red-500"
+                row.status === dict.common.active ? "text-green-600" : "text-red-500"
               }
             >
               {row.status}
@@ -723,19 +745,32 @@ export default function EmployeeConfigurationPage() {
         },
         {
           key: "action",
-          label: "Action",
+          label: dict.pages.employeeConfiguration.table.action,
           render: (r: any) => (
             <div className="flex items-center gap-2">
               <EmployeeConfigurationRowActions
+                onView={() => {
+                  if (r._raw) {
+                    router.push(
+                      withLocale(
+                        `${ROUTES.HR_EMPLOYEE_CONFIGURATION}/${r._raw.id}/view`
+                      )
+                    )
+                  }
+                }}
                 onEdit={() => {
                   if (r._raw) {
-                    router.push(`/employee-configuration/${r._raw.id}/edit`)
+                    router.push(
+                      withLocale(
+                        `${ROUTES.HR_EMPLOYEE_CONFIGURATION}/${r._raw.id}/edit`
+                      )
+                    )
                   }
                 }}
                 onDelete={() => {
                   if (
                     r._raw &&
-                    confirm("Are you sure you want to delete this employee?")
+                    confirm(dict.pages.employeeConfiguration.actions.confirmDelete)
                   ) {
                     deleteEmployeeMutation.mutate(r._raw.id)
                   }
@@ -754,20 +789,20 @@ export default function EmployeeConfigurationPage() {
     return [
       {
         key: "sno",
-        label: "S.No",
+        label: dict.pages.employeeConfiguration.table.sno,
         render: (r: any) => <span>{r.sno}</span>,
         className: "text-center w-[60px]",
       },
       {
         key: "name",
         label:
-          activeTab === "roles"
-            ? "User Role"
+          activeTab === "userRoles"
+            ? dict.pages.employeeConfiguration.table.userRole
             : activeTab === "specialization"
-              ? "Specialization"
+              ? dict.pages.employeeConfiguration.table.specialization
               : activeTab === "designation"
-                ? "Designation Name"
-                : "Name",
+                ? dict.pages.employeeConfiguration.table.designationName
+                : dict.pages.employeeConfiguration.table.name,
         render: (r: any) => (
           <span className="text-gray-800 font-medium">{r.name}</span>
         ),
@@ -807,7 +842,7 @@ export default function EmployeeConfigurationPage() {
               if (activeTab === "specialization" && r._raw) {
                 setEditingSpecialization(r._raw)
                 setIsEditDialogOpen(true)
-              } else if (activeTab === "roles" && r._raw) {
+              } else if (activeTab === "userRoles" && r._raw) {
                 setEditingRole(r._raw)
                 setIsEditRoleDialogOpen(true)
               } else if (activeTab === "designation" && r._raw) {
@@ -824,7 +859,7 @@ export default function EmployeeConfigurationPage() {
                 ) {
                   deleteMutation.mutate(r._raw.id)
                 }
-              } else if (activeTab === "roles" && r._raw) {
+              } else if (activeTab === "userRoles" && r._raw) {
                 if (confirm("Are you sure you want to delete this role?")) {
                   deleteRoleMutation.mutate(r._raw.id)
                 }
@@ -847,7 +882,7 @@ export default function EmployeeConfigurationPage() {
 
   const handleNew = () => {
     if (activeTab === "humanResources") {
-      router.push(ROUTES.HR_EMPLOYEE_ADD)
+      router.push(withLocale(ROUTES.HR_EMPLOYEE_ADD))
     } else {
       setIsAddDialogOpen(true)
     }
@@ -856,7 +891,7 @@ export default function EmployeeConfigurationPage() {
   const handleSave = async (values: any[]) => {
     if (activeTab === "specialization") {
       await createMutation.mutateAsync(values)
-    } else if (activeTab === "roles") {
+    } else if (activeTab === "userRoles") {
       // Roles only accepts single entry (first item)
       if (values.length > 0) {
         await createRoleMutation.mutateAsync(values[0])
@@ -918,7 +953,7 @@ export default function EmployeeConfigurationPage() {
       <Header />
 
       <div className="p-5 space-y-8">
-        <PageHeader title="Human Resources" />
+        <PageHeader title={dict.pages.employeeConfiguration.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Tabs and Actions */}
@@ -941,7 +976,7 @@ export default function EmployeeConfigurationPage() {
                             </Button>
                             <SearchInput value={search} onChange={setSearch} placeholder="Search..." />
                             <QuickActionsMenu />
-                            <NewButton handleClick={handleNew} />
+                            <NewButton label={dict.pages.employeeConfiguration.actions.addNewEmployee} />
                         </div>
                     </div> */}
 
@@ -951,8 +986,13 @@ export default function EmployeeConfigurationPage() {
             <div className="flex-shrink-0 w-full lg:w-auto">
               <DynamicTabs
                 tabs={filteredTabs}
-                defaultTab="humanResources"
-                onChange={(tabKey) => setActiveTab(tabKey as any)}
+                defaultTab={activeTab}
+                onChange={(tabKey) => {
+                  setActiveTab(tabKey as any)
+                  const params = new URLSearchParams(searchParams.toString())
+                  params.set("tab", tabKey)
+                  router.push(`?${params.toString()}`)
+                }}
               />
             </div>
 
@@ -980,7 +1020,7 @@ export default function EmployeeConfigurationPage() {
               <SearchInput
                 value={search}
                 onChange={setSearch}
-                placeholder="Search..."
+                placeholder={dict.common.search}
               />
               {/* </div> */}
 
@@ -1034,55 +1074,55 @@ export default function EmployeeConfigurationPage() {
             pagination={
               (activeTab === "specialization" &&
                 specialisationsData?.pagination) ||
-              (activeTab === "roles" && rolesData?.pagination) ||
-              (activeTab === "designation" && designationsData?.pagination) ||
-              (activeTab === "humanResources" && employeesData?.pagination)
+                (activeTab === "userRoles" && rolesData?.pagination) ||
+                (activeTab === "designation" && designationsData?.pagination) ||
+                (activeTab === "humanResources" && employeesData?.pagination)
                 ? (() => {
-                    const paginationData =
-                      activeTab === "specialization"
-                        ? specialisationsData?.pagination
-                        : activeTab === "roles"
-                          ? rolesData?.pagination
-                          : activeTab === "designation"
-                            ? designationsData?.pagination
-                            : employeesData?.pagination
-                    if (!paginationData) return null
-                    return (
-                      <div className="flex items-center justify-between pb-4 px-4">
-                        <div className="text-sm text-muted-foreground">
-                          Showing {data.length} of{" "}
-                          {paginationData.totalData}{" "}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setPage((p) => Math.max(1, p - 1))}
-                            disabled={page === 1 || loading}
-                          >
-                            Previous
-                          </Button>
-                          <div className="text-sm">
-                            Page {page} of {paginationData.totalPages}
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setPage((p) =>
-                                Math.min(paginationData.totalPages, p + 1)
-                              )
-                            }
-                            disabled={
-                              page === paginationData.totalPages || loading
-                            }
-                          >
-                            Next
-                          </Button>
-                        </div>
+                  const paginationData =
+                    activeTab === "specialization"
+                      ? specialisationsData?.pagination
+                      : activeTab === "userRoles"
+                        ? rolesData?.pagination
+                        : activeTab === "designation"
+                          ? designationsData?.pagination
+                          : employeesData?.pagination
+                  if (!paginationData) return null
+                  return (
+                    <div className="flex items-center justify-between pb-4 px-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing {data.length} of{" "}
+                        {paginationData.totalData}{" "}
                       </div>
-                    )
-                  })()
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPage((p) => Math.max(1, p - 1))}
+                          disabled={page === 1 || loading}
+                        >
+                          Previous
+                        </Button>
+                        <div className="text-sm">
+                          Page {page} of {paginationData.totalPages}
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setPage((p) =>
+                              Math.min(paginationData.totalPages, p + 1)
+                            )
+                          }
+                          disabled={
+                            page === paginationData.totalPages || loading
+                          }
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )
+                })()
                 : undefined
             }
             striped
@@ -1094,12 +1134,12 @@ export default function EmployeeConfigurationPage() {
       <AddDialog
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        mode={activeTab as "designation" | "specialization" | "roles"}
+        mode={activeTab as "designation" | "specialization" | "userRoles"}
         onSave={handleSave}
         isLoading={
           activeTab === "specialization"
             ? createMutation.isPending
-            : activeTab === "roles"
+            : activeTab === "userRoles"
               ? createRoleMutation.isPending
               : activeTab === "designation"
                 ? createDesignationMutation.isPending
