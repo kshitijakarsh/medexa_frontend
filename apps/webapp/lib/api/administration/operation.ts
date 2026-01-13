@@ -63,7 +63,7 @@ class OperationApiClient {
 
     constructor(config: ApiConfig) {
         this.baseUrl =
-            config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URI ?? "";
+            config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URL_SET_2 ?? "";
     }
 
     private async getJsonRequestConfig(): Promise<AxiosRequestConfig> {
