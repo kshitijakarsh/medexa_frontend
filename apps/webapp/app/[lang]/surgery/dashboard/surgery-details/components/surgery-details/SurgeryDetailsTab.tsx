@@ -19,8 +19,9 @@ interface SurgeryDetailsTabProps {
   surgeryData?: Surgery | null;
 }
 
-export const SurgeryDetailsTab = ({ isEditing, setIsEditing, patientId, surgeryData }: SurgeryDetailsTabProps) => {
+export const SurgeryDetailsTab = ({ isEditing, setIsEditing, surgeryData }: SurgeryDetailsTabProps) => {
   const dict = useDictionary();
+  const patientId = surgeryData?.patient_id;
 
   return (
     <div className="flex w-full gap-4">

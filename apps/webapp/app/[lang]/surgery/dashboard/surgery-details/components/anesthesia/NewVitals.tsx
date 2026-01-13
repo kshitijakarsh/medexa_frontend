@@ -7,7 +7,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { FormInput } from "@/components/ui/form-input";
 import { FormTextarea } from "@/app/[lang]/surgery/_components/common/forms/form-textarea";
-import { useLatestVitalsByPatientId } from "@/app/[lang]/surgery/_hooks/useVitals";
+import { useLatestVitalsByPatientId, useCreateVitals, useUpdateVitals } from "@/app/[lang]/surgery/_hooks/useVitals";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { useDictionary } from "@/i18n/use-dictionary";
 
@@ -25,11 +25,37 @@ export const NewVitals = ({
     const vitals = anesthesia.vitals;
 
     const { data: vitalsData, isLoading } = useLatestVitalsByPatientId(patientId);
+    const createVitals = useCreateVitals();
+    const updateVitals = useUpdateVitals();
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data: any = Object.fromEntries(formData.entries());
+
+        // Add IDs
+        data.patient_id = patientId || "";
+        data.visit_id = "15"; // TODO: specific Get actual visit_id
+
+        if (vitalsData?.id) {
+            updateVitals.mutate({ id: vitalsData.id, data }, {
+                onSuccess: () => {
+                    onOpenChange(false);
+                },
+            });
+        } else {
+            createVitals.mutate(data, {
+                onSuccess: () => {
+                    onOpenChange(false);
+                },
+            });
+        }
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent showCloseButton={false} className="max-w-4xl gap-0 p-0 overflow-hidden border-none shadow-none bg-transparent">
-                <div className="w-full h-full rounded-2xl bg-white p-3 shadow-sm">
+                <form onSubmit={handleSubmit} className="w-full h-full rounded-2xl bg-white p-3 shadow-sm">
                     {/* Header */}
                     <div className="flex items-start justify-between mb-2">
                         <div>
@@ -62,45 +88,51 @@ export const NewVitals = ({
                                 {/* Row 1 */}
                                 <FormInput
                                     label={vitals.fields.bloodPressure}
+                                    name="blood_pressure"
                                     placeholder={vitals.placeholders.enterBP}
-                                    defaultValue={vitalsData?.blood_pressure_systolic && vitalsData?.blood_pressure_diastolic
-                                        ? `${vitalsData.blood_pressure_systolic}/${vitalsData.blood_pressure_diastolic}`
-                                        : ""}
+                                    defaultValue={vitalsData?.blood_pressure || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.pulseRate}
+                                    name="pulse_rate"
                                     placeholder={vitals.placeholders.enterPulseRate}
-                                    defaultValue={vitalsData?.heart_rate?.toString() ?? ""}
+                                    defaultValue={vitalsData?.pulse_rate || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.respirationRate}
+                                    name="respiration_rate"
                                     placeholder={vitals.placeholders.enterRR}
-                                    defaultValue={vitalsData?.respiratory_rate?.toString() ?? ""}
+                                    defaultValue={vitalsData?.respiration_rate || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.spo2}
+                                    name="spo2"
                                     placeholder={vitals.placeholders.enterSpo2}
-                                    defaultValue={vitalsData?.oxygen_saturation?.toString() ?? ""}
+                                    defaultValue={vitalsData?.spo2 || ""}
                                 />
 
                                 {/* Row 2 */}
                                 <FormInput
                                     label={vitals.fields.systolicL}
+                                    name="systolic_left"
                                     placeholder={vitals.placeholders.enterSystolicL}
-                                    defaultValue={vitalsData?.blood_pressure_systolic?.toString() ?? ""}
+                                    defaultValue={vitalsData?.systolic_left || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.diastolicL}
+                                    name="diastolic_left"
                                     placeholder={vitals.placeholders.enterDiastolicL}
-                                    defaultValue={vitalsData?.blood_pressure_diastolic?.toString() ?? ""}
+                                    defaultValue={vitalsData?.diastolic_left || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.systolicR}
+                                    name="systolic_right"
                                     placeholder={vitals.placeholders.enterSystolicR}
                                     defaultValue=""
                                 />
                                 <FormInput
                                     label={vitals.fields.diastolicR}
+                                    name="diastolic_right"
                                     placeholder={vitals.placeholders.enterDiastolicR}
                                     defaultValue=""
                                 />
@@ -108,43 +140,51 @@ export const NewVitals = ({
                                 {/* Row 3 */}
                                 <FormInput
                                     label={vitals.fields.temperature}
+                                    name="temperature"
                                     placeholder={vitals.placeholders.enterTemperature}
-                                    defaultValue={vitalsData?.temperature?.toString() ?? ""}
+                                    defaultValue={vitalsData?.temperature || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.grbs}
+                                    name="grbs"
                                     placeholder={vitals.placeholders.enterGRBS}
-                                    defaultValue={vitalsData?.blood_glucose?.toString() ?? ""}
+                                    defaultValue={vitalsData?.grbs || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.hb}
+                                    name="hb"
                                     placeholder={vitals.placeholders.enterHB}
                                     defaultValue=""
                                 />
                                 <FormInput
                                     label={vitals.fields.height}
+                                    name="height"
                                     placeholder={vitals.placeholders.enterHeight}
-                                    defaultValue={vitalsData?.height?.toString() ?? ""}
+                                    defaultValue={vitalsData?.height || ""}
                                 />
 
                                 {/* Row 4 */}
                                 <FormInput
                                     label={vitals.fields.weight}
+                                    name="weight"
                                     placeholder={vitals.placeholders.enterWeight}
-                                    defaultValue={vitalsData?.weight?.toString() ?? ""}
+                                    defaultValue={vitalsData?.weight || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.bmi}
+                                    name="bmi"
                                     placeholder={vitals.placeholders.enterBMI}
-                                    defaultValue={vitalsData?.bmi?.toString() ?? ""}
+                                    defaultValue={vitalsData?.bmi || ""}
                                 />
                                 <FormInput
                                     label={vitals.fields.ibw}
+                                    name="ibw"
                                     placeholder={vitals.placeholders.enterIBW}
                                     defaultValue=""
                                 />
                                 <FormInput
                                     label={vitals.fields.rbs}
+                                    name="rbs"
                                     placeholder={vitals.placeholders.enterRBS}
                                     defaultValue=""
                                 />
@@ -153,6 +193,7 @@ export const NewVitals = ({
                             {/* Additional Note */}
                             <FormTextarea
                                 label={vitals.fields.additionalNote}
+                                name="additional_note"
                                 placeholder={vitals.placeholders.enterAdditionalNote}
                                 className="min-h-[100px]"
                                 defaultValue={vitalsData?.additional_note ?? ""}
@@ -167,15 +208,17 @@ export const NewVitals = ({
                             onClick={() => onOpenChange(false)}
                             className="min-w-[100px] border-blue-500 text-blue-500 hover:bg-blue-50 font-medium"
                         >
-                            {anesthesia.actions.cancel}
+                            {dict.common.cancel}
                         </Button>
                         <Button
                             className="min-w-[100px] bg-green-500 hover:bg-green-600 text-white font-medium"
+                            type="submit"
+                            disabled={createVitals.isPending || updateVitals.isPending}
                         >
-                            {anesthesia.actions.save}
+                            {createVitals.isPending || updateVitals.isPending ? dict.common.saving : dict.common.save}
                         </Button>
                     </div>
-                </div>
+                </form>
             </DialogContent>
         </Dialog>
     );

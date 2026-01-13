@@ -247,7 +247,7 @@ const MOCK_METRICS: PreOpMetric[] = [
 ];
 
 
-export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgeryId, patientId }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void; surgeryId?: string; patientId?: string }) {
+export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgeryId }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void; surgeryId?: string }) {
   const dict = useDictionary();
   const [sectionsData, setSectionsData] = React.useState<SectionConfig[]>(INITIAL_SECTIONS);
 

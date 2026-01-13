@@ -210,13 +210,13 @@ export default function ApproveClearanceModal({
                                     className="h-11 px-8 border-blue-500 text-blue-500 hover:bg-blue-50 font-medium rounded-xl text-md"
                                     onClick={() => onOpenChange(false)}
                                 >
-                                    {dict.pages.surgery.surgeryDetails.common.cancel}
+                                    {dict.common.cancel}
                                 </Button>
                                 <Button
                                     type="submit"
                                     className="h-11 px-12 bg-[#48bb78] hover:bg-[#38a169] text-white font-medium rounded-xl text-md"
                                 >
-                                    {dict.pages.surgery.surgeryDetails.common.add}
+                                    {dict.common.add}
                                 </Button>
                             </div>
                         )}

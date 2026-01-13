@@ -241,23 +241,23 @@ function TeamsListContent() {
         },
         {
             key: "actions",
-            label: dict.pages.surgery.common.action,
+            label: dict.table.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: dict.pages.surgery.common.view,
+                        label: dict.common.view,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
-                        label: dict.pages.surgery.common.edit,
+                        label: dict.common.edit,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/new?id=${row.id}`);
                         }
                     },
                     {
-                        label: dict.pages.surgery.common.delete,
+                        label: dict.common.delete,
                         onClick: () => {
                             setTeamToDelete({ id: row.id.toString(), name: row.teamName });
                             setDeleteDialogOpen(true);
@@ -392,9 +392,9 @@ function TeamsListContent() {
 
             <ConfirmDialog
                 open={deleteDialogOpen}
-                title={dict.pages.surgery.common.delete}
+                title={dict.common.delete}
                 description={`Are you sure you want to delete the team "${teamToDelete?.name}"?`}
-                confirmText={dict.pages.surgery.common.delete}
+                confirmText={dict.common.delete}
                 cancelText={dict.common.cancel}
                 loading={deleteTeamMutation.isPending}
                 onConfirm={handleDeleteConfirmed}

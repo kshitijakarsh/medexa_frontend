@@ -178,12 +178,8 @@ export default function OrderRadiologyProcedureModal({
                         />
 
                         <DialogFooter className="gap-2 sm:gap-0 mt-2">
-                            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 font-medium px-8">
-                                {dict.pages.surgery.surgeryDetails.common.cancel}
-                            </Button>
-                            <Button type="submit" className="bg-green-500 hover:bg-green-600 text-white font-medium px-8">
-                                {dict.pages.surgery.surgeryDetails.common.save}
-                            </Button>
+                            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-blue-400 text-blue-600 hover:bg-blue-50 font-medium px-6 w-24 h-8 rounded-md border text-[10px] uppercase tracking-wider">{dict.common.cancel}</Button>
+                            <Button type="submit" className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider">{dict.common.save}</Button>
                         </DialogFooter>
                     </form>
                 </Form>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
@@ -44,26 +44,21 @@ export const ASARisk = ({
     { value: "high", label: asaRisk.options.riskLevel.high },
   ];
 
-  const asaValueMap: Record<string, string> = {
-    "ASA I": "asa_1",
-    "ASA II": "asa_2",
-    "ASA III": "asa_3",
-    "ASA IV": "asa_4",
-    "ASA V": "asa_5",
-  };
-
-  const getAsaDefaultValue = (val?: string) => {
-    if (!val) return "";
-    const match = Object.keys(asaValueMap).find(k => val.includes(k));
-    return match ? asaValueMap[match] : val.toLowerCase();
-  };
 
   // Local state for form fields
   const [formState, setFormState] = useState({
-    asa_status_classification: getAsaDefaultValue(asaStatusClassification),
+    asa_status_classification: asaStatusClassification || "",
     surgery_risk_level: surgeryRiskLevel?.toLowerCase() || "",
     asa_and_risk_additional_note: asaAndRiskAdditionalNote || "",
   });
+
+  useEffect(() => {
+    setFormState({
+      asa_status_classification: asaStatusClassification || "",
+      surgery_risk_level: surgeryRiskLevel?.toLowerCase() || "",
+      asa_and_risk_additional_note: asaAndRiskAdditionalNote || "",
+    });
+  }, [asaStatusClassification, surgeryRiskLevel, asaAndRiskAdditionalNote]);
 
   const handleSave = () => {
     if (onSave) {
@@ -74,22 +69,6 @@ export const ASARisk = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center mb-2">
-        {isEditing && (
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs px-4"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                {anesthesia.actions.saving}
-              </>
-            ) : (
-              anesthesia.actions.saveChanges
-            )}
-          </Button>
-        )}
       </div>
 
       {isEditing ? (
@@ -122,6 +101,22 @@ export const ASARisk = ({
               value={formState.asa_and_risk_additional_note}
               onChange={(e) => setFormState(prev => ({ ...prev, asa_and_risk_additional_note: e.target.value }))}
             />
+          </div>
+          <div className="flex justify-end mt-4">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs px-4"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {dict.common.saving}
+                </>
+              ) : (
+                dict.common.save
+              )}
+            </Button>
           </div>
         </>
       ) : (

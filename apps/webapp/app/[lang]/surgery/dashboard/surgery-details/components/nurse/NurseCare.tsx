@@ -11,10 +11,9 @@ type NurseCareProps = {
   isEditing?: boolean;
   onSaveDraft?: () => void;
   surgeryId?: string;
-  patientId?: string;
 };
 
-export default function NurseCare({ isEditing, onSaveDraft, surgeryId, patientId }: NurseCareProps) {
+export default function NurseCare({ isEditing, onSaveDraft, surgeryId }: NurseCareProps) {
   const nurseNotesApi = createNurseNotesApiClient();
   const dict = useDictionary();
   const nurseCare = dict.pages.surgery.surgeryDetails.nurseCare.sidebar;

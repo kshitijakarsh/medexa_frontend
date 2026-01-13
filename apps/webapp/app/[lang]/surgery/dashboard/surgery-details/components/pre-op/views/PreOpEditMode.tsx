@@ -1,40 +1,17 @@
 "use client";
 
 import React from "react";
-import { ArchiveRestore, Trash2, MoreVertical, FileSearch, SquareCheckBig, Stethoscope, Plus, Eye, Pencil, FilePlus, Send, Check, ChevronsUpDown } from "lucide-react";
+import { ArchiveRestore, Send } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Button } from "@workspace/ui/components/button";
 import { Label } from "@workspace/ui/components/label";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
-import {
     Select,
     SelectContent,
-    SelectGroup,
     SelectItem,
-    SelectLabel,
     SelectTrigger,
     SelectValue,
 } from "@workspace/ui/components/select";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@workspace/ui/components/popover";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@workspace/ui/components/command";
-import { cn } from "@workspace/ui/lib/utils";
-import NewButton from "@/components/common/new-button";
 import OrderLaboratoryTestModal from "../modals/OrderLaboratoryTestModal";
 import OrderRadiologyProcedureModal from "../modals/OrderRadiologyProcedureModal";
 import NurseOrdersModal from "../modals/NurseOrdersModal";
@@ -44,369 +21,11 @@ import MedicalClearanceModal from "../modals/MedicalClearanceModal";
 import { OrderLabData } from "../modals/OrderLaboratoryTestModal";
 import { OrderRadiologyData } from "../modals/OrderRadiologyProcedureModal";
 import { useDictionary } from "@/i18n/use-dictionary";
-
+import { SectionCard } from "../SectionCard";
 import {
     SectionConfig,
     ChecklistItem,
-    ItemStatus,
-    AddOption,
-    STATUS_STYLES,
-    newItemUrgencyStyle
 } from "../PreOpChecklist";
-
-const sectionTypeMapping: Record<string, string> = {
-    "Consents Required": "Consent Form",
-    "Nursing Orders (Pre-Op)": "Nursing Order",
-    "Anaesthesia Requirements": "Anaesthesia Req",
-    "Equipment & Instruments": "Equipment",
-};
-
-
-type SectionCardProps = {
-    config: SectionConfig;
-    onAddItem: (item: ChecklistItem) => void;
-    onOrderLab?: (test: string) => void;
-    onOrderRad?: (test: string) => void;
-    onOrderNurse?: (order: string) => void;
-    onOrderImplant?: (implant: string) => void;
-    onOrderBlood?: (blood: string) => void;
-    onOrderClearance?: (clearance: string) => void;
-    onRemoveItem: (index: number) => void;
-};
-
-
-
-const SectionCard = ({ config, onAddItem, onOrderLab, onOrderRad, onOrderNurse, onOrderImplant, onOrderBlood, onOrderClearance, onRemoveItem }: SectionCardProps) => {
-
-    const { title, items, addLabel, addOptions } = config;
-    const [selectedValue, setSelectedValue] = React.useState<string>("");
-    const [error, setError] = React.useState<string>("");
-    const [openPopover, setOpenPopover] = React.useState(false);
-    const dict = useDictionary();
-
-    const validateSelection = (): boolean => {
-        if (!selectedValue) {
-            setError(`${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")} ${dict.pages.surgery.surgeryDetails.preOp.fields.required}`);
-            return false;
-        }
-        return true;
-    };
-
-
-    console.log(addOptions);
-    return (
-        <Card className="shadow-none border-0 mb-4 bg-white">
-            <CardHeader>
-                <div className="flex items-center gap-2">
-                    <CardTitle className="text-base font-medium text-slate-800">
-                        {title}
-                    </CardTitle>
-
-                    {items.length > 0 && (
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">
-                            {items.filter((i: ChecklistItem) => i.status === "Completed" || i.status === "Ordered").length}/{items.length} {dict.pages.surgery.surgeryDetails.common.completed}
-                        </span>
-                    )}
-                </div>
-            </CardHeader>
-
-            <CardContent className="pt-0 space-y-3">
-                {/* Existing items */}
-                {items.map((item: ChecklistItem, index: number) => (
-                    <div
-                        key={`${item.label}-${index}`}
-                        className={`rounded-lg p-3 border ${item.status === "Completed"
-                            ? "border-green-200 bg-green-50/50"
-                            : "border-slate-200 bg-white"
-                            }`}
-                    >
-                        {/* Main Row */}
-                        <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm font-medium text-slate-800">{item.label}</span>
-                                    {config.id !== "clearances" && (item.category || config.id === "investigations") && (
-                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200">
-                                            <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-                                                {item.category || (config.id === "investigations" ? "Lab Test" : "Requirement")}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {config.id === "investigations" && (
-                                        <div className={cn(
-                                            "flex items-center gap-1.5 px-2 py-0.5 rounded-md border",
-                                            newItemUrgencyStyle(item.urgency || "routine")
-                                        )}>
-                                            <span className="text-[10px] font-medium uppercase tracking-wider">
-                                                {item.urgency || "Routine"}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-2 mt-1.5 text-xs text-slate-500">
-                                    {config.id === "investigations" && (
-                                        <>
-                                            <span>Biochemistry</span>
-                                            <span>|</span>
-                                        </>
-                                    )}
-                                    <span>{item.subLabel || "2025-09-27 19:30"}</span>
-                                    {item.status === "Completed" && (
-                                        <span className="flex items-center gap-1 text-green-600 px-2 py-0.5">
-                                            <SquareCheckBig size={12} />
-                                            {dict.pages.surgery.surgeryDetails.preOp.status.completedPrev}
-                                        </span>
-                                    )}
-                                </div>
-                                {(item.status === "Completed" || item.status === "Ordered") && item.orderedBy && config.id === "investigations" && (
-                                    <p className="text-xs text-blue-500 mt-2 flex items-center gap-1 font-medium">
-                                        <Stethoscope size={14} /> {dict.pages.surgery.surgeryDetails.common.orderedBy} {item.orderedBy}
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Right side: Status + Action */}
-                            <div className="flex items-center gap-2">
-                                <span
-                                    className={`text-xs font-medium px-3 py-1.5 rounded-full ${item.status ? STATUS_STYLES[item.status] : "bg-slate-200 text-slate-500"}`}
-                                >
-                                    {item.status === "Completed" ? dict.pages.surgery.surgeryDetails.common.completed :
-                                        item.status === "Ordered" ? dict.pages.surgery.surgeryDetails.common.ordered :
-                                            item.status === "Pending" ? dict.pages.surgery.surgeryDetails.common.pending :
-                                                item.status || dict.pages.surgery.surgeryDetails.common.pending}
-                                </span>
-                                {config.id !== "investigations" ? (
-                                    <button
-                                        onClick={() => onRemoveItem(index)}
-                                        className="p-2 bg-red-100 text-red-400 rounded-sm transition-colors hover:bg-red-200"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                ) : (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <button className="flex items-center gap-1 text-xs text-blue-500 font-medium px-2 py-1 rounded-sm transition-colors bg-white hover:bg-slate-50">
-                                                {dict.pages.surgery.surgeryDetails.common.action}
-                                                <MoreVertical size={14} className="text-green-500" />
-                                            </button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            {item.status === "Completed" ? (
-                                                <>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        {dict.pages.surgery.surgeryDetails.preOp.actions.createNewOrder} <FilePlus size={14} className="text-slate-500" />
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={() => onRemoveItem(index)}
-                                                        className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
-                                                    >
-                                                        {dict.pages.surgery.surgeryDetails.common.delete} <Trash2 size={14} />
-                                                    </DropdownMenuItem>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        {dict.pages.surgery.surgeryDetails.common.view} <Eye size={14} className="text-slate-500" />
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 cursor-pointer justify-between">
-                                                        {dict.pages.surgery.surgeryDetails.common.edit} <Pencil size={14} className="text-slate-500" />
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onClick={() => onRemoveItem(index)}
-                                                        className="gap-2 cursor-pointer justify-between text-red-600 focus:text-red-600"
-                                                    >
-                                                        {dict.pages.surgery.surgeryDetails.common.delete} <Trash2 size={14} />
-                                                    </DropdownMenuItem>
-                                                </>
-                                            )}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Previous Result Available Section (Only for Ordered and if previousResult exists) */}
-                        {item.status === "Ordered" && item.previousResult && (
-                            <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                                <p className="text-xs text-slate-600 flex items-center gap-1.5">
-                                    <span className="text-blue-500">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <line x1="12" y1="16" x2="12" y2="12"></line>
-                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                                        </svg>
-                                    </span>
-                                    {dict.pages.surgery.surgeryDetails.preOp.status.prevAvailable}: {item.previousResult.date} ({item.previousResult.count} {dict.pages.surgery.surgeryDetails.preOp.status.results})
-                                </p>
-                                <Button
-                                    size="sm"
-                                    className="h-7 text-xs bg-blue-500 hover:bg-blue-600 text-white gap-1.5 rounded-full px-3"
-                                >
-                                    {dict.pages.surgery.surgeryDetails.preOp.status.usePrev}
-                                    <FileSearch size={12} />
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                ))}
-
-                {/* Add row */}
-                <div className="pt-4 mt-4">
-                    <div className="flex items-end gap-4">
-                        <div className="flex-1 space-y-1.5">
-                            <Label className="text-xs font-medium text-slate-700">
-                                {addLabel}
-                            </Label>
-                            {config.id === "consents" ? (
-                                <Popover open={openPopover} onOpenChange={setOpenPopover}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            aria-expanded={openPopover}
-                                            className={cn("h-10 w-full justify-between bg-white text-xs font-normal", error && "border-red-500")}
-                                        >
-                                            {selectedValue
-                                                ? addOptions.find((opt) => opt.value === selectedValue)?.label
-                                                : `${dict.pages.surgery.surgeryDetails.preOp.fields.select} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}`}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                                        <Command>
-                                            <CommandInput placeholder={`${dict.pages.surgery.surgeryDetails.preOp.fields.search} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}...`} className="h-9 text-xs" />
-                                            <CommandList>
-                                                <CommandEmpty className="text-xs">{dict.pages.surgery.surgeryDetails.preOp.fields.noForms}</CommandEmpty>
-                                                <CommandGroup>
-                                                    {addOptions.map((opt) => (
-                                                        <CommandItem
-                                                            key={opt.value}
-                                                            value={opt.label}
-                                                            onSelect={(currentValue) => {
-                                                                // cmdk value is typically lowercase label
-                                                                const selected = addOptions.find(o => o.label.toLowerCase() === currentValue.toLowerCase());
-                                                                if (selected) {
-                                                                    setSelectedValue(selected.value);
-                                                                    setError("");
-                                                                    setOpenPopover(false);
-                                                                }
-                                                            }}
-                                                            className="text-xs"
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    "mr-2 h-4 w-4",
-                                                                    selectedValue === opt.value ? "opacity-100" : "opacity-0"
-                                                                )}
-                                                            />
-                                                            {opt.label}
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </Popover>
-                            ) : (
-                                <Select value={selectedValue} onValueChange={(val) => {
-                                    setSelectedValue(val);
-                                    setError("");
-                                }}>
-                                    <SelectTrigger className={`h-10 w-full ${error ? "border-red-500" : ""}`}>
-                                        <SelectValue placeholder={`${dict.pages.surgery.surgeryDetails.preOp.fields.select} ${addLabel.replace(dict.pages.surgery.surgeryDetails.common.add + " ", "")}`} />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-[300px]">
-
-                                        {addOptions.map((opt) => (
-                                            <SelectItem key={opt.value} value={opt.value}>
-                                                {opt.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            )}
-                            {error && (
-                                <p className="text-xs text-red-500 mt-1">{error}</p>
-                            )}
-                        </div>
-                        {config.id === "investigations" ? (
-                            <div className="flex gap-2">
-                                <NewButton handleClick={() => {
-                                    if (validateSelection()) {
-                                        onOrderLab?.(selectedValue);
-                                        setSelectedValue("");
-                                    }
-                                }} name="Lab" />
-                                <NewButton handleClick={() => {
-                                    if (validateSelection()) {
-                                        onOrderRad?.(selectedValue);
-                                        setSelectedValue("");
-                                    }
-                                }} name="Rad" />
-                            </div>
-                        ) : config.id === "prep" ? (
-                            <NewButton handleClick={() => {
-                                if (validateSelection()) {
-                                    if (onOrderNurse) {
-                                        onOrderNurse(selectedValue);
-                                    }
-                                    setSelectedValue("");
-                                }
-                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
-                        ) : config.id === "implants" ? (
-                            <NewButton handleClick={() => {
-                                if (validateSelection()) {
-                                    if (onOrderImplant) {
-                                        onOrderImplant(selectedValue);
-                                    }
-                                    setSelectedValue("");
-                                }
-                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
-                        ) : config.id === "clearances" ? (
-                            <NewButton handleClick={() => {
-                                if (validateSelection()) {
-                                    if (onOrderClearance) {
-                                        onOrderClearance(selectedValue);
-                                    }
-                                    setSelectedValue("");
-                                }
-                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
-                        ) : config.id === "blood" ? (
-                            <NewButton handleClick={() => {
-                                if (validateSelection()) {
-                                    if (onOrderBlood) {
-                                        onOrderBlood(selectedValue);
-                                    }
-                                    setSelectedValue("");
-                                }
-                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
-                        ) : (
-                            <NewButton handleClick={() => {
-                                if (validateSelection()) {
-                                    const label = addOptions.find((o: AddOption) => o.value === selectedValue)?.label || selectedValue;
-                                    onAddItem({
-                                        label,
-                                        status: "Ordered",
-                                        subLabel: dict.pages.surgery.surgeryDetails.common.justNow,
-                                        category: sectionTypeMapping[config.id] || "Requirement"
-                                    });
-                                    setSelectedValue("");
-                                }
-                            }} name={dict.pages.surgery.surgeryDetails.common.add} />
-                        )}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
-
-/* ---------------------------------- */
-/* Main component                      */
-/* ---------------------------------- */
 
 export type PreOpEditModeProps = {
     sections: SectionConfig[];
@@ -416,6 +35,7 @@ export type PreOpEditModeProps = {
 
 export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditModeProps) => {
     const dict = useDictionary();
+    const preOp = dict.pages.surgery.surgeryDetails.preOp;
     const [isLabModalOpen, setIsLabModalOpen] = React.useState(false);
     const [selectedLabTest, setSelectedLabTest] = React.useState("");
     const [isRadModalOpen, setIsRadModalOpen] = React.useState(false);
@@ -460,7 +80,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
         const section = sections.find(s => s.id === "investigations");
         const label = section?.addOptions.find(o => o.value === data.test)?.label || data.test;
 
-        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
+        let subLabel = dict.common.justNow;
         // removed urgency from subLabel as it is now a badge
         if (data.notes) subLabel += ` | Note: ${data.notes}`;
 
@@ -482,7 +102,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
         const section = sections.find(s => s.id === "investigations");
         const label = section?.addOptions.find(o => o.value === data.procedure)?.label || data.procedure;
 
-        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
+        let subLabel = dict.common.justNow;
         // removed urgency from subLabel as it is now a badge
         if (data.notes) subLabel += ` | Note: ${data.notes}`;
 
@@ -504,7 +124,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
         const section = sections.find(s => s.id === "nursingOrders");
         const label = section?.addOptions.find(o => o.value === data.orderType)?.label || data.orderType;
 
-        let subLabel = dict.pages.surgery.surgeryDetails.common.justNow;
+        let subLabel = dict.common.justNow;
         if (data.notes) subLabel += ` | ${data.notes}`;
 
         handleAddItem("nursingOrders", {
@@ -604,18 +224,18 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
             <Card className="shadow-none border-0 mb-4 bg-white">
                 <CardHeader>
                     <CardTitle className="text-base font-medium text-slate-800">
-                        {dict.pages.surgery.surgeryDetails.preOp.fields.surgeryRequirement}
+                        {preOp.fields.surgeryRequirement}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-end gap-4">
                         <div className="flex-1 space-y-1.5">
                             <Label className="text-xs font-medium text-slate-700">
-                                {dict.pages.surgery.surgeryDetails.preOp.fields.surgeryTemplate}
+                                {preOp.fields.surgeryTemplate}
                             </Label>
                             <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
                                 <SelectTrigger className="h-10 w-full">
-                                    <SelectValue placeholder={dict.pages.surgery.surgeryDetails.preOp.fields.selectTemplate} />
+                                    <SelectValue placeholder={preOp.fields.selectTemplate} />
                                 </SelectTrigger>
                                 <SelectContent className="z-[100]">
                                     <SelectItem value="appendectomy">Appendectomy</SelectItem>
@@ -632,7 +252,7 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
                             <div className="flex items-center bg-green-400 p-1 rounded-sm">
                                 <ArchiveRestore size={16} strokeWidth={2} />
                             </div>
-                            {dict.pages.surgery.surgeryDetails.preOp.actions.loadTemplates}
+                            {preOp.actions.loadTemplates}
                         </Button>
                     </div>
                 </CardContent>
@@ -661,10 +281,10 @@ export const PreOpEditMode = ({ sections, setSections, onSaveDraft }: PreOpEditM
                     className="border-blue-500 text-blue-500 hover:bg-white hover:text-blue-500"
                     onClick={handleSaveDraft}
                 >
-                    {dict.pages.surgery.surgeryDetails.preOp.actions.saveDraft}
+                    {preOp.actions.saveDraft}
                 </Button>
                 <Button className="bg-green-600 hover:bg-green-600">
-                    <Send size={16} className="mr-2" /> {dict.pages.surgery.surgeryDetails.preOp.actions.markCompleted}
+                    <Send size={16} className="mr-2" /> {preOp.actions.markCompleted}
                 </Button>
             </div>
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 import { NoteField } from "@/app/[lang]/surgery/_components/common/NoteField";
@@ -65,6 +65,16 @@ export const AirwayAssessment = ({
     airway_management_plan: airwayManagementPlan || "",
   });
 
+  useEffect(() => {
+    setFormState({
+      mallampati_grade: mallampatiGrade || "",
+      mouth_opening: mouthOpening,
+      neck_mobility: neckMobility,
+      diffult_airway_risk: difficultAirwayRisk || "",
+      airway_management_plan: airwayManagementPlan || "",
+    });
+  }, [mallampatiGrade, mouthOpening, neckMobility, difficultAirwayRisk, airwayManagementPlan]);
+
   const handleSave = () => {
     if (onSave) {
       onSave(formState);
@@ -75,22 +85,6 @@ export const AirwayAssessment = ({
     <div className="flex flex-col gap-6">
       {/* Header Info */}
       <div className="flex justify-between items-center">
-        {isEditing && (
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs px-4"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                {anesthesia.actions.saving}
-              </>
-            ) : (
-              anesthesia.actions.saveChanges
-            )}
-          </Button>
-        )}
       </div>
 
       {isEditing ? (
@@ -135,6 +129,22 @@ export const AirwayAssessment = ({
             value={formState.airway_management_plan}
             onChange={(e) => setFormState(prev => ({ ...prev, airway_management_plan: e.target.value }))}
           />
+          <div className="flex justify-end mt-4">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="bg-green-600 hover:bg-green-700 text-white h-8 text-xs px-4"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {dict.common.saving}
+                </>
+              ) : (
+                dict.common.save
+              )}
+            </Button>
+          </div>
         </>
       ) : (
         <>

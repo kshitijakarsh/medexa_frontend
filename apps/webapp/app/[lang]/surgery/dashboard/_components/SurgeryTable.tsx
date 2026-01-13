@@ -3,17 +3,16 @@
 import React from "react";
 import { Surgery } from "@/lib/api/surgery/surgeries";
 import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
-import { SurgeryStatus } from "@/app/[lang]/surgery/_lib/types";
 import { useDictionary } from "@/i18n/use-dictionary";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import Image from "next/image";
-
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { VipCrownBadge } from "@/components/common/pasient-card/vip-crown-badge";
 import { Button } from "@workspace/ui/components/button";
 import { useRouter, useParams } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
 import ActionMenu from "@/components/common/action-menu";
+import { StatusPill } from "@/components/common/pasient-card/status-pill";
 
 // Table row interface for display
 interface SurgeryRow {
@@ -29,7 +28,7 @@ interface SurgeryRow {
   procedure: string;
   surgeon: string;
   specialty: string;
-  status: SurgeryStatus;
+  status: string;
 }
 
 interface SurgeryTableProps {
@@ -54,12 +53,19 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
         : undefined
   });
 
-  // Extract surgeries from response
   const extractSurgeries = (): Surgery[] => {
-    if (initialData) return initialData; // Use initialData if provided
+    if (initialData) return initialData;
     if (!surgeriesData) return [];
-    if (Array.isArray(surgeriesData)) return surgeriesData;
-    if (Array.isArray((surgeriesData as any).data)) return (surgeriesData as any).data;
+
+    // Check if it's a paginated response with a .data property
+    if ('data' in surgeriesData && Array.isArray(surgeriesData.data)) {
+      return surgeriesData.data as Surgery[];
+    }
+
+    if (Array.isArray(surgeriesData)) {
+      return surgeriesData;
+    }
+
     return [];
   };
 
@@ -68,14 +74,16 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
   // Map API data to table rows
   const tableData: SurgeryRow[] = surgeries.map((surgery: Surgery) => ({
     id: surgery.id,
-    otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "OT-1"),
+    otRoom: surgery.ot_room
+      ? `${dict.pages.surgery.common.prefixes.otRoom} ${surgery.ot_room}`
+      : (surgery.ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom} ${surgery.ot_room_id}` : "—"),
     patient: {
       id: surgery.patient?.id || surgery.patient_id || "",
       name: surgery.patient
         ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
         : dict.pages.surgery.common.fallbacks.unknownPatient,
-      mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
-      avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+      mrn: surgery.patient?.civil_id || surgery.patient?.mrn || "—",
+      avatarUrl: surgery.patient?.photo_url || surgery.patient?.avatarUrl || "/images/avatars/1.png",
       vip: surgery.patient?.vip,
     },
     time: (surgery.date || surgery.scheduled_date)
@@ -84,44 +92,14 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
         minute: "2-digit"
       })
       : "—",
-    procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
+    procedure: surgery.procedure?.name || (surgery as any).surgery_type || "—",
     surgeon: surgery.doctor
       ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
       : dict.pages.surgery.common.fallbacks.notAssigned,
     specialty: surgery.department || "General",
-    status: mapStatus(surgery.status),
+    status: (surgery.status || "scheduled").toLowerCase(),
   }));
 
-  // Map API status to SurgeryStatus enum
-  function mapStatus(status?: string): SurgeryStatus {
-    switch (status?.toLowerCase()) {
-      case "in_progress":
-      case "in progress":
-        return SurgeryStatus.IN_PROGRESS;
-      case "pre_op":
-      case "pre-op":
-        return SurgeryStatus.PRE_OP;
-      case "scheduled":
-        return SurgeryStatus.SCHEDULED;
-      case "completed":
-        return SurgeryStatus.COMPLETED;
-      default:
-        return SurgeryStatus.SCHEDULED;
-    }
-  }
-
-  const getStatusStyle = (status: SurgeryStatus) => {
-    switch (status) {
-      case SurgeryStatus.IN_PROGRESS:
-        return "bg-orange-50 text-orange-600 border-orange-200";
-      case SurgeryStatus.PRE_OP:
-        return "bg-blue-50 text-blue-600 border-blue-200";
-      case SurgeryStatus.SCHEDULED:
-        return "bg-indigo-50 text-indigo-600 border-indigo-200";
-      default:
-        return "bg-gray-100 text-gray-500 border-border-light";
-    }
-  };
 
   const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
@@ -130,7 +108,7 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
     },
     {
       key: "patient",
-      label: surgeryTableDict.table.patient,
+      label: dict.table.patient,
       render: (row) => (
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -158,7 +136,7 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
     },
     {
       key: "time",
-      label: surgeryTableDict.table.time,
+      label: dict.table.time,
     },
     {
       key: "procedure",
@@ -178,37 +156,31 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
     },
     {
       key: "status",
-      label: surgeryTableDict.table.status,
+      label: dict.table.status,
       render: (row) => (
-        <span
-          className={`rounded-full border px-4 py-1 text-xs font-medium ${getStatusStyle(
-            row.status
-          )}`}
-        >
-          {row.status}
-        </span>
+        <StatusPill status={row.status} />
       ),
     },
     {
       key: "action",
-      label: surgeryTableDict.table.action,
+      label: dict.table.action,
       className: "text-right",
       render: (row) => (
         <ActionMenu actions={[
           {
-            label: surgeryTableDict.table.actions.view,
+            label: dict.common.view,
             onClick: () => {
               router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
             }
           },
           {
-            label: surgeryTableDict.table.actions.edit,
+            label: dict.common.edit,
             onClick: () => {
               router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
             }
           },
           {
-            label: surgeryTableDict.table.actions.delete,
+            label: dict.common.delete,
             // onClick: () => {
             //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
             // }
@@ -240,7 +212,7 @@ export const SurgeryTable = ({ initialData }: SurgeryTableProps) => {
           className="text-blue-500 text-sm"
           onClick={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
         >
-          {surgeryTableDict.viewAll}
+          {dict.dashboard.viewAll}
         </Button>
       </div>
 

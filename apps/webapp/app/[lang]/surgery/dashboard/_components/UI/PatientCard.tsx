@@ -16,7 +16,7 @@ type PatientCardProps = {
   procedure: string;
   time: string;
   room: string;
-  status?: string; // backend-friendly
+  status?: string;
   vip?: boolean;
 };
 

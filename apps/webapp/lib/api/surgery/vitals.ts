@@ -9,17 +9,23 @@ interface ApiConfig {
 export interface VitalRecord {
     id: string;
     patient_id: string;
-    height?: number;
-    weight?: number;
-    bmi?: number;
-    blood_pressure_systolic?: number;
-    blood_pressure_diastolic?: number;
-    heart_rate?: number;
-    respiratory_rate?: number;
-    temperature?: number;
-    oxygen_saturation?: number;
-    blood_glucose?: number;
-    pain_score?: number;
+    visit_id: string;
+    blood_pressure?: string;
+    pulse_rate?: string;
+    respiration_rate?: string;
+    spo2?: string;
+    systolic_left?: string;
+    diastolic_left?: string;
+    systolic_right?: string;
+    diastolic_right?: string;
+    temperature?: string;
+    grbs?: string;
+    hb?: string;
+    height?: string;
+    weight?: string;
+    bmi?: string;
+    ibw?: string;
+    rbs?: string;
     additional_note?: string;
     recorded_at: string;
     created_at?: string;
@@ -36,6 +42,30 @@ export interface VitalsResponse {
         totalPages: number;
     };
 }
+
+export interface CreateVitalsPayload {
+    patient_id: string;
+    visit_id: string;
+    blood_pressure?: string;
+    pulse_rate?: string;
+    respiration_rate?: string;
+    spo2?: string;
+    systolic_left?: string;
+    diastolic_left?: string;
+    systolic_right?: string;
+    diastolic_right?: string;
+    temperature?: string;
+    grbs?: string;
+    hb?: string;
+    height?: string;
+    weight?: string;
+    bmi?: string;
+    ibw?: string;
+    rbs?: string;
+    additional_note?: string;
+}
+
+export type UpdateVitalsPayload = Partial<CreateVitalsPayload>;
 
 class VitalsApiClient {
     private baseUrl: string;
@@ -63,6 +93,30 @@ class VitalsApiClient {
         const config = await this.getConfig();
         return axios.get<VitalsResponse>(
             `${this.baseUrl}/api/v1/patients/${patientId}/vitals`,
+            { ...config }
+        );
+    }
+
+    /* ---------------------------------------------------
+       POST: Create Vitals
+    --------------------------------------------------- */
+    async createVitals(data: CreateVitalsPayload) {
+        const config = await this.getConfig();
+        return axios.post<VitalsResponse>(
+            `${this.baseUrl}/api/v1/vitals`,
+            data,
+            { ...config }
+        );
+    }
+
+    /* ---------------------------------------------------
+       PUT: Update Vitals
+    --------------------------------------------------- */
+    async updateVitals(id: string, data: UpdateVitalsPayload) {
+        const config = await this.getConfig();
+        return axios.put<VitalsResponse>(
+            `${this.baseUrl}/api/v1/vitals/${id}`,
+            data,
             { ...config }
         );
     }

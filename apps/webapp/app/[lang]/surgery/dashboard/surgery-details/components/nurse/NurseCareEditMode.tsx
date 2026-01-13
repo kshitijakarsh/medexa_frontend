@@ -235,7 +235,7 @@ export const NurseCareEditMode = ({ initialData, onSaveDraft }: NurseCareEditMod
                         <div className="col-span-2">{nurseCare.fields.size}</div>
                         <div className="col-span-3">{nurseCare.fields.batchLotNo}</div>
                         <div className="col-span-2">{nurseCare.fields.manufacturer}</div>
-                        <div className="col-span-2">{nurseCare.fields.quantity}</div>
+                        <div className="col-span-2">{dict.common.quantity}</div>
                     </div>
                     <div className="grid grid-cols-12 gap-2 items-start">
                         <div className="col-span-3"><SelectInput placeholder={nurseCare.fields.selectType} /></div>
@@ -261,8 +261,8 @@ export const NurseCareEditMode = ({ initialData, onSaveDraft }: NurseCareEditMod
                 <CardContent>
                     <div className="grid grid-cols-12 gap-2 text-xs px-1">
                         <div className="col-span-4">{nurseCare.fields.itemName}</div>
-                        <div className="col-span-3">{nurseCare.fields.quantity}</div>
-                        <div className="col-span-5">{nurseCare.fields.note || "Note"}</div>
+                        <div className="col-span-3">{dict.common.quantity}</div>
+                        <div className="col-span-5">{dict.common.note}</div>
                     </div>
                     <div className="grid grid-cols-12 gap-2 items-start">
                         <div className="col-span-4"><SelectInput placeholder={nurseCare.fields.selectItemName} /></div>

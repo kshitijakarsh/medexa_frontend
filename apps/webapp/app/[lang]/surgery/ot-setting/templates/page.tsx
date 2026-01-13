@@ -8,7 +8,6 @@ import { useState, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 
 import {
-    Calendar,
     BriefcaseMedical,
     Stethoscope,
     CalendarDays,
@@ -173,23 +172,23 @@ export default function TemplatesList() {
         },
         {
             key: "actions",
-            label: dict.pages.surgery.common.action,
+            label: dict.table.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: dict.pages.surgery.common.view,
+                        label: dict.common.view,
                         // onClick: () => {
                         //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}`);
                         // }
                     },
                     {
-                        label: dict.pages.surgery.common.edit,
+                        label: dict.common.edit,
                         // onClick: () => {
                         //     router.push(`/${lang}/surgery/ot-setting/templates/${row.id}/edit`);
                         // }
                     },
                     {
-                        label: dict.pages.surgery.common.delete,
+                        label: dict.common.delete,
                         // onClick: () => {
                         //     // Handle delete
                         // }
