@@ -26,7 +26,8 @@
     "exportExcel": "Export Excel",
     "bulkAddDepartment": "Bulk Add Department",
     "noData": "No data available",
-    "Addnew": "Add New"
+    "Addnew": "Add New",
+    "addRow": "Add Row"
   },
   "dashboard": {
     "todayOverview": "Today's Overview",
@@ -566,6 +567,45 @@
         "placeholderEmail": "Enter Email",
         "placeholderPhone": "Enter Phone Number",
         "placeholderPassword": "Enter Password"
+      }
+    },
+    "employeeConfiguration": {
+      "title": "Employee Configuration",
+      "tabs": {
+        "humanResources": "Employee",
+        "designation": "Designation Master",
+        "specialization": "Specialization",
+        "userRoles": "User Roles"
+      },
+      "table": {
+        "sno": "S.No",
+        "name": "Name",
+        "designation": "Designation",
+        "department": "Department",
+        "contact": "Contact",
+        "createdOn": "Created On",
+        "addedBy": "Added By",
+        "status": "Status",
+        "action": "Action",
+        "userRole": "User Role",
+        "specialization": "Specialization",
+        "designationName": "Designation Name",
+        "searchPlaceholder": "Search..."
+      },
+      "actions": {
+        "add": "Add New",
+        "filter": "Filter",
+        "view": "View",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDelete": "Are you sure you want to delete this employee?",
+        "addBulkDesignation": "Add Bulk Designation",
+        "addBulkSpecialization": "Add Bulk Specialization",
+        "addUserRole": "Add User Role",
+        "addRow": "Add Row",
+        "addNewEmployee": "Add New Employee",
+        "addDesignation": "Add Designation",
+        "addSpecialization": "Add Specialization"
       }
     },
     "settings": {

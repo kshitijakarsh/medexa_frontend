@@ -15,6 +15,10 @@ import {
   Users,
   Scissors,
   Wrench,
+  UserCheck,
+  UserRoundMinus,
+  UserSquare,
+  UserCog,
 } from "lucide-react"
 
 import {
@@ -94,10 +98,29 @@ export function AppSidebar({ }) {
       ? [
         {
           title: "HR Management",
-          url: [withLocale(ROUTES.HR)],
+          url: [withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION + "?tab=humanResources")],
           icon: IdCard,
         },
-
+        {
+          title: "Designation Master",
+          url: [withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION + "?tab=designation")],
+          icon: UserRoundMinus,
+        },
+        {
+          title: "Specialization",
+          url: [withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION + "?tab=specialization")],
+          icon: UserSquare,
+        },
+        {
+          title: "User Roles",
+          url: [withLocale(ROUTES.HR_EMPLOYEE_CONFIGURATION + "?tab=userRoles")],
+          icon: UserCog,
+        },
+        {
+          title: "Leave Management",
+          url: [withLocale(ROUTES.HR_LEAVE_MANAGEMENT)],
+          icon: UserCheck,
+        },
       ]
       : []),
 
