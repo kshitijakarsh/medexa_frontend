@@ -398,6 +398,12 @@ const statusStyles: Record<
     bg: "bg-gray-300",
     text: "text-gray-800",
   },
+
+  Scheduled: {
+    bg: "bg-[#E6F3FF]",
+    text: "text-[#6155F5]",
+    border: "border border-[#6155F5]",
+  }
 };
 
 /* ------------------------------------------------------
