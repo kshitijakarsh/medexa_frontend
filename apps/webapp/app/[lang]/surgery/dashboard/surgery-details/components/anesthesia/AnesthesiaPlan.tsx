@@ -13,9 +13,8 @@ import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { AnesthesiaPlan as AnesthesiaPlanType } from "@/lib/api/surgery/anesthesia";
 import { useAnesthesia, useCreateAnesthesia, useUpdateAnesthesia } from "@/app/[lang]/surgery/_hooks/useAnesthesia";
 import { useSurgeryById } from "@/app/[lang]/surgery/_hooks/useSurgery";
-
-import { toast } from "@workspace/ui/lib/sonner";
 import { Info } from "lucide-react";
+import { format } from "@workspace/ui/hooks/use-date-fns"
 
 import { useDictionary } from "@/i18n/use-dictionary";
 
@@ -75,6 +74,8 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
   };
 
   const data = anesthesiaData;
+  const updatedAt = data?.updated_at;
+  const updatedBy = data?.updatedBy?.name;
   const [internalActiveTab, setInternalActiveTab] = React.useState("Medical History");
 
   const activeTab = propActiveTab || internalActiveTab;
@@ -145,13 +146,11 @@ export const AnesthesiaPlan: React.FC<AnesthesiaPlanProps> = ({
       <div className="py-2">
         <div className="flex justify-end items-center gap-1 mr-2">
           <div className="flex items-center rounded-full px-4 py-1.5 text-xs border border-blue-200 text-slate-500">
-            {/* {updatedAt ? (
-                <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
-              ) : */}
-
-            {/* ( */}
-            <>{dict.pages.surgery.surgeryDetails.anesthesia.status.lastEditedBy} Anesthesia Sarah {dict.pages.surgery.surgeryDetails.anesthesia.status.on} November 14, 2024, {dict.pages.surgery.surgeryDetails.anesthesia.status.at} 8:45 AM.</>
-            {/* )} */}
+            {updatedAt ? (
+              <>Last Edited by {updatedBy || 'System'} on {format(new Date(updatedAt), "MMMM dd, yyyy, 'at' h:mm a")}.</>
+            ) : (
+              <>{dict.pages.surgery.surgeryDetails.anesthesia.status.lastEditedBy} Anesthesia Sarah {dict.pages.surgery.surgeryDetails.anesthesia.status.on} November 14, 2024, {dict.pages.surgery.surgeryDetails.anesthesia.status.at} 8:45 AM.</>
+            )}
           </div>
           <Info size={18} className="text-blue-400" />
         </div>
