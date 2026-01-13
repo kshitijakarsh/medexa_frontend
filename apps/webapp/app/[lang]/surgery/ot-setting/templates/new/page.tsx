@@ -20,12 +20,6 @@ const templateFormSchema = z.object({
     templateName: z.string().min(1, "Template name is required"),
 });
 
-// --- Types ---
-interface Procedure {
-    id: string;
-    title: string;
-    description?: string;
-}
 
 const PendingActionItem = ({ title, details, onRemove }: { title: string, details?: string, onRemove: () => void }) => (
     <div className="rounded-lg border border-blue-200 p-2 flex items-center justify-between bg-blue-50/50">

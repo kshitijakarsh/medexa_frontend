@@ -163,7 +163,7 @@ export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) =
                                 <th className="pb-2">{common.fields.size}</th>
                                 <th className="pb-2">{common.fields.batchLotNo}</th>
                                 <th className="pb-2">{common.fields.manufacturer}</th>
-                                <th className="pb-2">{common.fields.quantity}</th>
+                                <th className="pb-2">{dict.common.quantity}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -188,8 +188,8 @@ export const NurseCareViewMode = ({ data, isLoading }: NurseCareViewModeProps) =
                         <thead>
                             <tr className="text-left text-xs font-bold text-slate-500 uppercase">
                                 <th className="pb-2">{common.fields.itemName}</th>
-                                <th className="pb-2">{common.fields.quantity}</th>
-                                <th className="pb-2">{common.fields.note}</th>
+                                <th className="pb-2">{dict.common.quantity}</th>
+                                <th className="pb-2">{dict.common.note}</th>
                             </tr>
                         </thead>
                         <tbody>

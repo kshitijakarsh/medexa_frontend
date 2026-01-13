@@ -7,7 +7,6 @@ import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
 import { SurgeryRow } from "@/app/[lang]/surgery/_lib/types";
 import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
-import NewButton from "@/components/common/new-button";
 import FilterButton from "@/components/common/filter-button";
 import { DateRangeDropdown } from "@/app/[lang]/surgery/dashboard/_components/UI/DateRangeDropdown";
 import { DateRange } from "react-day-picker";
@@ -34,8 +33,6 @@ export default function SurgeryList() {
     const { lang } = useParams();
     const dict = useDictionary();
     const scheduleDict = dict.pages.surgery.otSchedule;
-    const surgeryTableDict = dict.pages.surgery.dashboard;
-    const [selectedTeam, setSelectedTeam] = useState("");
     const [searchType, setSearchType] = useState({ label: "MRN", value: "mrn" });
     const [searchValue, setSearchValue] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -185,7 +182,7 @@ export default function SurgeryList() {
         },
         {
             key: "actions",
-            label: dict.pages.surgery.common.action,
+            label: dict.table.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {

@@ -345,7 +345,22 @@ const statusStyles: Record<
     bg: "bg-red-100",
     border: "border border-red-300",
     text: "text-red-600",
+  },
 
+  // Urgency Levels
+  Stat: {
+    bg: "bg-red-500",
+    text: "text-white",
+  },
+
+  Urgent: {
+    bg: "bg-orange-400",
+    text: "text-white",
+  },
+
+  Elective: {
+    bg: "bg-blue-400",
+    text: "text-white",
   },
 
   // Your previous statuses

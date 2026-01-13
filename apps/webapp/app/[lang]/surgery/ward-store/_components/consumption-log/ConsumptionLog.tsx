@@ -64,7 +64,7 @@ export const ConsumptionLog = ({
     const columns = [
         {
             key: "date",
-            label: wardStoreDict.columns.date,
+            label: dict.common.date,
         },
         {
             key: "itemName",
@@ -72,7 +72,7 @@ export const ConsumptionLog = ({
         },
         {
             key: "quantity",
-            label: wardStoreDict.columns.quantity,
+            label: dict.common.quantity,
         },
         {
             key: "usageType",
@@ -80,7 +80,7 @@ export const ConsumptionLog = ({
         },
         {
             key: "patient",
-            label: wardStoreDict.columns.patient,
+            label: dict.table.patient,
             render: (row: ConsumptionLogItem) => {
                 if (row.patient) {
                     return (
@@ -95,29 +95,29 @@ export const ConsumptionLog = ({
         },
         {
             key: "loggedBy",
-            label: wardStoreDict.columns.loggedBy,
+            label: dict.table.addedBy,
         },
         {
             key: "note",
-            label: wardStoreDict.columns.note,
+            label: dict.common.note,
         },
         {
             key: "action",
-            label: wardStoreDict.columns.action,
+            label: dict.table.action,
             render: (row: ConsumptionLogItem) => (
                 <ActionMenu actions={[
                     {
-                        label: wardStoreDict.actions.view,
+                        label: dict.common.view,
 
                     },
                     {
-                        label: wardStoreDict.actions.edit,
+                        label: dict.common.edit,
                         onClick: () => {
                             if (onEdit) onEdit(row.id);
                         }
                     },
                     {
-                        label: wardStoreDict.actions.delete,
+                        label: dict.common.delete,
                         onClick: () => {
                             if (onDelete) onDelete(row.id);
                         }

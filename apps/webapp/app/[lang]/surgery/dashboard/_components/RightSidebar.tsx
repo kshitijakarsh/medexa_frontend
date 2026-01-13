@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AlertCircle, Zap, ShieldCheck, Clock, Users, FlaskConical } from "lucide-react";
+import { AlertCircle, Clock, Users, FlaskConical } from "lucide-react";
 import PatientCard from "./UI/PatientCard";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@workspace/ui/components/button";
@@ -9,6 +9,11 @@ import { ROUTES } from "@/lib/routes";
 import { Surgery } from "@/lib/api/surgery/surgeries";
 import { useDictionary } from "@/i18n/use-dictionary";
 import { useSurgeries } from "../../_hooks/useSurgery";
+
+interface SurgeryAPIResponse {
+  success: boolean;
+  data: Surgery[];
+}
 
 const RightSidebar: React.FC = () => {
   const router = useRouter();
@@ -61,7 +66,7 @@ const RightSidebar: React.FC = () => {
           className="text-xs font-medium text-blue-500 h-auto p-0"
           onClick={onViewAll}
         >
-          {rightSidebarDict.viewAll}
+          {dict.dashboard.viewAll}
         </Button>
       </div>
       <div className="flex flex-col gap-3">
@@ -71,9 +76,10 @@ const RightSidebar: React.FC = () => {
   );
 
   const { data: surgeriesResponse, isLoading } = useSurgeries({ limit: 50 });
+  const commonDict = dict.pages.surgery.common;
 
   const allSurgeries: Surgery[] = Array.isArray(surgeriesResponse?.data)
-    ? surgeriesResponse.data
+    ? (surgeriesResponse as unknown as SurgeryAPIResponse).data
     : (Array.isArray(surgeriesResponse) ? surgeriesResponse : []);
 
   const upcomingSurgeries = allSurgeries
@@ -89,6 +95,31 @@ const RightSidebar: React.FC = () => {
     .slice(0, 5);
 
   const surgeryRequests = allSurgeries.slice(0, 5);
+
+  const renderSurgeryList = (list: Surgery[], noDataLabel: string) => {
+    if (isLoading) {
+      return <div className="py-4 text-center text-xs text-gray-500">{dict.common.loading}</div>;
+    }
+    if (list.length === 0) {
+      return <div className="py-4 text-center text-xs text-gray-500">{noDataLabel}</div>;
+    }
+    return list.map((item) => (
+      <PatientCard
+        key={item.id}
+        id={item.id}
+        avatar={item.patient?.photo_url || item.patient?.avatarUrl || ""}
+        name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : commonDict.fallbacks.unknownPatient}
+        mrn={item.patient?.civil_id || item.patient?.mrn || "—"}
+        procedure={item.procedure?.name || "—"}
+        time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit"
+        }) : "—"}
+        room={item.ot_room_id ? `${commonDict.prefixes.otRoom}${item.ot_room_id}` : (item.ot_room || "—")}
+        status={item.status}
+      />
+    ));
+  };
 
 
   return (
@@ -122,26 +153,7 @@ const RightSidebar: React.FC = () => {
         icon={Clock}
         onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
-        {isLoading ? (
-          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.loading}</div>
-        ) : upcomingSurgeries.length === 0 ? (
-          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.noUpcoming}</div>
-        ) : upcomingSurgeries.map((item) => (
-          <PatientCard
-            key={item.id}
-            id={item.id}
-            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
-            name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
-            procedure={item.procedure?.name || item.surgery_type || "—"}
-            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit"
-            }) : "—"}
-            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
-            status={item.status}
-          />
-        ))}
+        {renderSurgeryList(upcomingSurgeries, rightSidebarDict.alerts.noUpcoming)}
       </SidebarSection>
 
       {/* Surgery Requests */}
@@ -150,26 +162,7 @@ const RightSidebar: React.FC = () => {
         icon={Clock}
         onViewAll={() => router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`)}
       >
-        {isLoading ? (
-          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.loading}</div>
-        ) : surgeryRequests.length === 0 ? (
-          <div className="py-4 text-center text-xs text-gray-500">{rightSidebarDict.alerts.noRequests}</div>
-        ) : surgeryRequests.map((item) => (
-          <PatientCard
-            key={item.id}
-            id={item.id}
-            avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
-            name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-            mrn={item.patient?.civil_id || (item as any).patient?.mrn || "—"}
-            procedure={item.procedure?.name || item.surgery_type || "—"}
-            time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit"
-            }) : "—"}
-            room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
-            status={item.status}
-          />
-        ))}
+        {renderSurgeryList(surgeryRequests, rightSidebarDict.alerts.noRequests)}
       </SidebarSection>
     </aside>
   );

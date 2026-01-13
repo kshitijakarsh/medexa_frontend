@@ -215,13 +215,13 @@ export default function MedicalClearanceModal({
                                 onClick={() => onOpenChange(false)}
                                 className="border-blue-400 text-blue-600 hover:bg-blue-50 font-medium px-6 w-24 h-8 rounded-md border text-[10px] uppercase tracking-wider"
                             >
-                                {dict.pages.surgery.surgeryDetails.common.cancel}
+                                {dict.common.cancel}
                             </Button>
                             <Button
                                 type="submit"
                                 className="bg-[#48C586] hover:bg-[#3fb378] text-white font-medium px-6 w-24 h-8 rounded-md text-[10px] uppercase tracking-wider"
                             >
-                                {dict.pages.surgery.surgeryDetails.common.add}
+                                {dict.common.add}
                             </Button>
                         </DialogFooter>
                     </form>

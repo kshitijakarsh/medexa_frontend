@@ -112,7 +112,7 @@ export const NewMedicalHistory = ({
                                         className="border-blue-100 bg-white placeholder:text-slate-400 focus-visible:ring-blue-500"
                                     />
                                     <NewButton
-                                        name={anesthesia.actions.add}
+                                        name={dict.common.add}
                                         handleClick={() => { }}
                                     />
                                 </div>
@@ -127,12 +127,12 @@ export const NewMedicalHistory = ({
                             onClick={() => onOpenChange(false)}
                             className="min-w-[100px] border-blue-500 text-blue-500 hover:bg-blue-50 font-medium"
                         >
-                            {anesthesia.actions.cancel}
+                            {dict.common.cancel}
                         </Button>
                         <Button
                             className="min-w-[100px] bg-green-500 hover:bg-green-600 text-white font-medium"
                         >
-                            {anesthesia.actions.save}
+                            {dict.common.save}
                         </Button>
                     </div>
                 </div>

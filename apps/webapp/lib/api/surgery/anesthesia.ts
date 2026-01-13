@@ -50,7 +50,7 @@ class AnesthesiaApiClient {
     private authToken?: string;
 
     constructor(config: ApiConfig) {
-        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URI ?? "";
+        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URI_SET_2 ?? "";
         this.authToken = config.authToken;
     }
 
@@ -71,12 +71,29 @@ class AnesthesiaApiClient {
      */
     async getAnesthesiaPlans(surgeryId: string) {
         const config = await this.getConfig();
-        return axios.get<AnesthesiaPlansResponse>(
+        const response = await axios.get<AnesthesiaPlansResponse>(
             `${this.baseUrl}/api/v1/surgery/${surgeryId}/anesthesia`,
             {
                 ...config,
             }
         );
+        return response;
+    }
+
+    /**
+     * PUT: Update anesthesia plan for a specific surgery ID
+     * Endpoint: api/v1/surgery/{id}/anesthesia
+     */
+    async updateAnesthesiaPlan(surgeryId: string, data: Partial<AnesthesiaPlan>) {
+        const config = await this.getConfig();
+        const response = await axios.put<AnesthesiaPlansResponse>(
+            `${this.baseUrl}/api/v1/surgery/${surgeryId}/anesthesia`,
+            data,
+            {
+                ...config,
+            }
+        );
+        return response;
     }
 
     /**
@@ -85,9 +102,24 @@ class AnesthesiaApiClient {
      */
     async saveAnesthesiaPlan(surgeryId: string, data: Partial<AnesthesiaPlan>) {
         const config = await this.getConfig();
-        return axios.post<AnesthesiaPlansResponse>(
+        const response = await axios.post<AnesthesiaPlansResponse>(
             `${this.baseUrl}/api/v1/surgery/${surgeryId}/anesthesia`,
             data,
+            {
+                ...config,
+            }
+        );
+        return response;
+    }
+
+    /**
+     * DELETE: Delete anesthesia plan for a specific surgery ID
+     * Endpoint: api/v1/surgery/{id}/anesthesia
+     */
+    async deleteAnesthesiaPlan(surgeryId: string) {
+        const config = await this.getConfig();
+        return axios.delete(
+            `${this.baseUrl}/api/v1/surgery/${surgeryId}/anesthesia`,
             {
                 ...config,
             }

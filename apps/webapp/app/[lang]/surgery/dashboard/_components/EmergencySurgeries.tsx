@@ -10,18 +10,24 @@ import { useSurgeries } from "../../_hooks/useSurgery";
 import { Surgery } from "@/lib/api/surgery/surgeries";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 
+interface SurgeryAPIResponse {
+  success: boolean;
+  data: Surgery[];
+}
+
 const EmergencySurgeries: React.FC = () => {
   const router = useRouter();
   const { lang } = useParams();
   const dict = useDictionary();
   const emergencyDict = dict.pages.surgery.dashboard;
+  const commonDict = dict.pages.surgery.common;
 
   const { data: surgeriesData, isLoading, error } = useSurgeries({ urgency: "emergency" });
 
   const extractSurgeries = (): Surgery[] => {
     if (!surgeriesData) return [];
     if (Array.isArray(surgeriesData)) return surgeriesData;
-    if (Array.isArray((surgeriesData as any).data)) return (surgeriesData as any).data;
+    if ((surgeriesData as SurgeryAPIResponse).data) return (surgeriesData as SurgeryAPIResponse).data;
     return [];
   };
 
@@ -48,7 +54,7 @@ const EmergencySurgeries: React.FC = () => {
             router.push(`/${lang}${ROUTES.SURGERY_OT_SCHEDULE}`);
           }}
         >
-          {emergencyDict.viewAll}
+          {dict.dashboard.viewAll}
         </Button>
       </div>
 
@@ -65,16 +71,16 @@ const EmergencySurgeries: React.FC = () => {
               <div key={item.id || index} className="shrink-0">
                 <PatientCard
                   id={item.id}
-                  avatar={(item.patient as any)?.photo_url || "/images/avatars/1.png"}
-                  name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : "Unknown"}
-                  mrn={(item.patient as any)?.mrn || item.patient?.civil_id || "—"}
-                  procedure={item.procedure?.name || item.surgery_type || "—"}
+                  avatar={item.patient?.photo_url || item.patient?.avatarUrl || ""}
+                  name={item.patient ? `${item.patient.first_name} ${item.patient.last_name}` : commonDict.fallbacks.unknownPatient}
+                  mrn={item.patient?.civil_id || item.patient?.mrn || "—"}
+                  procedure={item.procedure?.name || "—"}
                   time={(item.date || item.scheduled_date) ? new Date(item.date || (item.scheduled_date as string)).toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit"
                   }) : "—"}
-                  room={(item as any).ot_room_id ? `OT-${(item as any).ot_room_id}` : ((item as any).ot_room || "—")}
-                  status="Emergency"
+                  room={item.ot_room_id ? `${commonDict.prefixes.otRoom}${item.ot_room_id}` : (item.ot_room || "—")}
+                  status={emergencyDict.emergency || "Emergency"}
                 />
               </div>
             ))
