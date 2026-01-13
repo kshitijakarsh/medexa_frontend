@@ -58,7 +58,7 @@ const mapPatientToDetails = (patient: PatientItem): PatientDetails => {
 const mapMedicationsToPrescriptions = (medications: ApiMedicationItem[]): Prescription[] => {
     // Group medications by visit_id and created_by (doctor)
     const grouped = new Map<string, ApiMedicationItem[]>()
-    
+
     medications.forEach((med) => {
         if (!med.is_deleted) {
             const key = `${med.visit_id}-${med.created_by}`
@@ -76,11 +76,11 @@ const mapMedicationsToPrescriptions = (medications: ApiMedicationItem[]): Prescr
             const firstMed = meds[0]
             if (!firstMed) return null
 
-            const doctorName = firstMed.createdBy 
+            const doctorName = firstMed.createdBy
                 ? `${firstMed.createdBy.first_name} ${firstMed.createdBy.last_name}`.trim()
                 : "Unknown Doctor"
-            
-            const visitDate = firstMed.visit?.visit_date 
+
+            const visitDate = firstMed.visit?.visit_date
                 ? format(new Date(firstMed.visit.visit_date), "MMM dd, yyyy")
                 : format(new Date(firstMed.created_at), "MMM dd, yyyy")
 
@@ -130,7 +130,7 @@ export default function PatientDetailsPage() {
             try {
                 const apiClient = createPatientsApiClient()
                 const response = await apiClient.getPatient(patientId)
-                
+
                 if (response.data.success && response.data.data) {
                     const patientDetails = mapPatientToDetails(response.data.data)
                     setPatient(patientDetails)
@@ -229,13 +229,13 @@ export default function PatientDetailsPage() {
                 setVisitsLoading(true)
                 try {
                     const visitPurposeClient = createVisitPurposeApiClient({})
-                    console.log("PatientDetailsPage: API client created, making request...")
+                    // console.log("PatientDetailsPage: API client created, making request...")
                     const response = await visitPurposeClient.getByPatient(patientId, {
                         page: 1,
                         limit: 100,
                     })
 
-                    console.log("PatientDetailsPage: API response received", response.data)
+                    // console.log("PatientDetailsPage: API response received", response.data)
                     if (response.data.success) {
                         const visits = mapVisitPurposesToVisits(response.data.data)
                         setPatient((prev) => {
@@ -314,8 +314,8 @@ export default function PatientDetailsPage() {
                 return <RadiologyTab reports={patient.radiologyReports} />
             case "medications":
                 return (
-                    <MedicationsTab 
-                        prescriptions={patient.prescriptions} 
+                    <MedicationsTab
+                        prescriptions={patient.prescriptions}
                         loading={medicationsLoading}
                     />
                 )
