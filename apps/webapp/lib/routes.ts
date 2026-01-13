@@ -3,6 +3,7 @@ export const DOCTOR_BASE = `/doctor`
 export const FRONTOFFICE_BASE = "/frontoffice"
 export const HR = "/hr"
 export const NURSE_BASE = "/nurse"
+export const PHARMACY_BASE = "/pharmacy"
 export const SURGERY_BASE = "/surgery"
 
 export const ROUTES = {
@@ -70,6 +71,18 @@ export const ROUTES = {
   // HR
   HR: `${HR}/employee-configuration`,
   HR_EMPLOYEE_ADD: `${HR}/employee-configuration/add`,
+
+  // Pharmacy
+  PHARMACY_DASHBOARD: `${PHARMACY_BASE}/dashboard`,
+  PHARMACY_OPD_DISPENSING: `${PHARMACY_BASE}/opd-dispensing`,
+  PHARMACY_IPD_PHARMACY: `${PHARMACY_BASE}/ipd-pharmacy`,
+  PHARMACY_GENERAL_SALES: `${PHARMACY_BASE}/general-sales`,
+  PHARMACY_GENERAL_SALES_INVOICE: `${PHARMACY_BASE}/general-sales/invoice`,
+  PHARMACY_AVAILABLE_MEDICINES: `${PHARMACY_BASE}/available-medicines`,
+  PHARMACY_DRUG_INVENTORY: `${PHARMACY_BASE}/drug-inventory`,
+  PHARMACY_EXPIRY_MANAGEMENT: `${PHARMACY_BASE}/expiry-management`,
+  PHARMACY_APPROVALS: `${PHARMACY_BASE}/approvals`,
+  PHARMACY_REPORTS: `${PHARMACY_BASE}/reports`,
 
   // Surgery
   SURGERY_DASHBOARD: `${SURGERY_BASE}/dashboard`,
