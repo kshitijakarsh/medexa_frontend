@@ -149,7 +149,7 @@ export const getRequestById = async (
   config?: ApiConfig
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
-  const response: AxiosResponse<RequestDetailResponse> = await client.get(`/api/v1/pharmacy/requests/${id}`)
+  const response: AxiosResponse<RequestDetailResponse> = await client.get(`/api/v1/requests/${id}`)
   return response.data
 }
 
@@ -163,7 +163,7 @@ export const createRequest = async (
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<RequestDetailResponse> = await client.post(
-    "/api/v1/pharmacy/requests",
+    "/api/v1/requests",
     payload
   )
   return response.data
@@ -180,7 +180,7 @@ export const updateRequest = async (
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<RequestDetailResponse> = await client.put(
-    `/api/v1/pharmacy/requests/${id}`,
+    `/api/v1/requests/${id}`,
     payload
   )
   return response.data
@@ -201,7 +201,7 @@ export const deleteRequest = async (
 ): Promise<DeleteRequestResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<DeleteRequestResponse> = await client.delete(
-    `/api/v1/pharmacy/requests/${id}`
+    `/api/v1/requests/${id}`
   )
   return response.data
 }

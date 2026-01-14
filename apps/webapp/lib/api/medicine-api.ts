@@ -17,6 +17,7 @@ export interface Medicine {
   min_level: number
   unit_price: number
   selling_price: number
+  tax_rate: number
   status: string
   created_at?: string
   updated_at?: string
@@ -52,6 +53,7 @@ export interface CreateMedicinePayload {
   min_level?: number
   unit_price?: number
   selling_price?: number
+  tax_rate?: number
   status?: string
 }
 
@@ -64,6 +66,7 @@ export interface UpdateMedicinePayload {
   min_level?: number
   unit_price?: number
   selling_price?: number
+  tax_rate?: number
   status?: string
 }
 

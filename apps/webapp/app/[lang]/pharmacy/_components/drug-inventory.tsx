@@ -50,6 +50,7 @@ export function DrugInventory() {
     min_level: 0,
     unit_price: 0,
     selling_price: 0,
+    tax_rate: 0,
     medicine_category_id: 1,
   })
   const [error, setError] = useState<string | null>(null)
@@ -103,6 +104,7 @@ export function DrugInventory() {
       min_level: medicine.min_level,
       unit_price: medicine.unit_price,
       selling_price: medicine.selling_price,
+      tax_rate: medicine.tax_rate || 0,
       medicine_category_id: medicine.medicine_category_id,
     })
     setEditModalOpen(true)
@@ -456,6 +458,19 @@ export function DrugInventory() {
                 placeholder="Enter selling price"
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="tax_rate">Tax Rate (%) *</Label>
+              <Input
+                id="tax_rate"
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={formData.tax_rate}
+                onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                placeholder="Enter tax rate"
+              />
+            </div>
           </div>
           {error && (
             <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm mb-4">
@@ -557,6 +572,19 @@ export function DrugInventory() {
                 value={formData.selling_price}
                 onChange={(e) => setFormData({ ...formData, selling_price: parseFloat(e.target.value) || 0 })}
                 placeholder="Enter selling price"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-tax_rate">Tax Rate (%) *</Label>
+              <Input
+                id="edit-tax_rate"
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                value={formData.tax_rate}
+                onChange={(e) => setFormData({ ...formData, tax_rate: parseFloat(e.target.value) || 0 })}
+                placeholder="Enter tax rate"
               />
             </div>
           </div>

@@ -21,6 +21,7 @@ export interface Batch {
   created_by?: number
   updated_by?: number
   is_deleted: boolean
+  medicine: any
 }
 
 export interface BatchListResponse {

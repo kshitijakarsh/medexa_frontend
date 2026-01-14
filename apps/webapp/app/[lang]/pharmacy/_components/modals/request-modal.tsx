@@ -351,7 +351,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                         .filter((batch) => !requestItems.find((item) => item.medicine_batch_id === batch.id))
                         .map((batch) => (
                           <SelectItem key={batch.id} value={batch.id.toString()}>
-                            {batch.batch_number} - Medicine ID: {batch.medicine_id} (Qty: {batch.quantity})
+                            {batch.batch_number} - {batch.medicine?.medicine || `Medicine ID: ${batch.medicine_id}`} ({batch.medicine?.type || ''}) - Qty: {batch.quantity}
                           </SelectItem>
                         ))}
                     </SelectContent>
@@ -391,7 +391,11 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                           </div>
                           {batch && (
                             <div className="text-sm text-gray-600 space-y-1 mt-1">
-                              <div>Medicine ID: {batch.medicine_id}</div>
+                              {batch.medicine && (
+                                <div className="font-medium text-gray-900">
+                                  {batch.medicine.medicine} - {batch.medicine.type}
+                                </div>
+                              )}
                               <div className="flex gap-4">
                                 <span>Quantity: {batch.quantity}</span>
                                 <span>Location: {batch.location || "N/A"}</span>

@@ -58,9 +58,9 @@ export function generatePharmacyBillPDF(billData: BillData): void {
     total,
     paymentMethod = 'Cash',
     pharmacyName = 'Medexa Pharmacy',
-    pharmacyAddress = 'Healthcare Excellence Center, Medical District, Dubai, UAE',
-    pharmacyPhone = '+971 4 XXX XXXX',
-    pharmacyLicense = 'License No: PH-2024-MEDEXA'
+    pharmacyAddress = '123 Healthcare Street, Medical District, Dubai, UAE',
+    pharmacyPhone = '+971 4 123 4567',
+    pharmacyLicense = 'License No: PH-2024-12345'
   } = billData
 
   const docDefinition: TDocumentDefinitions = {
@@ -223,12 +223,7 @@ export function generatePharmacyBillPDF(billData: BillData): void {
                 text: `Status: Paid`,
                 style: 'customerDetails',
                 color: '#10b981',
-                margin: [0, 0, 0, 5]
-              },
-              {
-              text: `Tax Rate: ${billData.taxRate || 5}%`,
-              style: 'customerDetails',
-              margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
+                margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
               },
               ...(billData.prescriptionRef ? [{
                 text: `Prescription: ${billData.prescriptionRef}`,
@@ -280,7 +275,7 @@ export function generatePharmacyBillPDF(billData: BillData): void {
                 bold: true
               },
               {
-                text: `KWD ${item.selling_price.toFixed(3)}`,
+                text: `$${item.selling_price.toFixed(2)}`,
                 style: 'tableCell',
                 alignment: 'right'
               },
@@ -346,20 +341,20 @@ export function generatePharmacyBillPDF(billData: BillData): void {
               widths: ['*', 80],
               body: [
                 [
-                  { text: 'Subtotal (Before Tax):', style: 'summaryLabel' },
-                  { text: `KWD ${subtotal.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Subtotal:', style: 'summaryLabel' },
+                  { text: `$${subtotal.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 [
-                  { text: `Tax (${billData.taxRate || 5}%):`, style: 'summaryLabel' },
-                  { text: `KWD ${tax.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Tax (5%):', style: 'summaryLabel' },
+                  { text: `$${tax.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 ...(discount > 0 ? [[
                   { text: 'Discount:', style: 'summaryLabel', color: '#ef4444' },
-                  { text: `-KWD ${discount.toFixed(3)}`, style: 'summaryValue', color: '#ef4444' }
+                  { text: `-$${discount.toFixed(2)}`, style: 'summaryValue', color: '#ef4444' }
                 ]] : []),
                 [
                   {
-                    text: 'TOTAL (After Tax):',
+                    text: 'TOTAL:',
                     style: 'summaryLabel',
                     bold: true,
                     fontSize: 12,
@@ -367,7 +362,7 @@ export function generatePharmacyBillPDF(billData: BillData): void {
                     color: '#ffffff'
                   },
                   {
-                    text: `KWD ${total.toFixed(3)}`,
+                    text: `$${total.toFixed(2)}`,
                     style: 'summaryValue',
                     bold: true,
                     fontSize: 13,
@@ -771,7 +766,7 @@ export function openPharmacyBillPDF(billData: BillData): void {
                 bold: true
               },
               {
-                text: `KWD ${item.selling_price.toFixed(3)}`,
+                text: `$${item.selling_price.toFixed(2)}`,
                 style: 'tableCell',
                 alignment: 'right'
               },
@@ -837,20 +832,20 @@ export function openPharmacyBillPDF(billData: BillData): void {
               widths: ['*', 80],
               body: [
                 [
-                  { text: 'Subtotal (Before Tax):', style: 'summaryLabel' },
-                  { text: `KWD ${subtotal.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Subtotal:', style: 'summaryLabel' },
+                  { text: `$${subtotal.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 [
-                  { text: `Tax (${billData.taxRate || 5}%):`, style: 'summaryLabel' },
-                  { text: `KWD ${tax.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Tax (5%):', style: 'summaryLabel' },
+                  { text: `$${tax.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 ...(discount > 0 ? [[
                   { text: 'Discount:', style: 'summaryLabel', color: '#ef4444' },
-                  { text: `-KWD ${discount.toFixed(3)}`, style: 'summaryValue', color: '#ef4444' }
+                  { text: `-$${discount.toFixed(2)}`, style: 'summaryValue', color: '#ef4444' }
                 ]] : []),
                 [
                   {
-                    text: 'TOTAL (After Tax):',
+                    text: 'TOTAL:',
                     style: 'summaryLabel',
                     bold: true,
                     fontSize: 12,
@@ -858,7 +853,7 @@ export function openPharmacyBillPDF(billData: BillData): void {
                     color: '#ffffff'
                   },
                   {
-                    text: `KWD ${total.toFixed(3)}`,
+                    text: `$${total.toFixed(2)}`,
                     style: 'summaryValue',
                     bold: true,
                     fontSize: 13,
@@ -1216,12 +1211,7 @@ export function printPharmacyBillPDF(billData: BillData): void {
                 text: `Status: Paid`,
                 style: 'customerDetails',
                 color: '#10b981',
-                margin: [0, 0, 0, 5]
-              },
-              {
-              text: `Tax Rate: ${billData.taxRate || 5}%`,
-              style: 'customerDetails',
-              margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
+                margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
               },
               ...(billData.prescriptionRef ? [{
                 text: `Prescription: ${billData.prescriptionRef}`,
@@ -1273,7 +1263,7 @@ export function printPharmacyBillPDF(billData: BillData): void {
                 bold: true
               },
               {
-                text: `KWD ${item.selling_price.toFixed(3)}`,
+                text: `$${item.selling_price.toFixed(2)}`,
                 style: 'tableCell',
                 alignment: 'right'
               },
@@ -1339,20 +1329,20 @@ export function printPharmacyBillPDF(billData: BillData): void {
               widths: ['*', 80],
               body: [
                 [
-                  { text: 'Subtotal (Before Tax):', style: 'summaryLabel' },
-                  { text: `KWD ${subtotal.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Subtotal:', style: 'summaryLabel' },
+                  { text: `$${subtotal.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 [
-                  { text: `Tax (${billData.taxRate || 5}%):`, style: 'summaryLabel' },
-                  { text: `KWD ${tax.toFixed(3)}`, style: 'summaryValue' }
+                  { text: 'Tax (5%):', style: 'summaryLabel' },
+                  { text: `$${tax.toFixed(2)}`, style: 'summaryValue' }
                 ],
                 ...(discount > 0 ? [[
                   { text: 'Discount:', style: 'summaryLabel', color: '#ef4444' },
-                  { text: `-KWD ${discount.toFixed(3)}`, style: 'summaryValue', color: '#ef4444' }
+                  { text: `-$${discount.toFixed(2)}`, style: 'summaryValue', color: '#ef4444' }
                 ]] : []),
                 [
                   {
-                    text: 'TOTAL (After Tax):',
+                    text: 'TOTAL:',
                     style: 'summaryLabel',
                     bold: true,
                     fontSize: 12,
@@ -1360,7 +1350,7 @@ export function printPharmacyBillPDF(billData: BillData): void {
                     color: '#ffffff'
                   },
                   {
-                    text: `KWD ${total.toFixed(3)}`,
+                    text: `$${total.toFixed(2)}`,
                     style: 'summaryValue',
                     bold: true,
                     fontSize: 13,
@@ -1544,12 +1534,3 @@ export function printPharmacyBillPDF(billData: BillData): void {
   // Generate and print the PDF
   pdfMake.createPdf(docDefinition).print()
 }
-
-
-
-
-
-
-
-
-

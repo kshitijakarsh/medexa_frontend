@@ -77,7 +77,13 @@ export function useCreateOrder() {
         console.log("[useCreateOrder] api.create() returned:", response.data)
         return response.data
       } catch (err: any) {
-        console.error("[useCreateOrder] api.create() failed:", err.response?.data || err.message)
+        const errorData = err.response?.data || {}
+        const errorMsg = errorData.message || errorData.errors?.[0]?.message || err.message
+        console.error("[useCreateOrder] api.create() failed:", {
+          status: err.response?.status,
+          data: errorData,
+          message: errorMsg
+        })
         throw err
       }
     },

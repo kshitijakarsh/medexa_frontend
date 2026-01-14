@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import { Input } from "@workspace/ui/components/input"
 import { Search, User, Calendar, FileText, Bed, ArrowLeft, Download, Printer, CheckCircle } from "lucide-react"
 import { usePrescriptions } from "../_hooks/usePrescription"
+import { useMedicines } from "../_hooks/useMedicine"
 import type { Prescription } from "@/lib/api/prescription-api"
 import type { Medicine } from "@/lib/api/medicine-api"
 import { useCreateOrder } from "../_hooks/useOrder"
@@ -31,6 +32,11 @@ export function IPDPharmacy() {
     search: searchQuery || undefined,
     limit: 50,
   })
+  
+  // Fetch all medicines to get complete data including prices
+  const { data: medicinesData } = useMedicines({
+    limit: 100,
+  })
 
   // Filter prescriptions that have ipd_id (IPD)
   const prescriptions = (data?.data || []).filter(p => p.ipd_id)
@@ -50,28 +56,43 @@ export function IPDPharmacy() {
   const handleDispenseAndBill = useCallback(() => {
     if (!selectedPrescription || !selectedPrescription.prescription_items) return
     
+    // Get all medicines for lookup
+    const allMedicines = medicinesData?.data || []
+    
     // Convert prescription items to cart items
+    // Calculate quantity as: dosage × frequency × duration
     const cartItems: CartItem[] = selectedPrescription.prescription_items
       .filter(item => item.medicine)
-      .map(item => ({
-        id: item.medicine!.id,
-        tenant_id: 0,
-        medicine_category_id: 0,
-        medicine: item.medicine!.medicine,
-        type: item.medicine!.type,
-        content: item.medicine!.content || '',
-        quantity: 1,
-        total_stock: 999,
-        min_level: 0,
-        unit_price: 0,
-        selling_price: 0,
-        status: 'active',
-        is_deleted: false,
-      }))
+      .map(item => {
+        const dosage = parseInt(String(item.dosage || 1))
+        const frequency = parseInt(String(item.frequency || 1))
+        const duration = parseInt(String(item.duration || 1))
+        const calculatedQuantity = dosage * frequency * duration
+        
+        // Find the complete medicine data from the medicines list
+        const fullMedicineData = allMedicines.find(m => m.id === item.medicine!.id)
+        
+        return {
+          id: item.medicine!.id,
+          tenant_id: fullMedicineData?.tenant_id || 0,
+          medicine_category_id: fullMedicineData?.medicine_category_id || 0,
+          medicine: item.medicine!.medicine,
+          type: item.medicine!.type,
+          content: item.medicine!.content || '',
+          quantity: calculatedQuantity,
+          total_stock: fullMedicineData?.total_stock || 999,
+          min_level: fullMedicineData?.min_level || 0,
+          unit_price: fullMedicineData?.unit_price || 0,
+          selling_price: fullMedicineData?.selling_price || 0,
+          tax_rate: fullMedicineData?.tax_rate || 5,
+          status: fullMedicineData?.status || 'active',
+          is_deleted: false,
+        }
+      })
     
     setCart(cartItems)
     setShowBilling(true)
-  }, [selectedPrescription])
+  }, [selectedPrescription, medicinesData])
 
   const handleBackToPrescription = useCallback(() => {
     setShowBilling(false)
@@ -86,7 +107,12 @@ export function IPDPharmacy() {
 
     try {
       const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-      const tax = subtotal * 0.05
+      const tax = cart.reduce((sum, item) => {
+        const itemTotal = item.selling_price * item.quantity
+        const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+        return sum + itemTax
+      }, 0)
+      const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
       const total = subtotal + tax
 
       const orderPayload: CreateOrderPayload = {
@@ -111,8 +137,11 @@ export function IPDPharmacy() {
       setShowBilling(false)
       setSelectedPrescription(null)
     } catch (error: any) {
-      console.error("Failed to create order:", error)
-      alert(`Failed to create order: ${error.response?.data?.message || error.message}`)
+      console.error("Failed to create order - Full error:", error)
+      console.error("Error response:", error.response)
+      console.error("Error message:", error.message)
+      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || "Unknown error"
+      alert(`Failed to create order: ${errorMsg}`)
     }
   }, [cart, selectedPrescription, createOrderMutation])
 
@@ -120,7 +149,12 @@ export function IPDPharmacy() {
     if (cart.length === 0 || !selectedPrescription) return
 
     const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-    const tax = subtotal * 0.05
+    const tax = cart.reduce((sum, item) => {
+      const itemTotal = item.selling_price * item.quantity
+      const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+      return sum + itemTax
+    }, 0)
+    const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
     const total = subtotal + tax
     const now = new Date()
     const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
@@ -150,7 +184,8 @@ export function IPDPharmacy() {
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
       pharmacyLicense: 'License No: PH-2024-MEDEXA',
-      prescriptionRef: `RX-${selectedPrescription.id}`
+      prescriptionRef: `RX-${selectedPrescription.id}`,
+      taxRate: Number(avgTaxRate.toFixed(2))
     }
 
     printPharmacyBillPDF(billData)
@@ -160,7 +195,12 @@ export function IPDPharmacy() {
     if (cart.length === 0 || !selectedPrescription) return
 
     const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-    const tax = subtotal * 0.05
+    const tax = cart.reduce((sum, item) => {
+      const itemTotal = item.selling_price * item.quantity
+      const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+      return sum + itemTax
+    }, 0)
+    const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
     const total = subtotal + tax
     const now = new Date()
     const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
@@ -190,7 +230,8 @@ export function IPDPharmacy() {
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
       pharmacyLicense: 'License No: PH-2024-MEDEXA',
-      prescriptionRef: `RX-${selectedPrescription.id}`
+      prescriptionRef: `RX-${selectedPrescription.id}`,
+      taxRate: Number(avgTaxRate.toFixed(2))
     }
 
     generatePharmacyBillPDF(billData)
@@ -207,7 +248,12 @@ export function IPDPharmacy() {
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-  const tax = subtotal * 0.05
+  const tax = cart.reduce((sum, item) => {
+    const itemTotal = item.selling_price * item.quantity
+    const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+    return sum + itemTax
+  }, 0)
+  const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
   const total = subtotal + tax
 
   return (
@@ -313,48 +359,43 @@ export function IPDPharmacy() {
 
                 {/* Order Items Grid */}
                 <div className="grid grid-cols-1 gap-3 mb-4">
-                  {cart.map((item) => (
-                    <Card key={item.id} className="p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <h3 className="font-medium">{item.medicine}</h3>
-                          <p className="text-sm text-muted-foreground">{item.type}</p>
-                          {item.content && (
-                            <p className="text-xs text-muted-foreground">{item.content}</p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Price</p>
-                            <p className="font-medium">KWD {item.selling_price.toFixed(3)}</p>
+                  {cart.map((item) => {
+                    const itemSubtotal = item.selling_price * item.quantity;
+                    const itemTax = itemSubtotal * ((item.tax_rate || 0) / 100);
+                    const itemTotal = itemSubtotal + itemTax;
+                    
+                    return (
+                      <Card key={item.id} className="p-4">
+                        <div className="flex items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <h3 className="font-medium">{item.medicine}</h3>
+                            <p className="text-sm text-muted-foreground">{item.type}</p>
+                            {item.content && (
+                              <p className="text-xs text-muted-foreground">{item.content}</p>
+                            )}
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => updateQuantity(item.id, -1)}
-                            >
-                              -
-                            </Button>
-                            <span className="w-8 text-center">{item.quantity}</span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => updateQuantity(item.id, 1)}
-                            >
-                              +
-                            </Button>
-                          </div>
-                          <div className="text-right min-w-[80px]">
-                            <p className="text-sm text-muted-foreground">Total</p>
-                            <p className="font-medium">KWD {(item.selling_price * item.quantity).toFixed(3)}</p>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className="text-sm text-muted-foreground">Price</p>
+                              <p className="font-medium">KWD {item.selling_price.toFixed(3)}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-muted-foreground">Qty:</span>
+                              <span className="font-medium">{item.quantity}</span>
+                            </div>
+                            <div className="text-right min-w-[100px]">
+                              <p className="text-xs text-muted-foreground">Subtotal</p>
+                              <p className="text-sm">KWD {itemSubtotal.toFixed(3)}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Tax ({item.tax_rate || 0}%)</p>
+                              <p className="text-sm">KWD {itemTax.toFixed(3)}</p>
+                              <p className="text-xs text-muted-foreground mt-1">Total</p>
+                              <p className="font-semibold text-blue-600">KWD {itemTotal.toFixed(3)}</p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  ))}
+                      </Card>
+                    );
+                  })}
                 </div>
 
                 {/* Action Buttons */}
@@ -375,15 +416,15 @@ export function IPDPharmacy() {
                     <h3 className="font-semibold mb-4">Order Summary</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="text-muted-foreground">Subtotal (Before Tax)</span>
                         <span>KWD {subtotal.toFixed(3)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Tax (5%)</span>
+                        <span className="text-muted-foreground">Tax ({avgTaxRate.toFixed(1)}%)</span>
                         <span>KWD {tax.toFixed(3)}</span>
                       </div>
                       <div className="border-t pt-3 flex justify-between font-semibold">
-                        <span>Total</span>
+                        <span>Total (After Tax)</span>
                         <span className="text-xl text-green-600">KWD {total.toFixed(3)}</span>
                       </div>
                       <Button

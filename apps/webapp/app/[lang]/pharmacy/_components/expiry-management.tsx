@@ -112,9 +112,9 @@ export function ExpiryManagement() {
       ),
     },
     {
-      key: "medicine_id",
-      label: "Medicine ID",
-      render: (row: Batch) => <span className="text-gray-600">{row.medicine_id}</span>,
+      key: "medicine Name",
+      label: "Medicine Name",
+      render: (row: Batch) => <span className="text-gray-600">{row.medicine.medicine}</span>,
     },
     {
       key: "quantity",

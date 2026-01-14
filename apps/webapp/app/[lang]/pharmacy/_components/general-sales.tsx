@@ -94,6 +94,7 @@ export function GeneralSales() {
               min_level: 0,
               unit_price: 0,
               selling_price: 0, // Will be updated when medicine data is fetched
+              tax_rate: item.medicine.tax_rate || 5, // Default to 5% if not set
               status: 'active',
               is_deleted: false,
             }))
@@ -241,7 +242,12 @@ export function GeneralSales() {
 
     try {
       const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-      const tax = subtotal * 0.05
+      const tax = cart.reduce((sum, item) => {
+        const itemTotal = item.selling_price * item.quantity
+        const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+        return sum + itemTax
+      }, 0)
+      const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
       const total = subtotal + tax
 
       // Prepare order payload
@@ -274,8 +280,11 @@ export function GeneralSales() {
       setPrescriptionId(null)
       setIsCheckout(false)
     } catch (error: any) {
-      console.error("[GeneralSales] Failed to create order:", error)
-      alert(`Failed to create order: ${error.response?.data?.message || error.message}`)
+      console.error("[GeneralSales] Failed to create order - Full error:", error)
+      console.error("[GeneralSales] Error response:", error.response)
+      console.error("[GeneralSales] Error message:", error.message)
+      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || "Unknown error"
+      alert(`Failed to create order: ${errorMsg}`)
     }
   }, [cart, createOrderMutation, selectedPatient, prescriptionId])
 
@@ -286,7 +295,12 @@ export function GeneralSales() {
     }
 
     const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-    const tax = subtotal * 0.05
+    const tax = cart.reduce((sum, item) => {
+      const itemTotal = item.selling_price * item.quantity
+      const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+      return sum + itemTax
+    }, 0)
+    const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
     const total = subtotal + tax
     const now = new Date()
     const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
@@ -316,7 +330,8 @@ export function GeneralSales() {
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
       pharmacyLicense: 'License No: PH-2024-MEDEXA',
-      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined
+      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined,
+      taxRate: Number(avgTaxRate.toFixed(2))
     }
 
     printPharmacyBillPDF(billData)
@@ -329,7 +344,12 @@ export function GeneralSales() {
     }
 
     const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-    const tax = subtotal * 0.05
+    const tax = cart.reduce((sum, item) => {
+      const itemTotal = item.selling_price * item.quantity
+      const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+      return sum + itemTax
+    }, 0)
+    const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
     const total = subtotal + tax
     const now = new Date()
     const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
@@ -359,7 +379,8 @@ export function GeneralSales() {
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
       pharmacyLicense: 'License No: PH-2024-MEDEXA',
-      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined
+      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined,
+      taxRate: Number(avgTaxRate.toFixed(2))
     }
 
     generatePharmacyBillPDF(billData)
@@ -367,7 +388,12 @@ export function GeneralSales() {
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
-  const tax = subtotal * 0.05
+  const tax = cart.reduce((sum, item) => {
+    const itemTotal = item.selling_price * item.quantity
+    const itemTax = itemTotal * ((item.tax_rate || 5) / 100)
+    return sum + itemTax
+  }, 0)
+  const avgTaxRate = subtotal > 0 ? (tax / subtotal) * 100 : 5
   const total = subtotal + tax
 
   // Checkout View
@@ -423,28 +449,39 @@ export function GeneralSales() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {cart.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
-                    >
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-base">{item.medicine}</h3>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {item.type} {item.content && `• ${item.content}`}
-                        </p>
-                        <div className="text-sm text-gray-600 mt-2">
-                          Qty: <span className="font-medium">{item.quantity}</span> × $
-                          {item.selling_price.toFixed(2)} = ${(item.selling_price * item.quantity).toFixed(2)}
+                  {cart.map((item) => {
+                    const itemSubtotal = item.selling_price * item.quantity;
+                    const itemTax = itemSubtotal * ((item.tax_rate || 0) / 100);
+                    const itemTotal = itemSubtotal + itemTax;
+                    
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                      >
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-base">{item.medicine}</h3>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {item.type} {item.content && `• ${item.content}`}
+                          </p>
+                          <div className="text-sm text-gray-600 mt-2">
+                            Qty: <span className="font-medium">{item.quantity}</span> × KWD{' '}
+                            {item.selling_price.toFixed(3)}
+                          </div>
+                        </div>
+                        <div className="text-right min-w-[120px]">
+                          <p className="text-xs text-gray-600">Subtotal</p>
+                          <p className="text-sm">KWD {itemSubtotal.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600 mt-1">Tax ({item.tax_rate || 0}%)</p>
+                          <p className="text-sm">KWD {itemTax.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600 mt-1">Total</p>
+                          <div className="text-lg font-bold text-blue-600">
+                            KWD {itemTotal.toFixed(3)}
+                          </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-blue-600">
-                          ${(item.selling_price * item.quantity).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -479,16 +516,16 @@ export function GeneralSales() {
               <CardContent className="space-y-4">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">${subtotal.toFixed(2)}</span>
+                    <span className="text-gray-600">Subtotal (Before Tax)</span>
+                    <span className="font-medium">KWD {subtotal.toFixed(3)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Tax (5%)</span>
-                    <span className="font-medium">${tax.toFixed(2)}</span>
+                    <span className="text-gray-600">Tax ({avgTaxRate.toFixed(1)}%)</span>
+                    <span className="font-medium">KWD {tax.toFixed(3)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t-2 text-lg font-bold">
-                    <span>Total</span>
-                    <span className="text-green-600">${total.toFixed(2)}</span>
+                    <span>Total (After Tax)</span>
+                    <span className="text-green-600">KWD {total.toFixed(3)}</span>
                   </div>
                 </div>
 
@@ -635,7 +672,7 @@ export function GeneralSales() {
                           In Stock: <span className="font-medium text-black">{medicine.total_stock}</span>
                         </div>
                         <div className="text-base font-bold text-blue-600">
-                          ${medicine.selling_price.toFixed(2)}
+                          KWD {medicine.selling_price.toFixed(3)}
                         </div>
                       </div>
                       <Button
@@ -691,51 +728,61 @@ export function GeneralSales() {
               </div>
             ) : (
               <div className="space-y-3">
-                {cart.map((item) => (
-                  <Card key={item.id} className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-sm">{item.medicine}</h4>
-                        <p className="text-xs text-gray-600 mt-1">
-                          ${item.selling_price.toFixed(2)} × {item.quantity}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-red-600"
-                        onClick={() => removeFromCart(item.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                {cart.map((item) => {
+                  const itemSubtotal = item.selling_price * item.quantity;
+                  const itemTax = itemSubtotal * ((item.tax_rate || 0) / 100);
+                  const itemTotal = itemSubtotal + itemTax;
+                  
+                  return (
+                    <Card key={item.id} className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-sm">{item.medicine}</h4>
+                          <p className="text-xs text-gray-600 mt-1">
+                            KWD {item.selling_price.toFixed(3)} × {item.quantity}
+                          </p>
+                        </div>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => updateQuantity(item.id, -1)}
+                          className="h-8 w-8 p-0 text-red-600"
+                          onClick={() => removeFromCart(item.id)}
                         >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-12 text-center font-medium">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => updateQuantity(item.id, 1)}
-                          disabled={item.quantity >= item.total_stock}
-                        >
-                          <Plus className="h-3 w-3" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="font-bold text-blue-600">
-                        ${(item.selling_price * item.quantity).toFixed(2)}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => updateQuantity(item.id, -1)}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="w-12 text-center font-medium">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            onClick={() => updateQuantity(item.id, 1)}
+                            disabled={item.quantity >= item.total_stock}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-600">Subtotal: KWD {itemSubtotal.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600">Tax ({item.tax_rate || 0}%): KWD {itemTax.toFixed(3)}</p>
+                          <div className="font-bold text-blue-600">
+                            KWD {itemTotal.toFixed(3)}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -744,16 +791,16 @@ export function GeneralSales() {
           <div className="border-t p-6">
             <div className="space-y-2 text-sm mb-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
+                <span className="text-gray-600">Subtotal (Before Tax)</span>
+                <span className="font-medium">KWD {subtotal.toFixed(3)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax (5%)</span>
-                <span className="font-medium">${tax.toFixed(2)}</span>
+                <span className="text-gray-600">Tax ({avgTaxRate.toFixed(1)}%)</span>
+                <span className="font-medium">KWD {tax.toFixed(3)}</span>
               </div>
               <div className="flex justify-between pt-2 border-t-2 text-lg font-bold">
-                <span>Total Amount</span>
-                <span className="text-green-600">${total.toFixed(2)}</span>
+                <span>Total (After Tax)</span>
+                <span className="text-green-600">KWD {total.toFixed(3)}</span>
               </div>
             </div>
             <Button

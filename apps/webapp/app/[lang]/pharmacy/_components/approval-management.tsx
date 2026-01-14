@@ -131,7 +131,7 @@ export function ApprovalManagement() {
       render: (row: Request) => (
         <div className="flex items-center gap-2">
           <FileText className="h-4 w-4 text-gray-400" />
-          <span className="font-semibold">{row.request_items?.length || 0}</span>
+          <span className="font-semibold">{(row.requestItems?.length || row.request_items?.length || 0)}</span>
           <span className="text-xs text-gray-500">batches</span>
         </div>
       ),
