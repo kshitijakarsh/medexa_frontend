@@ -7,3 +7,5 @@ export { GeneralSales } from "./general-sales"
 export { GeneralSalesCheckout } from "./general-sales-checkout"
 export { ExpiryManagement } from "./expiry-management"
 export { ApprovalManagement } from "./approval-management"
+export { Orders } from "./orders"
+

@@ -5,14 +5,33 @@ import { useRouter, useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
-import { Search, Plus, Minus, Trash2, ShoppingCart as CartIcon, ArrowLeft, CheckCircle, Printer, Download } from "lucide-react"
+import { Search, Plus, Minus, Trash2, ShoppingCart as CartIcon, ArrowLeft, CheckCircle, Printer, Download, User } from "lucide-react"
 import { useMedicines } from "../_hooks/useMedicine"
+import { usePatients } from "../_hooks/usePatient"
 import { useQueryClient } from "@tanstack/react-query"
 import type { Medicine } from "@/lib/api/medicine-api"
+import type { Patient } from "@/lib/api/patient-api"
 import { generatePharmacyBillPDF, printPharmacyBillPDF, type BillData } from "@/lib/utils/pdf-generator"
+import { useCreateOrder } from "../_hooks/useOrder"
+import type { CreateOrderPayload } from "@/lib/api/order-api"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
+import { Label } from "@workspace/ui/components/label"
 
 interface CartItem extends Medicine {
   quantity: number
+}
+
+interface PrescriptionBillData {
+  prescription: any
+  prescriptionItems: any[]
+  patient: any
+  prescriptionId: number
 }
 
 export function GeneralSales() {
@@ -25,9 +44,86 @@ export function GeneralSales() {
   const [allMedicines, setAllMedicines] = useState<Medicine[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [isCheckout, setIsCheckout] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
+  const [patientSearch, setPatientSearch] = useState("")
+  const [debouncedPatientSearch, setDebouncedPatientSearch] = useState("")
+  const [showPatientDropdown, setShowPatientDropdown] = useState(false)
+  const [prescriptionId, setPrescriptionId] = useState<number | null>(null)
   const observerTarget = useRef<HTMLDivElement>(null)
 
+  const createOrderMutation = useCreateOrder()
   const limit = 10
+
+  // Load prescription data from localStorage on mount
+  useEffect(() => {
+    const billDataStr = localStorage.getItem('pharmacy_bill_data')
+    if (billDataStr) {
+      try {
+        const billData: PrescriptionBillData = JSON.parse(billDataStr)
+        
+        // Set patient if available
+        if (billData.patient) {
+          setSelectedPatient(billData.patient as Patient)
+        }
+        
+        // Set prescription ID for order creation
+        if (billData.prescriptionId) {
+          setPrescriptionId(billData.prescriptionId)
+        }
+        
+        // Pre-fill cart with prescription items
+        if (billData.prescriptionItems && billData.prescriptionItems.length > 0) {
+          // We need to convert prescription items to cart items
+          // Since prescription items don't have full medicine pricing, we'll need to fetch those
+          const prescriptionMedicineIds = billData.prescriptionItems.map(item => item.medicine_id)
+          console.log('[GeneralSales] Loading prescription medicines:', prescriptionMedicineIds)
+          
+          // For now, create cart items from prescription data
+          // We'll need to update prices when medicines are fetched
+          const cartItems: CartItem[] = billData.prescriptionItems
+            .filter(item => item.medicine)
+            .map(item => ({
+              id: item.medicine.id,
+              tenant_id: 0, // Will be set by backend
+              medicine_category_id: 0, // Will be set when medicine data is fetched
+              medicine: item.medicine.medicine,
+              type: item.medicine.type,
+              content: item.medicine.content || '',
+              quantity: 1, // Default quantity, can be adjusted
+              total_stock: 999, // Placeholder
+              min_level: 0,
+              unit_price: 0,
+              selling_price: 0, // Will be updated when medicine data is fetched
+              status: 'active',
+              is_deleted: false,
+            }))
+          
+          setCart(cartItems)
+          setIsCheckout(true) // Go directly to checkout for prescription orders
+        }
+        
+        // Clear the data after loading
+        localStorage.removeItem('pharmacy_bill_data')
+      } catch (error) {
+        console.error('[GeneralSales] Error loading prescription data:', error)
+      }
+    }
+  }, [])
+
+  // Debounce patient search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedPatientSearch(patientSearch)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [patientSearch])
+
+  // Fetch patients for dropdown
+  const { data: patientsData } = usePatients({
+    limit: 10,
+    search: debouncedPatientSearch || undefined,
+    enabled: showPatientDropdown || !!debouncedPatientSearch,
+  })
 
   // Debounce search input
   useEffect(() => {
@@ -137,10 +233,51 @@ export function GeneralSales() {
     setIsCheckout(false)
   }, [])
 
-  const handleConfirmSale = useCallback(() => {
-    setCart([])
-    setIsCheckout(false)
-  }, [cart])
+  const handleConfirmSale = useCallback(async () => {
+    if (cart.length === 0) {
+      alert("Cart is empty")
+      return
+    }
+
+    try {
+      const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
+      const tax = subtotal * 0.05
+      const total = subtotal + tax
+
+      // Prepare order payload
+      const orderPayload: CreateOrderPayload = {
+        patient_id: selectedPatient ? Number(selectedPatient.id) : undefined,
+        prescription_id: prescriptionId || undefined,
+        status: "completed",
+        payment_status: "paid",
+        payment_method: "Cash",
+        notes: prescriptionId ? `Prescription order - RX-${prescriptionId}` : "General sales order",
+        order_items: cart.map(item => ({
+          medicine_id: item.id,
+          quantity: item.quantity,
+          price_at_sale: item.selling_price,
+        }))
+      }
+
+      console.log("[GeneralSales] Creating order with payload:", orderPayload)
+      
+      // Create the order
+      const response = await createOrderMutation.mutateAsync(orderPayload)
+      
+      console.log("[GeneralSales] Order created successfully:", response)
+      alert(`Order #${response.data.id} created successfully!`)
+      
+      // Clear cart, prescription ID, and go back to shopping
+      setCart([])
+      setSelectedPatient(null)
+      setPatientSearch("")
+      setPrescriptionId(null)
+      setIsCheckout(false)
+    } catch (error: any) {
+      console.error("[GeneralSales] Failed to create order:", error)
+      alert(`Failed to create order: ${error.response?.data?.message || error.message}`)
+    }
+  }, [cart, createOrderMutation, selectedPatient, prescriptionId])
 
   const handlePrint = useCallback(() => {
     if (cart.length === 0) {
@@ -158,8 +295,10 @@ export function GeneralSales() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: 'Walk-in Customer',
-      customerPhone: 'N/A',
+      customerName: selectedPatient 
+        ? `${selectedPatient.first_name} ${selectedPatient.last_name}` 
+        : 'Walk-in Customer',
+      customerPhone: selectedPatient?.mobile_number || 'N/A',
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -176,11 +315,12 @@ export function GeneralSales() {
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
-      pharmacyLicense: 'License No: PH-2024-MEDEXA'
+      pharmacyLicense: 'License No: PH-2024-MEDEXA',
+      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined
     }
 
     printPharmacyBillPDF(billData)
-  }, [cart])
+  }, [cart, selectedPatient, prescriptionId])
 
   const handleDownloadPDF = useCallback(() => {
     if (cart.length === 0) {
@@ -198,8 +338,10 @@ export function GeneralSales() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: 'Walk-in Customer',
-      customerPhone: 'N/A',
+      customerName: selectedPatient 
+        ? `${selectedPatient.first_name} ${selectedPatient.last_name}` 
+        : 'Walk-in Customer',
+      customerPhone: selectedPatient?.mobile_number || 'N/A',
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -216,11 +358,12 @@ export function GeneralSales() {
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
-      pharmacyLicense: 'License No: PH-2024-MEDEXA'
+      pharmacyLicense: 'License No: PH-2024-MEDEXA',
+      prescriptionRef: prescriptionId ? `RX-${prescriptionId}` : undefined
     }
 
     generatePharmacyBillPDF(billData)
-  }, [cart])
+  }, [cart, selectedPatient, prescriptionId])
 
   // Calculate totals
   const subtotal = cart.reduce((sum, item) => sum + item.selling_price * item.quantity, 0)
@@ -234,14 +377,42 @@ export function GeneralSales() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Order Review</h1>
-            <p className="text-gray-600 mt-1">Review and confirm your sale</p>
+            <h1 className="text-3xl font-bold">
+              {prescriptionId ? 'Prescription Order Review' : 'Order Review'}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {prescriptionId 
+                ? `Dispensing prescription RX-${prescriptionId}` 
+                : 'Review and confirm your sale'}
+            </p>
           </div>
           <Button onClick={handleBackToShopping} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Shopping
           </Button>
         </div>
+
+        {/* Prescription Info Banner */}
+        {prescriptionId && selectedPatient && (
+          <Card className="bg-blue-50 border-blue-200">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-lg">
+                  Rx
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-blue-900">
+                    Prescription Order - RX-{prescriptionId}
+                  </div>
+                  <div className="text-sm text-blue-700">
+                    Patient: {selectedPatient.first_name} {selectedPatient.last_name}
+                    {selectedPatient.mobile_number && ` • ${selectedPatient.mobile_number}`}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Items List */}
@@ -350,8 +521,78 @@ export function GeneralSales() {
       {/* Left: Medicine List */}
       <div className="lg:col-span-2">
         <Card className="h-full flex flex-col">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold mb-4">Available Medicines</h2>
+          <div className="p-6 border-b space-y-4">
+            <h2 className="text-lg font-semibold">Available Medicines</h2>
+            
+            {/* Patient Selection */}
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Select Patient (Optional)</Label>
+              {selectedPatient ? (
+                <div className="p-3 bg-blue-50 rounded-md border border-blue-200 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <User className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <div className="text-sm font-medium text-blue-900">
+                        {selectedPatient.first_name} {selectedPatient.last_name}
+                      </div>
+                      <div className="text-xs text-blue-600">
+                        {selectedPatient.mobile_number}
+                      </div>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+                    onClick={() => {
+                      setSelectedPatient(null)
+                      setPatientSearch("")
+                      setShowPatientDropdown(false)
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </div>
+              ) : (
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+                  <Input
+                    placeholder="Search patient by name or mobile..."
+                    value={patientSearch}
+                    onChange={(e) => {
+                      setPatientSearch(e.target.value)
+                      setShowPatientDropdown(true)
+                    }}
+                    onFocus={() => setShowPatientDropdown(true)}
+                    className="pl-10"
+                  />
+                  {showPatientDropdown && patientSearch && patientsData?.data && patientsData.data.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+                      {patientsData.data.map((patient) => (
+                        <button
+                          key={patient.id}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 border-b last:border-b-0"
+                          onClick={() => {
+                            setSelectedPatient(patient)
+                            setPatientSearch("")
+                            setShowPatientDropdown(false)
+                          }}
+                        >
+                          <div className="font-medium text-sm">
+                            {patient.first_name} {patient.last_name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {patient.mobile_number} {patient.civil_id && `• ${patient.civil_id}`}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Medicine Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input

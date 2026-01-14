@@ -638,16 +638,16 @@ function DrugInventoryBatch({ medicineId, onBack }: { medicineId: number; onBack
     batch.location.toLowerCase().includes(search.toLowerCase())
   )
 
-  // Calculate batch metrics
-  const totalBatches = batches.length
-  const totalQuantity = batches.reduce((sum, b) => sum + b.quantity, 0)
-  const expiringSoon = batches.filter(b => {
+  // Use KPIs from API response, fallback to calculated values
+  const totalBatches = batchesData?.kpis?.totalBatches ?? batches.length
+  const totalQuantity = batchesData?.kpis?.totalQuantity ?? batches.reduce((sum, b) => sum + b.quantity, 0)
+  const expiringSoon = batchesData?.kpis?.expiringSoon ?? batches.filter(b => {
     const expiryDate = new Date(b.expiry_date)
     const threeMonthsFromNow = new Date()
     threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3)
     return expiryDate <= threeMonthsFromNow && expiryDate > new Date()
   }).length
-  const expired = batches.filter(b => new Date(b.expiry_date) < new Date()).length
+  const expired = batchesData?.kpis?.expired ?? batches.filter(b => new Date(b.expiry_date) < new Date()).length
 
   const handleCreateBatchClick = () => {
     setBatchFormData({
@@ -725,6 +725,21 @@ function DrugInventoryBatch({ medicineId, onBack }: { medicineId: number; onBack
     return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">Valid</Badge>
   }
 
+  const getResponseStatusBadge = (status?: string) => {
+    if (!status) return null
+    
+    const statusConfig: Record<string, { className: string; label: string }> = {
+      active: { className: "bg-green-100 text-green-700 hover:bg-green-100", label: "Active" },
+      inactive: { className: "bg-gray-100 text-gray-700 hover:bg-gray-100", label: "Inactive" },
+      quarantined: { className: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100", label: "Quarantined" },
+      disposed: { className: "bg-gray-100 text-gray-700 hover:bg-gray-100", label: "Disposed" },
+      returned: { className: "bg-blue-100 text-blue-700 hover:bg-blue-100", label: "Returned" },
+    }
+    
+    const config = statusConfig[status] ?? { className: "bg-gray-100 text-gray-700", label: status.toUpperCase() }
+    return <Badge className={config.className}>{config.label}</Badge>
+  }
+
   const batchColumns = [
     {
       key: "batch_number",
@@ -747,12 +762,19 @@ function DrugInventoryBatch({ medicineId, onBack }: { medicineId: number; onBack
       render: (row: Batch) => <span>{row.location}</span>,
     },
     {
+      key: "status",
+      label: "Status (API)",
+      render: (row: Batch) => getResponseStatusBadge(row.status),
+    },
+    {
       key: "expiry_date",
-      label: "Expiry Date",
+      label: "Expiry Status",
       render: (row: Batch) => (
-        <div className="flex items-center gap-2">
-          <span>{new Date(row.expiry_date).toLocaleDateString()}</span>
-          {getBatchStatusBadge(row.expiry_date)}
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">{new Date(row.expiry_date).toLocaleDateString()}</span>
+            {getBatchStatusBadge(row.expiry_date)}
+          </div>
         </div>
       ),
     },

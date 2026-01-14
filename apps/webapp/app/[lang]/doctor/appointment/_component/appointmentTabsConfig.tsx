@@ -62,7 +62,8 @@ export const appointmentTabsConfig = (
             : []),
         ...(hasPermission(
             userPermissions,
-            PERMISSIONS.DOCTOR.PRESCRIPTION.VIEW
+            PERMISSIONS.DOCTOR.VITALS.VIEW
+            // PERMISSIONS.DOCTOR.PRESCRIPTION.VIEW
         )
             ? [
                 { key: "Prescription", label: "Prescription", component: <Prescription /> },

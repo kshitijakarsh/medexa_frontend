@@ -35,6 +35,7 @@ export interface BillData {
   pharmacyAddress?: string
   pharmacyPhone?: string
   pharmacyLicense?: string
+  prescriptionRef?: string
 }
 
 /**
@@ -219,8 +220,15 @@ export function generatePharmacyBillPDF(billData: BillData): void {
               {
                 text: `Status: Paid`,
                 style: 'customerDetails',
-                color: '#10b981'
-              }
+                color: '#10b981',
+                margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
+              },
+              ...(billData.prescriptionRef ? [{
+                text: `Prescription: ${billData.prescriptionRef}`,
+                style: 'customerDetails',
+                color: '#0066cc',
+                bold: true
+              }] : [])
             ]
           }
         ],
@@ -1200,8 +1208,15 @@ export function printPharmacyBillPDF(billData: BillData): void {
               {
                 text: `Status: Paid`,
                 style: 'customerDetails',
-                color: '#10b981'
-              }
+                color: '#10b981',
+                margin: [0, 0, 0, billData.prescriptionRef ? 5 : 0]
+              },
+              ...(billData.prescriptionRef ? [{
+                text: `Prescription: ${billData.prescriptionRef}`,
+                style: 'customerDetails',
+                color: '#0066cc',
+                bold: true
+              }] : [])
             ]
           }
         ],

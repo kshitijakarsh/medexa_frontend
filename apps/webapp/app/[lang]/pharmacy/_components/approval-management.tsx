@@ -34,7 +34,7 @@ export function ApprovalManagement() {
     status: filterTab !== "all" ? filterTab : undefined,
   })
 
-  const requests: Request[] = Array.isArray(responseData?.data?.requests) ? responseData.data.requests : []
+  const requests: Request[] = Array.isArray(responseData?.data) ? responseData.data : []
 
   // Filter requests based on active tab and search
   const filteredRequests = requests.filter(request => {
@@ -52,10 +52,10 @@ export function ApprovalManagement() {
   })
 
   // Calculate metrics from data
-  const totalRequests = requests.length
-  const pendingCount = requests.filter(r => r.status === "pending").length
-  const approvedCount = requests.filter(r => r.status === "approved").length
-  const rejectedCount = requests.filter(r => r.status === "rejected").length
+  const totalRequests = responseData?.kpis?.totalRequests ?? requests.length
+  const pendingCount = responseData?.kpis?.pending ?? requests.filter(r => r.status === "pending").length
+  const approvedCount = responseData?.kpis?.approved ?? requests.filter(r => r.status === "approved").length
+  const rejectedCount = responseData?.kpis?.rejected ?? requests.filter(r => r.status === "rejected").length
 
   const handleCreateRequest = () => {
     setSelectedRequest(null)

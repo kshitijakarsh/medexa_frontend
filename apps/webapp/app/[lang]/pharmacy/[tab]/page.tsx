@@ -7,6 +7,7 @@ import {
   OPDDispensing,
   IPDPharmacy,
   GeneralSales,
+  Orders,
   DrugInventory,
   ExpiryManagement,
   ApprovalManagement,
@@ -17,6 +18,7 @@ const VALID_TABS = [
   "opd-dispensing",
   "ipd-pharmacy",
   "general-sales",
+  "orders",
   "drug-inventory",
   "expiry-management",
   "approvals",
@@ -39,6 +41,8 @@ export default function PharmacyTabPage({ params }: { params: Promise<{ tab: str
       return <IPDPharmacy />
     case "general-sales":
       return <GeneralSales />
+    case "orders":
+      return <Orders />
     case "drug-inventory":
       return <DrugInventory />
     case "expiry-management":

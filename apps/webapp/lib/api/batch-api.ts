@@ -26,6 +26,16 @@ export interface Batch {
 export interface BatchListResponse {
   success: boolean
   data: Batch[]
+  kpis?: {
+    totalBatches: number
+    totalQuantity: number
+    expiringSoon: number
+    expired: number
+    quarantined?: number
+    returned?: number
+    disposed?: number
+    activeBatches?: number
+  }
   pagination?: {
     page: number
     limit: number

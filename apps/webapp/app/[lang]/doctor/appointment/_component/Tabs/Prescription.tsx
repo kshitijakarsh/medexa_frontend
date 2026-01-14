@@ -214,40 +214,299 @@
 
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import NewButton from "@/components/common/new-button"
 
 import { MedicationForm, PrescriptionItem } from "./prescription/types"
 import MedicationTable from "./prescription/MedicationTable"
 import AddMedicationModal from "./prescription/AddMedicationModal"
-import { FileUp, Printer } from "lucide-react"
+import { FileUp, Printer, Loader2 } from "lucide-react"
 import { SectionWrapper } from "./common/SectionWrapper"
 import { SectionTitle } from "./common/SectionTitle"
+import { Dialog, DialogContent, DialogTitle } from "@workspace/ui/components/dialog"
 
-import { useDictionary } from "@/i18n/dictionary-context";
+import { useDictionary } from "@/i18n/dictionary-context"
+import { 
+  usePrescriptionsByVisit, 
+  useCreatePrescription, 
+  useUpdatePrescription, 
+  useDeletePrescription 
+} from "./_hooks/useDoctorPrescription"
+import { CreatePrescriptionPayload } from "@/lib/api/doctor-prescription-api"
+import { useDoctorVisitById } from "../common/useDoctorVisitById"
 
 export default function Prescription() {
   const [showModal, setShowModal] = useState(false)
-  const dict = useDictionary();
+  const [editingMed, setEditingMed] = useState<PrescriptionItem | null>(null)
+  const [viewingMed, setViewingMed] = useState<PrescriptionItem | null>(null)
+  const dict = useDictionary()
+  const params = useParams()
+  
+  const visitId = params.id ? parseInt(params.id as string) : 0
+
+  // Fetch visit data to get patient_id
+  const { data: visitData } = useDoctorVisitById(visitId.toString())
+  const patientId = visitData?.patient_id
+
+  // Fetch prescriptions for this visit
+  const { data: prescriptionData, isLoading, refetch } = usePrescriptionsByVisit(visitId, {}, !!visitId)
+  const createMutation = useCreatePrescription()
+  const updateMutation = useUpdatePrescription()
+  const deleteMutation = useDeletePrescription()
 
   const [meds, setMeds] = useState<PrescriptionItem[]>([])
+  const [currentPrescriptionId, setCurrentPrescriptionId] = useState<number | null>(null)
 
-  const addMedication = (data: MedicationForm) => {
-    setMeds((prev) => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        medication: data.medication,
-        dosage: data.dosage,
-        frequency: data.interval,
-        duration: data.duration,
-        instructions: data.instructions,
-      },
-    ])
+  // Load existing prescriptions when data is fetched
+  useEffect(() => {
+    if (prescriptionData?.data && prescriptionData.data.length > 0) {
+      // Get the first prescription (you might need to adjust this logic)
+      const prescription = prescriptionData.data[0]
+      if (prescription) {
+        setCurrentPrescriptionId(prescription.id)
+        
+        // Map API prescription items to UI format
+        const mappedMeds = prescription.prescription_items?.map((item, index) => ({
+          id: item.id || index + 1,
+          medicine_id: item.medicine_id,
+          medication: item.medicine?.medicine || `Medicine ${item.medicine_id}`,
+          dosage: item.dosage,
+          route: item.route || undefined,
+          frequency: item.frequency,
+          duration: item.duration || "",
+          instructions: item.medication_instructions || undefined,
+        })) || []
+        
+        setMeds(mappedMeds)
+      }
+    }
+  }, [prescriptionData])
+
+  const editMedication = async (data: MedicationForm) => {
+    console.log("[Prescription] Editing medication:", data)
+    
+    if (!editingMed || !patientId) {
+      alert("Cannot edit medication")
+      return
+    }
+
+    const updatedMed: PrescriptionItem = {
+      ...editingMed,
+      medicine_id: data.medicine_id,
+      medication: data.medication,
+      dosage: data.dosage,
+      route: data.route,
+      frequency: data.interval,
+      duration: data.duration,
+      instructions: data.instructions,
+    }
+    
+    const updatedMeds = meds.map(m => m.id === editingMed.id ? updatedMed : m)
+    setMeds(updatedMeds)
+    setEditingMed(null)
+    
+    if (!currentPrescriptionId) {
+      console.log("[Prescription] No prescription saved yet")
+      return
+    }
+
+    // Auto-save to backend
+    try {
+      console.log("[Prescription] Auto-updating after edit")
+      await updateMutation.mutateAsync({
+        id: currentPrescriptionId,
+        payload: {
+          prescription_items: updatedMeds.map(med => ({
+            medicine_id: med.medicine_id!,
+            dosage: med.dosage,
+            route: med.route || null,
+            frequency: med.frequency,
+            duration: med.duration || null,
+            medication_instructions: med.instructions || null,
+          }))
+        }
+      })
+      alert("Medication updated and saved")
+    } catch (error: any) {
+      console.error("[Prescription] Edit save error:", error)
+      alert("Failed to save edit: " + (error?.response?.data?.message || error.message))
+      refetch()
+    }
   }
 
-  const removeMedication = (id: number) => {
-    setMeds((s) => s.filter((m) => m.id !== id))
+  const addMedication = async (data: MedicationForm) => {
+    console.log("[Prescription] Adding medication:", data)
+    
+    if (!patientId) {
+      alert("Patient information not found")
+      return
+    }
+
+    const newMed: PrescriptionItem = {
+      id: meds.length + 1,
+      medicine_id: data.medicine_id,
+      medication: data.medication,
+      dosage: data.dosage,
+      route: data.route,
+      frequency: data.interval,
+      duration: data.duration,
+      instructions: data.instructions,
+    }
+    console.log("[Prescription] New med created:", newMed)
+    
+    const updatedMeds = [...meds, newMed]
+    setMeds(updatedMeds)
+    
+    // Auto-save to backend
+    try {
+      const payload: CreatePrescriptionPayload = {
+        patient_id: patientId,
+        visit_id: visitId,
+        status: "pending",
+        prescription_items: updatedMeds.map(med => ({
+          medicine_id: med.medicine_id!,
+          dosage: med.dosage,
+          route: med.route || null,
+          frequency: med.frequency,
+          duration: med.duration || null,
+          medication_instructions: med.instructions || null,
+        }))
+      }
+
+      if (currentPrescriptionId) {
+        console.log("[Prescription] Auto-updating prescription")
+        await updateMutation.mutateAsync({
+          id: currentPrescriptionId,
+          payload: { prescription_items: payload.prescription_items }
+        })
+      } else {
+        console.log("[Prescription] Auto-creating prescription")
+        const response = await createMutation.mutateAsync(payload)
+        setCurrentPrescriptionId(response.data.id)
+      }
+      alert("Medication added and saved")
+    } catch (error: any) {
+      console.error("[Prescription] Auto-save error:", error)
+      alert("Failed to save: " + (error?.response?.data?.message || error.message))
+      // Revert the local state
+      setMeds(meds)
+    }
+  }
+
+  const removeMedication = async (id: number) => {
+    console.log("[Prescription] Remove medication ID:", id)
+    const med = meds.find(m => m.id === id)
+    console.log("[Prescription] Found med:", med)
+    
+    if (!med) return
+    
+    if (!confirm(`Are you sure you want to remove ${med.medication}?`)) {
+      return
+    }
+
+    const remainingMeds = meds.filter(m => m.id !== id)
+    setMeds(remainingMeds)
+    
+    if (!currentPrescriptionId) {
+      console.log("[Prescription] No prescription saved yet, just removed from local state")
+      return
+    }
+
+    try {
+      if (remainingMeds.length > 0) {
+        console.log("[Prescription] Auto-updating prescription after delete")
+        await updateMutation.mutateAsync({
+          id: currentPrescriptionId,
+          payload: {
+            prescription_items: remainingMeds.map(med => ({
+              medicine_id: med.medicine_id!,
+              dosage: med.dosage,
+              route: med.route || null,
+              frequency: med.frequency,
+              duration: med.duration || null,
+              medication_instructions: med.instructions || null,
+            }))
+          }
+        })
+        alert("Medication removed and saved")
+      } else {
+        console.log("[Prescription] Deleting entire prescription")
+        await deleteMutation.mutateAsync(currentPrescriptionId)
+        setCurrentPrescriptionId(null)
+        alert("Prescription deleted")
+      }
+    } catch (error: any) {
+      console.error("[Prescription] Remove error:", error)
+      alert("Failed to remove: " + (error?.response?.data?.message || error.message))
+      refetch()
+    }
+  }
+
+  const handleSaveToPharmacy = async () => {
+    console.log("[Prescription] Save clicked, meds:", meds)
+    if (meds.length === 0) {
+      console.log("[Prescription] No medications to save")
+      alert("Please add at least one medication")
+      return
+    }
+
+    // Validate that all medications have medicine_id
+    const invalidMeds = meds.filter(med => !med.medicine_id)
+    if (invalidMeds.length > 0) {
+      console.log("[Prescription] Invalid meds (missing medicine_id):", invalidMeds)
+      alert("Please select medicines from the dropdown for all medications")
+      return
+    }
+
+    if (!patientId) {
+      console.log("[Prescription] No patient ID found")
+      alert("Patient information not found")
+      return
+    }
+
+    try {
+      const payload: CreatePrescriptionPayload = {
+        patient_id: patientId,
+        visit_id: visitId,
+        status: "pending",
+        prescription_items: meds.map(med => ({
+          medicine_id: med.medicine_id!,
+          dosage: med.dosage,
+          route: med.route || null,
+          frequency: med.frequency,
+          duration: med.duration || null,
+          medication_instructions: med.instructions || null,
+        }))
+      }
+
+      console.log("[Prescription] Payload created:", payload)
+
+      if (currentPrescriptionId) {
+        console.log("[Prescription] Updating prescription ID:", currentPrescriptionId)
+        const updatePayload = {
+          id: currentPrescriptionId,
+          payload: {
+            prescription_items: payload.prescription_items
+          }
+        }
+        console.log("[Prescription] Update payload:", updatePayload)
+        const result = await updateMutation.mutateAsync(updatePayload)
+        console.log("[Prescription] Update result:", result)
+        alert("Prescription updated and sent to pharmacy")
+      } else {
+        console.log("[Prescription] Creating new prescription")
+        const response = await createMutation.mutateAsync(payload)
+        console.log("[Prescription] Create response:", response)
+        setCurrentPrescriptionId(response.data.id)
+        alert("Prescription created and sent to pharmacy")
+      }
+      refetch()
+    } catch (error: any) {
+      console.error("[Prescription] Save error:", error)
+      console.error("[Prescription] Error response:", error?.response?.data)
+      alert(error?.response?.data?.message || "Failed to save prescription: " + error.message)
+    }
   }
 
   return (
@@ -267,49 +526,116 @@ export default function Prescription() {
               handleClick={() => setShowModal(true)}
             />
 
-            <button className="border border-blue-100 rounded-full text-blue-600 flex items-center gap-2 p-0.5">
+            <button 
+              className="border border-blue-100 rounded-full text-blue-600 flex items-center gap-2 p-0.5 disabled:opacity-50"
+              onClick={() => {
+                console.log("[Prescription] Send to Pharmacy button clicked!")
+                console.log("[Prescription] Button disabled?", createMutation.isPending || updateMutation.isPending || meds.length === 0)
+                console.log("[Prescription] Meds length:", meds.length)
+                handleSaveToPharmacy()
+              }}
+              disabled={createMutation.isPending || updateMutation.isPending || meds.length === 0}
+            >
               <span className="p-2.5 bg-blue-200 rounded-full">
-                <FileUp className="w-4 h-4" />
+                {createMutation.isPending || updateMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <FileUp className="w-4 h-4" />
+                )}
               </span>
-              <span className="pe-3 py-1 ">{dict.pages.doctor.appointment.tabsContent.prescription.sendPharmacy}</span>
+              <span className="pe-3 py-1">{dict.pages.doctor.appointment.tabsContent.prescription.sendPharmacy}</span>
             </button>
+            
             <button className="border border-blue-100 rounded-full text-blue-600 flex items-center gap-2 p-0.5">
               <span className="p-2.5 bg-blue-200 rounded-full">
                 <Printer className="w-4 h-4" />
               </span>
-              <span className="pe-3 py-1 ">{dict.pages.doctor.appointment.tabsContent.prescription.printRx}</span>
+              <span className="pe-3 py-1">{dict.pages.doctor.appointment.tabsContent.prescription.printRx}</span>
             </button>
           </div>
         </div>
       }
     >
-      {/* <div className="p-6"> */}
-
       {/* CONTENT */}
       <div className="min-h-[240px]">
-        {meds.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          </div>
+        ) : meds.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-            {/* <img src="/empty-rx.png" className="w-24 mb-3 opacity-70" /> */}
             <div>{dict.pages.doctor.appointment.tabsContent.prescription.empty}</div>
-            {/* <button
-                className="mt-3 bg-green-500 text-white px-4 py-2 rounded-full"
-                onClick={() => setShowModal(true)}
-              >
-                Add Medication
-              </button> */}
           </div>
         ) : (
-          <MedicationTable meds={meds} onRemove={removeMedication} />
+          <MedicationTable 
+            meds={meds} 
+            onRemove={removeMedication}
+            onEdit={(med) => {
+              setEditingMed(med)
+              setShowModal(true)
+            }}
+            onView={(med) => setViewingMed(med)}
+          />
         )}
       </div>
 
       {/* MODAL */}
       <AddMedicationModal
         open={showModal}
-        onClose={() => setShowModal(false)}
-        onAdd={addMedication}
+        onClose={() => {
+          setShowModal(false)
+          setEditingMed(null)
+        }}
+        onAdd={editingMed ? editMedication : addMedication}
+        editData={editingMed ? {
+          medication: editingMed.medication,
+          medicine_id: editingMed.medicine_id!,
+          dosage: editingMed.dosage,
+          route: editingMed.route || "",
+          interval: editingMed.frequency,
+          duration: editingMed.duration || "",
+          instructions: editingMed.instructions || "",
+        } : undefined}
+        isEdit={!!editingMed}
       />
-      {/* </div> */}
+      
+      {/* VIEW DIALOG */}
+      {viewingMed && (
+        <Dialog open={!!viewingMed} onOpenChange={() => setViewingMed(null)}>
+          <DialogContent className="max-w-2xl">
+            <DialogTitle>Medication Details</DialogTitle>
+            <div className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Medicine</label>
+                  <p className="text-base mt-1">{viewingMed.medication}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Dosage</label>
+                  <p className="text-base mt-1">{viewingMed.dosage}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Route</label>
+                  <p className="text-base mt-1">{viewingMed.route || "N/A"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Frequency</label>
+                  <p className="text-base mt-1">{viewingMed.frequency}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Duration</label>
+                  <p className="text-base mt-1">{viewingMed.duration || "N/A"}</p>
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-500">Instructions</label>
+                <p className="text-base mt-1">{viewingMed.instructions || "No special instructions"}</p>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </SectionWrapper>
   )
 }
+

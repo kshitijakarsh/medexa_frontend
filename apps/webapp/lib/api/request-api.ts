@@ -65,14 +65,18 @@ export interface Request {
 
 export interface RequestListResponse {
   success: boolean
-  data: {
-    requests: Request[]
-    pagination?: {
-      page: number
-      limit: number
-      total: number
-      totalPages: number
-    }
+  data: Request[]
+  kpis?: {
+    totalRequests: number
+    pending: number
+    approved: number
+    rejected: number
+  }
+  pagination?: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
   }
   message?: string
 }
@@ -145,7 +149,7 @@ export const getRequestById = async (
   config?: ApiConfig
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
-  const response: AxiosResponse<RequestDetailResponse> = await client.get(`/api/v1/requests/${id}`)
+  const response: AxiosResponse<RequestDetailResponse> = await client.get(`/api/v1/pharmacy/requests/${id}`)
   return response.data
 }
 
@@ -159,7 +163,7 @@ export const createRequest = async (
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<RequestDetailResponse> = await client.post(
-    "/api/v1/requests",
+    "/api/v1/pharmacy/requests",
     payload
   )
   return response.data
@@ -176,7 +180,7 @@ export const updateRequest = async (
 ): Promise<RequestDetailResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<RequestDetailResponse> = await client.put(
-    `/api/v1/requests/${id}`,
+    `/api/v1/pharmacy/requests/${id}`,
     payload
   )
   return response.data
@@ -197,7 +201,7 @@ export const deleteRequest = async (
 ): Promise<DeleteRequestResponse> => {
   const client = await createApiClient(config)
   const response: AxiosResponse<DeleteRequestResponse> = await client.delete(
-    `/api/v1/requests/${id}`
+    `/api/v1/pharmacy/requests/${id}`
   )
   return response.data
 }

@@ -56,11 +56,11 @@ export function ExpiryManagement() {
     return true // "all" tab
   })
 
-  // Calculate metrics from filtered data
-  const totalBatches = batches.length
-  const quarantinedCount = batches.filter(b => b.status === "quarantined").length
-  const returnedCount = batches.filter(b => b.status === "returned").length
-  const disposedCount = batches.filter(b => b.status === "disposed").length
+  // Use KPIs from API response, fallback to calculated values
+  const totalBatches = data?.kpis?.totalBatches ?? batches.length
+  const quarantinedCount = data?.kpis?.quarantined ?? batches.filter(b => b.status === "quarantined").length
+  const returnedCount = data?.kpis?.returned ?? batches.filter(b => b.status === "returned").length
+  const disposedCount = data?.kpis?.disposed ?? batches.filter(b => b.status === "disposed").length
 
   const calculateDaysToExpiry = (expiryDate: string) => {
     const expiry = new Date(expiryDate)
@@ -70,14 +70,22 @@ export function ExpiryManagement() {
     return diffDays
   }
 
-  const getExpiryStatusBadge = (expiryDate: string, status?: string) => {
-    if (status === "disposed") {
-      return <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-100">Disposed</Badge>
-    }
-    if (status === "returned") {
-      return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">Returned</Badge>
+  const getApiStatusBadge = (status?: string) => {
+    if (!status) return null
+    
+    const statusConfig: Record<string, { className: string; label: string }> = {
+      active: { className: "bg-green-100 text-green-700 hover:bg-green-100", label: "Active" },
+      inactive: { className: "bg-gray-100 text-gray-700 hover:bg-gray-100", label: "Inactive" },
+      quarantined: { className: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100", label: "Quarantined" },
+      disposed: { className: "bg-gray-100 text-gray-700 hover:bg-gray-100", label: "Disposed" },
+      returned: { className: "bg-blue-100 text-blue-700 hover:bg-blue-100", label: "Returned" },
     }
     
+    const config = statusConfig[status] ?? { className: "bg-gray-100 text-gray-700", label: status.toUpperCase() }
+    return <Badge className={config.className}>{config.label}</Badge>
+  }
+
+  const getExpiryStatusBadge = (expiryDate: string, status?: string) => {
     const expiry = new Date(expiryDate)
     const now = new Date()
     const threeMonthsFromNow = new Date()
@@ -119,16 +127,23 @@ export function ExpiryManagement() {
       render: (row: Batch) => <span>{row.location || "N/A"}</span>,
     },
     {
+      key: "status",
+      label: "API Status",
+      render: (row: Batch) => getApiStatusBadge(row.status),
+    },
+    {
+      key: "expiry_status",
+      label: "Expiry Status",
+      render: (row: Batch) => getExpiryStatusBadge(row.expiry_date),
+    },
+    {
       key: "expiry_date",
       label: "Expiry Date",
       render: (row: Batch) => {
         const daysToExpiry = calculateDaysToExpiry(row.expiry_date)
         return (
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span>{new Date(row.expiry_date).toLocaleDateString()}</span>
-              {getExpiryStatusBadge(row.expiry_date, row.status)}
-            </div>
+            <div>{new Date(row.expiry_date).toLocaleDateString()}</div>
             <div className="text-xs text-gray-500">
               {daysToExpiry > 0 ? `${daysToExpiry} days remaining` : daysToExpiry === 0 ? 'Expires today' : `Expired ${Math.abs(daysToExpiry)} days ago`}
             </div>
