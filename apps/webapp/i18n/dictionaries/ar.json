@@ -2,6 +2,7 @@
   "common": {
     "save": "حفظ",
     "cancel": "إلغاء",
+    "clear": "مسح",
     "edit": "تعديل",
     "delete": "حذف",
     "update": "تحديث",
@@ -125,6 +126,32 @@
   "pages": {
     "dashboard": {
       "title": "لوحة القيادة"
+    },
+    "common": {
+      "fields": {
+        "email": "البريد الإلكتروني",
+        "gender": "الجنس",
+        "dob": "تاريخ الميلاد",
+        "diagnosis": "التشخيص",
+        "medication": "دواء",
+        "dosage": "الجرعة",
+        "route": "المسار",
+        "frequency": "التكرار",
+        "duration": "المدة",
+        "instructions": "التعليمات",
+        "mrn": "رقم السجل الطبي (MRN)",
+        "opd": "العيادات الخارجية (OPD)",
+        "order": "طلب",
+        "phone": "رقم الهاتف",
+        "address": "العنوان",
+        "license": "الترخيص",
+        "typeContent": "النوع والمحتوى",
+        "civilId": "الرقم المدني",
+        "bedId": "رقم السرير",
+        "prescriptionId": "رقم الوصفة",
+        "patientInfo": "معلومات المريض",
+        "prescriptionInfo": "معلومات الوصفة"
+      }
     },
     "login": {
       "title": "تسجيل الدخول"
@@ -2556,6 +2583,393 @@
             }
           }
         }
+      }
+    },
+    "pharmacy": {
+      "common": {
+        "viewAll": "عرض الكل",
+        "loadingPrescriptions": "جاري تحميل الوصفات...",
+        "loadingMedicines": "جاري تحميل الأدوية...",
+        "noPrescriptionsFound": "لم يتم العثور على وصفات",
+        "noMedicinesFound": "لم يتم العثور على أدوية",
+        "totalMedications": "إجمالي الأدوية",
+        "dispenseAndBill": "صرف وفواتير",
+        "printLabel": "طباعة الملصق",
+        "noMedications": "لا توجد أدوية في هذه الوصفة",
+        "additionalNotes": "ملاحظات إضافية:",
+        "price": "السعر",
+        "qty": "الكمية",
+        "cartEmpty": "السلة فارغة",
+        "subtotal": "المجموع الفرعي",
+        "tax": "الضريبة (5%)",
+        "totalAmount": "المجموع الإجمالي",
+        "confirmSale": "تأكيد البيع",
+        "processing": "جاري المعالجة...",
+        "all": "الكل",
+        "status": "الحالة",
+        "actions": "الإجراءات",
+        "items": "الأصناف",
+        "viewDetails": "عرض التفاصيل",
+        "edit": "تعديل",
+        "delete": "حذف",
+        "cancel": "إلغاء",
+        "pending": "قيد الانتظار",
+        "approved": "تمت الموافقة",
+        "rejected": "مرفوض",
+        "completed": "مكتمل",
+        "priority": "الأولوية",
+        "reason": "السبب",
+        "quantity": "الكمية",
+        "type": "النوع",
+        "inStock": "في المخزون",
+        "previous": "السابق",
+        "next": "التالي",
+        "clear": "مسح",
+        "clearAll": "مسح الكل",
+        "refresh": "تحديث",
+        "export": "تصدير",
+        "selectPatient": "اختر المريض (اختياري)",
+        "done": "تم",
+        "active": "نشط",
+        "nameRequired": "الاسم مطلوب",
+        "typeRequired": "النوع مطلوب",
+        "saveFailed": "فشل حفظ المعلومات",
+        "updateFailed": "فشل تحديث المعلومات",
+        "close": "إغلاق",
+        "deleteConfirmation": "هل أنت متأكد أنك تريد حذف {{item}}؟",
+        "medicineId": "معرف الدواء",
+        "id": "المعرف",
+        "selectPriority": "اختر الأولوية"
+      },
+      "dashboard": {
+        "title": "لوحة قيادة الصيدلية",
+        "kpis": {
+          "totalStockValue": "إجمالي قيمة المخزون",
+          "itemsBelowMinLevel": "أصناف أقل من الحد الأدنى",
+          "pendingOPDs": "طلبات OPD معلقة",
+          "expiringSoon": "تنتهي صلاحيتها قريباً",
+          "trends": {
+            "increase": "زيادة",
+            "decrease": "نقص",
+            "vsLastMonth": "مقارنة بالشهر الماضي"
+          }
+        },
+        "charts": {
+          "topSellingDrugs": "الأدوية الأكثر مبيعاً (هذا الأسبوع)",
+          "quantitySold": "الكمية المباعة",
+          "salesAmount": "قيمة المبيعات",
+          "medicinesBySales": "الأدوية حسب المبيعات"
+        },
+        "additionalDetails": {
+          "title": "تفاصيل إضافية",
+          "placeholder": "سيتم عرض التفاصيل والمعلومات الإضافية هنا"
+        }
+      },
+      "opd": {
+        "title": "صرف العيادات الخارجية",
+        "prescriptionQueue": "قائمة انتظار الوصفات",
+        "searchPlaceholder": "البحث عن طريق المريض، المعرف، أو الوصفة...",
+        "noPrescriptionsFound": "لم يتم العثور على وصفات عيادات خارجية",
+        "detailsTitle": "تفاصيل الوصفة",
+        "visitInfo": "معلومات الزيارة",
+        "diagnosis": "التشخيص",
+        "checkout": {
+          "title": "الدفع",
+          "backToPrescription": "العودة إلى الوصفة",
+          "summary": "ملخص الطلب",
+          "total": "الإجمالي",
+          "printBill": "طباعة الفاتورة",
+          "downloadPdf": "تحميل PDF",
+          "walkInCustomer": "عميل غير مسجل",
+          "cash": "نقداً",
+          "confirmDispense": "تأكيد الصرف"
+        },
+        "status": {
+          "waiting": "في الانتظار",
+          "done": "تم"
+        },
+        "alerts": {
+          "cartEmpty": "السلة فارغة",
+          "orderSuccess": "تم إنشاء الطلب رقم #{{id}} بنجاح!",
+          "orderFailed": "فشل إنشاء الطلب: {{message}}"
+        }
+      },
+      "ipd": {
+        "title": "صيدلية التنويم (IPD)",
+        "prescriptionQueue": "طلبات أدوية التنويم",
+        "searchPlaceholder": "البحث بواسطة المريض أو الرقم...",
+        "noPrescriptionsFound": "لا توجد طلبات أدوية تنويم",
+        "detailsTitle": "طلب أدوية التنويم",
+        "ipdInfo": "معلومات التنويم",
+        "medicationsToDispense": "الأدوية التي سيتم صرفها",
+        "labelInstruction": "يرجى لصق ملصق الأدوية لتسليمها لغرفة المريض في التنويم",
+        "selectOrder": "اختر طلب أدوية لصرفه",
+        "status": {
+          "critical": "حرجة",
+          "ready": "جاهزة"
+        },
+        "ipdPrescriptionOrder": "طلب وصفة IPD - {{id}}"
+      },
+      "generalSales": {
+        "title": "مبيعات عامة",
+        "orderReview": "مراجعة الطلب",
+        "prescriptionOrderReview": "مراجعة طلب الوصفة",
+        "dispensingPrescription": "صرف الوصفة {{id}}",
+        "reviewAndConfirm": "راجع وأكد البيع",
+        "backToShopping": "العودة للتسوق",
+        "availableMedicines": "الأدوية المتاحة",
+        "patientSearchPlaceholder": "البحث عن مريض بالاسم أو الجوال...",
+        "medicineSearchPlaceholder": "البحث عن دواء بالاسم أو النوع أو الفئة...",
+        "addToCart": "أضف إلى السلة",
+        "shoppingCart": "سلة التسوق",
+        "addMedicinesToStart": "أضف أدوية لبدء عملية البيع",
+        "completeSale": "إتمام البيع",
+        "orderItems": "أصناف الطلب ({{count}})",
+        "printInvoice": "طباعة الفاتورة",
+        "downloadPdfInvoice": "تحميل الفاتورة PDF",
+        "continueShopping": "مواصلة التسوق",
+        "generalSalesOrder": "طلب مبيعات عامة",
+        "prescriptionOrder": "طلب وصفة طبية - {{id}}"
+      },
+      "orders": {
+        "title": "إدارة الطلبات",
+        "description": "عرض وإدارة طلبات الصيدلية",
+        "searchPlaceholder": "البحث برقم الطلب، اسم المريض...",
+        "filters": "الفلاتر",
+        "orderStatus": "حالة الطلب",
+        "paymentStatus": "حالة الدفع",
+        "allStatuses": "كل الحالات",
+        "allPaymentStatus": "كل حالات الدفع",
+        "clearFilters": "مسح الفلاتر",
+        "ordersList": "قائمة الطلبات",
+        "loadingOrders": "جاري تحميل الطلبات...",
+        "noOrdersFound": "لم يتم العثور على طلبات",
+        "adjustFilters": "حاول تعديل الفلاتر",
+        "showingOrders": "عرض {{count}} من {{total}} طلبات",
+        "orderId": "رقم الطلب",
+        "patient": "المريض",
+        "paymentMethod": "طريقة الدفع",
+        "deleteOrder": "حذف الطلب",
+        "alerts": {
+          "deleteSuccess": "تم حذف الطلب بنجاح!",
+          "deleteFailed": "فشل حذف الطلب: {{message}}"
+        },
+        "orderStatusLabels": {
+          "pending": "قيد الانتظار",
+          "processing": "جاري المعالجة",
+          "completed": "مكتمل",
+          "cancelled": "ملغي"
+        },
+        "paymentStatusLabels": {
+          "paid": "مدفوع",
+          "pending": "قيد الانتظار",
+          "partial": "جزئي",
+          "refunded": "مسترد"
+        },
+        "modals": {
+          "view": {
+            "title": "تفاصيل الطلب",
+            "description": "معلومات كاملة عن هذا الطلب",
+            "items": "بنود الطلب",
+            "noItems": "لا توجد بنود في هذا الطلب"
+          },
+          "delete": {
+            "title": "حذف الطلب",
+            "description": "هل أنت متأكد أنك تريد حذف الطلب رقم #{{id}}؟ لا يمكن التراجع عن هذا الإجراء.",
+            "button": "حذف",
+            "deleting": "جاري الحذف..."
+          }
+        }
+      },
+      "inventory": {
+        "title": "مخزون الأدوية",
+        "noMedicinesFound": "لم يتم العثور على أدوية",
+        "allMedicines": "كل الأدوية",
+        "lowStock": "مخزون منخفض",
+        "expiringSoon": "تنتهي صلاحيتها قريباً",
+        "totalItems": "إجمالي الأصناف",
+        "lowStockAlerts": "تنبيهات انخفاض المخزون",
+        "fastMovingItems": "أصناف سريعة الحركة",
+        "slowMovingItems": "أصناف بطيئة الحركة",
+        "addMedicine": "إضافة دواء",
+        "updateMedicine": "تحديث الدواء",
+        "deleteMedicine": "حذف الدواء",
+        "manageBatches": "إدارة الشحنات",
+        "medicineName": "اسم الدواء",
+        "category": "الفئة",
+        "currentStock": "المخزون الحالي",
+        "minLevel": "الحد الأدنى",
+        "unitPrice": "سعر الوحدة",
+        "inStock": "متوفر",
+        "medium": "متوسط",
+        "requiresAttention": "تطلب اهتماماً",
+        "highTurnover": "دوران عالي",
+        "reviewRequired": "مراجعة مطلوبة",
+        "trends": {
+          "increase": "زيادة",
+          "decrease": "نقصان",
+          "vsLastMonth": "مقارنة بالشهر الماضي"
+        },
+        "fields": {
+          "medicineName": "اسم الدواء *",
+          "type": "النوع *",
+          "content": "المحتوى/القوة",
+          "totalStock": "إجمالي المخزون *",
+          "minLevel": "الحد الأدنى للمستوى *",
+          "unitPrice": "سعر الوحدة *",
+          "sellingPrice": "سعر البيع *",
+          "tablet": "حبوب",
+          "capsule": "كبسولة",
+          "syrup": "شراب",
+          "injection": "حقنة",
+          "ointment": "مرهم"
+        },
+        "placeholders": {
+          "search": "البحث حسب اسم الدواء، الفئة، أو الشركة المصنعة...",
+          "medicineName": "أدخل اسم الدواء",
+          "selectType": "اختر النوع",
+          "content": "مثال: 500 ملغ",
+          "stock": "أدخل كمية المخزون",
+          "minLevel": "أدخل الحد الأدنى للمستوى",
+          "unitPrice": "أدخل سعر الوحدة",
+          "sellingPrice": "أدخل سعر البيع"
+        },
+        "modals": {
+          "create": {
+            "title": "إضافة دواء جديد",
+            "description": "املأ التفاصيل لإضافة دواء جديد إلى المخزون."
+          },
+          "edit": {
+            "title": "تعديل الدواء",
+            "description": "قم بتحديث تفاصيل الدواء أدناه."
+          },
+          "delete": {
+            "title": "حذف الدواء",
+            "description": "هل أنت متأكد أنك تريد حذف هذا الدواء؟ لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "batches": {
+          "title": "إدارة الشحنات",
+          "batchNumber": "رقم الشحنة",
+          "expiryStatus": "حالة الصلاحية",
+          "totalValue": "القيمة الإجمالية",
+          "statusApi": "الحالة (API)",
+          "expired": "منتهي الصلاحية",
+          "valid": "صالح",
+          "location": "الموقع",
+          "addBatch": "إضافة شحنة",
+          "editBatch": "تعديل الشحنة",
+          "deleteBatch": "حذف الشحنة",
+          "deleteBatchDesc": "هل أنت متأكد أنك تريد حذف هذه الشحنة؟ لا يمكن التراجع عن هذا الإجراء.",
+          "totalBatches": "إجمالي الشحنات",
+          "totalQuantity": "إجمالي الكمية",
+          "allInventory": "كل المخزون",
+          "within3Months": "خلال 3 أشهر",
+          "addBatchDesc": "املأ تفاصيل الشحنة لإضافة مخزون جديد.",
+          "editBatchDesc": "قم بتحديث تفاصيل الشحنة أدناه.",
+          "batchNumberPlaceholder": "أدخل رقم الشحنة",
+          "locationPlaceholder": "أدخل موقع التخزين",
+          "totalValuePlaceholder": "أدخل القيمة الإجمالية للشحنة"
+        }
+      },
+      "expiry": {
+        "title": "إدارة انتهاء صلاحية الدفعات",
+        "quarantined": "في الحجر",
+        "returned": "مرتجع",
+        "disposed": "مُتخلص منه",
+        "medicineId": "معرف الدواء",
+        "viewDetails": "عرض التفاصيل",
+        "totalBatches": "إجمالي الدفعات",
+        "underReview": "قيد المراجعة",
+        "returnRequests": "طلبات الإرجاع",
+        "disposalRecords": "سجلات التخلص",
+        "daysRemaining": "متبقي {{count}} يوم",
+        "expiresToday": "تنتهي اليوم",
+        "expiredDaysAgo": "انتهت منذ {{count}} يوم",
+        "expiryDate": "تاريخ الانتهاء",
+        "searchPlaceholder": "البحث برقم الشحنة..."
+      },
+      "approvals": {
+        "title": "إدارة الموافقات",
+        "createRequest": "إنشاء طلب",
+        "editRequest": "تعديل الطلب",
+        "deleteRequest": "حذف الطلب",
+        "requestNumber": "رقم الطلب",
+        "requestDate": "تاريخ الطلب",
+        "priority": "الأولوية",
+        "reason": "السبب",
+        "viewRequest": "عرض الطلب",
+        "createNewRequest": "إنشاء طلب جديد",
+        "type": "النوع",
+        "selectType": "اختر النوع",
+        "location": "الموقع",
+        "certNumber": "رقم الشهادة",
+        "notes": "ملاحظات",
+        "requestItems": "أصناف الطلب (الشحنات)",
+        "addBatch": "إضافة شحنة",
+        "selectBatch": "اختر شحنة",
+        "noBatchesAdded": "لم يتم إضافة شحنات بعد. انقر على 'إضافة شحنة' لإضافة أصناف الطلب.",
+        "medicineId": "معرف الدواء",
+        "qty": "الكمية",
+        "saving": "جاري الحفظ...",
+        "updateRequest": "تحديث الطلب",
+        "createRequestLabel": "إنشاء طلب",
+        "creating": "جاري الإنشاء...",
+        "requestCreated": "تم إنشاء الطلب بنجاح!",
+        "requestFailed": "فشل إنشاء الطلب. يرجى المحاولة مرة أخرى.",
+        "submitRequestDesc": "إرسال طلب جديد لإدارة الشحنات",
+        "availableQuantity": "الكمية المتوفرة",
+        "selectPriority": "اختر الأولوية",
+        "selectStatus": "اختر الحالة",
+        "types": {
+          "disposal": "تخلص",
+          "return": "إرجاع",
+          "quarantine": "حجر صحي",
+          "transfer": "نقل"
+        },
+        "fields": {
+          "disposalMethod": "طريقة التخلص",
+          "disposalDate": "تاريخ التخلص",
+          "authorizedBy": "مرخص من قبل",
+          "disposalLocation": "موقع التخلص",
+          "returnTo": "إرجاع إلى",
+          "returnReason": "سبب الإرجاع",
+          "creditAmount": "مبلغ الرصيد",
+          "trackingNumber": "رقم التتبع",
+          "quarantineArea": "منطقة الحجر",
+          "reviewDate": "تاريخ المراجعة",
+          "quarantineReason": "سبب الحجر",
+          "qualityIssue": "مشكلة الجودة"
+        },
+        "placeholders": {
+          "disposalMethod": "أدخل طريقة التخلص",
+          "authorizedBy": "أدخل اسم المرخص",
+          "disposalLocation": "أدخل موقع التخلص",
+          "returnTo": "أدخل جهة الإرجاع",
+          "returnReason": "أدخل سبب الإرجاع",
+          "creditAmount": "أدخل مبلغ الرصيد",
+          "trackingNumber": "أدخل رقم التتبع",
+          "quarantineArea": "أدخل منطقة الحجر",
+          "quarantineReason": "أدخل سبب الحجر",
+          "qualityIssue": "صف مشكلة الجودة",
+          "quantity": "أدخل الكمية",
+          "reason": "أدخل السبب",
+          "notes": "أدخل ملاحظات إضافية",
+          "selectType": "اختر نوع الطلب"
+        },
+        "batches": "شحنات",
+        "priorityLabels": {
+          "low": "منخفضة",
+          "medium": "متوسطة",
+          "high": "عالية",
+          "urgent": "عاجلة"
+        },
+        "totalRequests": "إجمالي الطلبات",
+        "awaitingReview": "في انتظار المراجعة",
+        "allApprovals": "كل الموافقات",
+        "approvedRequests": "طلبات معتمدة",
+        "rejectedRequests": "طلبات مرفوضة",
+        "searchPlaceholder": "البحث برقم الطلب..."
       }
     }
   },

@@ -19,6 +19,13 @@ import {
   UserRoundMinus,
   UserSquare,
   UserCog,
+  Pill,
+  ShoppingCart,
+  Package,
+  Clock,
+  CheckCircle,
+  FileText,
+  ClipboardList,
 } from "lucide-react"
 
 import {
@@ -50,6 +57,7 @@ import {
   ROUTES,
   FRONTOFFICE_BASE,
   SURGERY_BASE,
+  PHARMACY_BASE,
   NURSE_BASE,
 } from "@/lib/routes"
 import { useLocaleRoute } from "@/app/hooks/use-locale-route"
@@ -68,6 +76,7 @@ export function AppSidebar({ }) {
     // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
     frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)) && !pathname.includes(NURSE_BASE),
     surgery: pathname.includes(SURGERY_BASE),
+    pharmacy: pathname.includes(PHARMACY_BASE),
   }
 
   const items = [
@@ -300,6 +309,56 @@ export function AppSidebar({ }) {
           title: "Ward Store",
           url: [withLocale(ROUTES.SURGERY_WARD_STORE)],
           icon: BriefcaseMedical,
+        }
+      ]
+      : []),
+    ...(modulesAvailable.pharmacy
+      ? [
+        {
+          title: "Dashboard",
+          url: [withLocale(ROUTES.PHARMACY_DASHBOARD)],
+          icon: LayoutDashboard,
+          exactMatch: true,
+        },
+        {
+          title: "OPD Dispensing",
+          url: [withLocale(ROUTES.PHARMACY_OPD_DISPENSING)],
+          icon: Pill,
+        },
+        {
+          title: "IPD Pharmacy",
+          url: [withLocale(ROUTES.PHARMACY_IPD_PHARMACY)],
+          icon: BedDouble,
+        },
+        {
+          title: "General Sales",
+          url: [withLocale(ROUTES.PHARMACY_GENERAL_SALES)],
+          icon: ShoppingCart,
+        },
+        {
+          title: "Orders",
+          url: [withLocale(ROUTES.PHARMACY_ORDERS)],
+          icon: ClipboardList,
+        },
+        {
+          title: "Drug Inventory",
+          icon: Package,
+          url: [withLocale(ROUTES.PHARMACY_DRUG_INVENTORY)],
+        },
+        {
+          title: "Expiry Management",
+          icon: Clock,
+          url: [withLocale(ROUTES.PHARMACY_EXPIRY_MANAGEMENT)],
+        },
+        {
+          title: "Approvals",
+          icon: CheckCircle,
+          url: [withLocale(ROUTES.PHARMACY_APPROVALS)],
+        },
+        {
+          title: "Reports",
+          icon: FileText,
+          url: [withLocale(ROUTES.PHARMACY_REPORTS)],
         }
       ]
       : []),

@@ -13,6 +13,7 @@ import type { Medicine } from "@/lib/api/medicine-api"
 import { useCreateOrder } from "../_hooks/useOrder"
 import type { CreateOrderPayload } from "@/lib/api/order-api"
 import { generatePharmacyBillPDF, printPharmacyBillPDF, type BillData } from "@/lib/utils/pdf-generator"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface CartItem extends Medicine {
   quantity: number
@@ -23,9 +24,15 @@ export function IPDPharmacy() {
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null)
   const [showBilling, setShowBilling] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
-  
+
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.ipd
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonFields = dict.pages.common.fields
+  const commonDict = dict.common
+
   const createOrderMutation = useCreateOrder()
-  
+
   // Fetch IPD prescriptions
   const { data, isLoading } = usePrescriptions({
     search: searchQuery || undefined,
@@ -37,19 +44,19 @@ export function IPDPharmacy() {
 
   const getStatusBadge = (status: string) => {
     if (status === "pending") {
-      return <Badge className="bg-red-500">Critical</Badge>
+      return <Badge className="bg-red-500">{pDict.status.critical}</Badge>
     } else if (status === "active") {
-      return <Badge className="bg-yellow-500">Pending</Badge>
+      return <Badge className="bg-yellow-500">{phCommonDict.pending}</Badge>
     } else {
-      return <Badge className="bg-green-500">Ready</Badge>
+      return <Badge className="bg-green-500">{pDict.status.ready}</Badge>
     }
   }
 
   const selectedPrescriptionItems = selectedPrescription?.prescription_items || []
-  
+
   const handleDispenseAndBill = useCallback(() => {
     if (!selectedPrescription || !selectedPrescription.prescription_items) return
-    
+
     // Convert prescription items to cart items
     const cartItems: CartItem[] = selectedPrescription.prescription_items
       .filter(item => item.medicine)
@@ -68,7 +75,7 @@ export function IPDPharmacy() {
         status: 'active',
         is_deleted: false,
       }))
-    
+
     setCart(cartItems)
     setShowBilling(true)
   }, [selectedPrescription])
@@ -80,7 +87,7 @@ export function IPDPharmacy() {
 
   const handleConfirmSale = useCallback(async () => {
     if (cart.length === 0 || !selectedPrescription) {
-      alert("Cart is empty")
+      alert(dict.pages.pharmacy.opd.alerts.cartEmpty)
       return
     }
 
@@ -95,7 +102,7 @@ export function IPDPharmacy() {
         status: "completed",
         payment_status: "paid",
         payment_method: "Cash",
-        notes: `IPD Prescription order - RX-${selectedPrescription.id}`,
+        notes: pDict.ipdPrescriptionOrder.replace("{{id}}", selectedPrescription.id.toString()),
         order_items: cart.map(item => ({
           medicine_id: item.id,
           quantity: item.quantity,
@@ -104,15 +111,15 @@ export function IPDPharmacy() {
       }
 
       const response = await createOrderMutation.mutateAsync(orderPayload)
-      alert(`Order #${response.data.id} created successfully!`)
-      
+      alert(dict.pages.pharmacy.opd.alerts.orderSuccess.replace("{{id}}", response.data.id.toString()))
+
       // Reset
       setCart([])
       setShowBilling(false)
       setSelectedPrescription(null)
     } catch (error: any) {
       console.error("Failed to create order:", error)
-      alert(`Failed to create order: ${error.response?.data?.message || error.message}`)
+      alert(dict.pages.pharmacy.opd.alerts.orderFailed.replace("{{message}}", error.response?.data?.message || error.message))
     }
   }, [cart, selectedPrescription, createOrderMutation])
 
@@ -129,10 +136,10 @@ export function IPDPharmacy() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: selectedPrescription.patient 
-        ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}` 
-        : 'Walk-in Customer',
-      customerPhone: selectedPrescription.patient?.mobile_number || 'N/A',
+      customerName: selectedPrescription.patient
+        ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}`
+        : dict.pages.pharmacy.opd.checkout.walkInCustomer,
+      customerPhone: selectedPrescription.patient?.mobile_number || commonDict.noData,
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -145,7 +152,7 @@ export function IPDPharmacy() {
       tax,
       discount: 0,
       total,
-      paymentMethod: 'Cash',
+      paymentMethod: dict.pages.pharmacy.opd.checkout.cash,
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
@@ -169,10 +176,10 @@ export function IPDPharmacy() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: selectedPrescription.patient 
-        ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}` 
-        : 'Walk-in Customer',
-      customerPhone: selectedPrescription.patient?.mobile_number || 'N/A',
+      customerName: selectedPrescription.patient
+        ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}`
+        : dict.pages.pharmacy.opd.checkout.walkInCustomer,
+      customerPhone: selectedPrescription.patient?.mobile_number || commonDict.noData,
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -185,7 +192,7 @@ export function IPDPharmacy() {
       tax,
       discount: 0,
       total,
-      paymentMethod: 'Cash',
+      paymentMethod: dict.pages.pharmacy.opd.checkout.cash,
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
@@ -216,11 +223,11 @@ export function IPDPharmacy() {
       <div className="col-span-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">IPD Prescriptions</CardTitle>
+            <CardTitle className="text-base">{pDict.prescriptionQueue}</CardTitle>
             <div className="relative mt-3">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by patient or ID..."
+                placeholder={pDict.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -230,25 +237,24 @@ export function IPDPharmacy() {
           <CardContent className="p-0">
             <div className="max-h-[calc(100vh-280px)] overflow-y-auto">
               {isLoading ? (
-                <div className="p-8 text-center text-gray-500">Loading prescriptions...</div>
+                <div className="p-8 text-center text-gray-500">{phCommonDict.loadingPrescriptions}</div>
               ) : prescriptions.length === 0 ? (
-                <div className="p-8 text-center text-gray-500">No IPD prescriptions found</div>
+                <div className="p-8 text-center text-gray-500">{pDict.noPrescriptionsFound}</div>
               ) : (
                 prescriptions.map((prescription) => {
                   const patientName = prescription.patient
                     ? `${prescription.patient.first_name} ${prescription.patient.last_name}`
-                    : "Unknown Patient"
+                    : dict.pages.surgery.common.fallbacks.unknownPatient
                   const patientInitials = patientName.split(" ").map(n => n[0]).join("").substring(0, 2)
-                  
+
                   return (
                     <div
                       key={prescription.id}
                       onClick={() => setSelectedPrescription(prescription)}
-                      className={`flex items-center gap-3 p-4 border-b cursor-pointer transition-colors ${
-                        selectedPrescription?.id === prescription.id
-                          ? "bg-blue-50 border-l-4 border-l-blue-600"
-                          : "hover:bg-gray-50"
-                      }`}
+                      className={`flex items-center gap-3 p-4 border-b cursor-pointer transition-colors ${selectedPrescription?.id === prescription.id
+                        ? "bg-blue-50 border-l-4 border-l-blue-600"
+                        : "hover:bg-gray-50"
+                        }`}
                     >
                       <Avatar className="h-10 w-10">
                         <AvatarFallback className="bg-gray-200 text-gray-700">
@@ -257,7 +263,7 @@ export function IPDPharmacy() {
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-sm truncate">{patientName}</div>
-                        <div className="text-xs text-gray-600">ID: {prescription.patient_id}</div>
+                        <div className="text-xs text-gray-600">{dict.common.employeeId}: {prescription.patient_id}</div>
                         <div className="text-xs text-gray-500">
                           {new Date(prescription.prescription_date).toLocaleDateString()}
                         </div>
@@ -269,7 +275,7 @@ export function IPDPharmacy() {
               )}
             </div>
             <div className="p-4 border-t">
-              <Button variant="link" className="text-blue-600 p-0">View All →</Button>
+              <Button variant="link" className="text-blue-600 p-0">{phCommonDict.viewAll} →</Button>
             </div>
           </CardContent>
         </Card>
@@ -289,9 +295,9 @@ export function IPDPharmacy() {
                     onClick={handleBackToPrescription}
                   >
                     <ArrowLeft className="h-4 w-4 mr-2" />
-                    Back to Prescription
+                    {dict.pages.pharmacy.opd.checkout.backToPrescription}
                   </Button>
-                  <CardTitle>Checkout - IPD Prescription RX-{selectedPrescription.id}</CardTitle>
+                  <CardTitle>{dict.pages.pharmacy.opd.checkout.title} - {pDict.title} RX-{selectedPrescription.id}</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
@@ -300,13 +306,13 @@ export function IPDPharmacy() {
                   <div className="flex items-center gap-2 text-purple-900">
                     <Bed className="h-5 w-5" />
                     <span className="font-medium">
-                      IPD Prescription Order - RX-{selectedPrescription.id}
+                      {pDict.ipdPrescriptionOrder.replace("{{id}}", selectedPrescription.id.toString())}
                     </span>
                   </div>
                   <div className="mt-2 text-sm text-purple-700">
-                    Patient: {selectedPrescription.patient
+                    {dict.table.patient}: {selectedPrescription.patient
                       ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}`
-                      : "N/A"
+                      : commonDict.noData
                     }
                   </div>
                 </div>
@@ -325,7 +331,7 @@ export function IPDPharmacy() {
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">Price</p>
+                            <p className="text-sm text-muted-foreground">{dict.pages.charges.columns.standardCharge}</p>
                             <p className="font-medium">KWD {item.selling_price.toFixed(3)}</p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -348,7 +354,7 @@ export function IPDPharmacy() {
                             </Button>
                           </div>
                           <div className="text-right min-w-[80px]">
-                            <p className="text-sm text-muted-foreground">Total</p>
+                            <p className="text-sm text-muted-foreground">{dict.pages.pharmacy.opd.checkout.total}</p>
                             <p className="font-medium">KWD {(item.selling_price * item.quantity).toFixed(3)}</p>
                           </div>
                         </div>
@@ -361,29 +367,29 @@ export function IPDPharmacy() {
                 <div className="flex gap-2 mb-4">
                   <Button variant="outline" onClick={handlePrint}>
                     <Printer className="mr-2 h-4 w-4" />
-                    Print Bill
+                    {dict.pages.pharmacy.opd.checkout.printBill}
                   </Button>
                   <Button variant="outline" onClick={handleDownloadPDF}>
                     <Download className="mr-2 h-4 w-4" />
-                    Download PDF
+                    {dict.pages.pharmacy.opd.checkout.downloadPdf}
                   </Button>
                 </div>
 
                 {/* Order Summary - Right Sidebar */}
                 <Card className="bg-gray-50">
                   <CardContent className="p-6">
-                    <h3 className="font-semibold mb-4">Order Summary</h3>
+                    <h3 className="font-semibold mb-4">{dict.pages.pharmacy.opd.checkout.summary}</h3>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Subtotal</span>
+                        <span className="text-muted-foreground">{phCommonDict.subtotal}</span>
                         <span>KWD {subtotal.toFixed(3)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Tax (5%)</span>
+                        <span className="text-muted-foreground">{phCommonDict.tax}</span>
                         <span>KWD {tax.toFixed(3)}</span>
                       </div>
                       <div className="border-t pt-3 flex justify-between font-semibold">
-                        <span>Total</span>
+                        <span>{dict.pages.pharmacy.opd.checkout.total}</span>
                         <span className="text-xl text-green-600">KWD {total.toFixed(3)}</span>
                       </div>
                       <Button
@@ -391,7 +397,7 @@ export function IPDPharmacy() {
                         onClick={handleConfirmSale}
                         disabled={createOrderMutation.isPending}
                       >
-                        {createOrderMutation.isPending ? "Processing..." : "Confirm Sale"}
+                        {createOrderMutation.isPending ? phCommonDict.processing : phCommonDict.confirmSale}
                       </Button>
                     </div>
                   </CardContent>
@@ -404,47 +410,47 @@ export function IPDPharmacy() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-base">IPD Medication Order</CardTitle>
-                  
+                  <CardTitle className="text-base">{pDict.detailsTitle}</CardTitle>
+
                   {/* Patient Details */}
                   <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div className="flex items-center gap-3 mb-3">
                       <User className="h-5 w-5 text-blue-600" />
-                      <h3 className="font-semibold text-blue-900">Patient Information</h3>
+                      <h3 className="font-semibold text-blue-900">{commonFields.patientInfo}</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Name:</span>
+                        <span className="text-gray-600">{dict.table.patient}:</span>
                         <span className="font-medium">
                           {selectedPrescription.patient
                             ? `${selectedPrescription.patient.first_name} ${selectedPrescription.patient.last_name}`
-                            : "N/A"
+                            : commonDict.noData
                           }
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Patient ID:</span>
+                        <span className="text-gray-600">{commonFields.mrn}:</span>
                         <span className="font-medium">{selectedPrescription.patient_id}</span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Civil ID:</span>
-                        <span className="font-medium">{selectedPrescription.patient?.civil_id || "N/A"}</span>
+                        <span className="text-gray-600">{commonFields.civilId}:</span>
+                        <span className="font-medium">{selectedPrescription.patient?.civil_id || commonDict.noData}</span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Mobile:</span>
-                        <span className="font-medium">{selectedPrescription.patient?.mobile_number || "N/A"}</span>
+                        <span className="text-gray-600">{commonFields.phone}:</span>
+                        <span className="font-medium">{selectedPrescription.patient?.mobile_number || commonDict.noData}</span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Email:</span>
-                        <span className="font-medium">{selectedPrescription.patient?.email || "N/A"}</span>
+                        <span className="text-gray-600">{commonFields.email}:</span>
+                        <span className="font-medium">{selectedPrescription.patient?.email || commonDict.noData}</span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Gender:</span>
-                        <span className="font-medium capitalize">{selectedPrescription.patient?.gender || "N/A"}</span>
+                        <span className="text-gray-600">{commonFields.gender}:</span>
+                        <span className="font-medium capitalize">{selectedPrescription.patient?.gender || commonDict.noData}</span>
                       </div>
                       {selectedPrescription.patient?.dob && (
                         <div className="flex gap-2">
-                          <span className="text-gray-600">DOB:</span>
+                          <span className="text-gray-600">{commonFields.dob}:</span>
                           <span className="font-medium">
                             {new Date(selectedPrescription.patient.dob).toLocaleDateString()}
                           </span>
@@ -462,12 +468,12 @@ export function IPDPharmacy() {
                       </div>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                         <div className="flex gap-2">
-                          <span className="text-gray-600">IPD ID:</span>
+                          <span className="text-gray-600">{dict.common.employeeId}:</span>
                           <span className="font-medium">{selectedPrescription.ipd.id}</span>
                         </div>
                         {selectedPrescription.ipd.bed_id && (
                           <div className="flex gap-2">
-                            <span className="text-gray-600">Bed ID:</span>
+                            <span className="text-gray-600">{commonFields.bedId}:</span>
                             <span className="font-medium">{selectedPrescription.ipd.bed_id}</span>
                           </div>
                         )}
@@ -495,22 +501,22 @@ export function IPDPharmacy() {
                   <div className="mt-3 p-4 bg-green-50 rounded-lg border border-green-200">
                     <div className="flex items-center gap-3 mb-3">
                       <FileText className="h-5 w-5 text-green-600" />
-                      <h3 className="font-semibold text-green-900">Prescription Information</h3>
+                      <h3 className="font-semibold text-green-900">{commonFields.prescriptionInfo}</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Prescription Date:</span>
+                        <span className="text-gray-600">{dict.common.date}:</span>
                         <span className="font-medium">
                           {new Date(selectedPrescription.prescription_date).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-600">Status:</span>
+                        <span className="text-gray-600">{commonDict.status}:</span>
                         {getStatusBadge(selectedPrescription.status)}
                       </div>
                       {selectedPrescription.diagnosis && (
                         <div className="flex gap-2 col-span-2">
-                          <span className="text-gray-600">Diagnosis:</span>
+                          <span className="text-gray-600">{commonFields.diagnosis}:</span>
                           <span className="font-medium">{selectedPrescription.diagnosis}</span>
                         </div>
                       )}
@@ -518,7 +524,7 @@ export function IPDPharmacy() {
                   </div>
                 </div>
                 <div className="text-right ml-4">
-                  <div className="text-sm text-gray-600">Prescription ID</div>
+                  <div className="text-sm text-gray-600">{commonFields.prescriptionId}</div>
                   <div className="font-medium">IPD-{selectedPrescription.id}</div>
                 </div>
               </div>
@@ -529,18 +535,18 @@ export function IPDPharmacy() {
                 <>
                   {/* Medications Table */}
                   <div className="space-y-3">
-                    <div className="font-medium">Medications to Dispense</div>
+                    <div className="font-medium">{pDict.medicationsToDispense}</div>
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
                         <thead className="bg-gray-50 border-b">
                           <tr>
-                            <th className="text-left p-3 font-medium text-gray-700">Medication</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Type & Content</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Dosage</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Route</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Frequency</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Duration</th>
-                            <th className="text-left p-3 font-medium text-gray-700">Instructions</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.medication}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.typeContent}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.dosage}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.route}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.frequency}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.duration}</th>
+                            <th className="text-left p-3 font-medium text-gray-700">{commonFields.instructions}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -574,14 +580,14 @@ export function IPDPharmacy() {
                   {/* Notes Section */}
                   {selectedPrescription.notes && (
                     <div className="mt-4 p-3 bg-gray-50 rounded-md border">
-                      <div className="text-sm font-medium text-gray-700 mb-1">Additional Notes:</div>
+                      <div className="text-sm font-medium text-gray-700 mb-1">{phCommonDict.additionalNotes}</div>
                       <div className="text-sm text-gray-600">{selectedPrescription.notes}</div>
                     </div>
                   )}
 
                   {/* Note */}
                   <div className="mt-6 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
-                    <p>✓ Please label the medication packet to deliver to patient's IPD room</p>
+                    <p>✓ {pDict.labelInstruction}</p>
                   </div>
 
                   {/* Summary */}
@@ -590,28 +596,28 @@ export function IPDPharmacy() {
                       IPD
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-gray-600 mb-1">Total Medications</div>
+                      <div className="text-sm text-gray-600 mb-1">{phCommonDict.totalMedications}</div>
                       <div className="text-3xl font-bold text-purple-600">{selectedPrescriptionItems.length}</div>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
                   <div className="mt-6 flex gap-3">
-                    <Button 
+                    <Button
                       className="flex-1 bg-blue-600 hover:bg-blue-700 h-12"
                       onClick={handleDispenseAndBill}
                       disabled={selectedPrescriptionItems.length === 0}
                     >
-                      Dispense & Bill
+                      {phCommonDict.dispenseAndBill}
                     </Button>
                     <Button variant="outline" className="px-8 h-12 bg-green-50 text-green-700 border-green-200 hover:bg-green-100">
-                      Print Label
+                      {phCommonDict.printLabel}
                     </Button>
                   </div>
                 </>
               ) : (
                 <div className="text-center py-12 text-muted-foreground">
-                  <p>No medications in this prescription</p>
+                  <p>{phCommonDict.noMedications}</p>
                 </div>
               )}
             </CardContent>
@@ -619,7 +625,7 @@ export function IPDPharmacy() {
         ) : (
           <Card className="h-[calc(100vh-200px)] flex items-center justify-center">
             <div className="text-center text-muted-foreground p-6">
-              <p className="text-lg">Select a medication order to dispense</p>
+              <p className="text-lg">{pDict.selectOrder}</p>
             </div>
           </Card>
         )}

@@ -6,6 +6,7 @@ import { Button } from "@workspace/ui/components/button"
 import { ArrowLeft, CheckCircle, Printer, Download } from "lucide-react"
 import type { Medicine } from "@/lib/api/medicine-api"
 import { generatePharmacyBillPDF, printPharmacyBillPDF, type BillData } from "@/lib/utils/pdf-generator"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface CartItem extends Medicine {
   quantity: number
@@ -14,6 +15,10 @@ interface CartItem extends Medicine {
 export function GeneralSalesCheckout() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.generalSales
+  const phCommonDict = dict.pages.pharmacy.common
+  const opdDict = dict.pages.pharmacy.opd
 
   // Parse cart data from URL params
   const cartJson = searchParams.get("cart")
@@ -36,10 +41,10 @@ export function GeneralSalesCheckout() {
   if (cart.length === 0) {
     return (
       <div className="w-full flex flex-col items-center justify-center min-h-[600px]">
-        <div className="text-gray-500 mb-4">No items to checkout</div>
+        <div className="text-gray-500 mb-4">{phCommonDict.cartEmpty}</div>
         <Button onClick={() => router.back()} variant="outline">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Shopping
+          {pDict.backToShopping}
         </Button>
       </div>
     )
@@ -65,13 +70,13 @@ export function GeneralSalesCheckout() {
   const prepareBillData = (): BillData => {
     const now = new Date()
     const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
-    
+
     return {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: 'Walk-in Customer',
-      customerPhone: 'N/A',
+      customerName: opdDict.checkout.walkInCustomer,
+      customerPhone: dict.common.noData,
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -84,7 +89,7 @@ export function GeneralSalesCheckout() {
       tax,
       discount: 0,
       total,
-      paymentMethod: 'Cash',
+      paymentMethod: opdDict.checkout.cash,
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: '123 Healthcare Street, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 123 4567',
@@ -97,12 +102,12 @@ export function GeneralSalesCheckout() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Order Review</h1>
-          <p className="text-gray-600 mt-1">Review and confirm your sale</p>
+          <h1 className="text-3xl font-bold">{pDict.orderReview}</h1>
+          <p className="text-gray-600 mt-1">{pDict.reviewAndConfirm}</p>
         </div>
         <Button onClick={() => router.back()} variant="outline">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {phCommonDict.cancel}
         </Button>
       </div>
 
@@ -111,7 +116,7 @@ export function GeneralSalesCheckout() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Order Items ({cart.length})</CardTitle>
+              <CardTitle>{pDict.orderItems.replace("{{count}}", cart.length.toString())}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -126,7 +131,7 @@ export function GeneralSalesCheckout() {
                         {item.type} {item.content && `• ${item.content}`}
                       </p>
                       <div className="text-sm text-gray-600 mt-2">
-                        Qty: <span className="font-medium">{item.quantity}</span> × $
+                        {phCommonDict.qty}: <span className="font-medium">{item.quantity}</span> × $
                         {item.selling_price.toFixed(2)} = ${(item.selling_price * item.quantity).toFixed(2)}
                       </div>
                     </div>
@@ -149,7 +154,7 @@ export function GeneralSalesCheckout() {
               onClick={handlePrint}
             >
               <Printer className="mr-2 h-4 w-4" />
-              Print Invoice
+              {pDict.printInvoice}
             </Button>
             <Button
               variant="outline"
@@ -157,7 +162,7 @@ export function GeneralSalesCheckout() {
               onClick={handleDownloadPDF}
             >
               <Download className="mr-2 h-4 w-4" />
-              Download PDF
+              {pDict.downloadPdfInvoice}
             </Button>
           </div>
         </div>
@@ -166,20 +171,20 @@ export function GeneralSalesCheckout() {
         <div className="lg:col-span-1">
           <Card className="sticky top-20">
             <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+              <CardTitle>{opdDict.checkout.summary}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
+                  <span className="text-gray-600">{phCommonDict.subtotal}</span>
                   <span className="font-medium">${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Tax (5%)</span>
+                  <span className="text-gray-600">{phCommonDict.tax}</span>
                   <span className="font-medium">${tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t-2 text-lg font-bold">
-                  <span>Total</span>
+                  <span>{opdDict.checkout.total}</span>
                   <span className="text-green-600">${total.toFixed(2)}</span>
                 </div>
               </div>
@@ -189,7 +194,7 @@ export function GeneralSalesCheckout() {
                 onClick={handleConfirmSale}
               >
                 <CheckCircle className="mr-2 h-5 w-5" />
-                Confirm Sale
+                {phCommonDict.confirmSale}
               </Button>
 
               <Button
@@ -198,7 +203,7 @@ export function GeneralSalesCheckout() {
                 onClick={() => router.back()}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Continue Shopping
+                {pDict.continueShopping}
               </Button>
             </CardContent>
           </Card>

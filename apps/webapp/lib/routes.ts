@@ -84,6 +84,7 @@ export const ROUTES = {
   PHARMACY_DRUG_INVENTORY: `${PHARMACY_BASE}/drug-inventory`,
   PHARMACY_EXPIRY_MANAGEMENT: `${PHARMACY_BASE}/expiry-management`,
   PHARMACY_APPROVALS: `${PHARMACY_BASE}/approvals`,
+  PHARMACY_ORDERS: `${PHARMACY_BASE}/orders`,
   PHARMACY_REPORTS: `${PHARMACY_BASE}/reports`,
 
   // HR Navigation helpers

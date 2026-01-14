@@ -6,12 +6,15 @@ import { Badge } from "@workspace/ui/components/badge"
 import { TrendingUp, TrendingDown, Package, AlertTriangle, FileText, Clock, Download, Loader2 } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
 import { useDashboard } from "../_hooks/useDashboard"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 // Color palette for medicines by sales pie chart
 const COLORS = ["#2196F3", "#4CAF50", "#FF9800", "#F44336", "#9C27B0", "#00BCD4", "#FF5722", "#009688"]
 
 export function PharmacyDashboard() {
   const { data: dashboardData, isLoading } = useDashboard()
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.dashboard
 
   if (isLoading) {
     return (
@@ -36,7 +39,7 @@ export function PharmacyDashboard() {
         <Card className="bg-white border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600">Total Stock Value</div>
+              <div className="text-sm text-gray-600">{pDict.kpis.totalStockValue}</div>
               <Package className="h-5 w-5 text-blue-500" />
             </div>
             <div className="text-2xl font-bold text-blue-600">{kpis?.totalStockValue?.value || "$0"}</div>
@@ -46,7 +49,7 @@ export function PharmacyDashboard() {
               ) : (
                 <TrendingDown className="h-3 w-3 mr-1" />
               )}
-              <span>{Math.abs(kpis?.totalStockValue?.growthPercentage || 0)}% {kpis?.totalStockValue?.trend === "up" ? "Increase" : "Decrease"} Vs last Month</span>
+              <span>{Math.abs(kpis?.totalStockValue?.growthPercentage || 0)}% {kpis?.totalStockValue?.trend === "up" ? pDict.kpis.trends.increase : pDict.kpis.trends.decrease} {pDict.kpis.trends.vsLastMonth}</span>
             </div>
           </CardContent>
         </Card>
@@ -55,7 +58,7 @@ export function PharmacyDashboard() {
         <Card className={`bg-white border-l-4 ${kpis?.itemsBelowMinLevel?.status === "urgent" ? "border-l-orange-500" : "border-l-green-500"}`}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600">Items Below Min Level</div>
+              <div className="text-sm text-gray-600">{pDict.kpis.itemsBelowMinLevel}</div>
               <AlertTriangle className={`h-5 w-5 ${kpis?.itemsBelowMinLevel?.status === "urgent" ? "text-orange-500" : "text-green-500"}`} />
             </div>
             <div className={`text-2xl font-bold ${kpis?.itemsBelowMinLevel?.status === "urgent" ? "text-orange-600" : "text-green-600"}`}>
@@ -71,7 +74,7 @@ export function PharmacyDashboard() {
         <Card className="bg-white border-l-4 border-l-green-500">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600">Pending OPDs</div>
+              <div className="text-sm text-gray-600">{pDict.kpis.pendingOPDs}</div>
               <FileText className="h-5 w-5 text-green-500" />
             </div>
             <div className="text-2xl font-bold text-green-600">{kpis?.pendingOPDs?.count || 0}</div>
@@ -83,7 +86,7 @@ export function PharmacyDashboard() {
         <Card className="bg-white border-l-4 border-l-red-500">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600">Expiring Soon</div>
+              <div className="text-sm text-gray-600">{pDict.kpis.expiringSoon}</div>
               <Clock className="h-5 w-5 text-red-500" />
             </div>
             <div className="text-2xl font-bold text-red-600">{kpis?.expiringSoon?.count || 0}</div>
@@ -98,7 +101,7 @@ export function PharmacyDashboard() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Top Selling Drugs (This Week)</CardTitle>
+              <CardTitle className="text-base">{pDict.charts.topSellingDrugs}</CardTitle>
             </CardHeader>
             <CardContent>
               {topSellingDrugs.length > 0 ? (
@@ -106,16 +109,16 @@ export function PharmacyDashboard() {
                   <BarChart data={topSellingDrugs}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="medicine_name" angle={-15} textAnchor="end" height={80} fontSize={11} />
-                    <YAxis yAxisId="left" orientation="left" stroke="#2196F3" label={{ value: 'Quantity Sold', angle: -90, position: 'insideLeft', fontSize: 11 }} />
-                    <YAxis yAxisId="right" orientation="right" stroke="#4CAF50" label={{ value: 'Sales Amount', angle: 90, position: 'insideRight', fontSize: 11 }} />
+                    <YAxis yAxisId="left" orientation="left" stroke="#2196F3" label={{ value: pDict.charts.quantitySold, angle: -90, position: 'insideLeft', fontSize: 11 }} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#4CAF50" label={{ value: pDict.charts.salesAmount, angle: 90, position: 'insideRight', fontSize: 11 }} />
                     <Tooltip />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar yAxisId="left" dataKey="quantity_sold" fill="#2196F3" name="Quantity Sold" />
-                    <Bar yAxisId="right" dataKey="sales_amount" fill="#4CAF50" name="Sales Amount" />
+                    <Bar yAxisId="left" dataKey="quantity_sold" fill="#2196F3" name={pDict.charts.quantitySold} />
+                    <Bar yAxisId="right" dataKey="sales_amount" fill="#4CAF50" name={pDict.charts.salesAmount} />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="h-80 flex items-center justify-center text-gray-500">No data available</div>
+                <div className="h-80 flex items-center justify-center text-gray-500">{dict.common.noData}</div>
               )}
             </CardContent>
           </Card>
@@ -124,7 +127,7 @@ export function PharmacyDashboard() {
         {/* Pie Chart */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Medicines by Sales</CardTitle>
+            <CardTitle className="text-base">{pDict.charts.medicinesBySales}</CardTitle>
           </CardHeader>
           <CardContent>
             {medicinesBySales.length > 0 ? (
@@ -158,7 +161,7 @@ export function PharmacyDashboard() {
                 </div>
               </>
             ) : (
-              <div className="h-80 flex items-center justify-center text-gray-500">No data available</div>
+              <div className="h-80 flex items-center justify-center text-gray-500">{dict.common.noData}</div>
             )}
           </CardContent>
         </Card>
@@ -167,11 +170,11 @@ export function PharmacyDashboard() {
       {/* Additional Section - Reserved for future details */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Additional Details</CardTitle>
+          <CardTitle className="text-base">{pDict.additionalDetails.title}</CardTitle>
         </CardHeader>
         <CardContent className="min-h-40 p-4">
           <div className="text-center text-gray-500">
-            <p>Additional details and information will be displayed here</p>
+            <p>{pDict.additionalDetails.placeholder}</p>
           </div>
         </CardContent>
       </Card>
