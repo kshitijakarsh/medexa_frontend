@@ -1,8 +1,7 @@
-"use client";
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 const SURGEON_TEAM_OPTIONS = [
   { value: "team_a", label: "Team A" },
@@ -35,59 +34,62 @@ const TECHNICIAN_OPTIONS = [
 ];
 
 const SurgicalTeamSection: React.FC = () => {
+  const dict = useDictionary();
+  const details = dict.pages.surgery.surgeryDetails.details;
+
   return (
     <Card className="shadow-none border-0">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-bold text-slate-800">Surgical Team</CardTitle>
+        <CardTitle className="text-base font-bold text-slate-800">{details.surgicalTeam}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <SelectField
-          label="Select Surgeon Team"
-          placeholder="Select Surgeon Team"
+          label={details.fields.surgeonTeam}
+          placeholder={details.placeholders.selectSurgeonTeam}
           options={SURGEON_TEAM_OPTIONS}
         />
 
         {/* Surgeon */}
         <SelectField
-          label="Surgeon"
-          placeholder="Select Surgeon"
+          label={details.fields.surgeon}
+          placeholder={details.placeholders.selectSurgeon}
           options={SURGEON_OPTIONS}
         />
 
         {/* Assistant Surgeons (with Add button) */}
         <SelectField
-          label="Assistant Surgeons"
-          placeholder="Select Assistant Surgeons"
+          label={details.fields.assistantSurgeons}
+          placeholder={details.placeholders.selectAssistantSurgeons}
           options={ASSISTANT_OPTIONS}
           showAddButton
         />
 
         {/* Anaesthetist (with Add button) */}
         <SelectField
-          label="Anaesthetist"
-          placeholder="Select Anaesthetist"
+          label={details.fields.anaesthetist}
+          placeholder={details.placeholders.selectAnaesthetist}
           options={ANAESTHETIST_OPTIONS}
           showAddButton
         />
 
         {/* Scrub Nurse (with Add button) */}
         <SelectField
-          label="Scrub Nurse"
-          placeholder="Select Scrub Nurse"
+          label={details.fields.scrubNurse}
+          placeholder={details.placeholders.selectScrubNurse}
           options={NURSE_OPTIONS}
           showAddButton
         />
 
         {/* Circulating Nurse */}
         <SelectField
-          label="Circulating Nurse"
-          placeholder="Select Circulating Nurse"
+          label={details.fields.circulatingNurse}
+          placeholder={details.placeholders.selectCirculatingNurse}
           options={NURSE_OPTIONS}
         />
 
         <SelectField
-          label="OT Technician"
-          placeholder="Select OT Technician"
+          label={details.fields.otTechnician}
+          placeholder={details.placeholders.selectOtTechnician}
           options={TECHNICIAN_OPTIONS}
         />
       </CardContent>

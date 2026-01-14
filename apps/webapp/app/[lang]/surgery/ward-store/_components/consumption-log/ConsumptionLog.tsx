@@ -20,116 +20,34 @@ export type ConsumptionLogItem = {
     note: string;
 };
 
-// --- Mock Data ---
-const CONSUMPTION_LOG_DATA: ConsumptionLogItem[] = [
-    {
-        id: "1",
-        date: "2024-12-03 14:30",
-        itemName: "Injection",
-        quantity: 1,
-        usageType: "Patient",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        note: "IV Cannula Insertion",
-    },
-    {
-        id: "2",
-        date: "2024-12-03 14:30",
-        itemName: "Sanitizer Use",
-        quantity: 100,
-        usageType: "Ward",
-        loggedBy: "Nurse Fatima",
-        note: "Nurse Hand Cleaning",
-    },
-    {
-        id: "3",
-        date: "2024-12-03 14:30",
-        itemName: "Injection",
-        quantity: 1,
-        usageType: "Ward",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        note: "IV Cannula Insertion",
-    },
-    {
-        id: "4",
-        date: "2024-12-03 14:30",
-        itemName: "Sanitizer Use",
-        quantity: 100,
-        usageType: "Ward",
-        loggedBy: "Nurse Fatima",
-        note: "Nurse Hand Cleaning",
-    },
-    {
-        id: "5",
-        date: "2024-12-03 14:30",
-        itemName: "Injection",
-        quantity: 1,
-        usageType: "Ward",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        note: "IV Cannula Insertion",
-    },
-    {
-        id: "6",
-        date: "2024-12-03 14:30",
-        itemName: "Injection",
-        quantity: 1,
-        usageType: "Ward",
-        patient: {
-            name: "Ganguli Rathod",
-            mrn: "1222",
-        },
-        loggedBy: "Nurse Fatima",
-        note: "IV Cannula Insertion",
-    },
-    {
-        id: "7",
-        date: "2024-12-03 14:30",
-        itemName: "Sanitizer Use",
-        quantity: 100,
-        usageType: "Ward",
-        loggedBy: "Nurse Fatima",
-        note: "Nurse Hand Cleaning",
-    },
-    {
-        id: "8",
-        date: "2024-12-03 14:30",
-        itemName: "Sanitizer Use",
-        quantity: 100,
-        usageType: "Ward",
-        loggedBy: "Nurse Fatima",
-        note: "Nurse Hand Cleaning",
-    },
-];
-
 import { ConsumptionLog as ConsumptionLogType } from "@/lib/api/surgery/ward";
+
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export const ConsumptionLog = ({
     data,
     isLoading,
+    onEdit,
+    onDelete,
 }: {
     data?: ConsumptionLogType[];
     isLoading: boolean;
+    onEdit?: (id: string) => void;
+    onDelete?: (id: string) => void;
 }) => {
+    const dict = useDictionary();
+    const wardStoreDict = dict.pages.surgery.wardStore;
+    const commonDict = dict.pages.surgery.common;
+
     // Map API data (snake_case) to table display format
     const tableData: ConsumptionLogItem[] = React.useMemo(() => {
         if (!data) return [];
         return data.map((log) => ({
             id: log.id,
-            date: log.date,
+            date: log.date || "-",
             itemName: log.item_name,
             quantity: log.quantity,
-            usageType: log.usage_type,
+            usageType: (log.usage_type.charAt(0).toUpperCase() + log.usage_type.slice(1)) as "Patient" | "Ward",
             patient: log.patient
                 ? {
                     name: `${log.patient.first_name} ${log.patient.last_name}`,
@@ -139,30 +57,30 @@ export const ConsumptionLog = ({
             loggedBy: log.logged_by
                 ? `${log.logged_by.first_name} ${log.logged_by.last_name}`
                 : "Unknown",
-            note: log.note || "-",
+            note: log.notes || "-",
         }));
     }, [data]);
 
     const columns = [
         {
             key: "date",
-            label: "Date",
+            label: dict.common.date,
         },
         {
             key: "itemName",
-            label: "Item Name",
+            label: wardStoreDict.columns.itemName,
         },
         {
             key: "quantity",
-            label: "Quantity",
+            label: dict.common.quantity,
         },
         {
             key: "usageType",
-            label: "Usage Type",
+            label: wardStoreDict.columns.usageType,
         },
         {
             key: "patient",
-            label: "Patient",
+            label: dict.table.patient,
             render: (row: ConsumptionLogItem) => {
                 if (row.patient) {
                     return (
@@ -177,34 +95,32 @@ export const ConsumptionLog = ({
         },
         {
             key: "loggedBy",
-            label: "Logged By",
+            label: dict.table.addedBy,
         },
         {
             key: "note",
-            label: "Note",
+            label: dict.common.note,
         },
         {
             key: "action",
-            label: "Action",
-            render: () => (
+            label: dict.table.action,
+            render: (row: ConsumptionLogItem) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: dict.common.view,
+
                     },
                     {
-                        label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: dict.common.edit,
+                        onClick: () => {
+                            if (onEdit) onEdit(row.id);
+                        }
                     },
                     {
-                        label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: dict.common.delete,
+                        onClick: () => {
+                            if (onDelete) onDelete(row.id);
+                        }
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             ),

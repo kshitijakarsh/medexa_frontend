@@ -1,160 +1,124 @@
 "use client";
 
 import React from "react";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Send } from "lucide-react";
-import { createSurgeryApiClient } from "@/lib/api/surgery/surgeries";
-import { MOCK_DATA } from "@/app/[lang]/surgery/_lib/constants";
+import { Surgery } from "@/lib/api/surgery/surgeries";
 import SurgeryFormSection from "./SurgeryFormSection";
 import SurgicalTeamSection from "./SurgicalTeamSection";
 import ClinicalSidebar from "./ClinicalSidebar";
 import { DetailSection } from "./DetailsSection";
 import { InfoField } from "@/app/[lang]/surgery/_components/common/InfoField";
 
+import { useDictionary } from "@/i18n/use-dictionary";
+
 interface SurgeryDetailsTabProps {
   isEditing: boolean;
   setIsEditing: (isEditing: boolean) => void;
+  surgeryId?: string;
   patientId?: string;
+  surgeryData?: Surgery | null;
 }
 
-export const SurgeryDetailsTab = ({ isEditing, setIsEditing, patientId }: SurgeryDetailsTabProps) => {
-  const { id } = useParams();
-  const surgeryApi = createSurgeryApiClient({});
-
-  const { data: response, isLoading } = useQuery({
-    queryKey: ["surgery-details", id],
-    queryFn: async () => {
-      if (!id || id === "new") return null;
-      const resp = await surgeryApi.getById(id as string);
-      return resp.data;
-    },
-    enabled: !!id && id !== "new",
-  });
-
-  const surgeryData = response?.data;
-
-  // Prepare clinical data (keeping MOCK_DATA for these as they aren't in the provided sample)
-  const clinicalData = {
-    problems: MOCK_DATA.activeProblems,
-    allergies: MOCK_DATA.allergies,
-    medications: MOCK_DATA.medications.map((m: any) => ({
-      id: String(m.slNo),
-      name: m.name,
-      detail: `${m.dose} - ${m.frequency}`,
-    })),
-  };
+export const SurgeryDetailsTab = ({ isEditing, setIsEditing, surgeryData }: SurgeryDetailsTabProps) => {
+  const dict = useDictionary();
+  const patientId = surgeryData?.patient_id;
 
   return (
-    <div className="flex flex-col gap-4">
-      {isEditing ? (
-        <div className="flex w-full gap-4">
-          <div className="flex-1 flex flex-col gap-4 min-w-0">
+    <div className="flex w-full gap-4">
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col gap-4 min-w-0">
+        {isEditing ? (
+          <>
             <SurgeryFormSection />
             <SurgicalTeamSection />
 
-            <div className="mt-auto flex w-full justify-end gap-3 pt-4">
+            <div className="flex w-full justify-end gap-3 pt-4">
               <button
                 className="px-6 py-2 border border-blue-500 rounded-lg text-sm"
                 onClick={() => setIsEditing(false)}
               >
-                CANCEL
+                {dict.pages.surgery.surgeryDetails.details.actions.cancel}
               </button>
               <button
-                className="flex gap-2 items-center px-4 py-2 rounded-lg bg-green-room text-white"
+                className="flex gap-2 items-center px-4 py-2 rounded-lg bg-green-500 text-white"
                 onClick={() => setIsEditing(false)}
               >
-                <Send size={18} /> Update Request
+                <Send size={18} /> {dict.pages.surgery.surgeryDetails.details.actions.updateRequest}
               </button>
             </div>
-          </div>
-
-          <div className="w-90 shrink-0">
-            <ClinicalSidebar
-              problems={clinicalData.problems}
-              allergies={clinicalData.allergies}
-              medications={clinicalData.medications}
-              patientId={patientId}
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-12 lg:col-span-8">
-            <DetailSection title="Schedule Surgery">
+          </>
+        ) : (
+          <>
+            <DetailSection title={dict.pages.surgery.surgeryDetails.details.title}>
               <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                 <InfoField
-                  label="Procedure"
-                  value={surgeryData?.procedure?.name || MOCK_DATA.surgery.procedure}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.procedure}
+                  value={surgeryData?.procedure?.name || "—"}
                 />
                 <InfoField
-                  label="Department"
-                  value={surgeryData?.department_id || MOCK_DATA.surgery.department}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.department}
+                  value={surgeryData?.department || "—"}
                 />
 
-                <InfoField label="Urgency" value={surgeryData?.urgency || MOCK_DATA.surgery.urgency} />
+                <InfoField label={dict.pages.surgery.surgeryDetails.details.fields.urgency} value={surgeryData?.urgency || "—"} />
                 <InfoField
-                  label="Estimated Duration (hours)"
-                  value={surgeryData?.duration?.toString() || MOCK_DATA.surgery.estimatedDuration}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.estimatedDuration}
+                  value={surgeryData?.duration?.toString() || "—"}
                 />
 
                 <InfoField
-                  label="Surgery Date"
-                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleDateString() : MOCK_DATA.surgery.date}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.surgeryDate}
+                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleDateString() : "—"}
                 />
                 <InfoField
-                  label="Surgery Time"
-                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : MOCK_DATA.surgery.time}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.surgeryTime}
+                  value={surgeryData?.date ? new Date(surgeryData.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "—"}
                 />
 
-                <InfoField label="OT Room" value={surgeryData?.ot_room_id || MOCK_DATA.surgery.otRoom} />
+                <InfoField label={dict.pages.surgery.surgeryDetails.details.fields.otRoom} value={surgeryData?.ot_room_id || "—"} />
               </div>
             </DetailSection>
 
-            <DetailSection title="Surgical Team">
+            <DetailSection title={dict.pages.surgery.surgeryDetails.details.surgicalTeam}>
               <div className="grid grid-cols-2 gap-y-2 gap-x-4">
                 <InfoField
-                  label="Select Surgeon Team"
-                  value={MOCK_DATA.team.teamName}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.surgeonTeam}
+                  value={"—"}
                 />
-                <InfoField label="Surgeon" value={surgeryData?.surgeon_id || MOCK_DATA.team.surgeon.name} />
+                <InfoField label={dict.pages.surgery.surgeryDetails.details.fields.surgeon} value={surgeryData?.doctor ? `${surgeryData.doctor.first_name} ${surgeryData.doctor.last_name}` : "—"} />
 
                 <InfoField
-                  label="Assistant Surgeons"
-                  value={surgeryData?.assistant_surgeon_id || MOCK_DATA.team.assistants.map((d) => d.name).join(", ")}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.assistantSurgeons}
+                  value={surgeryData?.assistant_surgeon_id || "—"}
                 />
                 <InfoField
-                  label="Anaesthetist"
-                  value={surgeryData?.anaesthetist_id || MOCK_DATA.team.anaesthetist.name}
-                />
-
-                <InfoField
-                  label="Scrub Nurse"
-                  value={surgeryData?.scrub_nurse_id || MOCK_DATA.team.scrubNurse}
-                />
-                <InfoField
-                  label="Circulating Nurse"
-                  value={surgeryData?.circulating_nurse_id || MOCK_DATA.team.circulatingNurse}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.anaesthetist}
+                  value={surgeryData?.anaesthetist_id || "—"}
                 />
 
                 <InfoField
-                  label="OT Technician"
-                  value={surgeryData?.ot_technician_id || MOCK_DATA.team.otTechnician}
+                  label={dict.pages.surgery.surgeryDetails.details.fields.scrubNurse}
+                  value={surgeryData?.scrub_nurse_id || "—"}
+                />
+                <InfoField
+                  label={dict.pages.surgery.surgeryDetails.details.fields.circulatingNurse}
+                  value={surgeryData?.circulating_nurse_id || "—"}
+                />
+
+                <InfoField
+                  label={dict.pages.surgery.surgeryDetails.details.fields.otTechnician}
+                  value={surgeryData?.ot_technician_id || "—"}
                 />
               </div>
             </DetailSection>
-          </div>
+          </>
+        )}
+      </div>
 
-          <div className="col-span-12 lg:col-span-4">
-            <ClinicalSidebar
-              problems={clinicalData.problems}
-              allergies={clinicalData.allergies}
-              medications={clinicalData.medications}
-              patientId={patientId}
-            />
-          </div>
-        </div>
-      )}
+      {/* Sidebar - fixed width, always visible */}
+      <div className="w-90 shrink-0">
+        <ClinicalSidebar patientId={patientId} />
+      </div>
     </div>
   );
 };

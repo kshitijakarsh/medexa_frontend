@@ -17,12 +17,52 @@ export interface ProcedureListResponse {
     data: Procedure[];
 }
 
+export interface SurgeryTemplate {
+    id: string;
+    name: string;
+    procedure_id?: string;
+    procedure?: {
+        id: string;
+        name: string;
+    };
+    lead_surgeon_id?: string;
+    lead_surgeon?: {
+        id: string;
+        name: string;
+        department?: string;
+    };
+    status?: string;
+    created_at?: string;
+    updated_at?: string;
+    createdBy?: {
+        id: string;
+        name: string;
+        department?: string;
+    };
+}
+
+export interface SurgeryTemplateListResponse {
+    success: boolean;
+    data: SurgeryTemplate[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+}
+
+export interface SurgeryTemplateResponse {
+    success: boolean;
+    data: SurgeryTemplate;
+}
+
 class SurgeryTemplateApiClient {
     private baseUrl: string;
     private authToken?: string;
 
     constructor(config: ApiConfig) {
-        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URI ?? "";
+        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URL_SET_2 ?? "";
         this.authToken = config.authToken;
     }
 
@@ -34,6 +74,32 @@ class SurgeryTemplateApiClient {
                 Authorization: token ? `Bearer ${token}` : "",
             },
         };
+    }
+
+    /* ---------------------------------------------------
+       GET: All Templates
+    --------------------------------------------------- */
+    async getTemplates(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+    }) {
+        const config = await this.getConfig();
+        return axios.get<SurgeryTemplateListResponse>(`${this.baseUrl}/api/v1/surgery-templates`, {
+            ...config,
+            params,
+        });
+    }
+
+    /* ---------------------------------------------------
+       POST: Create Template
+    --------------------------------------------------- */
+    async create(payload: Partial<SurgeryTemplate>) {
+        const config = await this.getConfig();
+        return axios.post<SurgeryTemplateResponse>(`${this.baseUrl}/api/v1/surgery-templates`, payload, {
+            ...config,
+        });
     }
 
     /* ---------------------------------------------------

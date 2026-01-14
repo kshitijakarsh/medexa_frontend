@@ -2,6 +2,8 @@
 
 import React from "react";
 import ChecklistSidebar from "../shared/ChecklistSidebar";
+import { useDictionary } from "@/i18n/use-dictionary";
+
 
 export type ItemStatus = "Completed" | "Ordered" | "Pending" | "Processing" | "Due" | "N/A";
 
@@ -34,6 +36,7 @@ export type AddOption = {
 };
 
 export type SectionConfig = {
+  id: string;
   title: string;
   count?: string;
   showChanged?: boolean;
@@ -44,6 +47,7 @@ export type SectionConfig = {
 
 export const INITIAL_SECTIONS: SectionConfig[] = [
   {
+    id: "procedures",
     title: "Procedures",
     showChanged: false,
     items: [
@@ -60,6 +64,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "investigations",
     title: "Required Investigations",
     showChanged: true,
     items: [
@@ -91,6 +96,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "clearances",
     title: "Medical Clearances",
     items: [
       { label: "Anaesthesia Clearance", status: "Pending", doctor: "Dr. Vinay" },
@@ -107,6 +113,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "consents",
     title: "Consents Required",
     items: [
       { label: "Surgical Consent", status: "Completed", subLabel: "Signed by patient & surgeon" },
@@ -121,6 +128,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "nursingOrders",
     title: "Nursing Orders (Pre-Op)",
     items: [
       { label: "NPO Status Check", status: "Completed", subLabel: "Confirmed NPO since 10 PM" },
@@ -135,6 +143,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "prep",
     title: "Patient Preparation Requirements",
     items: [
       { label: "Site Marking", status: "Completed", subLabel: "Marked by Dr. Vinay" },
@@ -149,6 +158,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "anesthesia",
     title: "Anaesthesia Requirements",
     items: [
       { label: "GA Machine Check", status: "Pending" },
@@ -163,6 +173,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "equipment",
     title: "Equipment & Instruments",
     items: [
       { label: "Laparoscopic Tower", subLabel: "Reserved for OR 2", status: "Ordered" },
@@ -177,6 +188,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "implants",
     title: "Implants & Consumables",
     items: [
       { label: "Prolene Mesh (15x15)", status: "Ordered", subLabel: "Size verification needed" },
@@ -191,6 +203,7 @@ export const INITIAL_SECTIONS: SectionConfig[] = [
     ],
   },
   {
+    id: "blood",
     title: "Blood & Resource Preparation",
     items: [
       { label: "Blood Grouping & Cross Matching", status: "Completed", subLabel: "O+ Confirmed" },
@@ -233,12 +246,48 @@ const MOCK_METRICS: PreOpMetric[] = [
   { title: "OT & Resource Readiness", completed: 6, total: 7 },
 ];
 
-export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void }) {
+
+export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit, surgeryId }: { isEditing?: boolean; onSaveDraft?: () => void; onEdit?: () => void; surgeryId?: string }) {
+  const dict = useDictionary();
   const [sectionsData, setSectionsData] = React.useState<SectionConfig[]>(INITIAL_SECTIONS);
 
+  // Map of title to dictionary key for localization
+  const titleMap: Record<string, string> = {
+    "Procedures": dict.pages.surgery.surgeryDetails.preOp.sections.procedures,
+    "Required Investigations": dict.pages.surgery.surgeryDetails.preOp.sections.investigations,
+    "Medical Clearances": dict.pages.surgery.surgeryDetails.preOp.sections.clearances,
+    "Consents Required": dict.pages.surgery.surgeryDetails.preOp.sections.consents,
+    "Nursing Orders (Pre-Op)": dict.pages.surgery.surgeryDetails.preOp.sections.nursingOrders,
+    "Patient Preparation Requirements": dict.pages.surgery.surgeryDetails.preOp.sections.prep,
+    "Anaesthesia Requirements": dict.pages.surgery.surgeryDetails.preOp.sections.anesthesia,
+    "Equipment & Instruments": dict.pages.surgery.surgeryDetails.preOp.sections.equipment,
+    "Implants & Consumables": dict.pages.surgery.surgeryDetails.preOp.sections.implants,
+    "Blood & Resource Preparation": dict.pages.surgery.surgeryDetails.preOp.sections.blood,
+  };
+
+  const addLabelMap: Record<string, string> = {
+    "Add Procedure": dict.pages.surgery.surgeryDetails.preOp.addLabels.procedure,
+    "Add Investigation": dict.pages.surgery.surgeryDetails.preOp.addLabels.investigation,
+    "Add Clearance": dict.pages.surgery.surgeryDetails.preOp.addLabels.clearance,
+    "Add Consent": dict.pages.surgery.surgeryDetails.preOp.addLabels.consent,
+    "Add Nursing Order": dict.pages.surgery.surgeryDetails.preOp.addLabels.nursingOrder,
+    "Add Prep Requirement": dict.pages.surgery.surgeryDetails.preOp.addLabels.prep,
+    "Add Anaesthesia Req": dict.pages.surgery.surgeryDetails.preOp.addLabels.anesthesia,
+    "Add Equipment": dict.pages.surgery.surgeryDetails.preOp.addLabels.equipment,
+    "Add Implant/Consumable": dict.pages.surgery.surgeryDetails.preOp.addLabels.implant,
+    "Add Blood/Resource": dict.pages.surgery.surgeryDetails.preOp.addLabels.blood,
+  };
+
+  // Localized sections for display
+  const localizedSections = sectionsData.map(section => ({
+    ...section,
+    title: titleMap[section.title] || section.title,
+    addLabel: addLabelMap[section.addLabel] || section.addLabel
+  }));
+
   // Calculate sidebar counts dynamically
-  const sidebarItems = sectionsData
-    .filter(section => section.title !== "Procedures")
+  const sidebarItems = localizedSections
+    .filter(section => section.title !== dict.pages.surgery.surgeryDetails.preOp.sections.procedures)
     .map(section => ({
       label: section.title,
       completedCount: section.items.filter(item => item.status === "Completed").length,
@@ -249,7 +298,7 @@ export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit }: { isE
   const totalPending = sidebarItems.reduce((acc, item) => acc + item.pendingCount, 0);
 
   const sidebarHeader = {
-    title: "All Pre-Op Checklist",
+    title: dict.pages.surgery.surgeryDetails.preOp.sidebar.title,
     completedCount: totalCompleted,
     pendingCount: totalPending
   };
@@ -263,13 +312,13 @@ export default function PreOpChecklist({ isEditing, onSaveDraft, onEdit }: { isE
       <div className="lg:col-span-3">
         {isEditing ? (
           <PreOpEditMode
-            sections={sectionsData}
+            sections={localizedSections}
             setSections={setSectionsData}
             onSaveDraft={onSaveDraft}
           />
         ) : (
           <PreOpViewMode
-            sectionsData={sectionsData}
+            sectionsData={localizedSections}
             setSectionsData={setSectionsData}
             onEdit={onEdit}
             metrics={MOCK_METRICS}

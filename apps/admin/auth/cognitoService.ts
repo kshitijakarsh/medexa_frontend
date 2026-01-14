@@ -22,8 +22,8 @@ export const loginUserCognito = (email: string, password: string) => {
 
         user.authenticateUser(authDetails, {
             onSuccess: (session: CognitoUserSession) => {
-                console.log("Access Token:", session.getAccessToken().getJwtToken());
-                console.log("Refresh Token:", session.getRefreshToken().getToken());
+                // console.log("Access Token:", session.getAccessToken().getJwtToken());
+                // console.log("Refresh Token:", session.getRefreshToken().getToken());
                 resolve({ success: true, message: "Login successful" });
             },
             onFailure: (err) => {

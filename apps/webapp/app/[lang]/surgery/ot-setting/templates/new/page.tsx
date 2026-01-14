@@ -1,33 +1,25 @@
-
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Trash2, Send } from "lucide-react";
 import { DynamicSection } from "@/app/[lang]/surgery/_components/common/DynamicSection";
 import { FormInput } from "@/components/ui/form-input";
 import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
-import { createSurgeryTemplateApiClient } from "@/lib/api/surgery/templates";
+import {
+    useSurgeryProcedures,
+    useSurgeryClearances,
+    useSurgeryConsents,
+    useCreateSurgeryTemplate
+} from "@/app/[lang]/surgery/_hooks/useSurgeryTemplate";
+import { useDictionary } from "@/i18n/use-dictionary";
+import { z } from "@workspace/ui/lib/zod";
+import { toast } from "@workspace/ui/lib/sonner";
 
-// --- Types ---
-interface Procedure {
-    id: string;
-    title: string;
-    details?: string;
-}
+const templateFormSchema = z.object({
+    templateName: z.string().min(1, "Template name is required"),
+});
 
-// --- Mock Data ---
-const MOCK_PROCEDURES = [
-    {
-        title: "ECG - 12 Lead",
-        details: "Impression: Normal sinus rhythm. No ST-T wave changes. No evidence of acute ischemia."
-    }
-];
-
-const MOCK_INVESTIGATIONS = [
-    { name: "CBC (Complete Blood Count)", badges: ["Laboratory Tests", "STAT"] }
-];
 
 const PendingActionItem = ({ title, details, onRemove }: { title: string, details?: string, onRemove: () => void }) => (
     <div className="rounded-lg border border-blue-200 p-2 flex items-center justify-between bg-blue-50/50">
@@ -48,41 +40,18 @@ const PendingActionItem = ({ title, details, onRemove }: { title: string, detail
 
 export default function CreateTemplatePage() {
     const router = useRouter();
+    const dict = useDictionary();
+    const templatesDict = dict.pages.surgery.otSetting.templates;
+    const createTemplateDict = templatesDict.createTemplate;
 
-    // API Client
-    const templatesApi = createSurgeryTemplateApiClient({});
-
-    // Fetch Procedures
-    const { data: proceduresData, isLoading: isLoadingProcedures } = useQuery({
-        queryKey: ["procedures"],
-        queryFn: async () => {
-            const response = await templatesApi.getProcedures({ limit: 100 });
-            return response.data.data;
-        }
-    });
+    // Hooks
+    const { data: proceduresData, isLoading: isLoadingProcedures } = useSurgeryProcedures();
+    const { data: clearancesData, isLoading: isLoadingClearances } = useSurgeryClearances();
+    const { data: consentsData, isLoading: isLoadingConsents } = useSurgeryConsents();
+    const createTemplateMutation = useCreateSurgeryTemplate();
 
     const procedureOptions = proceduresData?.map(p => p.title) || [];
-
-    // Fetch Clearances
-    const { data: clearancesData, isLoading: isLoadingClearances } = useQuery({
-        queryKey: ["clearances"],
-        queryFn: async () => {
-            const response = await templatesApi.getClearances({ limit: 100 });
-            return response.data.data;
-        }
-    });
-
     const clearanceOptions = clearancesData?.map(c => c.name) || [];
-
-    // Fetch Consents
-    const { data: consentsData, isLoading: isLoadingConsents } = useQuery({
-        queryKey: ["consents"],
-        queryFn: async () => {
-            const response = await templatesApi.getConsents({ limit: 100 });
-            return response.data.data;
-        }
-    });
-
     const consentOptions = consentsData?.map(c => c.name) || [];
 
     // State
@@ -91,16 +60,17 @@ export default function CreateTemplatePage() {
 
     // Sections State
     const [procedures, setProcedures] = useState<{ title: string; details?: string }[]>([]);
-    const [investigations, setInvestigations] = useState(MOCK_INVESTIGATIONS);
+    const [investigations, setInvestigations] = useState<string[]>([]);
     const [medicalClearances, setMedicalClearances] = useState<string[]>([]);
     const [consents, setConsents] = useState<string[]>([]);
-    const [nursingOrders, setNursingOrders] = useState(["Monitor vital signs every 2 hours", "Maintain strict intake & output chart", "Ensure consent forms are signed"]);
-    const [patientPrep, setPatientPrep] = useState(["NPO for 6 Hours", "DVT Prophylaxis - Stockings"]);
-    const [anesthesiaReq, setAnesthesiaReq] = useState(["General Anesthesia", "Endotracheal Intubation"]);
-    const [equipment, setEquipment] = useState(["Laparoscopic Tower", "Harmonic Scalpel"]);
-    const [implants, setImplants] = useState(["Clips for Cystic Duct/Artery", "Retrieval Bag"]);
-    const [bloodPrep, setBloodPrep] = useState(["Keep 2 units blood on standby", "Platelets on call"]);
+    const [nursingOrders, setNursingOrders] = useState<string[]>([]);
+    const [patientPrep, setPatientPrep] = useState<string[]>([]);
+    const [anesthesiaReq, setAnesthesiaReq] = useState<string[]>([]);
+    const [equipment, setEquipment] = useState<string[]>([]);
+    const [implants, setImplants] = useState<string[]>([]);
+    const [bloodPrep, setBloodPrep] = useState<string[]>([]);
 
+    const isPending = createTemplateMutation.isPending;
 
     // Generic handler for adding/removing
     const makeHandlers = (getter: any[], setter: any) => ({
@@ -126,23 +96,50 @@ export default function CreateTemplatePage() {
         setConsents([...consents, name]);
     };
 
+    const handleSave = async (isDraft: boolean) => {
+        const validationResult = templateFormSchema.safeParse({ templateName });
+
+        if (!validationResult.success) {
+            const firstIssue = validationResult.error.issues[0];
+            if (firstIssue) {
+                const errorMessages: Record<string, string> = {
+                    templateName: (createTemplateDict as any).notifications?.templateNameRequired || "Template name is required",
+                };
+                const fieldName = firstIssue.path[0] as string;
+                toast.error(errorMessages[fieldName] || firstIssue.message);
+            }
+            return;
+        }
+
+        try {
+            await createTemplateMutation.mutateAsync({
+                name: templateName,
+                status: isDraft ? 'inactive' : (isActive ? 'active' : 'inactive'),
+                // Extend the payload as per backend requirements
+            });
+            router.back();
+        } catch (error) {
+            console.error("Failed to save template:", error);
+        }
+    };
+
     return (
         <div className="min-h-screen">
             <div className="sticky top-0 z-10 px-6 py-4 flex items-center gap-2">
                 <button
                     onClick={() => router.back()}
-                    className="p-2 -ml-2 bg-blue-500 text-slate-500 transition-colors rounded-md"
+                    className="p-2 -ml-2 text-slate-500 transition-colors rounded-md"
                 >
-                    <ArrowLeft size={20} className="text-white" />
+                    <ArrowLeft size={20} className="text-slate-800" />
                 </button>
-                <h1 className="text-base font-medium tracking-tight">Create Template</h1>
+                <h1 className="text-base font-medium tracking-tight">{createTemplateDict.title}</h1>
             </div>
 
             <div className="w-full p-1 space-y-8">
 
                 <section className="rounded-xl border border-slate-200 bg-white overflow-hidden">
                     <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                        <h3 className="font-medium text-sm text-slate-800">Surgery Requirement</h3>
+                        <h3 className="font-medium text-sm text-slate-800">{createTemplateDict.sectionTitle}</h3>
                     </div>
 
                     <div className="p-4">
@@ -152,8 +149,8 @@ export default function CreateTemplatePage() {
                                     <div className="flex items-start gap-2">
                                         <div className="flex-1">
                                             <FormInput
-                                                label="Surgery Template Name"
-                                                placeholder="Select Template Name"
+                                                label={createTemplateDict.templateName}
+                                                placeholder={createTemplateDict.placeholders.templateName}
                                                 value={templateName}
                                                 onChange={(e) => setTemplateName(e.target.value)}
                                                 className="border-slate-200"
@@ -164,7 +161,7 @@ export default function CreateTemplatePage() {
                                             <StatusToggle
                                                 isActive={isActive}
                                                 onToggle={setIsActive}
-                                                label="Status"
+                                                label={createTemplateDict.status}
                                             />
                                         </div>
                                     </div>
@@ -176,11 +173,11 @@ export default function CreateTemplatePage() {
 
                 <div className="space-y-8">
                     <DynamicSection
-                        title="Procedures"
+                        title={createTemplateDict.sections.procedures}
                         items={procedures}
                         onAddItem={handleAddProcedure}
                         onRemoveItem={(index) => setProcedures(procedures.filter((_, i) => i !== index))}
-                        placeholder={isLoadingProcedures ? "Loading Procedures..." : "Select Procedure"}
+                        placeholder={isLoadingProcedures ? createTemplateDict.placeholders.loadingProcedures : createTemplateDict.placeholders.selectProcedure}
                         options={procedureOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
@@ -193,131 +190,130 @@ export default function CreateTemplatePage() {
                     />
 
                     <DynamicSection
-                        title="Required Investigations"
+                        title={createTemplateDict.sections.requiredInvestigations}
                         items={investigations}
                         {...makeHandlers(investigations, setInvestigations)}
-                        placeholder="Select Item Name"
+                        placeholder={createTemplateDict.placeholders.selectItemName}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.name}
-                                details={typeof item !== 'string' && item.badges ? item.badges.join(", ") : undefined}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Medical Clearances"
+                        title={createTemplateDict.sections.medicalClearances}
                         items={medicalClearances}
                         onAddItem={handleAddClearance}
                         onRemoveItem={(index) => setMedicalClearances(medicalClearances.filter((_, i) => i !== index))}
-                        placeholder={isLoadingClearances ? "Loading Clearances..." : "Add Medical Clearances"}
+                        placeholder={isLoadingClearances ? createTemplateDict.placeholders.loadingClearances : createTemplateDict.placeholders.addMedicalClearances}
                         options={clearanceOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Consents Required"
+                        title={createTemplateDict.sections.consentsRequired}
                         items={consents}
                         onAddItem={handleAddConsent}
                         onRemoveItem={(index) => setConsents(consents.filter((_, i) => i !== index))}
-                        placeholder={isLoadingConsents ? "Loading Consents..." : "Add Consents Required"}
+                        placeholder={isLoadingConsents ? createTemplateDict.placeholders.loadingConsents : createTemplateDict.placeholders.addConsentsRequired}
                         options={consentOptions}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Nursing Orders (Pre-Op)"
+                        title={createTemplateDict.sections.nursingOrders}
                         items={nursingOrders}
                         {...makeHandlers(nursingOrders, setNursingOrders)}
-                        placeholder="Add Consents Required"
+                        placeholder={createTemplateDict.placeholders.addConsentsRequired}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Patient Preparation Requirements"
+                        title={createTemplateDict.sections.patientPreparation}
                         items={patientPrep}
                         {...makeHandlers(patientPrep, setPatientPrep)}
-                        placeholder="Add Preparation Requirements"
+                        placeholder={createTemplateDict.placeholders.addPreparationRequirements}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Anesthesia Requirements"
+                        title={createTemplateDict.sections.anesthesiaRequirements}
                         items={anesthesiaReq}
                         {...makeHandlers(anesthesiaReq, setAnesthesiaReq)}
-                        placeholder="Add Anesthesia Requirements"
+                        placeholder={createTemplateDict.placeholders.addAnesthesiaRequirements}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Equipment & Instruments"
+                        title={createTemplateDict.sections.equipmentInstruments}
                         items={equipment}
                         {...makeHandlers(equipment, setEquipment)}
-                        placeholder="Add Equipment & Instruments"
+                        placeholder={createTemplateDict.placeholders.addEquipmentInstruments}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Implants & Consumables"
+                        title={createTemplateDict.sections.implantsConsumables}
                         items={implants}
                         {...makeHandlers(implants, setImplants)}
-                        placeholder="Add Equipment & Instruments"
+                        placeholder={createTemplateDict.placeholders.addEquipmentInstruments}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
                     />
 
                     <DynamicSection
-                        title="Blood & Resource Preparation"
+                        title={createTemplateDict.sections.bloodResourcePreparation}
                         items={bloodPrep}
                         {...makeHandlers(bloodPrep, setBloodPrep)}
-                        placeholder="Add Blood & Resource Preparation"
+                        placeholder={createTemplateDict.placeholders.addBloodResourcePreparation}
                         renderItem={(item, index, onRemove) => (
                             <PendingActionItem
                                 key={index}
-                                title={typeof item === 'string' ? item : item.title || item}
+                                title={item}
                                 onRemove={onRemove}
                             />
                         )}
@@ -328,11 +324,19 @@ export default function CreateTemplatePage() {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-                <button className="px-6 py-2 border border-blue-500 text-blue-500 font-medium rounded-lg text-sm bg-white hover:bg-blue-50">
-                    SAVE AS DRAFT
+                <button
+                    disabled={isPending}
+                    onClick={() => handleSave(true)}
+                    className="px-6 py-2 border border-blue-500 text-blue-500 font-medium rounded-lg text-sm bg-white hover:bg-blue-50 disabled:opacity-50"
+                >
+                    {isPending ? createTemplateDict.actions.saving : createTemplateDict.actions.saveAsDraft}
                 </button>
-                <button className="flex gap-2 items-center px-4 py-2 rounded-lg bg-[#50C786] text-white font-medium text-sm hover:bg-emerald-600">
-                    <Send size={16} /> COMPLETE & SIGN
+                <button
+                    disabled={isPending}
+                    onClick={() => handleSave(false)}
+                    className="flex gap-2 items-center px-4 py-2 rounded-lg bg-[#50C786] text-white font-medium text-sm hover:bg-emerald-600 disabled:opacity-50"
+                >
+                    {isPending ? createTemplateDict.actions.saving : <><Send size={16} /> {createTemplateDict.actions.completeAndSign}</>}
                 </button>
             </div>
         </div>

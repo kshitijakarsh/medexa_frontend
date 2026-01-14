@@ -2,11 +2,14 @@
 
 import { useEffect, useState, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { PaginationControls } from "@/components/common/data-table/PaginationControls";
+import { useDictionary } from "@/i18n/use-dictionary";
 import ActionMenu from "@/components/common/action-menu";
-import { createSurgeryTeamApiClient, SurgeryTeam } from "@/lib/api/surgery/teams";
+import { useSurgeryTeams, useDeleteSurgeryTeam } from "@/app/[lang]/surgery/_hooks/useSurgeryTeam";
+import { SurgeryTeam } from "@/lib/api/surgery/teams";
+import { ConfirmDialog } from "@/components/common/confirm-dialog";
+import { toast } from "@workspace/ui/lib/sonner";
 import {
     Calendar,
     BriefcaseMedical,
@@ -55,6 +58,7 @@ function TeamsListContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { lang } = useParams();
+    const dict = useDictionary();
 
     const initialPage = parseInt(searchParams.get("page") || "1");
     const [page, setPage] = useState(initialPage);
@@ -75,9 +79,6 @@ function TeamsListContent() {
     const [selectedDoctor, setSelectedDoctor] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
 
-    /* API Client */
-    const teamsApi = createSurgeryTeamApiClient({});
-
     /* Update URL on page change */
     useEffect(() => {
         const params = new URLSearchParams();
@@ -85,20 +86,34 @@ function TeamsListContent() {
         router.replace(`?${params.toString()}`);
     }, [page, router]);
 
+    // Deletion
+    const deleteTeamMutation = useDeleteSurgeryTeam();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [teamToDelete, setTeamToDelete] = useState<{ id: string; name: string } | null>(null);
+
+    const handleDeleteConfirmed = () => {
+        if (!teamToDelete) return;
+
+        deleteTeamMutation.mutate(teamToDelete.id, {
+            onSuccess: () => {
+                toast.success(dict.toast.deleted);
+                setDeleteDialogOpen(false);
+                setTeamToDelete(null);
+            },
+            onError: (error: any) => {
+                toast.error(error?.response?.data?.message || error?.message || dict.toast.failed);
+            }
+        });
+    };
+
     const {
         data: teamsData,
         isLoading,
         error: teamsError,
-    } = useQuery({
-        queryKey: ["surgery-teams", searchQuery, selectedStatus, selectedDept],
-        queryFn: async () => {
-            const response = await teamsApi.getAll({
-                search: searchQuery.length >= 2 ? searchQuery : undefined,
-                status: selectedStatus || undefined,
-            });
-            console.log("API Response:", response.data);
-            return response.data;
-        },
+        refetch,
+    } = useSurgeryTeams({
+        search: searchQuery.length >= 2 ? searchQuery : undefined,
+        status: selectedStatus || undefined,
     });
 
     const extractTeams = () => {
@@ -146,19 +161,19 @@ function TeamsListContent() {
     }));
 
     const searchOptions = [
-        { label: "MRN", value: "mrn" },
-        { label: "Name", value: "name" },
-        { label: "Team", value: "team" },
+        { label: dict.pages.surgery.otSetting.teams.searchLabels.mrn, value: "mrn" },
+        { label: dict.pages.surgery.otSetting.teams.searchLabels.name, value: "name" },
+        { label: dict.pages.surgery.otSetting.teams.searchLabels.team, value: "team" },
     ];
 
     const columns: Column<TeamTableRow>[] = [
         {
             key: "teamName",
-            label: "Team Name",
+            label: dict.pages.surgery.otSetting.teams.columns.teamName,
         },
         {
             key: "leadSurgeon",
-            label: "Lead Surgeon",
+            label: dict.pages.surgery.otSetting.teams.columns.leadSurgeon,
             render: (row) => (
                 <div className="flex items-center gap-2">
                     <div className="flex flex-col">
@@ -174,7 +189,7 @@ function TeamsListContent() {
         },
         {
             key: "membersCount",
-            label: "Members Count",
+            label: dict.pages.surgery.otSetting.teams.columns.membersCount,
             render: (row) => (
                 <div className="flex items-center gap-1">
                     <span>{row.membersCount}</span>
@@ -183,11 +198,11 @@ function TeamsListContent() {
         },
         {
             key: "speciality",
-            label: "Speciality",
+            label: dict.pages.surgery.otSetting.teams.columns.speciality,
         },
         {
             key: "createdOn",
-            label: "Created On",
+            label: dict.pages.surgery.otSetting.teams.columns.createdOn,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm text-slate-700">{row.createdOn}</span>
@@ -196,7 +211,7 @@ function TeamsListContent() {
         },
         {
             key: "createdBy",
-            label: "Created By",
+            label: dict.pages.surgery.otSetting.teams.columns.createdBy,
             render: (row) => (
                 <div className="flex flex-col">
                     <span className="text-sm font-medium text-slate-700">
@@ -210,7 +225,7 @@ function TeamsListContent() {
         },
         {
             key: "status",
-            label: "Status",
+            label: dict.pages.surgery.otSetting.teams.columns.status,
             render: (row) => (
                 <span
                     className={`
@@ -220,32 +235,34 @@ function TeamsListContent() {
                   font-medium
                 `}
                 >
-                    {row.status}
+                    {row.status === 'Active' ? dict.pages.surgery.common.status.active : dict.pages.surgery.common.status.inactive}
                 </span>
             )
         },
         {
             key: "actions",
-            label: "Action",
+            label: dict.table.action,
             render: (row) => (
                 <ActionMenu actions={[
                     {
-                        label: "View",
+                        label: dict.common.view,
                         onClick: () => {
                             router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
                         }
                     },
                     {
-                        label: "Edit",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: dict.common.edit,
+                        onClick: () => {
+                            router.push(`/${lang}/surgery/ot-setting/teams/new?id=${row.id}`);
+                        }
                     },
                     {
-                        label: "Delete",
-                        // onClick: () => {
-                        //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-                        // }
+                        label: dict.common.delete,
+                        onClick: () => {
+                            setTeamToDelete({ id: row.id.toString(), name: row.teamName });
+                            setDeleteDialogOpen(true);
+                        },
+                        variant: "danger"
                     }
                 ]} className="bg-transparent hover:bg-transparent text-blue-500" />
             )
@@ -262,27 +279,27 @@ function TeamsListContent() {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
                         <DateRangeDropdown
-                            label="Date Range"
+                            label={dict.pages.surgery.otSchedule.dateRange}
                             value={dateRange}
                             onSelect={setDateRange}
                         />
                         <FilterDropdown
                             icon={<BriefcaseMedical size={16} />}
-                            label="Department"
+                            label={dict.pages.surgery.common.department}
                             options={departments.length > 0 ? departments : ["No Departments"]}
                             value={selectedDept}
                             onSelect={setSelectedDept}
                         />
                         <FilterDropdown
                             icon={<Stethoscope size={16} />}
-                            label="Doctor"
+                            label={dict.pages.surgery.common.doctor}
                             options={doctors.length > 0 ? doctors : ["No Doctors"]}
                             value={selectedDoctor}
                             onSelect={setSelectedDoctor}
                         />
                         <FilterDropdown
                             icon={<Ellipsis size={16} />}
-                            label="Status"
+                            label={dict.common.status}
                             options={["Active", "Inactive"]}
                             value={selectedStatus}
                             onSelect={setSelectedStatus}
@@ -307,7 +324,7 @@ function TeamsListContent() {
             <div className="flex items-center justify-between gap-4 my-2">
                 {/* LEFT */}
                 <div className="flex shrink-0 items-center gap-3">
-                    <FilterButton onClick={() => { }} className="bg-blue-500 text-white hover:none" />
+                    <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
                 </div>
 
                 {/* RIGHT */}
@@ -372,6 +389,20 @@ function TeamsListContent() {
                     }
                 />
             )}
+
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                title={dict.common.delete}
+                description={`Are you sure you want to delete the team "${teamToDelete?.name}"?`}
+                confirmText={dict.common.delete}
+                cancelText={dict.common.cancel}
+                loading={deleteTeamMutation.isPending}
+                onConfirm={handleDeleteConfirmed}
+                onClose={() => {
+                    setDeleteDialogOpen(false);
+                    setTeamToDelete(null);
+                }}
+            />
         </div>
     );
 }

@@ -177,6 +177,7 @@ export function TopEmployeeInfo({ form, authToken }: TopEmployeeInfoProps) {
                     onChange={field.onChange}
                     options={userOptions}
                     disabled={isLoadingUsers}
+                    preventEmptyChange
                   />
                 </FormControl>
                 <FormMessage />
@@ -198,6 +199,7 @@ export function TopEmployeeInfo({ form, authToken }: TopEmployeeInfoProps) {
                     onChange={field.onChange}
                     options={departmentOptions}
                     disabled={isLoadingDepartments}
+                    preventEmptyChange
                   />
                 </FormControl>
                 <FormMessage />
@@ -221,6 +223,7 @@ export function TopEmployeeInfo({ form, authToken }: TopEmployeeInfoProps) {
                     onChange={field.onChange}
                     options={designationOptions}
                     disabled={isLoadingDesignations}
+                    preventEmptyChange
                   />
                 </FormControl>
                 <FormMessage />
@@ -244,6 +247,7 @@ export function TopEmployeeInfo({ form, authToken }: TopEmployeeInfoProps) {
                     onChange={field.onChange}
                     options={specialisationOptions}
                     disabled={isLoadingSpecialisations}
+                    preventEmptyChange
                   />
                 </FormControl>
                 <FormMessage />

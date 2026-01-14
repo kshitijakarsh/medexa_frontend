@@ -1,7 +1,7 @@
 "use client"
 
-import { Switch } from "@workspace/ui/components/switch"
 import { cn } from "@workspace/ui/lib/utils"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface StatusToggleProps {
     isActive: boolean
@@ -18,6 +18,9 @@ export const StatusToggle = ({
     variant = "status",
     className,
 }: StatusToggleProps) => {
+    const dict = useDictionary();
+    const statusDict = dict.pages.surgery.common.status;
+
     if (variant === "simple") {
         return (
             <div className={cn("flex items-center gap-3", className)}>
@@ -55,7 +58,7 @@ export const StatusToggle = ({
                     "text-sm font-medium transition-colors",
                     !isActive ? "text-red-500" : "text-red-300/70"
                 )}>
-                    Inactive
+                    {statusDict.inactive}
                 </span>
 
                 <button
@@ -79,7 +82,7 @@ export const StatusToggle = ({
                     "text-sm font-medium transition-colors",
                     isActive ? "text-emerald-500" : "text-emerald-300/70"
                 )}>
-                    Active
+                    {statusDict.active}
                 </span>
             </div>
         </div>

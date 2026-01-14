@@ -5,6 +5,7 @@ import { Badge } from "@workspace/ui/components/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select";
 import NewButton from "@/components/common/new-button";
 import { Trash2 } from "lucide-react";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 export interface DynamicSectionProps {
     title: string;
@@ -26,6 +27,8 @@ export const DynamicSection = ({
     options = [],
     viewOnly = false,
 }: DynamicSectionProps & { viewOnly?: boolean }) => {
+    const dict = useDictionary();
+    const common = dict.pages.surgery.common;
     const [inputValue, setInputValue] = useState("");
 
     const handleAdd = () => {
@@ -44,7 +47,7 @@ export const DynamicSection = ({
                     variant="secondary"
                     className="bg-blue-50 text-blue-600 text-[10px] px-1.5 py-0 h-5"
                 >
-                    {items.length} Items
+                    {items.length} {common.dynamicSection.items}
                 </Badge>
             </div>
 
@@ -100,13 +103,13 @@ export const DynamicSection = ({
                                         ))
                                     ) : (
                                         <SelectItem value="none" disabled>
-                                            No options available
+                                            {common.dynamicSection.noOptions}
                                         </SelectItem>
                                     )}
                                 </SelectContent>
                             </Select>
                         </div>
-                        <NewButton handleClick={handleAdd} name="Add" />
+                        <NewButton handleClick={handleAdd} name={dict.common.add} />
                     </div>
                 )}
             </div>

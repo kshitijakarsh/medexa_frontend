@@ -8,8 +8,9 @@ interface ApiConfig {
 
 export interface EquipmentUsageLog {
     id: string;
-    equipment_name: string;
+    item_name: string;
     asset_id: string;
+    condition_before_use?: string;
     patient_id?: string;
     patient?: {
         id: string;
@@ -32,10 +33,10 @@ export interface EquipmentUsageLog {
 
 export interface ConsumptionLog {
     id: string;
-    date: string;
+    date?: string;
     item_name: string;
     quantity: number;
-    usage_type: "Patient" | "Ward";
+    usage_type: "patient" | "ward";
     patient_id?: string;
     patient?: {
         id: string;
@@ -43,13 +44,71 @@ export interface ConsumptionLog {
         last_name: string;
         mrn?: string;
     };
-    logged_by_id?: string;
     logged_by?: {
         id: string;
         first_name: string;
         last_name: string;
     };
-    note?: string;
+    reason: string;
+    notes: string;
+}
+
+export interface ConsumptionLogListResponse {
+    success: boolean;
+    data: ConsumptionLog[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+}
+
+export interface ConsumptionLogDetailResponse {
+    success: boolean;
+    data: ConsumptionLog & {
+        created_at: string;
+        updated_at: string;
+        created_by: string;
+        updated_by: string;
+        createdBy: {
+            id: string;
+            name: string;
+        };
+        updatedBy: {
+            id: string;
+            name: string;
+        };
+    };
+}
+
+export interface EquipmentUsageLogListResponse {
+    success: boolean;
+    data: EquipmentUsageLog[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+}
+
+export interface EquipmentUsageLogDetailResponse {
+    success: boolean;
+    data: EquipmentUsageLog & {
+        created_at: string;
+        updated_at: string;
+        created_by: string;
+        updated_by: string;
+        createdBy?: {
+            id: string;
+            name: string;
+        };
+        updatedBy?: {
+            id: string;
+            name: string;
+        };
+    };
 }
 
 export interface WardType {
@@ -63,29 +122,84 @@ export interface WardTypeListResponse {
     data: WardType[];
 }
 
-export interface EquipmentUsageLogListResponse {
+export interface Ward {
+    id: string;
+    name: string;
+    description?: string;
+    code?: string;
+    status?: string;
+}
+
+export interface WardListResponse {
     success: boolean;
-    data: EquipmentUsageLog[];
+    data: Ward[];
+}
+
+export interface CreateConsumptionLogParams {
+    usage_type: "patient" | "ward";
+    patient_id?: string;
+    item_name: string;
+    reason: string;
+    quantity: number;
+    notes?: string;
+}
+
+export interface CreateEquipmentUsageLogParams {
+    item_name: string;
+    asset_id: string;
+    condition_before_use: string;
+    start_time: string;
+    end_time?: string;
+    notes?: string;
+    patient_id?: string;
+}
+
+export interface WardStock {
+    id: string;
+    item_name: string;
+    category: "Consumables" | "Equipment";
+    current_qty: number;
+    min_qty: number;
+    store: string;
+    expiry: string;
+    status: "Available" | "Low Stock" | "Out Of Stock";
+}
+
+export interface WardStockListResponse {
+    success: boolean;
+    data: WardStock[];
     pagination?: {
         page: number;
         limit: number;
         total: number;
         totalPages: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
     };
 }
 
-export interface ConsumptionLogListResponse {
+export interface StockRequest {
+    id: string;
+    request_id: string;
+    item_name: string;
+    quantity: number;
+    requested_date: string;
+    requested_by_id?: string;
+    requested_by?: {
+        id: string;
+        first_name: string;
+        last_name: string;
+    };
+    status: "Issued" | "Pending" | "Approved" | "Rejected" | "Partially Approved";
+    store_remarks?: string;
+}
+
+export interface StockRequestListResponse {
     success: boolean;
-    data: ConsumptionLog[];
+    data: StockRequest[];
     pagination?: {
         page: number;
         limit: number;
         total: number;
         totalPages: number;
-        hasNextPage: boolean;
-        hasPrevPage: boolean;
     };
 }
 
@@ -118,10 +232,15 @@ class WardApiClient {
         status?: string;
     }) {
         const config = await this.getConfig();
-        return axios.get(`${this.baseUrl}/api/v1/equipment-usage-logs`, {
+        return axios.get<EquipmentUsageLogListResponse>(`${this.baseUrl}/api/v1/equipment-usage-logs`, {
             ...config,
             params,
         });
+    }
+
+    async getEquipmentUsageLog(id: string) {
+        const config = await this.getConfig();
+        return axios.get<EquipmentUsageLogDetailResponse>(`${this.baseUrl}/api/v1/equipment-usage-logs/${id}`, config);
     }
 
     /* ---------------------------------------------------
@@ -134,18 +253,88 @@ class WardApiClient {
         usage_type?: string;
     }) {
         const config = await this.getConfig();
-        return axios.get(`${this.baseUrl}/api/v1/consumption-logs`, {
+        return axios.get<ConsumptionLogListResponse>(`${this.baseUrl}/api/v1/consumption-logs`, {
+            ...config,
+            params,
+        });
+    }
+
+    async getConsumptionLog(id: string) {
+        const config = await this.getConfig();
+        return axios.get<ConsumptionLogDetailResponse>(`${this.baseUrl}/api/v1/consumption-logs/${id}`, config);
+    }
+
+    /* ---------------------------------------------------
+       GET: Ward Stock
+    --------------------------------------------------- */
+    async getWardStock(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        category?: string;
+    }) {
+        const config = await this.getConfig();
+        return axios.get<WardStockListResponse>(`${this.baseUrl}/api/v1/ward-stock`, {
             ...config,
             params,
         });
     }
 
     /* ---------------------------------------------------
-       GET: All Ward Types
+       GET: All Stock Requests
     --------------------------------------------------- */
-    async getWardTypes() {
+    async getStockRequests(params?: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: string;
+    }) {
         const config = await this.getConfig();
-        return axios.get(`${this.baseUrl}/api/v1/ward-types`, {
+        return axios.get<StockRequestListResponse>(`${this.baseUrl}/api/v1/stock-requests`, {
+            ...config,
+            params,
+        });
+    }
+
+    /* ---------------------------------------------------
+       POST: Create Consumption Log
+    --------------------------------------------------- */
+    async createConsumptionLog(payload: CreateConsumptionLogParams) {
+        const config = await this.getConfig();
+        return axios.post(`${this.baseUrl}/api/v1/consumption-logs`, payload, config);
+    }
+
+    async updateConsumptionLog(id: string, payload: Partial<CreateConsumptionLogParams>) {
+        const config = await this.getConfig();
+        return axios.put(`${this.baseUrl}/api/v1/consumption-logs/${id}`, payload, config);
+    }
+
+    async deleteConsumptionLog(id: string) {
+        const config = await this.getConfig();
+        return axios.delete(`${this.baseUrl}/api/v1/consumption-logs/${id}`, config);
+    }
+
+    async createEquipmentUsageLog(payload: CreateEquipmentUsageLogParams) {
+        const config = await this.getConfig();
+        return axios.post(`${this.baseUrl}/api/v1/equipment-usage-logs`, payload, config);
+    }
+
+    async updateEquipmentUsageLog(id: string, payload: Partial<CreateEquipmentUsageLogParams>) {
+        const config = await this.getConfig();
+        return axios.put(`${this.baseUrl}/api/v1/equipment-usage-logs/${id}`, payload, config);
+    }
+
+    async deleteEquipmentUsageLog(id: string) {
+        const config = await this.getConfig();
+        return axios.delete(`${this.baseUrl}/api/v1/equipment-usage-logs/${id}`, config);
+    }
+
+    /* ---------------------------------------------------
+       GET: All Wards
+    --------------------------------------------------- */
+    async getWards() {
+        const config = await this.getConfig();
+        return axios.get<WardListResponse>(`${this.baseUrl}/api/v1/wards`, {
             ...config,
         });
     }

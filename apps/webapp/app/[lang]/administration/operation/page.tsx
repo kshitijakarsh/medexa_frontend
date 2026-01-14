@@ -218,7 +218,8 @@ import FilterButton from "@/components/common/filter-button";
 import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
 import { useUserStore } from "@/store/useUserStore";
 import { PERMISSIONS } from "@/app/utils/permissions";
-import { useDictionary } from "@/i18n/use-dictionary";  
+import { useDictionary } from "@/i18n/use-dictionary";
+import { useProcedures, useDeleteProcedure } from "@/app/[lang]/administration/_hooks/useOperation";
 
 function getOperationTabs(trans: any) {
   return [
@@ -272,14 +273,36 @@ export default function OperationManagementPage() {
 
 
 
+  const { data: proceduresData, isLoading: isProceduresLoading } = useProcedures({
+    search: activeTab === "operationCategory" ? search : undefined,
+  });
+
+  const deleteProcedure = useDeleteProcedure();
+
   useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setData(getMockOperations(activeTab));
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+    if (activeTab === "operation") {
+      setLoading(true);
+      const timer = setTimeout(() => {
+        setData(getMockOperations(activeTab));
+        setLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      if (proceduresData?.data) {
+        const formattedData = proceduresData.data.map((item: any, index: number) => ({
+          sno: index + 1,
+          id: item.id,
+          name: item.name,
+          code: item.code,
+          surgery_type: item.surgery_type,
+          standard_charge: item.standard_charge,
+          status: item.status,
+        }));
+        setData(formattedData);
+      }
+      setLoading(isProceduresLoading);
+    }
+  }, [activeTab, proceduresData, isProceduresLoading]);
 
   const handleSave = (values: any) => {
     const newEntry =
@@ -331,22 +354,29 @@ export default function OperationManagementPage() {
 
     return [
       { key: "sno", label: trans.table.sno, render: (r: any) => r.sno },
-      { key: "category", label: trans.table.category, render: (r: any) => r.category },
-      { key: "createdOn", label: trans.table.createdOn, render: (r: any) => r.createdOn },
-      { key: "addedBy", label: trans.table.addedBy, render: (r: any) => r.addedBy },
+      { key: "name", label: "Procedure Name", render: (r: any) => r.name },
+      { key: "code", label: "Code", render: (r: any) => r.code },
+      { key: "surgery_type", label: "Surgery Type", render: (r: any) => r.surgery_type },
+      { key: "standard_charge", label: "Charge", render: (r: any) => r.standard_charge },
       {
         key: "status",
         label: trans.table.status,
-        render: (r: any) => <span className="text-green-600">{r.status}</span>,
+        render: (r: any) => (
+          <span className={r.status === "active" ? "text-green-600" : "text-red-600"}>
+            {r.status === "active" ? "Active" : "Inactive"}
+          </span>
+        ),
       },
       {
         key: "action",
         label: trans.table.action,
         render: (r: any) => (
           <OperationRowActionMenu
-            onEdit={() => console.log("Edit", r.category)}
+            onEdit={() => console.log("Edit", r.name)}
             onView={() => { }}
-            onDelete={() => console.log("Delete", r.category)}
+            onDelete={() => {
+                deleteProcedure.mutate(r.id);
+            }}
             userPermissions={userPermissions}
             mode={activeTab}
           />

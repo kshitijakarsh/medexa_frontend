@@ -9,108 +9,102 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { SelectField } from "@/app/[lang]/surgery/_components/common/SelectField";
 import { Button } from "@workspace/ui/components/button";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // Options for select fields
-const PROCEDURE_OPTIONS = [
-    { value: "lap_chole", label: "Laparoscopic Cholecystectomy" },
-    { value: "open_chole", label: "Open Cholecystectomy" },
-    { value: "appendectomy", label: "Appendectomy" },
-    { value: "hernia_repair", label: "Hernia Repair" },
-];
-
-const SITE_OPTIONS = [
-    { value: "left", label: "Left" },
-    { value: "right", label: "Right" },
-    { value: "bilateral", label: "Bilateral" },
-    { value: "midline", label: "Midline" },
-    { value: "na", label: "Not Applicable" },
-];
-
-const APPROACH_OPTIONS = [
-    { value: "laparoscopic", label: "Laparoscopic" },
-    { value: "open", label: "Open" },
-    { value: "robotic", label: "Robotic" },
-    { value: "endoscopic", label: "Endoscopic" },
-    { value: "converted", label: "Converted to Open" },
-];
-
-const BLOOD_LOSS_OPTIONS = [
-    { value: "<50", label: "<50 ml" },
-    { value: "50-100", label: "50–100 ml" },
-    { value: "100-300", label: "100–300 ml" },
-    { value: ">300", label: ">300 ml" },
-];
-
-const BLOOD_UNITS_OPTIONS = [
-    { value: "0", label: "0" },
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-];
-
-const IMPLANT_TYPE_OPTIONS = [
-    { value: "hernia_mesh", label: "Hernia Mesh" },
-    { value: "ortho_plate", label: "Orthopedic Plate" },
-    { value: "stent", label: "Stent" },
-];
-
-const IMPLANT_SIZE_OPTIONS = [
-    { value: "small", label: "Small" },
-    { value: "medium", label: "Medium" },
-    { value: "large", label: "Large" },
-];
-
-const MANUFACTURER_OPTIONS = [
-    { value: "ethicon", label: "Ethicon" },
-    { value: "bard", label: "Bard" },
-    { value: "covidien", label: "Covidien" },
-];
-
-const QUANTITY_OPTIONS = [
-    { value: "1", label: "1" },
-    { value: "2", label: "2" },
-];
-
-const CONSUMABLE_ITEM_OPTIONS = [
-    { value: "sutures", label: "Sutures" },
-    { value: "stapler", label: "Stapler" },
-    { value: "clip_cartridge", label: "Clip Cartridge" },
-];
+const getOptions = (intraOp: any) => ({
+    procedures: [
+        { value: "lap_chole", label: "Laparoscopic Cholecystectomy" },
+        { value: "open_chole", label: "Open Cholecystectomy" },
+        { value: "appendectomy", label: "Appendectomy" },
+        { value: "hernia_repair", label: "Hernia Repair" },
+    ],
+    sites: [
+        { value: "left", label: "Left" },
+        { value: "right", label: "Right" },
+        { value: "bilateral", label: "Bilateral" },
+        { value: "midline", label: "Midline" },
+        { value: "na", label: "Not Applicable" },
+    ],
+    approaches: [
+        { value: "laparoscopic", label: "Laparoscopic" },
+        { value: "open", label: "Open" },
+        { value: "robotic", label: "Robotic" },
+        { value: "endoscopic", label: "Endoscopic" },
+        { value: "converted", label: "Converted to Open" },
+    ],
+    bloodLoss: [
+        { value: "<50", label: "<50 ml" },
+        { value: "50-100", label: "50–100 ml" },
+        { value: "100-300", label: "100–300 ml" },
+        { value: ">300", label: ">300 ml" },
+    ],
+    bloodUnits: [
+        { value: "0", label: "0" },
+        { value: "1", label: "1" },
+        { value: "2", label: "2" },
+    ],
+    implants: [
+        { value: "hernia_mesh", label: "Hernia Mesh" },
+        { value: "ortho_plate", label: "Orthopedic Plate" },
+        { value: "stent", label: "Stent" },
+    ],
+    sizes: [
+        { value: "small", label: "Small" },
+        { value: "medium", label: "Medium" },
+        { value: "large", label: "Large" },
+    ],
+    manufacturers: [
+        { value: "ethicon", label: "Ethicon" },
+        { value: "bard", label: "Bard" },
+        { value: "covidien", label: "Covidien" },
+    ],
+    quantities: [
+        { value: "1", label: "1" },
+        { value: "2", label: "2" },
+    ],
+    consumables: [
+        { value: "sutures", label: "Sutures" },
+        { value: "stapler", label: "Stapler" },
+        { value: "clip_cartridge", label: "Clip Cartridge" },
+    ],
+});
 
 // Procedure Form Component (reusable for multiple procedures)
-const ProcedureFormCard = ({ index, initialData }: { index: number; initialData?: any }) => (
+const ProcedureFormCard = ({ index, initialData, intraOp, options }: { index: number; initialData?: any; intraOp: any; options: any }) => (
     <div className="border border-slate-100 rounded-lg bg-slate-50/50 p-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectField
-                label="Actual Procedure Performed"
-                placeholder="Select Procedure"
-                options={PROCEDURE_OPTIONS}
+                label={intraOp.fields.actualProcedure}
+                placeholder={intraOp.fields.selectProcedure}
+                options={options.procedures}
                 value={initialData?.name}
             />
             <SelectField
-                label="Side / Site"
-                placeholder="Select Side / Site"
-                options={SITE_OPTIONS}
+                label={intraOp.fields.sideSite}
+                placeholder={intraOp.fields.selectSideSite}
+                options={options.sites}
                 value={initialData?.site}
             />
         </div>
         <SelectField
-            label="Approach / Access"
-            placeholder="Select Approach / Access"
-            options={APPROACH_OPTIONS}
+            label={intraOp.fields.approachAccess}
+            placeholder={intraOp.fields.selectApproach}
+            options={options.approaches}
             value={initialData?.approach}
         />
         <div className="space-y-1.5">
-            <Label className="text-sm">Intra-operative Findings</Label>
+            <Label className="text-sm">{intraOp.fields.intraOpFindings}</Label>
             <Textarea
-                placeholder="Enter findings"
+                placeholder={intraOp.fields.enterFindings}
                 className="min-h-[80px] resize-none"
                 defaultValue={initialData?.findings}
             />
         </div>
         <div className="space-y-1.5">
-            <Label className="text-sm">Operative Steps Summary</Label>
+            <Label className="text-sm">{intraOp.fields.operativeSteps}</Label>
             <Textarea
-                placeholder="Enter operative steps"
+                placeholder={intraOp.fields.enterOperativeSteps}
                 className="min-h-[80px] resize-none"
                 defaultValue={initialData?.steps}
             />
@@ -124,6 +118,11 @@ type IntraOpEditModeProps = {
 };
 
 export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModeProps) => {
+    const dict = useDictionary();
+    const intraOp = dict.pages.surgery.surgeryDetails.intraOp;
+    const common = dict.pages.surgery.surgeryDetails.common;
+    const options = getOptions(intraOp);
+
     const [specimensChecked, setSpecimensChecked] = useState(!!initialData?.specimens?.histopathology);
     const [drainsChecked, setDrainsChecked] = useState(!!initialData?.specimens?.drains);
     const [catheterChecked, setCatheterChecked] = useState(!!initialData?.specimens?.catheter);
@@ -133,24 +132,24 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Surgery Timing */}
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Surgery Timing</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.surgeryTiming}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Patient In Time</Label>
+                            <Label className="text-sm">{intraOp.fields.patientInTime}</Label>
                             <Input type="datetime-local" className="h-10" defaultValue={initialData?.timing?.patient_in} />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Anesthesia Start</Label>
+                            <Label className="text-sm">{intraOp.fields.anesthesiaStart}</Label>
                             <Input type="datetime-local" className="h-10" defaultValue={initialData?.timing?.anesthesia_start} />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Surgery Start (Incision)</Label>
+                            <Label className="text-sm">{intraOp.fields.surgeryStartIncision}</Label>
                             <Input type="datetime-local" className="h-10" defaultValue={initialData?.timing?.surgery_start} />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Surgery End (Closure)</Label>
+                            <Label className="text-sm">{intraOp.fields.surgeryEndClosure}</Label>
                             <Input type="datetime-local" className="h-10" defaultValue={initialData?.timing?.surgery_end} />
                         </div>
                     </div>
@@ -160,25 +159,25 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Procedure Details */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Procedure Details</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.procedureDetails}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <ProcedureFormCard index={1} initialData={initialData?.procedure} />
-                    {/* If multiple procedures are stored, we might want to map them here, but for now we follow the existing static structure */}
-                    <ProcedureFormCard index={2} />
+                    <ProcedureFormCard index={1} initialData={initialData?.procedure} intraOp={intraOp} options={options} />
+
+                    <ProcedureFormCard index={2} intraOp={intraOp} options={options} />
                 </CardContent>
             </Card>
 
             {/* Complications */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Complications</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.complications}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-medium">Intra-operative Complications</Label>
+                        <Label className="text-xs font-medium">{intraOp.fields.intraOpComplications}</Label>
                         <Textarea
-                            placeholder="Enter Intra-operative Complications"
+                            placeholder={intraOp.fields.enterComplications}
                             className="min-h-[60px] resize-none"
                             defaultValue={initialData?.complications}
                         />
@@ -189,32 +188,32 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Blood Loss & Transfusion */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Blood Loss & Transfusion</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.bloodLossTransfusion}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <SelectField
-                        label="Estimated Blood Loss (mL)"
-                        placeholder="Select blood loss"
-                        options={BLOOD_LOSS_OPTIONS}
+                        label={intraOp.fields.estimatedBloodLoss}
+                        placeholder={intraOp.fields.selectBloodLoss}
+                        options={options.bloodLoss}
                         value={initialData?.blood_loss?.estimated}
                     />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SelectField
-                            label="PRBC (Units)"
-                            placeholder="Select units"
-                            options={BLOOD_UNITS_OPTIONS}
+                            label={intraOp.fields.prbcUnits}
+                            placeholder={intraOp.fields.selectUnits}
+                            options={options.bloodUnits}
                             value={initialData?.blood_loss?.prbc?.toString()}
                         />
                         <SelectField
-                            label="FFP (Units)"
-                            placeholder="Select units"
-                            options={BLOOD_UNITS_OPTIONS}
+                            label={intraOp.fields.ffpUnits}
+                            placeholder={intraOp.fields.selectUnits}
+                            options={options.bloodUnits}
                             value={initialData?.blood_loss?.ffp?.toString()}
                         />
                         <SelectField
-                            label="Platelets (Units)"
-                            placeholder="Select units"
-                            options={BLOOD_UNITS_OPTIONS}
+                            label={intraOp.fields.plateletsUnits}
+                            placeholder={intraOp.fields.selectUnits}
+                            options={options.bloodUnits}
                             value={initialData?.blood_loss?.platelets?.toString()}
                         />
                     </div>
@@ -224,39 +223,39 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Implants Used */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Implants Used</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.implantsUsed}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
-                            label="Implant Type"
-                            placeholder="Select implant type"
-                            options={IMPLANT_TYPE_OPTIONS}
+                            label={intraOp.fields.implantType}
+                            placeholder={intraOp.fields.selectImplantType}
+                            options={options.implants}
                             value={initialData?.implants?.type}
                         />
                         <SelectField
-                            label="Size"
-                            placeholder="Select size"
-                            options={IMPLANT_SIZE_OPTIONS}
+                            label={intraOp.fields.size}
+                            placeholder={intraOp.fields.selectSize}
+                            options={options.sizes}
                             value={initialData?.implants?.size}
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Batch / Lot No.</Label>
-                            <Input type="text" placeholder="Enter batch/lot number" className="h-10" defaultValue={initialData?.implants?.batch_no} />
+                            <Label className="text-sm">{intraOp.fields.batchLotNo}</Label>
+                            <Input type="text" placeholder={intraOp.fields.enterBatchLotNo} className="h-10" defaultValue={initialData?.implants?.batch_no} />
                         </div>
                         <SelectField
-                            label="Manufacturer"
-                            placeholder="Select manufacturer"
-                            options={MANUFACTURER_OPTIONS}
+                            label={intraOp.fields.manufacturer}
+                            placeholder={intraOp.fields.selectManufacturer}
+                            options={options.manufacturers}
                             value={initialData?.implants?.manufacturer}
                         />
                     </div>
                     <SelectField
-                        label="Quantity"
-                        placeholder="Select quantity"
-                        options={QUANTITY_OPTIONS}
+                        label={dict.common.quantity}
+                        placeholder={intraOp.fields.selectQuantity}
+                        options={options.quantities}
                         value={initialData?.implants?.quantity?.toString()}
                     />
                 </CardContent>
@@ -265,24 +264,24 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Consumables Used */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Consumables Used</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.consumablesUsed}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
-                            label="Item Name"
-                            placeholder="Select consumable item"
-                            options={CONSUMABLE_ITEM_OPTIONS}
+                            label={intraOp.fields.itemName}
+                            placeholder={intraOp.fields.selectItemName}
+                            options={options.consumables}
                             value={initialData?.consumables?.item_name}
                         />
                         <div className="space-y-1.5">
-                            <Label className="text-sm">Quantity</Label>
-                            <Input type="number" placeholder="Enter quantity" className="h-10" defaultValue={initialData?.consumables?.quantity} />
+                            <Label className="text-sm">{dict.common.quantity}</Label>
+                            <Input type="number" placeholder={intraOp.fields.enterQuantity} className="h-10" defaultValue={initialData?.consumables?.quantity} />
                         </div>
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm">Note</Label>
-                        <Input type="text" placeholder="Enter additional details" className="h-10" defaultValue={initialData?.consumables?.note} />
+                        <Label className="text-sm">{dict.common.note}</Label>
+                        <Input type="text" placeholder={intraOp.fields.enterNote} className="h-10" defaultValue={initialData?.consumables?.note} />
                     </div>
                 </CardContent>
             </Card>
@@ -290,7 +289,7 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Specimens & Other Details */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Specimens & Other Details</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.specimensOther}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -301,13 +300,13 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                                 onCheckedChange={(checked) => setSpecimensChecked(checked as boolean)}
                             />
                             <Label htmlFor="specimens" className="text-sm cursor-pointer">
-                                Specimens sent for Histopathology
+                                {intraOp.fields.specimensHistopathology}
                             </Label>
                         </div>
                         {specimensChecked && (
                             <div className="ml-6 space-y-1.5">
                                 <Textarea
-                                    placeholder="Enter Specimen Details"
+                                    placeholder={intraOp.fields.enterSpecimenDetails}
                                     className="min-h-[80px] resize-none"
                                 />
                             </div>
@@ -321,13 +320,13 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                                 onCheckedChange={(checked) => setDrainsChecked(checked as boolean)}
                             />
                             <Label htmlFor="drains" className="text-sm cursor-pointer">
-                                Drains Placed
+                                {intraOp.fields.drainsPlaced}
                             </Label>
                         </div>
                         {drainsChecked && (
                             <div className="ml-6 space-y-1.5">
                                 <Textarea
-                                    placeholder="Enter Drain Details"
+                                    placeholder={intraOp.fields.enterDrainDetails}
                                     className="min-h-[80px] resize-none"
                                 />
                             </div>
@@ -341,13 +340,13 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                                 onCheckedChange={(checked) => setCatheterChecked(checked as boolean)}
                             />
                             <Label htmlFor="catheter" className="text-sm cursor-pointer">
-                                Catheter Placed
+                                {intraOp.fields.catheterPlaced}
                             </Label>
                         </div>
                         {catheterChecked && (
                             <div className="ml-6 space-y-1.5">
                                 <Textarea
-                                    placeholder="Enter Catheter Details"
+                                    placeholder={intraOp.fields.enterCatheterDetails}
                                     className="min-h-[80px] resize-none"
                                 />
                             </div>
@@ -359,13 +358,13 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
             {/* Surgeon's Additional Notes */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Surgeon's Additional Notes</CardTitle>
+                    <CardTitle className="text-lg font-medium">{intraOp.sections.surgeonNotes}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-medium">Operative Steps Summary</Label>
+                        <Label className="text-xs font-medium">{intraOp.fields.operativeSteps}</Label>
                         <Textarea
-                            placeholder="Enter additional notes"
+                            placeholder={intraOp.fields.enterAdditionalNotes}
                             className="min-h-[100px] resize-none"
                             defaultValue={initialData?.surgeon_notes}
                         />
@@ -380,10 +379,10 @@ export const IntraOpEditMode = ({ initialData, onSaveDraft }: IntraOpEditModePro
                     className="border-blue-500 text-blue-500 hover:bg-white hover:text-blue-500"
                     onClick={onSaveDraft}
                 >
-                    SAVE AS DRAFT
+                    {common.actions.saveDraft}
                 </Button>
                 <Button className="bg-green-600 hover:bg-green-600">
-                    <Send size={16} className="mr-2" /> MARK AS COMPLETED
+                    <Send size={16} className="mr-2" /> {common.actions.markCompleted}
                 </Button>
             </div>
         </>

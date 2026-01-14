@@ -28,7 +28,7 @@ export const DateRangeDropdown: React.FC<DateRangeDropdownProps> = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 bg-white shadow-soft px-4 py-2 rounded-full text-sm text-slate-600 transition-all hover:bg-slate-50 outline-none whitespace-nowrap">
+                <button className="flex items-center gap-2 bg-white px-4 py-2 rounded-full text-sm text-slate-600 transition-all hover:bg-slate-50 outline-none whitespace-nowrap">
                     <span className="text-slate-500">{icon || <CalendarIcon size={16} />}</span>
                     <span className={cn(value?.from && "text-slate-900 font-medium")}>
                         {value?.from ? (

@@ -1,13 +1,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { DataTable } from "@/components/common/data-table";
-interface Column<T> {
-    key: keyof T | string;
-    label: string;
-    render?: (row: T, index?: number) => React.ReactNode;
-    className?: string;
-}
 import { SurgeryRequest } from "./../../_lib/types";
-import { StatusBadge } from "../../_components/common/StatusBadge";
+import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import {
     SlidersHorizontal,
     Search,
@@ -26,11 +20,18 @@ import { FilterDropdown } from "./UI/FilterDropdown";
 import NewButton from "@/components/common/new-button";
 import { VipCrownBadge } from "@/components/common/pasient-card/vip-crown-badge";
 
+interface Column<T> {
+    key: keyof T | string;
+    label: string;
+    render?: (row: T, index?: number) => React.ReactNode;
+    className?: string;
+}
+
 interface DashboardEntityListProps {
     title: string;
     addButtonText: string;
     onAddClick: () => void;
-    data: any[];
+    data: SurgeryRequest[];
     searchPlaceholder?: string;
 }
 
@@ -117,7 +118,7 @@ export const DashboardEntityList = ({
         {
             key: "urgency",
             label: "Urgency",
-            render: (row) => <StatusBadge status={row.urgency} />
+            render: (row) => <StatusPill status={row.urgency} />
         },
         {
             key: "actions",
@@ -192,9 +193,7 @@ export const DashboardEntityList = ({
                         className="
         flex items-center gap-2
         rounded-full bg-blue-500 px-4 py-2
-        text-sm text-white
-        shadow-soft
-      "
+        text-sm text-white"
                     >
                         Filter <SlidersHorizontal size={14} />
                     </button>
@@ -206,14 +205,13 @@ export const DashboardEntityList = ({
                     <div
                         className="
         flex h-9 items-center overflow-hidden rounded-full
-        shadow-soft bg-background
+        bg-background
         transition focus-within:ring-2 focus-within:ring-blue-500/20
       "
                     >
                         <button
                             className="
           flex h-full items-center gap-1
-          shadow-soft
           px-3
           text-xs font-medium text-blue-500
         "
@@ -238,7 +236,7 @@ export const DashboardEntityList = ({
                     <button
                         className="
         flex items-center gap-2
-        rounded-full bg-white shadow-soft
+        rounded-full bg-white
         px-4 py-1.5
         text-sm font-medium text-gray-700
       "
@@ -257,12 +255,12 @@ export const DashboardEntityList = ({
                     ></NewButton>
 
                     {/* View mode toggle */}
-                    <div className="flex shrink-0 items-center gap-1 bg-white rounded-full p-0.5 shadow-soft">
+                    <div className="flex shrink-0 items-center gap-1 bg-white rounded-full p-0.5">
                         <button className="rounded-full p-1.5 text-gray-500">
                             <LayoutGrid size={18} />
                         </button>
 
-                        <button className="rounded-full bg-green-room p-1.5 text-white">
+                        <button className="rounded-full bg-green-500 p-1.5 text-white">
                             <LayoutList size={18} />
                         </button>
                     </div>

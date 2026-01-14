@@ -87,7 +87,7 @@ class SurgeryTeamApiClient {
     private authToken?: string;
 
     constructor(config: ApiConfig) {
-        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URI ?? "";
+        this.baseUrl = config.baseUrl ?? process.env.NEXT_PUBLIC_BASE_API_URL_SET_2 ?? "";
         this.authToken = config.authToken;
     }
 
@@ -136,6 +136,27 @@ class SurgeryTeamApiClient {
         return axios.get<SurgeryTeamResponse>(
             `${this.baseUrl}/api/v1/surgery-teams/${id}`,
             config
+        );
+    }
+
+    /* ---------------------------------------------------
+       PUT: Update Surgery Team
+    --------------------------------------------------- */
+    async update(id: string, payload: UpdateSurgeryTeamParams) {
+        return axios.put(
+            `${this.baseUrl}/api/v1/surgery-teams/${id}`,
+            payload,
+            await this.getConfig()
+        );
+    }
+
+    /* ---------------------------------------------------
+       DELETE: Delete Surgery Team
+    --------------------------------------------------- */
+    async delete(id: string) {
+        return axios.delete(
+            `${this.baseUrl}/api/v1/surgery-teams/${id}`,
+            await this.getConfig()
         );
     }
 }

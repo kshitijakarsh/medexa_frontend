@@ -111,6 +111,19 @@ export interface SurgeryRequest {
   urgency: UrgencyLevel;
 }
 
+
+export interface SurgeryResponse {
+  success: boolean;
+  data: SurgeryRequest[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
 /**
  * Scheduled surgery information
  */
@@ -220,4 +233,24 @@ export interface Medication {
   remainingDuration?: string;
   detail?: string;
   category?: string;
+}
+
+/**
+ * Standardized surgery row for table views
+ */
+export interface SurgeryRow {
+  id: string;
+  otRoom: string;
+  patient: {
+    id: string;
+    name: string;
+    mrn: string;
+    avatarUrl?: string;
+    vip?: boolean;
+  };
+  time: string;
+  procedure: string;
+  surgeon: string;
+  specialty: string;
+  status: string;
 }

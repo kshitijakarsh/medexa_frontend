@@ -3,6 +3,8 @@ import Image from "next/image";
 import { Clock, Phone, Mail, User, List, Printer, Download } from "lucide-react";
 import { Patient } from "@/app/[lang]/surgery/_lib/types";
 
+import { useDictionary } from "@/i18n/use-dictionary";
+
 const defaultPatient: Patient = {
   id: "1",
   name: "Fatima Al-Sabah",
@@ -76,6 +78,7 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
   isEditing = false,
   className,
 }) => {
+  const dict = useDictionary();
   const topRightActions = actionItems.filter((a) => a.position === "top-right");
   const bottomRightActions = actionItems.filter(
     (a) => a.position === "bottom-right"
@@ -134,7 +137,7 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
               {patient.insuranceProvider}
             </span>
             <span className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-medium tracking-wide">
-              Insurance: {patient.insuranceStatus}
+              {dict.pages.surgery.surgeryDetails.banner.insurance}: {patient.insuranceStatus}
             </span>
           </div>
         </div>
@@ -155,7 +158,7 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
             <>
               <StandardizedButton
                 action={{
-                  label: "Print Document",
+                  label: dict.pages.surgery.surgeryDetails.banner.printDocument,
                   icon: <Printer size={12} />,
                   position: "top-right",
                   variant: "outline",
@@ -163,7 +166,7 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
               />
               <StandardizedButton
                 action={{
-                  label: "Download Document",
+                  label: dict.pages.surgery.surgeryDetails.banner.downloadDocument,
                   icon: <Download size={12} />,
                   position: "top-right",
                   variant: "outline",
@@ -179,7 +182,7 @@ const PatientBanner: React.FC<PatientBannerProps> = ({
             <div className="">
               <StandardizedButton
                 action={{
-                  label: "View Details",
+                  label: dict.pages.surgery.surgeryDetails.banner.viewDetails,
                   icon: <List size={12} />,
                   position: "bottom-right",
                   onClick: onViewDetails,

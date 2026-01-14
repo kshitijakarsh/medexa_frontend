@@ -1,142 +1,3 @@
-// "use client";
-
-// import { useForm } from "@workspace/ui/hooks/use-form";
-// import { Input } from "@workspace/ui/components/input";
-// import { Button } from "@workspace/ui/components/button";
-// import {
-//   Form,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormControl,
-// } from "@workspace/ui/components/form";
-// import { z } from "@workspace/ui/lib/zod";
-// import { zodResolver } from "@workspace/ui/lib/zod";
-// import { StatusSwitch } from "@/components/common/switch-green";
-// import { AppDialog } from "@/components/common/app-dialog";
-
-// // ✅ Validation Schema
-// const schema = z.object({
-//   name: z.string().min(1, "This field is required"),
-//   active: z.boolean().catch(false),
-// });
-
-// type FormValues = z.infer<typeof schema>;
-
-// export function AddDialog({
-//   open,
-//   onClose,
-//   mode,
-// }: {
-//   open: boolean;
-//   onClose: () => void;
-//   mode: "designation" | "specialization" | "roles";
-// }) {
-//   const form = useForm<FormValues>({
-//     resolver: zodResolver(schema),
-//     defaultValues: {
-//       name: "",
-//       active: false,
-//     },
-//   });
-
-//   const handleSave = (values: FormValues) => {
-//     console.log(`Saved ${mode}:`, values);
-//     onClose();
-//   };
-
-//   // ✅ Titles for Dialog Header
-//   const titleMap: Record<typeof mode, string> = {
-//     designation: "Add Designation",
-//     specialization: "Add Specialization",
-//     roles: "Add User Role",
-//   };
-
-//   // ✅ Labels for Field Placeholder/Label
-//   const labelMap: Record<typeof mode, string> = {
-//     designation: "Designation Name",
-//     specialization: "Specialization Name",
-//     roles: "User Role Name",
-//   };
-
-//   return (
-//     <AppDialog
-//       open={open}
-//       onClose={onClose}
-//       title={titleMap[mode]}
-//       maxWidth="md:max-w-1xl lg:max-w-5xl"
-//     >
-//       <Form {...form}>
-//         <form
-//           onSubmit={form.handleSubmit(handleSave)}
-//           className="space-y-4 text-sm"
-//         >
-//           {/* 🧾 Input Field */}
-//           <FormField
-//             control={form.control}
-//             name="name"
-//             render={({ field }) => (
-//               <FormItem>
-//                 <FormLabel>{labelMap[mode]}</FormLabel>
-//                 <FormControl>
-//                   <Input
-//                     placeholder={`Enter ${labelMap[mode]}`}
-//                     {...field}
-//                   />
-//                 </FormControl>
-//               </FormItem>
-//             )}
-//           />
-
-//           {/* 🔘 Status Switch */}
-//           <FormField
-//             control={form.control}
-//             name="active"
-//             render={({ field }) => (
-//               <FormItem>
-//                 <FormLabel>Status</FormLabel>
-//                 <div
-//                   className={`flex items-center gap-3 rounded-md px-3 py-2 ${
-//                     field.value ? "bg-green-50" : "bg-gray-50"
-//                   }`}
-//                 >
-//                   <span className="text-sm text-red-500">Inactive</span>
-//                   <FormControl>
-//                     <StatusSwitch
-//                       checked={field.value}
-//                       onCheckedChange={field.onChange}
-//                     />
-//                   </FormControl>
-//                   <span className="text-sm text-green-600">Active</span>
-//                 </div>
-//               </FormItem>
-//             )}
-//           />
-
-//           {/* 🎯 Footer Buttons */}
-//           <div className="flex justify-end gap-3 pt-4">
-//             <Button
-//               type="button"
-//               variant="outline"
-//               onClick={onClose}
-//               className="text-blue-600 border-blue-500"
-//             >
-//               Cancel
-//             </Button>
-//             <Button
-//               type="submit"
-//               className="bg-green-500 hover:bg-green-600"
-//             >
-//               Save
-//             </Button>
-//           </div>
-//         </form>
-//       </Form>
-//     </AppDialog>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect } from "react";
@@ -156,6 +17,7 @@ import {
 import { Plus, X } from "lucide-react";
 import { AppDialog } from "@/components/common/app-dialog";
 import { StatusSwitch } from "@/components/common/switch-green";
+import { useDictionary } from "@/i18n/dictionary-context";
 
 const itemSchema = z.object({
   name: z.string().min(1, "This field is required").max(100),
@@ -171,12 +33,13 @@ type FormSchema = z.infer<typeof formSchema>;
 interface AddDialogProps {
   open: boolean;
   onClose: () => void;
-  mode: "designation" | "specialization" | "roles";
+  mode: "designation" | "specialization" | "userRoles";
   onSave?: (data: any[]) => void | Promise<void>;
   isLoading?: boolean;
 }
 
 export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: AddDialogProps) {
+  const dict = useDictionary();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -194,15 +57,15 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
   }, [open, form]);
 
   const titleMap = {
-    designation: "Add Bulk Designation",
-    specialization: "Add Bulk Specialization",
-    roles: "Add User Role",
+    designation: dict.pages.employeeConfiguration.actions.addBulkDesignation,
+    specialization: dict.pages.employeeConfiguration.actions.addBulkSpecialization,
+    userRoles: dict.pages.employeeConfiguration.actions.addUserRole,
   };
 
   const labelMap = {
-    designation: "Designation Name",
-    specialization: "Specialization Name",
-    roles: "User Role Name",
+    designation: dict.pages.employeeConfiguration.table.designationName,
+    specialization: dict.pages.employeeConfiguration.table.specialization,
+    userRoles: dict.pages.employeeConfiguration.table.userRole,
   };
 
   const handleSave = async (values: FormSchema) => {
@@ -212,12 +75,11 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
       }
       onClose();
     } catch (error) {
-      // Error handling is done in the parent component
       console.error(`Failed to save ${mode}:`, error);
     }
   };
 
-  const isSingle = mode === "roles";
+  const isSingle = mode === "userRoles";
 
   return (
     <AppDialog
@@ -228,14 +90,12 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSave)} className="space-y-6">
-          {/* Body */}
           <div className="max-h-[70vh] overflow-y-auto py-3">
             <div
-              className={`grid ${
-                fields.length > 1 && !isSingle
-                  ? "grid-cols-1 md:grid-cols-2"
-                  : "grid-cols-1"
-              } gap-6`}
+              className={`grid ${fields.length > 1 && !isSingle
+                ? "grid-cols-1 md:grid-cols-2"
+                : "grid-cols-1"
+                } gap-6`}
             >
               {fields.map((field, index) => (
                 <div
@@ -243,7 +103,6 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                   className="flex items-start justify-between gap-3 border rounded-lg p-4 shadow-sm"
                 >
                   <div className="flex flex-col lg:flex-row items-center gap-3 w-full">
-                    {/* Name */}
                     <FormField
                       control={form.control}
                       name={`items.${index}.name`}
@@ -252,7 +111,7 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                           <FormLabel>{labelMap[mode]}</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder={`Enter ${labelMap[mode]}`}
+                              placeholder={labelMap[mode]}
                               {...field}
                               disabled={isLoading}
                             />
@@ -262,21 +121,19 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                       )}
                     />
 
-                    {/* Status */}
                     <FormField
                       control={form.control}
                       name={`items.${index}.active`}
                       render={({ field }) => (
                         <FormItem>
                           <div className="flex flex-col rounded-md px-3">
-                            <FormLabel className="pb-2">Status</FormLabel>
+                            <FormLabel className="pb-2">{dict.common.status}</FormLabel>
                             <div
-                              className={`flex items-center gap-3 ${
-                                field.value ? "bg-green-50" : "bg-gray-50"
-                              } h-9 px-2`}
+                              className={`flex items-center gap-3 ${field.value ? "bg-green-50" : "bg-gray-50"
+                                } h-9 px-2`}
                             >
                               <span className="text-sm text-red-500">
-                                Inactive
+                                {dict.common.inactive}
                               </span>
                               <FormControl>
                                 <StatusSwitch
@@ -286,13 +143,12 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                                 />
                               </FormControl>
                               <span
-                                className={`text-sm ${
-                                  field.value
-                                    ? "text-green-600"
-                                    : "text-gray-400"
-                                }`}
+                                className={`text-sm ${field.value
+                                  ? "text-green-600"
+                                  : "text-gray-400"
+                                  }`}
                               >
-                                Active
+                                {dict.common.active}
                               </span>
                             </div>
                           </div>
@@ -300,7 +156,6 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                       )}
                     />
 
-                    {/* Remove Button (show only if more than one and not roles) */}
                     {!isSingle && fields.length > 1 && (
                       <Button
                         type="button"
@@ -317,7 +172,6 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
               ))}
             </div>
 
-            {/* Add Row (for designation/specialization only) */}
             {!isSingle && (
               <div className="flex justify-end mt-4">
                 <Button
@@ -327,7 +181,7 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
                   onClick={() => append({ name: "", active: false })}
                   disabled={isLoading}
                 >
-                  Add Row{" "}
+                  {dict.common.addRow}{" "}
                   <span className="bg-green-500 p-2 rounded-full">
                     <Plus className="w-5 h-5 bg-white rounded-full" />
                   </span>
@@ -336,7 +190,6 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
             )}
           </div>
 
-          {/* Footer */}
           <div className="flex justify-end gap-3 pt-6 border-t">
             <Button
               type="button"
@@ -345,14 +198,14 @@ export function AddDialog({ open, onClose, mode, onSave, isLoading = false }: Ad
               className="text-blue-600 border-blue-500"
               disabled={isLoading}
             >
-              Cancel
+              {dict.common.cancel}
             </Button>
             <Button
               type="submit"
               className="bg-green-500 hover:bg-green-600 text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? dict.common.saving : dict.common.save}
             </Button>
           </div>
         </form>

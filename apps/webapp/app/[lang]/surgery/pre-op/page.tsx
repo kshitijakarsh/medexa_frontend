@@ -3,85 +3,95 @@
 import React from "react";
 import {
   CalendarDays,
-  LayoutGrid,
-  Search,
-  ChevronDown,
-  SlidersHorizontal,
-  LayoutList,
 } from "lucide-react";
 import { DynamicTabs } from "@/components/common/dynamic-tabs-props";
 import { useRouter, useParams } from "next/navigation";
-import { ResponsiveDataTable } from "@/components/common/data-table/ResponsiveDataTable";
-// import type { Column } from "@/components/common/data-table";
-
-interface Column<T> {
-  key: keyof T | string;
-  label: string;
-  render?: (row: T, index?: number) => React.ReactNode;
-  className?: string;
-}
-
+import { Surgery } from "@/lib/api/surgery/surgeries";
+import { useSurgeries } from "@/app/[lang]/surgery/_hooks/useSurgery";
+import { SurgeryRow } from "@/app/[lang]/surgery/_lib/types";
+import { ResponsiveDataTable, type Column } from "@/components/common/data-table/ResponsiveDataTable";
+import { useDictionary } from "@/i18n/use-dictionary";
 import { AppointmentPatientCell } from "@/components/common/pasient-card/appointment-patient-cell";
 import { StatusPill } from "@/components/common/pasient-card/status-pill";
 import { TimeRoomInfo } from "@/components/common/pasient-card/time-room-info";
-import NewButton from "@/components/common/new-button";
 import ActionMenu from "@/components/common/action-menu";
-
-type PreOpRow = {
-  id: string;
-  patient: {
-    name: string;
-    mrn: string;
-    avatar?: string;
-    vip?: boolean;
-  };
-  procedure: string;
-  doctor: string;
-  time: string;
-  room: string;
-  status: "PreOp" | "IntraOp" | "PostOp";
-};
-
-const PRE_OP_DATA: PreOpRow[] = [
-  {
-    id: "1",
-    patient: {
-      name: "Fatima Al-Sabah",
-      mrn: "MRN-2501",
-      avatar: "/images/avatars/1.png",
-      vip: true,
-    },
-    procedure: "Doctor Consultation",
-    doctor: "Dr. Ahmed Khan",
-    time: "10:30 AM",
-    room: "OT-12",
-    status: "PreOp",
-  },
-  {
-    id: "2",
-    patient: {
-      name: "John Mathew",
-      mrn: "MRN-2502",
-      avatar: "/images/avatars/1.png",
-    },
-    procedure: "Pre Surgery Check",
-    doctor: "Dr. Sarah Lee",
-    time: "11:15 AM",
-    room: "OT-08",
-    status: "IntraOp",
-  },
-];
-
+import FilterButton from "@/components/common/filter-button";
+import DateFilter from "@/app/[lang]/surgery/_components/common/DateFilter";
+import { StatusToggle } from "@/app/[lang]/surgery/_components/common/StatusToggle";
+import ViewModeToggle from "@/app/[lang]/surgery/_components/common/ViewModeToggle";
+import SearchWithDropdown from "@/app/[lang]/surgery/_components/common/SearchWithDropdown";
 
 
 export default function PreOpList() {
   const [activeTab, setActiveTab] = React.useState("All Surgeries");
   const router = useRouter();
   const { lang } = useParams();
+  const dict = useDictionary();
+  const [sortOrder, setSortOrder] = React.useState<"nearest" | "farthest">("nearest");
+  const [isCalendarView, setIsCalendarView] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState<"grid" | "list">("list");
+  const [searchType, setSearchType] = React.useState({ label: "MRN", value: "mrn" });
+  const [searchValue, setSearchValue] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const columns = React.useMemo<Column<PreOpRow>[]>(() => [
+  const {
+    data: responseData,
+    isLoading,
+    refetch,
+  } = useSurgeries({
+    search: searchQuery || undefined,
+    status: (() => {
+      const statusMap: Record<string, string> = {
+        "Pre-op": "PreOp",
+        "Intra Op": "IntraOp",
+        "Post-op": "PostOp",
+      };
+      return statusMap[activeTab];
+    })(),
+  });
+
+  const tableData: SurgeryRow[] = React.useMemo(() => {
+    const actualSurgeries = responseData?.data || [];
+
+    // Map API data to table rows
+    const mappedActual: SurgeryRow[] = actualSurgeries.map((surgery: Surgery) => ({
+      id: surgery.id,
+      otRoom: (surgery as any).ot_room_id ? `${dict.pages.surgery.common.prefixes.otRoom}${(surgery as any).ot_room_id}` : ((surgery as any).ot_room || "—"),
+      patient: {
+        id: surgery.patient?.id || surgery.patient_id || "",
+        name: surgery.patient
+          ? `${surgery.patient.first_name} ${surgery.patient.last_name}`
+          : dict.pages.surgery.common.fallbacks.unknownPatient,
+        mrn: surgery.patient?.civil_id || (surgery as any).patient?.mrn || "MRN-0000",
+        avatarUrl: (surgery.patient as any)?.photo_url || (surgery.patient as any)?.avatarUrl || "/images/avatars/1.png",
+        vip: surgery.patient?.vip,
+      },
+      time: (surgery.date || surgery.scheduled_date)
+        ? new Date(surgery.date || (surgery.scheduled_date as string)).toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+        : "—",
+      procedure: surgery.procedure?.name || (surgery as any).procedure?.name || (surgery as any).surgery_type || "—",
+      surgeon: surgery.doctor
+        ? `${dict.pages.surgery.common.prefixes.doctor} ${surgery.doctor.first_name} ${surgery.doctor.last_name}`
+        : dict.pages.surgery.common.fallbacks.notAssigned,
+      specialty: surgery.department || "General",
+      status: surgery.status || "scheduled",
+    }));
+
+    return mappedActual;
+  }, [responseData, activeTab, dict.pages.surgery.common.prefixes.otRoom, dict.pages.surgery.common.fallbacks.unknownPatient, dict.pages.surgery.common.prefixes.doctor, dict.pages.surgery.common.fallbacks.notAssigned]);
+
+  const searchOptions = [
+    { label: "MRN", value: "mrn" },
+    { label: "Name", value: "name" },
+    { label: "Status", value: "status" },
+  ];
+
+  const columns = React.useMemo<Column<SurgeryRow>[]>(() => [
     {
-      key: "room",
+      key: "otRoom",
       label: "OT Room",
     },
     {
@@ -91,7 +101,7 @@ export default function PreOpList() {
         <AppointmentPatientCell
           name={row.patient.name}
           mrn={row.patient.mrn}
-          avatar={row.patient.avatar}
+          avatar={row.patient.avatarUrl}
           vip={row.patient.vip}
         />
       ),
@@ -99,14 +109,14 @@ export default function PreOpList() {
     {
       key: "time",
       label: "Date and Time",
-      render: (row) => <TimeRoomInfo time={row.time}/>,
+      render: (row) => <TimeRoomInfo time={row.time} />,
     },
     {
       key: "procedure",
       label: "Procedure",
     },
     {
-      key: "doctor",
+      key: "surgeon",
       label: "Surgeon",
     },
     {
@@ -116,58 +126,41 @@ export default function PreOpList() {
     },
     {
       key: "action",
-      label: "Action",
-      className: "text-right",
+      label: dict.table.action,
       render: (row) => (
         <ActionMenu actions={[
           {
-            label: "View",
+            label: dict.common.view,
             onClick: () => {
-              router.push(`/${lang}/surgery/ot-setting/teams/${row.id}`);
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
             }
           },
           {
-            label: "Edit",
-            // onClick: () => {
-            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-            // }
+            label: dict.common.edit,
+            onClick: () => {
+              router.push(`/${lang}/surgery/dashboard/surgery-details/${row.id}`);
+            }
           },
           {
-            label: "Delete",
-            // onClick: () => {
-            //     router.push(`/surgery/dashboard/surgery-details/${row.id}`);
-            // }
+            label: dict.common.delete,
           }
         ]} className="bg-transparent hover:bg-transparent text-blue-500" />
       ),
     },
-  ], []);
+  ], [dict, lang, router]);
 
   const counts = React.useMemo(() => ({
-    all: PRE_OP_DATA.length,
-    preOp: PRE_OP_DATA.filter((d) => d.status === "PreOp").length,
-    intraOp: PRE_OP_DATA.filter((d) => d.status === "IntraOp").length,
-    postOp: PRE_OP_DATA.filter((d) => d.status === "PostOp").length,
-  }), []);
-
-  const filteredData = React.useMemo(() => {
-    switch (activeTab) {
-      case "Pre-op":
-        return PRE_OP_DATA.filter((d) => d.status === "PreOp");
-      case "Intra Op":
-        return PRE_OP_DATA.filter((d) => d.status === "IntraOp");
-      case "Post-op":
-        return PRE_OP_DATA.filter((d) => d.status === "PostOp");
-      default:
-        return PRE_OP_DATA;
-    }
-  }, [activeTab]);
+    all: tableData.length,
+    preOp: tableData.filter((d) => d.status.toLowerCase() === "preop").length,
+    intraOp: tableData.filter((d) => d.status.toLowerCase() === "intraop").length,
+    postOp: tableData.filter((d) => d.status.toLowerCase() === "postop").length,
+  }), [tableData]);
 
   return (
     <div>
       <div className="flex flex-col gap-4">
-        <h1 className="text-slate-800 font-medium text-sm">
-          Surgeries Request List
+        <h1 className="font-medium text-base">
+          {dict.pages.surgery.preOp.surgeriesRequestList}
         </h1>
 
         {/* Filters */}
@@ -175,81 +168,58 @@ export default function PreOpList() {
           <div className="flex items-center gap-3 overflow-x-auto pb-1 w-full">
             <DynamicTabs
               tabs={[
-                { key: "All Surgeries", label: "All Surgeries"},
-                { key: "Pre-op", label: "Pre-op", count: counts.preOp },
-                { key: "Intra Op", label: "Intra Op", count: counts.intraOp },
-                { key: "Post-op", label: "Post-op", count: counts.postOp },
+                { key: "All Surgeries", label: dict.pages.surgery.preOp.tabs.allSurgeries },
+                { key: "Pre-op", label: dict.pages.surgery.preOp.tabs.preOp, count: counts.preOp },
+                { key: "Intra Op", label: dict.pages.surgery.preOp.tabs.intraOp, count: counts.intraOp },
+                { key: "Post-op", label: dict.pages.surgery.preOp.tabs.postOp, count: counts.postOp },
               ]}
               defaultTab={activeTab}
               onChange={(key) => setActiveTab(key)}
             />
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <span className="flex items-center gap-1 text-sm font-medium text-gray-700">
-              <CalendarDays size={18} className="text-blue-500" />
-              Calendar View
-            </span>
-
-            <button
-              role="switch"
-              aria-checked="false"
-              className="relative h-5 w-10 rounded-full bg-gray-300"
-            >
-              <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-white shadow-sm" />
-            </button>
-          </div>
+          <StatusToggle
+            variant="simple"
+            isActive={isCalendarView}
+            onToggle={setIsCalendarView}
+            className="flex shrink-0"
+            label={
+              <>
+                <CalendarDays size={18} className="text-blue-500" />
+                {dict.pages.surgery.common.calendarView}
+              </>
+            }
+          />
         </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 my-2">
-        <button className="flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm text-white shadow-soft">
-          Filter <SlidersHorizontal size={14} />
-        </button>
+        <FilterButton onClick={() => refetch()} className="bg-blue-500 text-white hover:none" />
 
         <div className="flex flex-1 items-center justify-end gap-3">
-          <div className="flex h-9 items-center overflow-hidden rounded-full bg-background shadow-soft">
-            <button className="flex h-full items-center gap-1 px-3 text-xs font-medium text-blue-500">
-              <Search size={14} />
-              MRN
-              <ChevronDown size={12} />
-            </button>
-            <input
-              type="text"
-              placeholder="Search MRN"
-              className="w-48 px-3 text-sm outline-none"
+          <div className="w-auto">
+            <SearchWithDropdown
+              options={searchOptions}
+              selectedOption={searchType}
+              onOptionSelect={setSearchType}
+              searchValue={searchValue}
+              onSearchChange={(val: string) => {
+                setSearchValue(val);
+                if (val.length >= 2) {
+                  setSearchQuery(val);
+                } else if (val.length === 0) {
+                  setSearchQuery("");
+                }
+              }}
+              placeholder={dict.common.search}
             />
           </div>
 
-          <button className="flex items-center gap-2 rounded-full bg-white shadow-soft px-4 py-1.5 text-sm">
-            Quick
-            <div className="flex flex-col">
-              <ChevronDown size={12} className="rotate-180 text-blue-500" />
-              <ChevronDown size={12} className="text-blue-500" />
-            </div>
-          </button>
+          <DateFilter
+            sortOrder={sortOrder}
+            onSortChange={setSortOrder}
+          />
 
-          {/* <button className="flex items-center gap-2 rounded-full bg-green-room pl-4 pr-0.5 py-0.5 text-sm text-white shadow-soft">
-            Add surgery
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#50C786]">
-              <Plus size={14} />
-            </div>
-          </button> */}
-
-          <NewButton
-            name="Add Surgeries"
-            handleClick={() => {
-              router.push(`/${lang}/surgery/dashboard/surgery-details/new`);
-            }}
-          ></NewButton>
-
-          <div className="flex items-center gap-1 bg-white rounded-full p-0.5 shadow-soft">
-            <button className="p-1.5 text-gray-500">
-              <LayoutGrid size={18} />
-            </button>
-            <button className="rounded-full bg-green-room p-1.5 text-white">
-              <LayoutList size={18} />
-            </button>
-          </div>
+          <ViewModeToggle mode={viewMode} onModeChange={setViewMode} />
         </div>
       </div>
 
@@ -257,7 +227,8 @@ export default function PreOpList() {
       <div className="mt-4">
         <ResponsiveDataTable
           columns={columns}
-          data={filteredData}
+          data={tableData}
+          loading={isLoading}
           striped
         />
       </div>

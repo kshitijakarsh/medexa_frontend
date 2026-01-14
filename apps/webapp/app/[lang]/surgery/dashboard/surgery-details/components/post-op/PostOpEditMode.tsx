@@ -28,6 +28,7 @@ import {
     SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
+import { useDictionary } from "@/i18n/use-dictionary";
 
 // Generate time slots every 30 mins
 const TIME_SLOTS = Array.from({ length: 48 }).map((_, i) => {
@@ -311,6 +312,9 @@ const NURSE_ORDER_COLUMNS: TableColumn<any>[] = [
 ];
 
 export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps) => {
+    const dict = useDictionary();
+    const postOp = dict.pages.surgery.surgeryDetails.postOp;
+
     const [followUpDate, setFollowUpDate] = React.useState<Date | null>(
         initialData?.follow_up?.date ? new Date(initialData.follow_up.date) : null
     );
@@ -331,42 +335,42 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
             {/* Disposition / Transfer */}
             <Card className="shadow-none border-0">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-lg font-medium">Disposition / Transfer</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.disposition}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SelectField
-                            label="Transfer To *"
-                            placeholder="Select Transfer To"
+                            label={`${postOp.fields.transferTo} *`}
+                            placeholder={postOp.fields.selectTransferTo}
                             options={TRANSFER_TO_OPTIONS}
                             defaultValue={initialData?.disposition?.transfer_to}
                         />
                         <SelectField
-                            label="Floor"
-                            placeholder="Select Floor"
+                            label={postOp.fields.floor}
+                            placeholder={postOp.fields.selectFloor}
                             options={FLOOR_OPTIONS}
                             defaultValue={initialData?.disposition?.floor}
                         />
                         <SelectField
-                            label="Ward / Unit"
-                            placeholder="Select Ward / Unit"
+                            label={postOp.fields.wardUnit}
+                            placeholder={postOp.fields.selectWardUnit}
                             options={WARD_OPTIONS}
                             defaultValue={initialData?.disposition?.ward_unit}
                         />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SelectField
-                            label="Bed Number"
-                            placeholder="Select Bed Number"
+                            label={postOp.fields.bedNumber}
+                            placeholder={postOp.fields.selectBedNumber}
                             options={BED_OPTIONS}
                             defaultValue={initialData?.disposition?.bed_number}
                         />
                         <div className="space-y-1.5">
-                            <Label className="text-xs font-medium text-slate-800">Transfer Time</Label>
+                            <Label className="text-xs font-medium text-slate-800">{postOp.fields.transferTime}</Label>
                             <Select defaultValue={initialData?.disposition?.transfer_time || "08:00"}>
                                 <SelectTrigger className={cn("w-full h-10")}>
                                     <div className="flex-1 text-left">
-                                        <SelectValue placeholder="Select Time" />
+                                        <SelectValue placeholder={postOp.fields.selectTime} />
                                     </div>
                                     <Clock className="w-4 h-4 text-green-500 opacity-50 mr-2" />
                                 </SelectTrigger>
@@ -380,8 +384,8 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
                             </Select>
                         </div>
                         <SelectField
-                            label="Nurse"
-                            placeholder="Select Nurse"
+                            label={postOp.fields.nurse}
+                            placeholder={postOp.fields.selectNurse}
                             options={NURSE_OPTIONS}
                             defaultValue={initialData?.disposition?.nurse}
                         />
@@ -391,25 +395,25 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
 
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Vital Signs Monitoring</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.vitalSigns}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SelectField
-                            label="Monitoring Frequency *"
-                            placeholder="Select Frequency"
+                            label={`${postOp.fields.monitoringFrequency} *`}
+                            placeholder={postOp.fields.selectFrequency}
                             options={MONITORING_FREQUENCY_OPTIONS}
                             defaultValue={initialData?.monitoring?.frequency}
                         />
                         <SelectField
-                            label="Duration *"
-                            placeholder="Select Duration"
+                            label={`${postOp.fields.duration} *`}
+                            placeholder={postOp.fields.selectDuration}
                             options={DURATION_OPTIONS}
                             defaultValue={initialData?.monitoring?.duration}
                         />
                         <SelectField
-                            label="Special Monitoring *"
-                            placeholder="Select Monitoring"
+                            label={`${postOp.fields.specialMonitoring} *`}
+                            placeholder={postOp.fields.selectMonitoring}
                             options={SPECIAL_MONITORING_OPTIONS}
                             defaultValue={initialData?.monitoring?.special}
                         />
@@ -420,19 +424,19 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
             {/* Pain Assessment */}
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Activity & Mobilization</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.activity}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <SelectField
-                        label="Activity Level *"
-                        placeholder="Select Activity Level"
+                        label={`${postOp.fields.activityLevel} *`}
+                        placeholder={postOp.fields.selectActivityLevel}
                         options={ACTIVITY_LEVEL_OPTIONS}
                         defaultValue={initialData?.activity?.level}
                     />
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-medium text-slate-800">Mobilization Plan</Label>
+                        <Label className="text-xs font-medium text-slate-800">{postOp.fields.mobilizationPlan}</Label>
                         <Textarea
-                            placeholder="Enter mobilization plan details"
+                            placeholder={postOp.fields.enterMobilizationPlan}
                             className="min-h-[60px] resize-none"
                             defaultValue={initialData?.activity?.plan}
                         />
@@ -443,19 +447,19 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
             {/* Diet & Mobility */}
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Diet & Oral Fluids</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.diet}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
-                            label="Diet Orders *"
-                            placeholder="Select diet"
+                            label={`${postOp.fields.dietOrders} *`}
+                            placeholder={postOp.fields.selectDiet}
                             options={DIET_OPTIONS}
                             defaultValue={initialData?.diet?.orders}
                         />
                         <SelectField
-                            label="Time (Hour)"
-                            placeholder="Select time"
+                            label={postOp.fields.timeHour}
+                            placeholder={postOp.fields.selectTimeHour}
                             options={MOBILITY_OPTIONS}
                             defaultValue={initialData?.diet?.time}
                         />
@@ -468,15 +472,15 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
                                 onCheckedChange={(checked) => setFluidRestriction(checked as boolean)}
                             />
                             <Label htmlFor="fluid-restriction" className="text-sm cursor-pointer">
-                                Fluid Restriction
+                                {postOp.fields.fluidRestriction}
                             </Label>
                         </div>
 
                         {fluidRestriction && (
                             <div className="space-y-2">
-                                <Label className="text-sm font-normal">Fluid Restriction Instructions</Label>
+                                <Label className="text-sm font-normal">{postOp.fields.fluidRestrictionInstructions}</Label>
                                 <Textarea
-                                    placeholder="Details maximum allowed fluid intake"
+                                    placeholder={postOp.fields.enterFluidRestriction}
                                     className="min-h-[60px] resize-none"
                                     defaultValue={initialData?.diet?.instructions}
                                 />
@@ -489,12 +493,12 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
 
             {/* Nurse Order Section */}
             <SurgeryDataTable
-                title="Nurse Order"
+                title={postOp.sections.nurseOrder}
                 columns={NURSE_ORDER_COLUMNS}
                 data={initialData?.nurse_orders || []}
                 headerAction={
                     <NewButton
-                        name="Add Nurse Note"
+                        name={postOp.actions.addNurseNote}
                         handleClick={() => console.log("Add Nurse Note")}
                         icon={<Plus size={16} className="text-green-600 bg-white rounded-full" />}
                     />
@@ -504,19 +508,19 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
             {/* Drain Output */}
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Pain Management</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.painManagement}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <SelectField
-                            label="Pain Assessment Frequency"
-                            placeholder="Select frequency"
+                            label={postOp.fields.painAssessmentFrequency}
+                            placeholder={postOp.fields.selectFrequency}
                             options={PAIN_ASSESSMENT_FREQUENCY_OPTIONS}
                             defaultValue={initialData?.pain?.frequency}
                         />
                         <SelectField
-                            label="Target Pain Score (0-10)"
-                            placeholder="Select target score"
+                            label={postOp.fields.targetPainScore}
+                            placeholder={postOp.fields.selectTargetScore}
                             options={TARGET_PAIN_SCORE_OPTIONS}
                             defaultValue={initialData?.pain?.target_score}
                         />
@@ -527,19 +531,19 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
             {/* Medications & Instructions */}
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Drains, Tubes & Catheters</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.drains}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="flex items-center space-x-2 bg-blue-50/50 p-2 rounded-sm">
                         <Checkbox id="urinary-catheter" defaultChecked={!!initialData?.drains?.catheter_in_situ} />
                         <Label htmlFor="urinary-catheter" className="text-sm cursor-pointer font-normal">
-                            Urinary Catheter in situ
+                            {postOp.fields.urinaryCatheter}
                         </Label>
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm font-normal">Catheter Removal Plan</Label>
+                        <Label className="text-sm font-normal">{postOp.fields.catheterRemovalPlan}</Label>
                         <Textarea
-                            placeholder="Enter post-operative instructions"
+                            placeholder={postOp.fields.enterPostOpInstructions}
                             className="min-h-[80px] resize-none"
                             defaultValue={initialData?.drains?.catheter_plan}
                         />
@@ -547,13 +551,13 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
                     <div className="flex items-center space-x-2 bg-blue-50/50 p-2 rounded-sm">
                         <Checkbox id="ngt-situ" defaultChecked={!!initialData?.drains?.ngt_in_situ} />
                         <Label htmlFor="ngt-situ" className="text-sm cursor-pointer font-normal">
-                            NGT (Nasogastric Tube) in situ
+                            {postOp.fields.ngt}
                         </Label>
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-sm font-normal">NGT Management</Label>
+                        <Label className="text-sm font-normal">{postOp.fields.ngtManagement}</Label>
                         <Textarea
-                            placeholder="Enter post-operative instructions"
+                            placeholder={postOp.fields.enterPostOpInstructions}
                             className="min-h-[80px] resize-none"
                             defaultValue={initialData?.drains?.ngt_management}
                         />
@@ -563,13 +567,13 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
 
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Special Instructions</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.specialInstructions}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-1.5">
-                        <Label className="text-sm font-normal">Additional Special Instructions</Label>
+                        <Label className="text-sm font-normal">{postOp.fields.additionalSpecialInstructions}</Label>
                         <Textarea
-                            placeholder="Enter special post-operative instructions"
+                            placeholder={postOp.fields.enterSpecialInstructions}
                             className="min-h-[80px] resize-none"
                             defaultValue={initialData?.special_instructions}
                         />
@@ -579,30 +583,30 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
 
             <Card className="shadow-none border-0">
                 <CardHeader>
-                    <CardTitle className="text-lg font-medium">Follow-Up & Reviews</CardTitle>
+                    <CardTitle className="text-lg font-medium">{postOp.sections.followUp}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SelectField
-                            label="Doctor"
-                            placeholder="Select Doctor"
+                            label={postOp.fields.doctor}
+                            placeholder={postOp.fields.selectDoctor}
                             options={DOCTOR_OPTIONS}
                             defaultValue={initialData?.follow_up?.doctor}
                         />
                         <div className="space-y-1.5">
-                            <Label className="text-sm font-medium text-gray-700">Date</Label>
+                            <Label className="text-sm font-medium text-gray-700">{postOp.fields.date}</Label>
                             <AppDatePicker
                                 value={followUpDate}
                                 onChange={setFollowUpDate}
-                                placeholder="Select follow-up date"
+                                placeholder={postOp.fields.selectFollowUpDate}
                             />
                         </div>
                         <div className="space-y-1.5">
-                            <Label className="text-sm font-medium text-gray-700">Time</Label>
+                            <Label className="text-sm font-medium text-gray-700">{postOp.fields.time}</Label>
                             <Select defaultValue={initialData?.follow_up?.time || "08:00"}>
                                 <SelectTrigger className={cn("w-full h-10")}>
                                     <div className="flex-1 text-left">
-                                        <SelectValue placeholder="Select Time" />
+                                        <SelectValue placeholder={postOp.fields.selectTime} />
                                     </div>
                                     <Clock className="w-4 h-4 text-green-500 opacity-50 mr-2" />
                                 </SelectTrigger>
@@ -626,10 +630,10 @@ export const PostOpEditMode = ({ initialData, onSaveDraft }: PostOpEditModeProps
                     className="border-blue-500 text-blue-500 hover:bg-white hover:text-blue-500"
                     onClick={handleSaveDraft}
                 >
-                    SAVE AS DRAFT
+                    {postOp.actions.saveDraft}
                 </Button>
                 <Button className="bg-green-600 hover:bg-green-600" onClick={() => console.log("Complete & Sign")}>
-                    <Send size={16} className="mr-2" /> SUBMIT ORDERS
+                    <Send size={16} className="mr-2" /> {postOp.actions.submitOrders}
                 </Button>
             </div>
         </>
