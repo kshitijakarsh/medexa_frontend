@@ -64,62 +64,66 @@ export function DataTable<T>({
       )}
 
       {/* Table */}
-      <Table className="rounded border-separate border-spacing-y-2">
-        <TableHeader className="bg-[#001A4D] [&_tr]:border-none">
-          <TableRow className="bg-[#001A4D] hover:bg-[#001A4D] rounded-lg">
-            {columns.map((col) => (
-              <TableHead
-                key={col.key.toString()}
-                className={`text-white py-4 first:rounded-l-lg last:rounded-r-lg ${col.className || ""}`}
-              >
-                {col.label}
-              </TableHead>
-            ))}
-          </TableRow>
-        </TableHeader>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <Table className="w-full">
+          <TableHeader>
+            <TableRow className="bg-[#001A4D] hover:bg-[#001A4D] border-none">
+              {columns.map((col) => (
+                <TableHead
+                  key={col.key.toString()}
+                  className={`text-white font-semibold py-4 px-6 ${col.className || ""}`}
+                >
+                  {col.label}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
 
-        <TableBody>
-          {loading ? (
-            <>
-              {[...Array(5)].map((_, i) => (
-                <TableRow key={i} className="animate-pulse">
-                  {columns.map((_, j) => (
-                    <TableCell key={j} className="py-4">
-                      <Skeleton className="h-4 w-full rounded-md" />
+          <TableBody>
+            {loading ? (
+              <>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i} className="animate-pulse border-b border-gray-100">
+                    {columns.map((_, j) => (
+                      <TableCell key={j} className="py-4 px-6">
+                        <Skeleton className="h-4 w-full rounded-md" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </>
+            ) : data.length === 0 ? (
+              <TableRow className="border-none">
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-12 text-muted-foreground"
+                >
+                  No records found
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.map((row, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => onRowClick?.(row)}
+                  className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                    onRowClick ? 'cursor-pointer' : 'cursor-default'
+                  } ${index === data.length - 1 ? 'border-none' : ''}`}
+                >
+                  {columns.map((col) => (
+                    <TableCell
+                      key={col.key.toString()}
+                      className={`py-4 px-6 ${col.className || ""}`}
+                    >
+                      {col.render ? col.render(row, index) : (row[col.key as keyof T] as any)}
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </>
-          ) : data.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="text-center py-8 text-muted-foreground"
-              >
-                No records found
-              </TableCell>
-            </TableRow>
-          ) : (
-            data.map((row, index) => (
-              <TableRow
-                key={index}
-                onClick={() => onRowClick?.(row)}
-                className="bg-white hover:bg-gray-50 cursor-default rounded-lg"
-              >
-                {columns.map((col, colIndex) => (
-                  <TableCell
-                    key={col.key.toString()}
-                    className={`py-4 ${colIndex === 0 ? 'rounded-l-lg' : ''} ${colIndex === columns.length - 1 ? 'rounded-r-lg' : ''} ${col.className || ""}`}
-                  >
-                    {col.render ? col.render(row, index) : (row[col.key as keyof T] as any)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Pagination */}
       {pagination && <div className="pt-4">{pagination}</div>}

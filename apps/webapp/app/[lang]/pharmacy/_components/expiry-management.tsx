@@ -5,7 +5,8 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
-import { Package, AlertTriangle, XCircle, Archive, Search, MoreVertical } from "lucide-react"
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import { Package, AlertTriangle, XCircle, Archive, Search, MoreVertical, Eye } from "lucide-react"
 import { DataTable } from "@/components/common/data-table"
 import { useBatches } from "../_hooks/useBatch"
 import { Batch } from "@/lib/api/batch-api"
@@ -103,38 +104,40 @@ export function ExpiryManagement() {
   const columns = [
     {
       key: "batch_number",
-      label: "Batch Number",
+      label: "Batch",
+      render: (row: Batch) => {
+        const initials = row.batch_number.substring(0, 2).toUpperCase()
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-indigo-100 text-indigo-700 font-semibold text-sm">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold text-gray-900">{row.batch_number}</div>
+              <div className="text-xs text-gray-500">ID: {row.id}</div>
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      key: "medicine",
+      label: "Medicine",
       render: (row: Batch) => (
         <div>
-          <div className="font-medium">{row.batch_number}</div>
-          <div className="text-xs text-gray-500">ID: {row.id}</div>
+          <div className="font-medium text-gray-900">{row.medicine?.medicine || 'N/A'}</div>
+          <div className="text-xs text-gray-500">{row.medicine?.type || ''}</div>
         </div>
       ),
     },
     {
-      key: "medicine Name",
-      label: "Medicine Name",
-      render: (row: Batch) => <span className="text-gray-600">{row.medicine.medicine}</span>,
-    },
-    {
       key: "quantity",
       label: "Quantity",
-      render: (row: Batch) => <span className="font-semibold">{row.quantity}</span>,
-    },
-    {
-      key: "location",
-      label: "Location",
-      render: (row: Batch) => <span>{row.location || "N/A"}</span>,
-    },
-    {
-      key: "status",
-      label: "API Status",
-      render: (row: Batch) => getApiStatusBadge(row.status),
-    },
-    {
-      key: "expiry_status",
-      label: "Expiry Status",
-      render: (row: Batch) => getExpiryStatusBadge(row.expiry_date),
+      render: (row: Batch) => (
+        <span className="font-semibold text-gray-900">{row.quantity}</span>
+      ),
     },
     {
       key: "expiry_date",
@@ -142,36 +145,32 @@ export function ExpiryManagement() {
       render: (row: Batch) => {
         const daysToExpiry = calculateDaysToExpiry(row.expiry_date)
         return (
-          <div className="space-y-1">
-            <div>{new Date(row.expiry_date).toLocaleDateString()}</div>
+          <div>
+            <div className="font-medium text-gray-900">{new Date(row.expiry_date).toLocaleDateString()}</div>
             <div className="text-xs text-gray-500">
-              {daysToExpiry > 0 ? `${daysToExpiry} days remaining` : daysToExpiry === 0 ? 'Expires today' : `Expired ${Math.abs(daysToExpiry)} days ago`}
+              {daysToExpiry > 0 ? `${daysToExpiry} days` : daysToExpiry === 0 ? 'Expires today' : `Expired`}
             </div>
           </div>
         )
       },
     },
     {
-      key: "total_value",
-      label: "Total Value",
-      render: (row: Batch) => <span className="font-semibold text-blue-600">${row.total_value.toFixed(2)}</span>,
+      key: "status",
+      label: "Status",
+      render: (row: Batch) => (
+        <div className="flex flex-col gap-1">
+          {getApiStatusBadge(row.status)}
+          {getExpiryStatusBadge(row.expiry_date)}
+        </div>
+      ),
     },
     {
       key: "actions",
-      label: "",
+      label: "Actions",
       render: (row: Batch) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4 text-gray-600" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              View Details
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-blue-50">
+          <Eye className="h-4 w-4 text-blue-600" />
+        </Button>
       ),
     },
   ]

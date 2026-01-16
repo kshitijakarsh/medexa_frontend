@@ -68,10 +68,11 @@ export function AppSidebar({ }) {
     // frontoffice: pathname.includes(FRONTOFFICE_BASE) || pathname.includes("/appointment"),
     frontoffice: pathname.includes(FRONTOFFICE_BASE) || (pathname.includes("/appointment") && !pathname.includes(DOCTOR_BASE)) && !pathname.includes(NURSE_BASE),
     surgery: pathname.includes(SURGERY_BASE),
+    pharmacy: pathname.includes("/pharmacy"),
   }
 
   const items = [
-    ...(!modulesAvailable.frontoffice && !modulesAvailable.doctor && !modulesAvailable.nurse && !modulesAvailable.hr && !modulesAvailable.surgery
+    ...(!modulesAvailable.frontoffice && !modulesAvailable.doctor && !modulesAvailable.nurse && !modulesAvailable.hr && !modulesAvailable.surgery && !modulesAvailable.pharmacy
       ? [
         {
           title: dict.nav.organizationSetup,
@@ -90,6 +91,50 @@ export function AppSidebar({ }) {
             withLocale(ROUTES.ADMINISTRATION_CHARGES_ADD),
           ],
           icon: Settings,
+        },
+      ]
+      : []),
+
+    ...(modulesAvailable.pharmacy
+      ? [
+        {
+          title: "Pharmacy",
+          icon: BriefcaseMedical,
+          url: [],
+          items: [
+            {
+              title: "Dashboard",
+              url: [withLocale("/pharmacy/dashboard")],
+            },
+            {
+              title: "OPD Dispensing",
+              url: [withLocale("/pharmacy/opd-dispensing")],
+            },
+            {
+              title: "IPD Pharmacy",
+              url: [withLocale("/pharmacy/ipd-pharmacy")],
+            },
+            {
+              title: "General Sales",
+              url: [withLocale("/pharmacy/general-sales")],
+            },
+            {
+              title: "Orders",
+              url: [withLocale("/pharmacy/orders")],
+            },
+            {
+              title: "Drug Inventory",
+              url: [withLocale("/pharmacy/drug-inventory")],
+            },
+            {
+              title: "Expiry Management",
+              url: [withLocale("/pharmacy/expiry-management")],
+            },
+            {
+              title: "Approvals",
+              url: [withLocale("/pharmacy/approvals")],
+            },
+          ],
         },
       ]
       : []),

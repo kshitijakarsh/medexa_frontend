@@ -7,7 +7,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import { Input } from "@workspace/ui/components/input"
 import { Search, User, Calendar, FileText, Bed, ArrowLeft, Download, Printer, CheckCircle } from "lucide-react"
-import { usePrescriptions } from "../_hooks/usePrescription"
+import { usePrescriptions, useUpdatePrescription } from "../_hooks/usePrescription"
 import { useMedicines } from "../_hooks/useMedicine"
 import type { Prescription } from "@/lib/api/prescription-api"
 import type { Medicine } from "@/lib/api/medicine-api"
@@ -26,6 +26,7 @@ export function IPDPharmacy() {
   const [cart, setCart] = useState<CartItem[]>([])
   
   const createOrderMutation = useCreateOrder()
+  const updatePrescriptionMutation = useUpdatePrescription()
   
   // Fetch IPD prescriptions
   const { data, isLoading } = usePrescriptions({
@@ -55,6 +56,11 @@ export function IPDPharmacy() {
   
   const handleDispenseAndBill = useCallback(() => {
     if (!selectedPrescription || !selectedPrescription.prescription_items) return
+    
+    if (selectedPrescription.status === "completed") {
+      alert("This prescription is already completed. This prescription has already been served.")
+      return
+    }
     
     // Get all medicines for lookup
     const allMedicines = medicinesData?.data || []
@@ -130,6 +136,18 @@ export function IPDPharmacy() {
       }
 
       const response = await createOrderMutation.mutateAsync(orderPayload)
+      
+      // Update prescription status to completed
+      try {
+        await updatePrescriptionMutation.mutateAsync({
+          id: selectedPrescription.id,
+          payload: { status: "completed" }
+        })
+      } catch (updateError) {
+        console.error("Failed to update prescription status:", updateError)
+        // Continue even if status update fails
+      }
+      
       alert(`Order #${response.data.id} created successfully!`)
       
       // Reset
@@ -143,7 +161,7 @@ export function IPDPharmacy() {
       const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || "Unknown error"
       alert(`Failed to create order: ${errorMsg}`)
     }
-  }, [cart, selectedPrescription, createOrderMutation])
+  }, [cart, selectedPrescription, createOrderMutation, updatePrescriptionMutation])
 
   const handlePrint = useCallback(() => {
     if (cart.length === 0 || !selectedPrescription) return
@@ -273,45 +291,66 @@ export function IPDPharmacy() {
               />
             </div>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-4">
             <div className="max-h-[calc(100vh-280px)] overflow-y-auto">
               {isLoading ? (
                 <div className="p-8 text-center text-gray-500">Loading prescriptions...</div>
               ) : prescriptions.length === 0 ? (
                 <div className="p-8 text-center text-gray-500">No IPD prescriptions found</div>
               ) : (
-                prescriptions.map((prescription) => {
-                  const patientName = prescription.patient
-                    ? `${prescription.patient.first_name} ${prescription.patient.last_name}`
-                    : "Unknown Patient"
-                  const patientInitials = patientName.split(" ").map(n => n[0]).join("").substring(0, 2)
-                  
-                  return (
-                    <div
-                      key={prescription.id}
-                      onClick={() => setSelectedPrescription(prescription)}
-                      className={`flex items-center gap-3 p-4 border-b cursor-pointer transition-colors ${
-                        selectedPrescription?.id === prescription.id
-                          ? "bg-blue-50 border-l-4 border-l-blue-600"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-gray-200 text-gray-700">
-                          {patientInitials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">{patientName}</div>
-                        <div className="text-xs text-gray-600">ID: {prescription.patient_id}</div>
-                        <div className="text-xs text-gray-500">
-                          {new Date(prescription.prescription_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      {getStatusBadge(prescription.status)}
-                    </div>
-                  )
-                })
+                <div className="grid grid-cols-1 gap-3">
+                  {prescriptions.map((prescription) => {
+                    const patientName = prescription.patient
+                      ? `${prescription.patient.first_name} ${prescription.patient.last_name}`
+                      : "Unknown Patient"
+                    const patientInitials = patientName.split(" ").map(n => n[0]).join("").substring(0, 2)
+                    const prescriptionNumber = `RX${prescription.id}`
+                    
+                    return (
+                      <Card
+                        key={prescription.id}
+                        onClick={() => {
+                          if (prescription.status === "completed") {
+                            alert("This prescription is already completed. This prescription has already been served.")
+                            return
+                          }
+                          setSelectedPrescription(prescription)
+                        }}
+                        className={`cursor-pointer transition-all hover:shadow-md ${
+                          selectedPrescription?.id === prescription.id
+                            ? "border-blue-500 border-2 bg-blue-50"
+                            : "border-gray-200"
+                        }`}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <Avatar className="h-12 w-12">
+                              <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
+                                {patientInitials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <h3 className="font-semibold text-sm text-gray-900">{patientName}</h3>
+                                  <p className="text-xs text-gray-600 mt-0.5">{prescriptionNumber}</p>
+                                </div>
+                                {getStatusBadge(prescription.status)}
+                              </div>
+                              <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(prescription.prescription_date).toLocaleDateString()}</span>
+                              </div>
+                              <div className="mt-2">
+                                <span className="text-xs text-blue-600 hover:text-blue-800 cursor-pointer">Doctor Consultation</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
               )}
             </div>
             <div className="p-4 border-t">

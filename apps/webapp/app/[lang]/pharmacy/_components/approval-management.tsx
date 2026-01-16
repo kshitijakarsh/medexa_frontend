@@ -5,6 +5,7 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
 import { FileText, Clock, CheckCircle, XCircle, Search, MoreVertical, Plus, Eye, Pencil, Trash2 } from "lucide-react"
 import { DataTable } from "@/components/common/data-table"
 import { useRequests, useDeleteRequest } from "../_hooks/useRequest"
@@ -110,19 +111,34 @@ export function ApprovalManagement() {
   const columns = [
     {
       key: "request_number",
-      label: "Request Number",
-      render: (row: Request) => (
-        <div>
-          <div className="font-medium">{row.request_number}</div>
-          <div className="text-xs text-gray-500">ID: {row.id}</div>
-        </div>
-      ),
+      label: "Request",
+      render: (row: Request) => {
+        const initials = row.request_number.substring(0, 2).toUpperCase()
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-purple-100 text-purple-700 font-semibold text-sm">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold text-gray-900">{row.request_number}</div>
+              <div className="text-xs text-gray-500">ID: {row.id}</div>
+            </div>
+          </div>
+        )
+      },
     },
     {
       key: "type",
       label: "Type",
       render: (row: Request) => (
-        <span className="capitalize font-medium">{row.type}</span>
+        <div>
+          <div className="font-medium text-gray-900 capitalize">{row.type}</div>
+          <div className="text-xs text-gray-500">
+            {row.request_date ? new Date(row.request_date).toLocaleDateString() : "N/A"}
+          </div>
+        </div>
       ),
     },
     {
@@ -130,8 +146,7 @@ export function ApprovalManagement() {
       label: "Items",
       render: (row: Request) => (
         <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-gray-400" />
-          <span className="font-semibold">{(row.requestItems?.length || row.request_items?.length || 0)}</span>
+          <span className="font-semibold text-gray-900">{(row.requestItems?.length || row.request_items?.length || 0)}</span>
           <span className="text-xs text-gray-500">batches</span>
         </div>
       ),
@@ -142,56 +157,30 @@ export function ApprovalManagement() {
       render: (row: Request) => getPriorityBadge(row.priority),
     },
     {
-      key: "request_date",
-      label: "Request Date",
-      render: (row: Request) => (
-        <span>
-          {row.request_date ? new Date(row.request_date).toLocaleDateString() : "N/A"}
-        </span>
-      ),
-    },
-    {
       key: "status",
       label: "Status",
       render: (row: Request) => getStatusBadge(row.status),
     },
     {
-      key: "reason",
-      label: "Reason",
-      render: (row: Request) => (
-        <div className="max-w-xs truncate" title={row.reason}>
-          {row.reason || "N/A"}
-        </div>
-      ),
-    },
-    {
       key: "actions",
-      label: "",
+      label: "Actions",
       render: (row: Request) => (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-              <MoreVertical className="h-4 w-4 text-gray-600" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => handleViewRequest(row)}>
-              <Eye className="mr-2 h-4 w-4" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleEditRequest(row)}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit Request
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleDeleteRequest(row)}
-              className="text-red-600"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Request
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-1">
+          <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-blue-50" onClick={() => handleViewRequest(row)}>
+            <Eye className="h-4 w-4 text-blue-600" />
+          </Button>
+          <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-green-50" onClick={() => handleEditRequest(row)}>
+            <Pencil className="h-4 w-4 text-green-600" />
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost" 
+            className="h-9 w-9 p-0 hover:bg-red-50"
+            onClick={() => handleDeleteRequest(row)}
+          >
+            <Trash2 className="h-4 w-4 text-red-600" />
+          </Button>
+        </div>
       ),
     },
   ]

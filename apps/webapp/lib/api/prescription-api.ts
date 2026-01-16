@@ -185,7 +185,7 @@ export const updatePrescription = async (
 ): Promise<PrescriptionResponse> => {
   const apiConfig = await createApiConfig(config)
   const response: AxiosResponse<PrescriptionResponse> = await axios.put(
-    `/api/v1/pharmacy/prescriptions/${id}`,
+    `/api/v1/prescriptions/${id}`,
     payload,
     apiConfig
   )

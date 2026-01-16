@@ -5,7 +5,8 @@ import { Card, CardContent } from "@workspace/ui/components/card"
 import { Input } from "@workspace/ui/components/input"
 import { Button } from "@workspace/ui/components/button"
 import { Badge } from "@workspace/ui/components/badge"
-import { Package, AlertTriangle, TrendingUp, TrendingDown, Search, Filter, Plus, Edit, Trash2, PackagePlus, Loader2 } from "lucide-react"
+import { Avatar, AvatarFallback } from "@workspace/ui/components/avatar"
+import { Package, AlertTriangle, TrendingUp, TrendingDown, Search, Filter, Plus, Edit, Trash2, PackagePlus, Loader2, Phone } from "lucide-react"
 import { DataTable } from "@/components/common/data-table"
 import { useMedicines, useDeleteMedicine, useCreateMedicine, useUpdateMedicine } from "../_hooks/useMedicine"
 import { useBatches, useCreateBatch, useUpdateBatch, useDeleteBatch } from "../_hooks/useBatch"
@@ -187,50 +188,62 @@ export function DrugInventory() {
     {
       key: "medicine",
       label: "Medicine Name",
+      render: (row: Medicine) => {
+        const initials = row.medicine.substring(0, 2).toUpperCase()
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-orange-100 text-orange-700 font-semibold text-sm">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="font-semibold text-gray-900">{row.medicine}</div>
+              <div className="text-xs text-gray-500">ID: {row.id}</div>
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      key: "type",
+      label: "Type",
       render: (row: Medicine) => (
         <div>
-          <div className="font-medium">{row.medicine}</div>
-          <div className="text-xs text-gray-500">{row.content || row.type}</div>
+          <div className="font-medium text-gray-900">{row.type}</div>
+          {row.content && <div className="text-xs text-gray-500">{row.content}</div>}
         </div>
       ),
     },
     {
-      key: "category",
-      label: "Category",
-      render: (row: Medicine) => row.type,
-    },
-    {
       key: "total_stock",
-      label: "Current Stock",
+      label: "Stock",
       render: (row: Medicine) => (
         <div className="flex items-center gap-2">
-          <span className="font-medium">{row.total_stock}</span>
+          <span className="font-semibold text-gray-900">{row.total_stock}</span>
           {getStockBadge(row.total_stock, row.min_level)}
         </div>
       ),
     },
     {
-      key: "min_level",
-      label: "Min Level",
-      render: (row: Medicine) => <span className="text-gray-600">{row.min_level}</span>,
-    },
-    {
       key: "selling_price",
-      label: "Unit Price",
-      render: (row: Medicine) => <span className="font-semibold text-blue-600">${row.selling_price.toFixed(2)}</span>,
+      label: "Price",
+      render: (row: Medicine) => (
+        <span className="font-semibold text-gray-900">KWD {row.selling_price.toFixed(3)}</span>
+      ),
     },
     {
       key: "actions",
       label: "Actions",
       render: (row: Medicine) => (
-        <div className="flex gap-2">
-          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => handleEditClick(row)}>
+        <div className="flex items-center gap-1">
+          <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-green-50" onClick={() => handleEditClick(row)}>
             <Edit className="h-4 w-4 text-blue-600" />
           </Button>
           <Button 
             size="sm" 
             variant="ghost" 
-            className="h-8 w-8 p-0"
+            className="h-9 w-9 p-0 hover:bg-red-50"
             onClick={() => handleDeleteClick(row)}
           >
             <Trash2 className="h-4 w-4 text-red-600" />
@@ -238,7 +251,7 @@ export function DrugInventory() {
           <Button 
             size="sm" 
             variant="ghost" 
-            className="h-8 w-8 p-0"
+            className="h-9 w-9 p-0 hover:bg-blue-50"
             onClick={() => {
               setSelectedMedicineId(row.id)
               setShowBatchPage(true)

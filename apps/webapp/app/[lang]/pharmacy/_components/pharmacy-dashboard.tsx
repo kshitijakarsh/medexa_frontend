@@ -33,23 +33,7 @@ export function PharmacyDashboard() {
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Total Stock Value */}
-        <Card className="bg-white border-l-4 border-l-blue-500">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600">Total Stock Value</div>
-              <Package className="h-5 w-5 text-blue-500" />
-            </div>
-            <div className="text-2xl font-bold text-blue-600">{kpis?.totalStockValue?.value || "$0"}</div>
-            <div className={`flex items-center mt-1 text-xs ${kpis?.totalStockValue?.trend === "up" ? "text-green-600" : "text-red-600"}`}>
-              {kpis?.totalStockValue?.trend === "up" ? (
-                <TrendingUp className="h-3 w-3 mr-1" />
-              ) : (
-                <TrendingDown className="h-3 w-3 mr-1" />
-              )}
-              <span>{Math.abs(kpis?.totalStockValue?.growthPercentage || 0)}% {kpis?.totalStockValue?.trend === "up" ? "Increase" : "Decrease"} Vs last Month</span>
-            </div>
-          </CardContent>
-        </Card>
+        
 
         {/* Items Below Min Level */}
         <Card className={`bg-white border-l-4 ${kpis?.itemsBelowMinLevel?.status === "urgent" ? "border-l-orange-500" : "border-l-green-500"}`}>
@@ -88,6 +72,24 @@ export function PharmacyDashboard() {
             </div>
             <div className="text-2xl font-bold text-red-600">{kpis?.expiringSoon?.count || 0}</div>
             <div className="text-xs text-red-600 mt-1">{kpis?.expiringSoon?.period}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white border-l-4 border-l-blue-500">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm text-gray-600">Total Stock Value</div>
+              <Package className="h-5 w-5 text-blue-500" />
+            </div>
+            <div className="text-2xl font-bold text-blue-600">{kpis?.totalStockValue?.value || "$0"}</div>
+            <div className={`flex items-center mt-1 text-xs ${kpis?.totalStockValue?.trend === "up" ? "text-green-600" : "text-red-600"}`}>
+              {kpis?.totalStockValue?.trend === "up" ? (
+                <TrendingUp className="h-3 w-3 mr-1" />
+              ) : (
+                <TrendingDown className="h-3 w-3 mr-1" />
+              )}
+              <span>{Math.abs(kpis?.totalStockValue?.growthPercentage || 0)}% {kpis?.totalStockValue?.trend === "up" ? "Increase" : "Decrease"} Vs last Month</span>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -129,7 +131,7 @@ export function PharmacyDashboard() {
           <CardContent>
             {medicinesBySales.length > 0 ? (
               <>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
                       data={medicinesBySales}
