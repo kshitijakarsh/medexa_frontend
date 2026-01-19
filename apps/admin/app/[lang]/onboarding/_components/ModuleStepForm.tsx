@@ -318,7 +318,7 @@ export function ModuleStepForm({ dict }: ModuleStepFormProps) {
     enabled: !!authToken,
     queryFn: async () => {
       const client = createModulesApiClient({ authToken })
-      const response = await client.getModules()
+      const response = await client.getModules({ limit: 100 })
       return response.data.data
     },
   })

@@ -81,11 +81,18 @@ class ModulesApiClient {
     }
   }
 
-  async getModules(): Promise<AxiosResponse<ModuleListResponse>> {
+  async getModules(params?: {
+    page?: number
+    limit?: number
+  }): Promise<AxiosResponse<ModuleListResponse>> {
     try {
+      const config = await this.getJsonRequestConfig()
+      if (params) {
+        config.params = params
+      }
       return await axios.get<ModuleListResponse>(
         `${this.baseUrl}/api/v1/modules`,
-        await this.getJsonRequestConfig()
+        config
       )
     } catch (error) {
       if (axios.isAxiosError(error)) {
