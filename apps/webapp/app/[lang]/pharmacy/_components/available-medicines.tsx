@@ -7,12 +7,19 @@ import { Button } from "@workspace/ui/components/button"
 import { Search, ShoppingCart, Plus, Minus, Trash2 } from "lucide-react"
 import { useMedicines } from "../_hooks/useMedicine"
 import { Medicine } from "@/lib/api/medicine-api"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface CartItem extends Medicine {
   cartQuantity: number
 }
 
 export function AvailableMedicines() {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.generalSales
+  const phCommonDict = dict.pages.pharmacy.common
+  const invDict = dict.pages.pharmacy.inventory
+  const opdDict = dict.pages.pharmacy.opd
+
   const [searchQuery, setSearchQuery] = useState("")
   const [cart, setCart] = useState<CartItem[]>([])
 
@@ -64,11 +71,11 @@ export function AvailableMedicines() {
       <div className="col-span-8">
         <Card>
           <div className="p-4 border-b">
-            <h3 className="font-semibold mb-3">Available Medicines</h3>
+            <h3 className="font-semibold mb-3">{pDict.availableMedicines}</h3>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search medicines by category or category..."
+                placeholder={pDict.medicineSearchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -85,7 +92,7 @@ export function AvailableMedicines() {
               </div>
             ) : filteredMedicines.length === 0 ? (
               <div className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">No medicines found</p>
+                <p className="text-muted-foreground">{invDict.noMedicinesFound}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-4">
@@ -101,11 +108,11 @@ export function AvailableMedicines() {
 
                         <div className="flex items-center justify-between text-sm">
                           <div>
-                            <div className="text-xs text-gray-600">Stock</div>
+                            <div className="text-xs text-gray-600">{phCommonDict.inStock}</div>
                             <div className="font-medium">{medicine.total_stock}</div>
                           </div>
                           <div>
-                            <div className="text-xs text-gray-600">Price</div>
+                            <div className="text-xs text-gray-600">{phCommonDict.price}</div>
                             <div className="font-semibold text-blue-600">${medicine.selling_price.toFixed(2)}</div>
                           </div>
                         </div>
@@ -117,7 +124,7 @@ export function AvailableMedicines() {
                           disabled={medicine.total_stock <= 0}
                         >
                           <Plus className="mr-2 h-4 w-4" />
-                          Add to Cart
+                          {pDict.addToCart}
                         </Button>
                       </div>
                     </CardContent>
@@ -135,15 +142,15 @@ export function AvailableMedicines() {
           <div className="p-4 border-b">
             <div className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
-              <h3 className="font-semibold">Shopping Cart</h3>
+              <h3 className="font-semibold">{pDict.shoppingCart}</h3>
             </div>
           </div>
 
           {cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
               <ShoppingCart className="h-16 w-16 text-gray-300 mb-3" />
-              <p className="text-gray-500">Cart is empty</p>
-              <p className="text-sm text-gray-400 mt-1">Add medicines to cart to proceed</p>
+              <p className="text-gray-500">{opdDict.alerts.cartEmpty}</p>
+              <p className="text-sm text-gray-400 mt-1">{pDict.addMedicinesToStart}</p>
             </div>
           ) : (
             <>
@@ -195,27 +202,27 @@ export function AvailableMedicines() {
               <div className="border-t p-4 space-y-4">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal:</span>
+                    <span className="text-gray-600">{phCommonDict.subtotal}:</span>
                     <span className="font-medium">
                       ${cart.reduce((sum, item) => sum + item.selling_price * item.cartQuantity, 0).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Tax (10%):</span>
+                    <span className="text-gray-600">{phCommonDict.tax} (10%):</span>
                     <span className="font-medium">
                       ${(cart.reduce((sum, item) => sum + item.selling_price * item.cartQuantity, 0) * 0.1).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between font-bold border-t pt-2">
-                    <span>Total:</span>
+                    <span>{opdDict.checkout.total}:</span>
                     <span className="text-green-600">
                       ${(cart.reduce((sum, item) => sum + item.selling_price * item.cartQuantity, 0) * 1.1).toFixed(2)}
                     </span>
                   </div>
                 </div>
 
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  Proceed to Checkout
+                <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => { }}>
+                  {opdDict.checkout.confirmDispense}
                 </Button>
               </div>
             </>

@@ -39,7 +39,20 @@
     "completed": "مكتمل",
     "pending": "قيد الانتظار",
     "ordered": "مطلوب",
-    "justNow": "الآن"
+    "justNow": "الآن",
+    "unknownError": "خطأ غير معروف",
+    "totalAmount": "المجموع الإجمالي",
+    "taxRate": "معدل الضريبة (%)",
+    "enterTaxRate": "أدخل معدل الضريبة",
+    "close": "إغلاق",
+    "all": "الكل",
+    "type": "النوع",
+    "items": "الأصناف",
+    "priority": "الأولوية",
+    "approved": "تمت الموافقة",
+    "rejected": "مرفوض",
+    "viewAll": "عرض الكل",
+    "qty": "الكمية"
   },
   "dashboard": {
     "todayOverview": "نظرة عامة اليوم",
@@ -79,7 +92,8 @@
     "createdOn": "تم الإنشاء في",
     "addedBy": "أضيف بواسطة",
     "sno": "م.",
-    "orderedBy": "مطلوب بواسطة"
+    "orderedBy": "مطلوب بواسطة",
+    "actions": "الإجراءات"
   },
   "actions": {
     "add": "إضافة",
@@ -2587,7 +2601,16 @@
     },
     "pharmacy": {
       "common": {
-        "viewAll": "عرض الكل",
+        "tabs": {
+          "dashboard": "لوحة القيادة",
+          "opd": "صرف العيادات الخارجية",
+          "ipd": "صيدلية التنويم",
+          "sales": "مبيعات عامة",
+          "orders": "الطلبات",
+          "inventory": "مخزون الأدوية",
+          "expiry": "إدارة الصلاحية",
+          "approvals": "الموافقات"
+        },
         "loadingPrescriptions": "جاري تحميل الوصفات...",
         "loadingMedicines": "جاري تحميل الأدوية...",
         "noPrescriptionsFound": "لم يتم العثور على وصفات",
@@ -2595,51 +2618,33 @@
         "totalMedications": "إجمالي الأدوية",
         "dispenseAndBill": "صرف وفواتير",
         "printLabel": "طباعة الملصق",
-        "noMedications": "لا توجد أدوية في هذه الوصفة",
-        "additionalNotes": "ملاحظات إضافية:",
-        "price": "السعر",
-        "qty": "الكمية",
-        "cartEmpty": "السلة فارغة",
-        "subtotal": "المجموع الفرعي",
-        "tax": "الضريبة (5%)",
-        "totalAmount": "المجموع الإجمالي",
-        "confirmSale": "تأكيد البيع",
-        "processing": "جاري المعالجة...",
-        "all": "الكل",
-        "status": "الحالة",
-        "actions": "الإجراءات",
-        "items": "الأصناف",
         "viewDetails": "عرض التفاصيل",
-        "edit": "تعديل",
-        "delete": "حذف",
-        "cancel": "إلغاء",
-        "pending": "قيد الانتظار",
-        "approved": "تمت الموافقة",
-        "rejected": "مرفوض",
-        "completed": "مكتمل",
-        "priority": "الأولوية",
-        "reason": "السبب",
-        "quantity": "الكمية",
-        "type": "النوع",
         "inStock": "في المخزون",
-        "previous": "السابق",
-        "next": "التالي",
-        "clear": "مسح",
         "clearAll": "مسح الكل",
         "refresh": "تحديث",
         "export": "تصدير",
         "selectPatient": "اختر المريض (اختياري)",
-        "done": "تم",
-        "active": "نشط",
         "nameRequired": "الاسم مطلوب",
         "typeRequired": "النوع مطلوب",
         "saveFailed": "فشل حفظ المعلومات",
         "updateFailed": "فشل تحديث المعلومات",
-        "close": "إغلاق",
         "deleteConfirmation": "هل أنت متأكد أنك تريد حذف {{item}}؟",
         "medicineId": "معرف الدواء",
-        "id": "المعرف",
-        "selectPriority": "اختر الأولوية"
+        "selectPriority": "اختر الأولوية",
+        "prescriptionId": "رقم الوصفة",
+        "noMedications": "لا توجد أدوية في هذه الوصفة",
+        "additionalNotes": "ملاحظات إضافية:",
+        "cartEmpty": "السلة فارغة",
+        "price": "السعر",
+        "subtotal": "المجموع الفرعي",
+        "tax": "الضريبة",
+        "confirmSale": "تأكيد البيع",
+        "processing": "جاري المعالجة...",
+        "doctorConsultation": "استشارة طبية",
+        "bedId": "رقم السرير",
+        "admissionDate": "تاريخ الدخول",
+        "dischargeDate": "تاريخ الخروج",
+        "unknownPatient": "مريض غير معروف"
       },
       "dashboard": {
         "title": "لوحة قيادة الصيدلية",
@@ -2667,12 +2672,11 @@
       },
       "opd": {
         "title": "صرف العيادات الخارجية",
-        "prescriptionQueue": "قائمة انتظار الوصفات",
-        "searchPlaceholder": "البحث عن طريق المريض، المعرف، أو الوصفة...",
+        "prescriptionQueue": "قائمة الوصفات",
+        "searchPlaceholder": "البحث عن مريض، معرف، أو وصفة...",
         "noPrescriptionsFound": "لم يتم العثور على وصفات عيادات خارجية",
         "detailsTitle": "تفاصيل الوصفة",
         "visitInfo": "معلومات الزيارة",
-        "diagnosis": "التشخيص",
         "checkout": {
           "title": "الدفع",
           "backToPrescription": "العودة إلى الوصفة",
@@ -2686,12 +2690,14 @@
         },
         "status": {
           "waiting": "في الانتظار",
-          "done": "تم"
+          "done": "تم",
+          "active": "نشط"
         },
         "alerts": {
           "cartEmpty": "السلة فارغة",
           "orderSuccess": "تم إنشاء الطلب رقم #{{id}} بنجاح!",
-          "orderFailed": "فشل إنشاء الطلب: {{message}}"
+          "orderFailed": "فشل إنشاء الطلب: {{message}}",
+          "prescriptionCompleted": "هذه الوصفة مكتملة بالفعل. تم تقديم هذه الوصفة بالفعل."
         }
       },
       "ipd": {
@@ -2708,7 +2714,14 @@
           "critical": "حرجة",
           "ready": "جاهزة"
         },
-        "ipdPrescriptionOrder": "طلب وصفة IPD - {{id}}"
+        "alerts": {
+          "orderSuccess": "تم إنشاء الطلب رقم #{{id}} بنجاح!",
+          "orderFailed": "فشل إنشاء الطلب: {{message}}",
+          "prescriptionCompleted": "هذه الوصفة مكتملة بالفعل. تم تقديم هذه الوصفة بالفعل."
+        },
+        "ipdPrescriptionOrder": "طلب وصفة IPD - {{id}}",
+        "admissionDate": "تاريخ الدخول",
+        "dischargeDate": "تاريخ الخروج"
       },
       "generalSales": {
         "title": "مبيعات عامة",
@@ -2728,6 +2741,9 @@
         "printInvoice": "طباعة الفاتورة",
         "downloadPdfInvoice": "تحميل الفاتورة PDF",
         "continueShopping": "مواصلة التسوق",
+        "alerts": {
+          "saleCompleted": "تمت عملية البيع بنجاح!"
+        },
         "generalSalesOrder": "طلب مبيعات عامة",
         "prescriptionOrder": "طلب وصفة طبية - {{id}}"
       },
@@ -2800,16 +2816,15 @@
         "currentStock": "المخزون الحالي",
         "minLevel": "الحد الأدنى",
         "unitPrice": "سعر الوحدة",
-        "inStock": "متوفر",
+        "trends": {
+          "increase": "زيادة",
+          "decrease": "نقص",
+          "vsLastMonth": "عن الشهر الماضي"
+        },
         "medium": "متوسط",
         "requiresAttention": "تطلب اهتماماً",
         "highTurnover": "دوران عالي",
         "reviewRequired": "مراجعة مطلوبة",
-        "trends": {
-          "increase": "زيادة",
-          "decrease": "نقصان",
-          "vsLastMonth": "مقارنة بالشهر الماضي"
-        },
         "fields": {
           "medicineName": "اسم الدواء *",
           "type": "النوع *",
@@ -2893,7 +2908,6 @@
         "title": "إدارة الموافقات",
         "createRequest": "إنشاء طلب",
         "editRequest": "تعديل الطلب",
-        "deleteRequest": "حذف الطلب",
         "requestNumber": "رقم الطلب",
         "requestDate": "تاريخ الطلب",
         "priority": "الأولوية",
@@ -2910,7 +2924,6 @@
         "selectBatch": "اختر شحنة",
         "noBatchesAdded": "لم يتم إضافة شحنات بعد. انقر على 'إضافة شحنة' لإضافة أصناف الطلب.",
         "medicineId": "معرف الدواء",
-        "qty": "الكمية",
         "saving": "جاري الحفظ...",
         "updateRequest": "تحديث الطلب",
         "createRequestLabel": "إنشاء طلب",
@@ -2919,8 +2932,8 @@
         "requestFailed": "فشل إنشاء الطلب. يرجى المحاولة مرة أخرى.",
         "submitRequestDesc": "إرسال طلب جديد لإدارة الشحنات",
         "availableQuantity": "الكمية المتوفرة",
-        "selectPriority": "اختر الأولوية",
         "selectStatus": "اختر الحالة",
+        "selectPriority": "اختر الأولوية",
         "types": {
           "disposal": "تخلص",
           "return": "إرجاع",

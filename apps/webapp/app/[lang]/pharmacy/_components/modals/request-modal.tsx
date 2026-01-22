@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useDictionary } from "@/i18n/use-dictionary"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,11 @@ interface RequestItemInput {
 }
 
 export function RequestModal({ open, onOpenChange, request, mode = "create" }: RequestModalProps) {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.approvals
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonDict = dict.common
+
   const [formData, setFormData] = useState({
     request_number: "",
     type: "",
@@ -58,14 +64,14 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
 
   const createMutation = useCreateRequest()
   const updateMutation = useUpdateRequest()
-  
+
   // Fetch full request data with nested relations for edit/view mode
   const { data: fullRequestData } = useRequest(
     request?.id || 0,
     (mode === "edit" || mode === "view") && !!request?.id
   )
   const fullRequest = fullRequestData?.data
-  
+
   const { data: batchesData } = useBatches({ page: 1, limit: 100 })
   const batches = Array.isArray(batchesData?.data) ? batchesData.data : []
 
@@ -78,7 +84,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
       const formattedDate = fullRequest.request_date
         ? fullRequest.request_date.split("T")[0]
         : ""
-      
+
       setFormData({
         request_number: fullRequest.request_number || "",
         type: fullRequest.type || "",
@@ -90,7 +96,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
         notes: fullRequest.notes || "",
         status: fullRequest.status || "pending",
       })
-      
+
       const items = fullRequest.requestItems || fullRequest.request_items
       if (items && Array.isArray(items)) {
         setRequestItems(
@@ -170,7 +176,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
     if (requestItem?.medicineBatch) {
       return requestItem.medicineBatch
     }
-    
+
     // Otherwise check in the loaded batches
     return batches.find((b) => b.id === batchId)
   }
@@ -180,7 +186,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isViewMode ? "View Request" : isEditMode ? "Edit Request" : "Create New Request"}
+            {isViewMode ? pDict.viewRequest : isEditMode ? pDict.editRequest : pDict.createNewRequest}
           </DialogTitle>
         </DialogHeader>
 
@@ -188,7 +194,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
           {/* Request Number */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="request_number">Request Number</Label>
+              <Label htmlFor="request_number">{pDict.requestNumber}</Label>
               <Input
                 id="request_number"
                 value={formData.request_number}
@@ -199,20 +205,20 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="type">Type</Label>
+              <Label htmlFor="type">{commonDict.type}</Label>
               <Select
                 value={formData.type}
                 onValueChange={(value) => setFormData({ ...formData, type: value })}
                 disabled={isViewMode}
               >
                 <SelectTrigger id="type">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={pDict.selectType} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="disposal">Disposal</SelectItem>
-                  <SelectItem value="return">Return</SelectItem>
-                  <SelectItem value="quarantine">Quarantine</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
+                  <SelectItem value="disposal">{pDict.types.disposal}</SelectItem>
+                  <SelectItem value="return">{pDict.types.return}</SelectItem>
+                  <SelectItem value="quarantine">{pDict.types.quarantine}</SelectItem>
+                  <SelectItem value="transfer">{pDict.types.transfer}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -221,7 +227,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
           {/* Request Date and Priority */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="request_date">Request Date</Label>
+              <Label htmlFor="request_date">{pDict.requestDate}</Label>
               <Input
                 id="request_date"
                 type="date"
@@ -232,20 +238,20 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
+              <Label htmlFor="priority">{commonDict.priority}</Label>
               <Select
                 value={formData.priority}
                 onValueChange={(value) => setFormData({ ...formData, priority: value })}
                 disabled={isViewMode}
               >
                 <SelectTrigger id="priority">
-                  <SelectValue placeholder="Select priority" />
+                  <SelectValue placeholder={phCommonDict.selectPriority} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
+                  <SelectItem value="low">{pDict.priorityLabels.low}</SelectItem>
+                  <SelectItem value="medium">{pDict.priorityLabels.medium}</SelectItem>
+                  <SelectItem value="high">{pDict.priorityLabels.high}</SelectItem>
+                  <SelectItem value="urgent">{pDict.priorityLabels.urgent}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -254,7 +260,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
           {/* Location and Certificate Number */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">{pDict.location}</Label>
               <Input
                 id="location"
                 value={formData.location}
@@ -264,7 +270,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="cert_number">Certificate Number</Label>
+              <Label htmlFor="cert_number">{pDict.certNumber}</Label>
               <Input
                 id="cert_number"
                 value={formData.cert_number}
@@ -276,7 +282,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
 
           {/* Reason */}
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason</Label>
+            <Label htmlFor="reason">{pDict.reason}</Label>
             <Textarea
               id="reason"
               value={formData.reason}
@@ -288,7 +294,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{commonDict.notes}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
@@ -301,20 +307,20 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
           {/* Status (for edit/view mode) */}
           {(isEditMode || isViewMode) && (
             <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor="status">{commonDict.status}</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => setFormData({ ...formData, status: value })}
                 disabled={isViewMode}
               >
                 <SelectTrigger id="status">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={pDict.selectStatus} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="pending">{commonDict.pending}</SelectItem>
+                  <SelectItem value="approved">{commonDict.approved}</SelectItem>
+                  <SelectItem value="rejected">{commonDict.rejected}</SelectItem>
+                  <SelectItem value="completed">{commonDict.completed}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -323,7 +329,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
           {/* Request Items Section */}
           <div className="space-y-3 border-t pt-4">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">Request Items (Batches)</Label>
+              <Label className="text-base font-semibold">{pDict.requestItems}</Label>
               {!isViewMode && (
                 <Button
                   type="button"
@@ -333,7 +339,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                   className="gap-2"
                 >
                   <Plus className="h-4 w-4" />
-                  Add Batch
+                  {pDict.addBatch}
                 </Button>
               )}
             </div>
@@ -344,7 +350,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                 <div className="flex gap-2">
                   <Select value={selectedBatchId} onValueChange={setSelectedBatchId}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a batch" />
+                      <SelectValue placeholder={pDict.selectBatch} />
                     </SelectTrigger>
                     <SelectContent>
                       {batches
@@ -357,7 +363,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                     </SelectContent>
                   </Select>
                   <Button type="button" onClick={handleAddRequestItem} disabled={!selectedBatchId}>
-                    Add
+                    {dict.common.add}
                   </Button>
                   <Button
                     type="button"
@@ -367,7 +373,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                       setSelectedBatchId("")
                     }}
                   >
-                    Cancel
+                    {commonDict.cancel}
                   </Button>
                 </div>
               </Card>
@@ -377,7 +383,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
             <div className="space-y-2">
               {requestItems.length === 0 ? (
                 <div className="text-center text-sm text-gray-500 py-8 border-2 border-dashed rounded-lg">
-                  No batches added yet. Click "Add Batch" to add request items.
+                  {pDict.noBatchesAdded}
                 </div>
               ) : (
                 requestItems.map((item) => {
@@ -387,7 +393,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="font-medium">
-                            {batch?.batch_number || `Batch ID: ${item.medicine_batch_id}`}
+                            {batch?.batch_number || `${pDict.batches}: ${item.medicine_batch_id}`}
                           </div>
                           {batch && (
                             <div className="text-sm text-gray-600 space-y-1 mt-1">
@@ -397,9 +403,9 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
                                 </div>
                               )}
                               <div className="flex gap-4">
-                                <span>Quantity: {batch.quantity}</span>
-                                <span>Location: {batch.location || "N/A"}</span>
-                                <span>Expiry: {new Date(batch.expiry_date).toLocaleDateString()}</span>
+                                <span>{commonDict.quantity}: {batch.quantity}</span>
+                                <span>{pDict.location}: {batch.location || dict.common.noData}</span>
+                                <span>{dict.pages.pharmacy.expiry.expiryDate}: {new Date(batch.expiry_date).toLocaleDateString()}</span>
                               </div>
                             </div>
                           )}
@@ -426,7 +432,7 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {isViewMode ? "Close" : "Cancel"}
+            {isViewMode ? commonDict.close : commonDict.cancel}
           </Button>
           {!isViewMode && (
             <Button
@@ -440,10 +446,10 @@ export function RequestModal({ open, onOpenChange, request, mode = "create" }: R
               }
             >
               {createMutation.isPending || updateMutation.isPending
-                ? "Saving..."
+                ? commonDict.saving
                 : isEditMode
-                ? "Update Request"
-                : "Create Request"}
+                  ? pDict.updateRequest
+                  : pDict.createRequestLabel}
             </Button>
           )}
         </DialogFooter>

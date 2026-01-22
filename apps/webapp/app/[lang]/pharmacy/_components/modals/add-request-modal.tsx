@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Batch } from "@/lib/api/batch-api"
+import { useDictionary } from "@/i18n/use-dictionary"
 import { useCreateRequest } from "../../_hooks/useRequest"
 import {
   Dialog,
@@ -37,6 +38,11 @@ export function AddRequestModal({
   onOpenChange,
   batch,
 }: AddRequestModalProps) {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.approvals
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonDict = dict.common
+
   const [requestType, setRequestType] = useState<RequestType>("dispose");
   const createRequest = useCreateRequest();
 
@@ -95,10 +101,10 @@ export function AddRequestModal({
 
     try {
       await createRequest.mutateAsync(basePayload);
-      alert("Request created successfully!");
+      alert(pDict.requestCreated);
       onOpenChange(false);
     } catch (error) {
-      alert("Failed to create request. Please try again.");
+      alert(pDict.requestFailed);
       console.error(error);
     }
   };
@@ -108,17 +114,17 @@ export function AddRequestModal({
       return (
         <>
           <div className="space-y-2">
-            <Label htmlFor="disposalMethod">Disposal Method</Label>
+            <Label htmlFor="disposalMethod">{pDict.fields.disposalMethod}</Label>
             <Input
               id="disposalMethod"
               value={disposalMethod}
               onChange={(e) => setDisposalMethod(e.target.value)}
-              placeholder="Enter disposal method"
+              placeholder={pDict.placeholders.disposalMethod}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="disposalDate">Disposal Date</Label>
+            <Label htmlFor="disposalDate">{pDict.fields.disposalDate}</Label>
             <Input
               id="disposalDate"
               type="date"
@@ -128,22 +134,22 @@ export function AddRequestModal({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="authorizedBy">Authorized By</Label>
+            <Label htmlFor="authorizedBy">{pDict.fields.authorizedBy}</Label>
             <Input
               id="authorizedBy"
               value={authorizedBy}
               onChange={(e) => setAuthorizedBy(e.target.value)}
-              placeholder="Enter authorizer name"
+              placeholder={pDict.placeholders.authorizedBy}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="disposalLocation">Disposal Location</Label>
+            <Label htmlFor="disposalLocation">{pDict.fields.disposalLocation}</Label>
             <Input
               id="disposalLocation"
               value={disposalLocation}
               onChange={(e) => setDisposalLocation(e.target.value)}
-              placeholder="Enter disposal location"
+              placeholder={pDict.placeholders.disposalLocation}
               required
             />
           </div>
@@ -155,44 +161,44 @@ export function AddRequestModal({
       return (
         <>
           <div className="space-y-2">
-            <Label htmlFor="returnTo">Return To</Label>
+            <Label htmlFor="returnTo">{pDict.fields.returnTo}</Label>
             <Input
               id="returnTo"
               value={returnTo}
               onChange={(e) => setReturnTo(e.target.value)}
-              placeholder="Enter return destination"
+              placeholder={pDict.placeholders.returnTo}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="returnReason">Return Reason</Label>
+            <Label htmlFor="returnReason">{pDict.fields.returnReason}</Label>
             <Input
               id="returnReason"
               value={returnReason}
               onChange={(e) => setReturnReason(e.target.value)}
-              placeholder="Enter return reason"
+              placeholder={pDict.placeholders.returnReason}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="creditAmount">Credit Amount</Label>
+            <Label htmlFor="creditAmount">{pDict.fields.creditAmount}</Label>
             <Input
               id="creditAmount"
               type="number"
               step="0.01"
               value={creditAmount}
               onChange={(e) => setCreditAmount(e.target.value)}
-              placeholder="Enter credit amount"
+              placeholder={pDict.placeholders.creditAmount}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="trackingNumber">Tracking Number</Label>
+            <Label htmlFor="trackingNumber">{pDict.fields.trackingNumber}</Label>
             <Input
               id="trackingNumber"
               value={trackingNumber}
               onChange={(e) => setTrackingNumber(e.target.value)}
-              placeholder="Enter tracking number"
+              placeholder={pDict.placeholders.trackingNumber}
               required
             />
           </div>
@@ -204,17 +210,17 @@ export function AddRequestModal({
       return (
         <>
           <div className="space-y-2">
-            <Label htmlFor="quarantineArea">Quarantine Area</Label>
+            <Label htmlFor="quarantineArea">{pDict.fields.quarantineArea}</Label>
             <Input
               id="quarantineArea"
               value={quarantineArea}
               onChange={(e) => setQuarantineArea(e.target.value)}
-              placeholder="Enter quarantine area"
+              placeholder={pDict.placeholders.quarantineArea}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="reviewDate">Review Date</Label>
+            <Label htmlFor="reviewDate">{pDict.fields.reviewDate}</Label>
             <Input
               id="reviewDate"
               type="date"
@@ -224,22 +230,22 @@ export function AddRequestModal({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="quarantineReason">Quarantine Reason</Label>
+            <Label htmlFor="quarantineReason">{pDict.fields.quarantineReason}</Label>
             <Input
               id="quarantineReason"
               value={quarantineReason}
               onChange={(e) => setQuarantineReason(e.target.value)}
-              placeholder="Enter quarantine reason"
+              placeholder={pDict.placeholders.quarantineReason}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="qualityIssue">Quality Issue</Label>
+            <Label htmlFor="qualityIssue">{pDict.fields.qualityIssue}</Label>
             <Input
               id="qualityIssue"
               value={qualityIssue}
               onChange={(e) => setQualityIssue(e.target.value)}
-              placeholder="Describe quality issue"
+              placeholder={pDict.placeholders.qualityIssue}
               required
             />
           </div>
@@ -254,9 +260,9 @@ export function AddRequestModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Request</DialogTitle>
+          <DialogTitle>{pDict.createNewRequest}</DialogTitle>
           <DialogDescription>
-            Submit a new request for batch management
+            {pDict.submitRequestDesc}
           </DialogDescription>
         </DialogHeader>
 
@@ -264,19 +270,19 @@ export function AddRequestModal({
           <div className="rounded-lg border p-4 bg-muted/50">
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
-                <span className="font-semibold">Batch Number:</span>{" "}
+                <span className="font-semibold">{pDict.batches}:</span>{" "}
                 {batch.batch_number}
               </div>
               <div>
-                <span className="font-semibold">Medicine ID:</span>{" "}
+                <span className="font-semibold">{pDict.medicineId}:</span>{" "}
                 {batch.medicine_id}
               </div>
               <div>
-                <span className="font-semibold">Available Quantity:</span>{" "}
+                <span className="font-semibold">{pDict.availableQuantity}:</span>{" "}
                 {batch.quantity}
               </div>
               <div>
-                <span className="font-semibold">Expiry Date:</span>{" "}
+                <span className="font-semibold">{dict.pages.pharmacy.expiry.expiryDate}:</span>{" "}
                 {batch.expiry_date && new Date(batch.expiry_date).toLocaleDateString()}
               </div>
             </div>
@@ -285,52 +291,52 @@ export function AddRequestModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="requestType">Request Type</Label>
+            <Label htmlFor="requestType">{commonDict.type}</Label>
             <Select
               value={requestType}
               onValueChange={(value) => setRequestType(value as RequestType)}
             >
               <SelectTrigger id="requestType">
-                <SelectValue placeholder="Select request type" />
+                <SelectValue placeholder={pDict.placeholders.selectType} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="dispose">Dispose</SelectItem>
-                <SelectItem value="return">Return</SelectItem>
-                <SelectItem value="quarantine">Quarantine</SelectItem>
+                <SelectItem value="dispose">{pDict.types.disposal}</SelectItem>
+                <SelectItem value="return">{pDict.types.return}</SelectItem>
+                <SelectItem value="quarantine">{pDict.types.quarantine}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="quantity">Quantity</Label>
+            <Label htmlFor="quantity">{commonDict.quantity}</Label>
             <Input
               id="quantity"
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Enter quantity"
+              placeholder={pDict.placeholders.quantity}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="reason">Reason</Label>
+            <Label htmlFor="reason">{pDict.reason}</Label>
             <Input
               id="reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="Enter reason"
+              placeholder={pDict.placeholders.reason}
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{commonDict.notes}</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Enter additional notes"
+              placeholder={pDict.placeholders.notes}
               rows={3}
             />
           </div>
@@ -343,10 +349,10 @@ export function AddRequestModal({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {commonDict.cancel}
             </Button>
             <Button type="submit" disabled={createRequest.isPending}>
-              {createRequest.isPending ? "Creating..." : "Create Request"}
+              {createRequest.isPending ? pDict.creating : pDict.createRequestLabel}
             </Button>
           </DialogFooter>
         </form>

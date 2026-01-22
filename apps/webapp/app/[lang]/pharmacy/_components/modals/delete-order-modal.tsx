@@ -9,6 +9,7 @@ import {
 } from "@workspace/ui/components/dialog"
 import { Button } from "@workspace/ui/components/button"
 import type { Order } from "@/lib/api/order-api"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface DeleteOrderModalProps {
   open: boolean
@@ -18,20 +19,25 @@ interface DeleteOrderModalProps {
   isDeleting?: boolean
 }
 
-export function DeleteOrderModal({ 
-  open, 
-  onOpenChange, 
-  order, 
+export function DeleteOrderModal({
+  open,
+  onOpenChange,
+  order,
   onConfirm,
-  isDeleting = false 
+  isDeleting = false
 }: DeleteOrderModalProps) {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.orders
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonDict = dict.common
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete Order</DialogTitle>
+          <DialogTitle>{pDict.modals.delete.title}</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete order #{order?.id}? This action cannot be undone.
+            {pDict.modals.delete.description.replace("{{id}}", order?.id.toString() || "")}
           </DialogDescription>
         </DialogHeader>
         <div className="flex justify-end gap-3 mt-4">
@@ -40,14 +46,14 @@ export function DeleteOrderModal({
             onClick={() => onOpenChange(false)}
             disabled={isDeleting}
           >
-            Cancel
+            {commonDict.cancel}
           </Button>
           <Button
             variant="destructive"
             onClick={onConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? pDict.modals.delete.deleting : pDict.modals.delete.button}
           </Button>
         </div>
       </DialogContent>

@@ -10,6 +10,7 @@ import { FileText, Clock, CheckCircle, XCircle, Search, MoreVertical, Plus, Eye,
 import { DataTable } from "@/components/common/data-table"
 import { useRequests, useDeleteRequest } from "../_hooks/useRequest"
 import { Request } from "@/lib/api/request-api"
+import { useDictionary } from "@/i18n/use-dictionary"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +20,11 @@ import {
 import { RequestModal } from "./modals/request-modal"
 
 export function ApprovalManagement() {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.approvals
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonDict = dict.common
+
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
   const [filterTab, setFilterTab] = useState<"all" | "pending" | "approved" | "rejected" | "completed">("all")
@@ -29,8 +35,8 @@ export function ApprovalManagement() {
   const deleteMutation = useDeleteRequest()
 
   // Fetch all requests
-  const { data: responseData, isLoading } = useRequests({ 
-    page, 
+  const { data: responseData, isLoading } = useRequests({
+    page,
     limit: 10,
     status: filterTab !== "all" ? filterTab : undefined,
   })
@@ -48,7 +54,7 @@ export function ApprovalManagement() {
     if (filterTab !== "all" && request.status !== filterTab) {
       return false
     }
-    
+
     return true
   })
 
@@ -77,17 +83,17 @@ export function ApprovalManagement() {
   }
 
   const handleDeleteRequest = async (request: Request) => {
-    if (confirm(`Are you sure you want to delete request ${request.request_number}?`)) {
+    if (confirm(phCommonDict.deleteConfirmation.replace("{{item}}", `${pDict.requestNumber} ${request.request_number}`))) {
       await deleteMutation.mutateAsync(request.id)
     }
   }
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { className: string; label: string }> = {
-      pending: { className: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100", label: "Pending" },
-      approved: { className: "bg-green-100 text-green-700 hover:bg-green-100", label: "Approved" },
-      rejected: { className: "bg-red-100 text-red-700 hover:bg-red-100", label: "Rejected" },
-      completed: { className: "bg-blue-100 text-blue-700 hover:bg-blue-100", label: "Completed" },
+      pending: { className: "bg-yellow-100 text-yellow-700 hover:bg-yellow-100", label: commonDict.pending },
+      approved: { className: "bg-green-100 text-green-700 hover:bg-green-100", label: commonDict.approved },
+      rejected: { className: "bg-red-100 text-red-700 hover:bg-red-100", label: commonDict.rejected },
+      completed: { className: "bg-blue-100 text-blue-700 hover:bg-blue-100", label: commonDict.completed },
     }
 
     const config = statusConfig[status] ?? statusConfig.pending
@@ -97,21 +103,22 @@ export function ApprovalManagement() {
   const getPriorityBadge = (priority?: string) => {
     if (!priority) return null
 
-    const priorityConfig: Record<string, { className: string }> = {
-      low: { className: "bg-gray-100 text-gray-700" },
-      medium: { className: "bg-blue-100 text-blue-700" },
-      high: { className: "bg-orange-100 text-orange-700" },
-      urgent: { className: "bg-red-100 text-red-700" },
+    const priorityConfig = {
+      low: { className: "bg-gray-100 text-gray-700", label: pDict.priorityLabels.low },
+      medium: { className: "bg-blue-100 text-blue-700", label: pDict.priorityLabels.medium },
+      high: { className: "bg-orange-100 text-orange-700", label: pDict.priorityLabels.high },
+      urgent: { className: "bg-red-100 text-red-700", label: pDict.priorityLabels.urgent },
     }
 
-    const config = priorityConfig[priority] ?? priorityConfig.medium
-    return <Badge className={config?.className}>{priority.toUpperCase()}</Badge>
+    const config = priorityConfig[(priority as keyof typeof priorityConfig) || "medium"] || priorityConfig.medium
+
+    return <Badge className={config.className}>{config.label}</Badge>
   }
 
   const columns = [
     {
       key: "request_number",
-      label: "Request",
+      label: pDict.requestNumber,
       render: (row: Request) => {
         const initials = row.request_number.substring(0, 2).toUpperCase()
         return (
@@ -131,7 +138,7 @@ export function ApprovalManagement() {
     },
     {
       key: "type",
-      label: "Type",
+      label: commonDict.type,
       render: (row: Request) => (
         <div>
           <div className="font-medium text-gray-900 capitalize">{row.type}</div>
@@ -143,27 +150,27 @@ export function ApprovalManagement() {
     },
     {
       key: "request_items",
-      label: "Items",
+      label: commonDict.items,
       render: (row: Request) => (
         <div className="flex items-center gap-2">
           <span className="font-semibold text-gray-900">{(row.requestItems?.length || row.request_items?.length || 0)}</span>
-          <span className="text-xs text-gray-500">batches</span>
+          <span className="text-xs text-gray-500">{pDict.batches}</span>
         </div>
       ),
     },
     {
       key: "priority",
-      label: "Priority",
+      label: commonDict.priority,
       render: (row: Request) => getPriorityBadge(row.priority),
     },
     {
       key: "status",
-      label: "Status",
+      label: commonDict.status,
       render: (row: Request) => getStatusBadge(row.status),
     },
     {
       key: "actions",
-      label: "Actions",
+      label: dict.table.actions,
       render: (row: Request) => (
         <div className="flex items-center gap-1">
           <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-blue-50" onClick={() => handleViewRequest(row)}>
@@ -172,9 +179,9 @@ export function ApprovalManagement() {
           <Button size="sm" variant="ghost" className="h-9 w-9 p-0 hover:bg-green-50" onClick={() => handleEditRequest(row)}>
             <Pencil className="h-4 w-4 text-green-600" />
           </Button>
-          <Button 
-            size="sm" 
-            variant="ghost" 
+          <Button
+            size="sm"
+            variant="ghost"
             className="h-9 w-9 p-0 hover:bg-red-50"
             onClick={() => handleDeleteRequest(row)}
           >
@@ -194,14 +201,14 @@ export function ApprovalManagement() {
           onClick={() => setFilterTab("all")}
           className={filterTab === "all" ? "bg-blue-600 hover:bg-blue-700" : ""}
         >
-          All
+          {commonDict.all}
         </Button>
         <Button
           variant={filterTab === "pending" ? "default" : "outline"}
           onClick={() => setFilterTab("pending")}
           className={filterTab === "pending" ? "bg-yellow-600 hover:bg-yellow-700" : ""}
         >
-          Pending
+          {commonDict.pending}
           {pendingCount > 0 && (
             <Badge className="ml-2 bg-white text-yellow-600">{pendingCount}</Badge>
           )}
@@ -211,7 +218,7 @@ export function ApprovalManagement() {
           onClick={() => setFilterTab("approved")}
           className={filterTab === "approved" ? "bg-green-600 hover:bg-green-700" : ""}
         >
-          Approved
+          {commonDict.approved}
           {approvedCount > 0 && (
             <Badge className="ml-2 bg-white text-green-600">{approvedCount}</Badge>
           )}
@@ -221,7 +228,7 @@ export function ApprovalManagement() {
           onClick={() => setFilterTab("rejected")}
           className={filterTab === "rejected" ? "bg-red-600 hover:bg-red-700" : ""}
         >
-          Rejected
+          {commonDict.rejected}
           {rejectedCount > 0 && (
             <Badge className="ml-2 bg-white text-red-600">{rejectedCount}</Badge>
           )}
@@ -231,10 +238,10 @@ export function ApprovalManagement() {
           onClick={() => setFilterTab("completed")}
           className={filterTab === "completed" ? "bg-blue-600 hover:bg-blue-700" : ""}
         >
-          Completed
+          {commonDict.completed}
         </Button>
       </div>
-      
+
       {/* Stats Cards */}
       <div className="grid grid-cols-4 gap-4">
         <Card>
@@ -243,9 +250,9 @@ export function ApprovalManagement() {
               <FileText className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <div className="text-sm text-gray-600">Total Requests</div>
+              <div className="text-sm text-gray-600">{pDict.totalRequests}</div>
               <div className="text-2xl font-bold">{totalRequests}</div>
-              <div className="text-xs text-blue-600">All approvals</div>
+              <div className="text-xs text-blue-600">{pDict.allApprovals}</div>
             </div>
           </CardContent>
         </Card>
@@ -256,9 +263,9 @@ export function ApprovalManagement() {
               <Clock className="h-6 w-6 text-yellow-600" />
             </div>
             <div>
-              <div className="text-sm text-gray-600">Pending</div>
+              <div className="text-sm text-gray-600">{commonDict.pending}</div>
               <div className="text-2xl font-bold">{pendingCount}</div>
-              <div className="text-xs text-yellow-600">Awaiting review</div>
+              <div className="text-xs text-yellow-600">{pDict.awaitingReview}</div>
             </div>
           </CardContent>
         </Card>
@@ -269,9 +276,9 @@ export function ApprovalManagement() {
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <div className="text-sm text-gray-600">Approved</div>
+              <div className="text-sm text-gray-600">{commonDict.approved}</div>
               <div className="text-2xl font-bold">{approvedCount}</div>
-              <div className="text-xs text-green-600">Approved requests</div>
+              <div className="text-xs text-green-600">{pDict.approvedRequests}</div>
             </div>
           </CardContent>
         </Card>
@@ -282,9 +289,9 @@ export function ApprovalManagement() {
               <XCircle className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <div className="text-sm text-gray-600">Rejected</div>
+              <div className="text-sm text-gray-600">{commonDict.rejected}</div>
               <div className="text-2xl font-bold">{rejectedCount}</div>
-              <div className="text-xs text-red-600">Rejected requests</div>
+              <div className="text-xs text-red-600">{pDict.rejectedRequests}</div>
             </div>
           </CardContent>
         </Card>
@@ -294,16 +301,16 @@ export function ApprovalManagement() {
       <Card>
         <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-lg">Approval Requests</h3>
+            <h3 className="font-semibold text-lg">{pDict.title}</h3>
             <Button onClick={handleCreateRequest} className="gap-2">
               <Plus className="h-4 w-4" />
-              Create Request
+              {pDict.createRequest}
             </Button>
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by request number..."
+              placeholder={pDict.searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"

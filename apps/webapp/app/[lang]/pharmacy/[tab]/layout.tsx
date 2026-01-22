@@ -2,27 +2,31 @@
 
 import { ReactNode } from "react"
 import { useRouter, useParams } from "next/navigation"
+import { useDictionary } from "@/i18n/use-dictionary"
 
-const PHARMACY_TABS = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "opd-dispensing", label: "OPD Dispensing" },
-  { key: "ipd-pharmacy", label: "IPD Pharmacy" },
-  { key: "general-sales", label: "General Sales" },
-  { key: "orders", label: "Orders" },
-  { key: "drug-inventory", label: "Drug Inventory" },
-  { key: "expiry-management", label: "Expiry Management" },
-  { key: "approvals", label: "Approvals" },
-  // { key: "reports", label: "Reports" },
-] as const
+
 
 export default function PharmacyTabLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const params = useParams()
   const activeTab = params?.tab as string
   const lang = params?.lang as string || "en"
+  const dict = useDictionary()
+  const tabsDict = dict.pages.pharmacy.common.tabs
+
+  const PHARMACY_TABS = [
+    { key: "dashboard", label: tabsDict.dashboard },
+    { key: "opd-dispensing", label: tabsDict.opd },
+    { key: "ipd-pharmacy", label: tabsDict.ipd },
+    { key: "general-sales", label: tabsDict.sales },
+    { key: "orders", label: tabsDict.orders },
+    { key: "drug-inventory", label: tabsDict.inventory },
+    { key: "expiry-management", label: tabsDict.expiry },
+    { key: "approvals", label: tabsDict.approvals },
+  ] as const
 
   const renderTabLabel = (label: string, isActive: boolean) => {
-    if (label === "IPD Pharmacy") {
+    if (label === tabsDict.ipd) {
       return (
         <>
           IPD <span className={isActive ? "bg-yellow-400 text-blue-600 px-1" : ""}>Pharmacy</span>
@@ -42,11 +46,10 @@ export default function PharmacyTabLayout({ children }: { children: ReactNode })
               <button
                 key={tab.key}
                 onClick={() => router.push(`/${lang}/pharmacy/${tab.key}`)}
-                className={`h-[60px] px-5 py-2 rounded-t-md text-sm font-medium whitespace-nowrap transition-colors ${
-                  activeTab === tab.key
+                className={`h-[60px] px-5 py-2 rounded-t-md text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.key
                     ? "bg-blue-500 text-white"
                     : "bg-blue-100 text-gray-700 hover:bg-gray-300"
-                }`}
+                  }`}
               >
                 {/* {renderTabLabel(tab.label, activeTab === tab.key)} */}
                 {tab.label}

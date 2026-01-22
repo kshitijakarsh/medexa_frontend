@@ -11,6 +11,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Badge } from "@workspace/ui/components/badge"
 import { Calendar, User, DollarSign, FileText } from "lucide-react"
 import type { Order } from "@/lib/api/order-api"
+import { useDictionary } from "@/i18n/use-dictionary"
 
 interface ViewOrderModalProps {
   open: boolean
@@ -19,25 +20,31 @@ interface ViewOrderModalProps {
 }
 
 export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProps) {
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.orders
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonDict = dict.common
+  const commonFields = dict.pages.common.fields
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      pending: { label: "Pending", variant: "outline" },
-      processing: { label: "Processing", variant: "secondary" },
-      completed: { label: "Completed", variant: "default" },
-      cancelled: { label: "Cancelled", variant: "destructive" },
+      pending: { label: commonDict.pending, variant: "outline" },
+      processing: { label: phCommonDict.processing, variant: "secondary" },
+      completed: { label: commonDict.completed, variant: "default" },
+      cancelled: { label: pDict.orderStatusLabels.cancelled, variant: "destructive" },
     }
     const config = statusConfig[status] || { label: status, variant: "outline" }
     return <Badge variant={config.variant}>{config.label}</Badge>
   }
 
   const getPaymentStatusBadge = (status?: string | null) => {
-    if (!status) return <Badge variant="outline">N/A</Badge>
-    
+    if (!status) return <Badge variant="outline">{commonDict.noData}</Badge>
+
     const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-      paid: { label: "Paid", variant: "default" },
-      pending: { label: "Pending", variant: "outline" },
-      partial: { label: "Partial", variant: "secondary" },
-      refunded: { label: "Refunded", variant: "destructive" },
+      paid: { label: pDict.paymentStatusLabels.paid, variant: "default" },
+      pending: { label: commonDict.pending, variant: "outline" },
+      partial: { label: pDict.paymentStatusLabels.partial, variant: "secondary" },
+      refunded: { label: pDict.paymentStatusLabels.refunded, variant: "destructive" },
     }
     const config = statusConfig[status] || { label: status, variant: "outline" }
     return <Badge variant={config.variant}>{config.label}</Badge>
@@ -49,34 +56,34 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Order Details - #{order.id}</DialogTitle>
+          <DialogTitle>{pDict.modals.view.title} - #{order.id}</DialogTitle>
           <DialogDescription>
-            Complete information about this order
+            {pDict.modals.view.description}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 py-4">
           {/* Order Information */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium text-gray-600">Order ID</Label>
+              <Label className="text-sm font-medium text-gray-600">{pDict.orderId}</Label>
               <div className="mt-1 text-lg font-semibold text-blue-600">#{order.id}</div>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Order Date</Label>
+              <Label className="text-sm font-medium text-gray-600">{commonDict.date}</Label>
               <div className="mt-1 flex items-center">
                 <Calendar className="h-4 w-4 mr-2 text-gray-400" />
                 <span>{new Date(order.order_date).toLocaleString()}</span>
               </div>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Patient</Label>
+              <Label className="text-sm font-medium text-gray-600">{pDict.patient}</Label>
               <div className="mt-1 flex items-center">
                 <User className="h-4 w-4 mr-2 text-gray-400" />
                 <span>
-                  {order.patient 
+                  {order.patient
                     ? `${order.patient.first_name} ${order.patient.last_name}`
-                    : "Walk-in Customer"
+                    : dict.pages.pharmacy.opd.checkout.walkInCustomer
                   }
                 </span>
               </div>
@@ -85,18 +92,18 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
               )}
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Payment Method</Label>
+              <Label className="text-sm font-medium text-gray-600">{pDict.paymentMethod}</Label>
               <div className="mt-1">
                 <DollarSign className="h-4 w-4 inline mr-1 text-gray-400" />
-                <span>{order.payment_method || "N/A"}</span>
+                <span>{order.payment_method || commonDict.noData}</span>
               </div>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Order Status</Label>
+              <Label className="text-sm font-medium text-gray-600">{pDict.orderStatus}</Label>
               <div className="mt-1">{getStatusBadge(order.status)}</div>
             </div>
             <div>
-              <Label className="text-sm font-medium text-gray-600">Payment Status</Label>
+              <Label className="text-sm font-medium text-gray-600">{pDict.paymentStatus}</Label>
               <div className="mt-1">{getPaymentStatusBadge(order.payment_status)}</div>
             </div>
           </div>
@@ -104,7 +111,7 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
           {/* Notes */}
           {order.notes && (
             <div>
-              <Label className="text-sm font-medium text-gray-600">Notes</Label>
+              <Label className="text-sm font-medium text-gray-600">{commonDict.notes}</Label>
               <div className="mt-2 p-3 bg-gray-50 rounded-md border">
                 <FileText className="h-4 w-4 inline mr-2 text-gray-400" />
                 <span className="text-sm">{order.notes}</span>
@@ -114,16 +121,16 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
 
           {/* Order Items */}
           <div>
-            <Label className="text-sm font-medium text-gray-600 mb-3 block">Order Items</Label>
+            <Label className="text-sm font-medium text-gray-600 mb-3 block">{pDict.modals.view.items}</Label>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-600 px-4 py-3">Medicine</th>
-                    <th className="text-left text-xs font-medium text-gray-600 px-4 py-3">Type</th>
-                    <th className="text-center text-xs font-medium text-gray-600 px-4 py-3">Quantity</th>
-                    <th className="text-right text-xs font-medium text-gray-600 px-4 py-3">Price</th>
-                    <th className="text-right text-xs font-medium text-gray-600 px-4 py-3">Subtotal</th>
+                    <th className="text-left text-xs font-medium text-gray-600 px-4 py-3">{commonFields.medication}</th>
+                    <th className="text-left text-xs font-medium text-gray-600 px-4 py-3">{commonDict.category}</th>
+                    <th className="text-center text-xs font-medium text-gray-600 px-4 py-3">{commonDict.quantity}</th>
+                    <th className="text-right text-xs font-medium text-gray-600 px-4 py-3">{phCommonDict.price}</th>
+                    <th className="text-right text-xs font-medium text-gray-600 px-4 py-3">{dict.pages.pharmacy.opd.checkout.total}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -131,13 +138,13 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
                     order.orderItems.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
-                          <div className="font-medium">{item.medicine?.medicine || `Medicine ID: ${item.medicine_id}`}</div>
+                          <div className="font-medium">{item.medicine?.medicine || `${phCommonDict.medicineId}: ${item.medicine_id}`}</div>
                           {item.medicine?.content && (
                             <div className="text-xs text-gray-500">{item.medicine.content}</div>
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-sm">{item.medicine?.type || "N/A"}</span>
+                          <span className="text-sm">{item.medicine?.type || commonDict.noData}</span>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className="font-medium">{item.quantity}</span>
@@ -155,7 +162,7 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
                   ) : (
                     <tr>
                       <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                        No items in this order
+                        {pDict.modals.view.noItems}
                       </td>
                     </tr>
                   )}
@@ -167,7 +174,7 @@ export function ViewOrderModal({ open, onOpenChange, order }: ViewOrderModalProp
           {/* Total */}
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Total Amount</span>
+              <span className="text-lg font-semibold">{commonDict.totalAmount}</span>
               <span className="text-2xl font-bold text-green-600">
                 ${order.total_amount.toFixed(2)}
               </span>

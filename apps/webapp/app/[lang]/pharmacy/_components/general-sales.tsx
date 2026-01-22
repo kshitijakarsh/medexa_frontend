@@ -13,6 +13,7 @@ import type { Medicine } from "@/lib/api/medicine-api"
 import type { Patient } from "@/lib/api/patient-api"
 import { generatePharmacyBillPDF, printPharmacyBillPDF, type BillData } from "@/lib/utils/pdf-generator"
 import { useCreateOrder } from "../_hooks/useOrder"
+import { useDictionary } from "@/i18n/use-dictionary"
 import type { CreateOrderPayload } from "@/lib/api/order-api"
 import {
   Select,
@@ -51,6 +52,13 @@ export function GeneralSales() {
   const [prescriptionId, setPrescriptionId] = useState<number | null>(null)
   const observerTarget = useRef<HTMLDivElement>(null)
 
+  const dict = useDictionary()
+  const pDict = dict.pages.pharmacy.generalSales
+  const opdDict = dict.pages.pharmacy.opd
+  const phCommonDict = dict.pages.pharmacy.common
+  const commonFields = dict.pages.common.fields
+  const commonDict = dict.common
+
   const createOrderMutation = useCreateOrder()
   const limit = 10
 
@@ -60,24 +68,24 @@ export function GeneralSales() {
     if (billDataStr) {
       try {
         const billData: PrescriptionBillData = JSON.parse(billDataStr)
-        
+
         // Set patient if available
         if (billData.patient) {
           setSelectedPatient(billData.patient as Patient)
         }
-        
+
         // Set prescription ID for order creation
         if (billData.prescriptionId) {
           setPrescriptionId(billData.prescriptionId)
         }
-        
+
         // Pre-fill cart with prescription items
         if (billData.prescriptionItems && billData.prescriptionItems.length > 0) {
           // We need to convert prescription items to cart items
           // Since prescription items don't have full medicine pricing, we'll need to fetch those
           const prescriptionMedicineIds = billData.prescriptionItems.map(item => item.medicine_id)
           console.log('[GeneralSales] Loading prescription medicines:', prescriptionMedicineIds)
-          
+
           // For now, create cart items from prescription data
           // We'll need to update prices when medicines are fetched
           const cartItems: CartItem[] = billData.prescriptionItems
@@ -98,11 +106,11 @@ export function GeneralSales() {
               status: 'active',
               is_deleted: false,
             }))
-          
+
           setCart(cartItems)
           setIsCheckout(true) // Go directly to checkout for prescription orders
         }
-        
+
         // Clear the data after loading
         localStorage.removeItem('pharmacy_bill_data')
       } catch (error) {
@@ -224,11 +232,11 @@ export function GeneralSales() {
   // Handle checkout
   const handleCompleteSale = useCallback(() => {
     if (cart.length === 0) {
-      alert("Cart is empty")
+      alert(opdDict.alerts.cartEmpty)
       return
     }
     setIsCheckout(true)
-  }, [cart.length])
+  }, [cart.length, opdDict.alerts.cartEmpty])
 
   const handleBackToShopping = useCallback(() => {
     setIsCheckout(false)
@@ -236,7 +244,7 @@ export function GeneralSales() {
 
   const handleConfirmSale = useCallback(async () => {
     if (cart.length === 0) {
-      alert("Cart is empty")
+      alert(opdDict.alerts.cartEmpty)
       return
     }
 
@@ -257,7 +265,7 @@ export function GeneralSales() {
         status: "completed",
         payment_status: "paid",
         payment_method: "Cash",
-        notes: prescriptionId ? `Prescription order - RX-${prescriptionId}` : "General sales order",
+        notes: prescriptionId ? pDict.prescriptionOrder.replace("{{id}}", prescriptionId.toString()) : pDict.generalSalesOrder,
         order_items: cart.map(item => ({
           medicine_id: item.id,
           quantity: item.quantity,
@@ -266,13 +274,13 @@ export function GeneralSales() {
       }
 
       console.log("[GeneralSales] Creating order with payload:", orderPayload)
-      
+
       // Create the order
       const response = await createOrderMutation.mutateAsync(orderPayload)
-      
+
       console.log("[GeneralSales] Order created successfully:", response)
-      alert(`Order #${response.data.id} created successfully!`)
-      
+      alert(opdDict.alerts.orderSuccess.replace("{{id}}", response.data.id.toString()))
+
       // Clear cart, prescription ID, and go back to shopping
       setCart([])
       setSelectedPatient(null)
@@ -283,14 +291,14 @@ export function GeneralSales() {
       console.error("[GeneralSales] Failed to create order - Full error:", error)
       console.error("[GeneralSales] Error response:", error.response)
       console.error("[GeneralSales] Error message:", error.message)
-      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || "Unknown error"
-      alert(`Failed to create order: ${errorMsg}`)
+      const errorMsg = error.response?.data?.message || error.response?.data?.errors?.[0]?.message || error.message || commonDict.unknownError
+      alert(opdDict.alerts.orderFailed.replace("{{message}}", errorMsg))
     }
   }, [cart, createOrderMutation, selectedPatient, prescriptionId])
 
   const handlePrint = useCallback(() => {
     if (cart.length === 0) {
-      alert("Cart is empty")
+      alert(opdDict.alerts.cartEmpty)
       return
     }
 
@@ -309,10 +317,10 @@ export function GeneralSales() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: selectedPatient 
-        ? `${selectedPatient.first_name} ${selectedPatient.last_name}` 
-        : 'Walk-in Customer',
-      customerPhone: selectedPatient?.mobile_number || 'N/A',
+      customerName: selectedPatient
+        ? `${selectedPatient.first_name} ${selectedPatient.last_name}`
+        : opdDict.checkout.walkInCustomer,
+      customerPhone: selectedPatient?.mobile_number || commonDict.noData,
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -325,7 +333,7 @@ export function GeneralSales() {
       tax,
       discount: 0,
       total,
-      paymentMethod: 'Cash',
+      paymentMethod: opdDict.checkout.cash,
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
@@ -339,7 +347,7 @@ export function GeneralSales() {
 
   const handleDownloadPDF = useCallback(() => {
     if (cart.length === 0) {
-      alert("Cart is empty")
+      alert(opdDict.alerts.cartEmpty)
       return
     }
 
@@ -358,10 +366,10 @@ export function GeneralSales() {
       invoiceNumber,
       date: now.toLocaleDateString('en-GB'),
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      customerName: selectedPatient 
-        ? `${selectedPatient.first_name} ${selectedPatient.last_name}` 
-        : 'Walk-in Customer',
-      customerPhone: selectedPatient?.mobile_number || 'N/A',
+      customerName: selectedPatient
+        ? `${selectedPatient.first_name} ${selectedPatient.last_name}`
+        : opdDict.checkout.walkInCustomer,
+      customerPhone: selectedPatient?.mobile_number || commonDict.noData,
       items: cart.map(item => ({
         id: item.id,
         medicine: item.medicine,
@@ -374,7 +382,7 @@ export function GeneralSales() {
       tax,
       discount: 0,
       total,
-      paymentMethod: 'Cash',
+      paymentMethod: opdDict.checkout.cash,
       pharmacyName: 'Medexa Pharmacy',
       pharmacyAddress: 'Healthcare Excellence Center, Medical District, Dubai, UAE',
       pharmacyPhone: '+971 4 XXX XXXX',
@@ -404,17 +412,17 @@ export function GeneralSales() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">
-              {prescriptionId ? 'Prescription Order Review' : 'Order Review'}
+              {prescriptionId ? pDict.prescriptionOrderReview : pDict.orderReview}
             </h1>
             <p className="text-gray-600 mt-1">
-              {prescriptionId 
-                ? `Dispensing prescription RX-${prescriptionId}` 
-                : 'Review and confirm your sale'}
+              {prescriptionId
+                ? `${pDict.dispensingPrescription.replace("{{id}}", prescriptionId.toString())}`
+                : pDict.reviewAndConfirm}
             </p>
           </div>
           <Button onClick={handleBackToShopping} variant="outline">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Shopping
+            {pDict.backToShopping}
           </Button>
         </div>
 
@@ -428,10 +436,10 @@ export function GeneralSales() {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-blue-900">
-                    Prescription Order - RX-{prescriptionId}
+                    {pDict.prescriptionOrderReview} - RX-{prescriptionId}
                   </div>
                   <div className="text-sm text-blue-700">
-                    Patient: {selectedPatient.first_name} {selectedPatient.last_name}
+                    {dict.table.patient}: {selectedPatient.first_name} {selectedPatient.last_name}
                     {selectedPatient.mobile_number && ` • ${selectedPatient.mobile_number}`}
                   </div>
                 </div>
@@ -445,7 +453,7 @@ export function GeneralSales() {
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle>Order Items ({cart.length})</CardTitle>
+                <CardTitle>{pDict.orderItems.replace("{{count}}", cart.length.toString())}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -453,7 +461,7 @@ export function GeneralSales() {
                     const itemSubtotal = item.selling_price * item.quantity;
                     const itemTax = itemSubtotal * ((item.tax_rate || 0) / 100);
                     const itemTotal = itemSubtotal + itemTax;
-                    
+
                     return (
                       <div
                         key={item.id}
@@ -465,18 +473,18 @@ export function GeneralSales() {
                             {item.type} {item.content && `• ${item.content}`}
                           </p>
                           <div className="text-sm text-gray-600 mt-2">
-                            Qty: <span className="font-medium">{item.quantity}</span> × KWD{' '}
+                            {commonDict.qty}: <span className="font-medium">{item.quantity}</span> × ${' '}
                             {item.selling_price.toFixed(3)}
                           </div>
                         </div>
                         <div className="text-right min-w-[120px]">
-                          <p className="text-xs text-gray-600">Subtotal</p>
-                          <p className="text-sm">KWD {itemSubtotal.toFixed(3)}</p>
-                          <p className="text-xs text-gray-600 mt-1">Tax ({item.tax_rate || 0}%)</p>
-                          <p className="text-sm">KWD {itemTax.toFixed(3)}</p>
-                          <p className="text-xs text-gray-600 mt-1">Total</p>
+                          <p className="text-xs text-gray-600">{phCommonDict.subtotal}</p>
+                          <p className="text-sm">$ {itemSubtotal.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600 mt-1">{phCommonDict.tax} ({item.tax_rate || 0}%)</p>
+                          <p className="text-sm">$ {itemTax.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600 mt-1">{commonDict.totalAmount}</p>
                           <div className="text-lg font-bold text-blue-600">
-                            KWD {itemTotal.toFixed(3)}
+                            $ {itemTotal.toFixed(3)}
                           </div>
                         </div>
                       </div>
@@ -494,7 +502,7 @@ export function GeneralSales() {
                 onClick={handlePrint}
               >
                 <Printer className="mr-2 h-4 w-4" />
-                Print Invoice
+                {pDict.printInvoice}
               </Button>
               <Button
                 variant="outline"
@@ -502,7 +510,7 @@ export function GeneralSales() {
                 onClick={handleDownloadPDF}
               >
                 <Download className="mr-2 h-4 w-4" />
-                Download PDF Invoice
+                {pDict.downloadPdfInvoice}
               </Button>
             </div>
           </div>
@@ -511,21 +519,21 @@ export function GeneralSales() {
           <div className="lg:col-span-1">
             <Card className="sticky top-20">
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>{opdDict.checkout.summary}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal (Before Tax)</span>
-                    <span className="font-medium">KWD {subtotal.toFixed(3)}</span>
+                    <span className="text-gray-600">{phCommonDict.subtotal}</span>
+                    <span className="font-medium">$ {subtotal.toFixed(3)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Tax ({avgTaxRate.toFixed(1)}%)</span>
-                    <span className="font-medium">KWD {tax.toFixed(3)}</span>
+                    <span className="text-gray-600">{phCommonDict.tax} ({avgTaxRate.toFixed(1)}%)</span>
+                    <span className="font-medium">$ {tax.toFixed(3)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t-2 text-lg font-bold">
-                    <span>Total (After Tax)</span>
-                    <span className="text-green-600">KWD {total.toFixed(3)}</span>
+                    <span>{commonDict.totalAmount}</span>
+                    <span className="text-green-600">$ {total.toFixed(3)}</span>
                   </div>
                 </div>
 
@@ -534,7 +542,7 @@ export function GeneralSales() {
                   onClick={handleConfirmSale}
                 >
                   <CheckCircle className="mr-2 h-5 w-5" />
-                  Confirm Sale
+                  {phCommonDict.confirmSale}
                 </Button>
 
                 <Button
@@ -543,7 +551,7 @@ export function GeneralSales() {
                   onClick={handleBackToShopping}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  Continue Shopping
+                  {pDict.continueShopping}
                 </Button>
               </CardContent>
             </Card>
@@ -559,11 +567,11 @@ export function GeneralSales() {
       <div className="lg:col-span-2">
         <Card className="h-full flex flex-col">
           <div className="p-6 border-b space-y-4">
-            <h2 className="text-lg font-semibold">Available Medicines</h2>
-            
+            <h2 className="text-lg font-semibold">{pDict.availableMedicines}</h2>
+
             {/* Patient Selection */}
             <div>
-              <Label className="text-sm font-medium mb-2 block">Select Patient (Optional)</Label>
+              <Label className="text-sm font-medium mb-2 block">{phCommonDict.selectPatient}</Label>
               {selectedPatient ? (
                 <div className="p-3 bg-blue-50 rounded-md border border-blue-200 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -587,14 +595,14 @@ export function GeneralSales() {
                       setShowPatientDropdown(false)
                     }}
                   >
-                    Clear
+                    {dict.common.clear}
                   </Button>
                 </div>
               ) : (
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                   <Input
-                    placeholder="Search patient by name or mobile..."
+                    placeholder={pDict.patientSearchPlaceholder}
                     value={patientSearch}
                     onChange={(e) => {
                       setPatientSearch(e.target.value)
@@ -633,7 +641,7 @@ export function GeneralSales() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search medicines by name, generic, or category..."
+                placeholder={pDict.medicineSearchPlaceholder}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -648,11 +656,11 @@ export function GeneralSales() {
             })()}
             {isLoading && page === 1 ? (
               <div className="flex items-center justify-center h-64">
-                <div className="text-gray-500">Loading medicines...</div>
+                <div className="text-gray-500">{phCommonDict.loadingMedicines}</div>
               </div>
             ) : allMedicines.length === 0 ? (
               <div className="flex items-center justify-center h-64">
-                <div className="text-gray-500">No medicines found</div>
+                <div className="text-gray-500">{phCommonDict.noMedicinesFound}</div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -669,7 +677,7 @@ export function GeneralSales() {
                     <div className="flex items-center justify-between mt-3">
                       <div className="space-y-1">
                         <div className="text-xs text-gray-600">
-                          In Stock: <span className="font-medium text-black">{medicine.total_stock}</span>
+                          {phCommonDict.inStock}: <span className="font-medium text-black">{medicine.total_stock}</span>
                         </div>
                         <div className="text-base font-bold text-blue-600">
                           KWD {medicine.selling_price.toFixed(3)}
@@ -682,7 +690,7 @@ export function GeneralSales() {
                         disabled={medicine.total_stock <= 0}
                       >
                         <Plus className="h-4 w-4 mr-1" />
-                        Add to Cart
+                        {pDict.addToCart}
                       </Button>
                     </div>
                   </Card>
@@ -693,7 +701,7 @@ export function GeneralSales() {
             {/* Infinite scroll trigger */}
             <div ref={observerTarget} className="h-10 flex items-center justify-center">
               {isFetching && page > 1 && (
-                <div className="text-sm text-gray-500">Loading more...</div>
+                <div className="text-sm text-gray-500">{dict.common.loading}</div>
               )}
             </div>
           </div>
@@ -707,11 +715,11 @@ export function GeneralSales() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <CartIcon className="h-5 w-5" />
-                Shopping Cart
+                {pDict.shoppingCart}
               </h2>
               {cart.length > 0 && (
                 <Button variant="ghost" size="sm" onClick={clearCart} className="text-red-600">
-                  Clear All
+                  {phCommonDict.clearAll}
                 </Button>
               )}
             </div>
@@ -723,8 +731,8 @@ export function GeneralSales() {
                 <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                   <CartIcon className="h-12 w-12 text-gray-400" />
                 </div>
-                <p className="text-gray-500">Cart is empty</p>
-                <p className="text-sm text-gray-400 mt-1">Add medicines to start a sale</p>
+                <p className="text-gray-500">{opdDict.alerts.cartEmpty}</p>
+                <p className="text-sm text-gray-400 mt-1">{pDict.addMedicinesToStart}</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -732,7 +740,7 @@ export function GeneralSales() {
                   const itemSubtotal = item.selling_price * item.quantity;
                   const itemTax = itemSubtotal * ((item.tax_rate || 0) / 100);
                   const itemTotal = itemSubtotal + itemTax;
-                  
+
                   return (
                     <Card key={item.id} className="p-4">
                       <div className="flex justify-between items-start mb-3">
@@ -773,10 +781,10 @@ export function GeneralSales() {
                           </Button>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs text-gray-600">Subtotal: KWD {itemSubtotal.toFixed(3)}</p>
-                          <p className="text-xs text-gray-600">Tax ({item.tax_rate || 0}%): KWD {itemTax.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600">{phCommonDict.subtotal}: $ {itemSubtotal.toFixed(3)}</p>
+                          <p className="text-xs text-gray-600">{phCommonDict.tax} ({item.tax_rate || 0}%): $ {itemTax.toFixed(3)}</p>
                           <div className="font-bold text-blue-600">
-                            KWD {itemTotal.toFixed(3)}
+                            $ {itemTotal.toFixed(3)}
                           </div>
                         </div>
                       </div>
@@ -791,16 +799,16 @@ export function GeneralSales() {
           <div className="border-t p-6">
             <div className="space-y-2 text-sm mb-4">
               <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal (Before Tax)</span>
-                <span className="font-medium">KWD {subtotal.toFixed(3)}</span>
+                <span className="text-gray-600">{phCommonDict.subtotal}</span>
+                <span className="font-medium">$ {subtotal.toFixed(3)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Tax ({avgTaxRate.toFixed(1)}%)</span>
-                <span className="font-medium">KWD {tax.toFixed(3)}</span>
+                <span className="text-gray-600">{phCommonDict.tax} ({avgTaxRate.toFixed(1)}%)</span>
+                <span className="font-medium">$ {tax.toFixed(3)}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t-2 text-lg font-bold">
-                <span>Total (After Tax)</span>
-                <span className="text-green-600">KWD {total.toFixed(3)}</span>
+              <div className="pt-2 border-t flex justify-between font-bold text-lg">
+                <span>{commonDict.totalAmount}</span>
+                <span className="text-green-600">$ {total.toFixed(3)}</span>
               </div>
             </div>
             <Button
@@ -808,7 +816,7 @@ export function GeneralSales() {
               disabled={cart.length === 0}
               onClick={handleCompleteSale}
             >
-              Complete Sale
+              {pDict.completeSale}
             </Button>
           </div>
         </Card>
