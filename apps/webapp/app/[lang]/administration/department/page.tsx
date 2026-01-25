@@ -508,10 +508,10 @@ function DepartmentsContent() {
       render: (row: any) => (
         <span
           className={
-            row.status === "Active" ? "text-green-600" : "text-red-500"
+            row.status?.toLowerCase() === "active" ? "text-green-600" : "text-red-500"
           }
         >
-          {row.status}
+          {row.status?.charAt(0).toUpperCase() + row.status?.slice(1)}
         </span>
       ),
     },
@@ -526,7 +526,7 @@ function DepartmentsContent() {
     {
       key: "addedBy",
       label: trans.table.addedBy,
-      render: (row: any) => row.createdBy.name || "—",
+      render: (row: any) => row.createdBy?.name || "—",
     },
     {
       key: "action",
@@ -550,7 +550,7 @@ function DepartmentsContent() {
   return (
     <>
       <div className="p-5 space-y-8">
-        <PageHeader title= {trans.title} />
+        <PageHeader title={trans.title} />
 
         <div className="bg-white p-5 rounded-md shadow-sm space-y-4">
           {/* Header Controls */}
@@ -607,8 +607,8 @@ function DepartmentsContent() {
           editingRow
             ? {
               id: editingRow.id,
-              name: editingRow.name,
-              active: editingRow.status === "Active",
+              name: editingRow.department_name,
+              active: editingRow.status?.toLowerCase() === "active",
             }
             : null
         }

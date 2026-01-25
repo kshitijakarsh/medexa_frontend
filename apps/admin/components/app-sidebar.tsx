@@ -62,21 +62,21 @@ export function AppSidebar({ dict }: AppSidebarProps) {
       ], // multiple URLs
       icon: Hospital,
     },
-    {
-      title: dict.nav.support,
-      url: ["/support"],
-      icon: Handshake,
-    },
+    // {
+    //   title: dict.nav.support,
+    //   url: ["/support"],
+    //   icon: Handshake,
+    // },
     {
       title: dict.nav.activityLog,
       url: ["/activity-log"],
       icon: Activity,
     },
-    {
-      title: dict.nav.monitoring,
-      url: ["/monitoring"],
-      icon: Monitor,
-    },
+    // {
+    //   title: dict.nav.monitoring,
+    //   url: ["/monitoring"],
+    //   icon: Monitor,
+    // },
   ]
 
   // const isActive = (url: string) => {
@@ -175,7 +175,8 @@ export function AppSidebar({ dict }: AppSidebarProps) {
                 ? dict.nav.application
                 : index === 1
                   ? dict.nav.management
-                  : dict.nav.monitor}
+                  // : dict.nav.monitor}
+                  : ""}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

@@ -402,7 +402,7 @@ export const HospitalInfoSection = ({
   >({
     queryKey: ["countries"],
     queryFn: async () => {
-      const client = createTenantApiClient({ authToken: "dev-token" })
+      const client = createTenantApiClient({ authToken: "" })
       const response = await client.getCountriesList()
       return response.data.data // Extract data array from response
     },
@@ -413,7 +413,7 @@ export const HospitalInfoSection = ({
   >({
     queryKey: ["authorities"],
     queryFn: async () => {
-      const client = createRegulatoryApiClient({ authToken: "dev-token" })
+      const client = createRegulatoryApiClient({ authToken: "" })
       const response = await client.getAuthoritesList()
       return response.data.data // Extract data array from response
     },
@@ -543,7 +543,11 @@ export const HospitalInfoSection = ({
                 <FormItem>
                   <FormLabel label={t.licenseExpiry.label} />
                   <FormControl>
-                    <Input type="datetime-local" {...field} />
+                    <Input
+                      type="datetime-local"
+                      min={new Date().toISOString().slice(0, 16)}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

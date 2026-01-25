@@ -423,7 +423,29 @@ import { masterConfig } from "./_components/fecth-master";
 import { useUserStore } from "@/store/useUserStore";
 import { Dictionary } from "@/i18n/get-dictionary";
 import { useDictionary } from "@/i18n/use-dictionary";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "@workspace/ui/lib/sonner";
+import { createDepartmentApiClient } from "@/lib/api/administration/department";
+import { createWardApiClient } from "@/lib/api/administration/wards";
+import AddDepartmentModal from "../department/_components/AddDepartmentModal";
+import { AddWardDialog } from "../units-wards-beds/_components/AddWardDialog";
+import { AddBedDialog } from "../units-wards-beds/_components/AddBedDialog";
+import { AddBedTypeDialog } from "../units-wards-beds/_components/AddBedTypeDialog";
+import { AddFloorDialog } from "../units-wards-beds/_components/AddFloorDialog";
+import { AddOperationTheatreDialog } from "../operation-theatres/_components/AddOperationTheatreDialog";
+import { AddDialog as AddUserDialog } from "../user/_components/AddDialog";
+import { AddDialog as AddOperationDialog } from "../operation/_components/AddDialog";
+import { AddRoleDialog } from "../roles/_components/AddDialog";
+import AddChargeDialog from "../charges/_components/AddSingleDialog";
 
+import { createRoleApiClient } from "@/lib/api/administration/roles";
+import { getAuthToken } from "@/app/utils/onboarding";
+import { getIdToken } from "@/app/utils/auth";
+import { createOperationTheatreApiClient } from "@/lib/api/administration/operation-theatres";
+
+/* ------------------------------------------------------------
+    Modals & Actions
+------------------------------------------------------------ */
 
 interface MasterData {
   id: string;
@@ -440,11 +462,19 @@ interface MasterData {
 export default function MastersPage() {
   const user = useUserStore((s) => s.user);
 
-
   const [data, setData] = useState<MasterData[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const dict = useDictionary();
+  const [authToken, setAuthToken] = useState("");
+
+  useEffect(() => {
+    const loadToken = async () => {
+      const token = await getAuthToken();
+      setAuthToken(token);
+    };
+    loadToken();
+  }, []);
 
   /* ------------------------------------------------------------
       Extract allowed submodules from user permissions
@@ -508,8 +538,6 @@ export default function MastersPage() {
 
     return subs;
   }, [user]);
-
-
 
   /* ------------------------------------------------------------
       Load masters and assign submoduleKey from masterConfig
@@ -576,10 +604,131 @@ export default function MastersPage() {
     return acc;
   }, {});
 
+  /* ------------------------------------------------------------
+      Modals & Actions
+  ------------------------------------------------------------ */
+  const [activeModal, setActiveModal] = useState<{ type: string; props?: any } | null>(null);
+
+  const handleAction = (id: string, option: string) => {
+    // console.log("Action:", id, option);
+    if (id === "Departments" && option === "Department") {
+      setActiveModal({ type: "DEPARTMENT" });
+    }
+    if (id === "Ward/ Beds") {
+      if (option === "Ward") setActiveModal({ type: "WARD" });
+      if (option === "Bed") setActiveModal({ type: "BED" });
+      if (option === "Bed Type") setActiveModal({ type: "BED_TYPE" });
+      if (option === "Floor") setActiveModal({ type: "FLOOR" });
+    }
+    if (id === "Operation Theatres / Procedure Rooms") {
+      if (option === "Theatre") setActiveModal({ type: "OT" });
+      // if (option === "Procedure Room") setActiveModal({ type: "PROCEDURE_ROOM" }); // Todo
+    }
+    if (id === "User" && option === "User") {
+      setActiveModal({ type: "USER" });
+    }
+    if (id === "Operation / Operation Category") {
+      if (option === "Operation") setActiveModal({ type: "OPERATION" });
+      if (option === "Operation Category") setActiveModal({ type: "OPERATION_CATEGORY" });
+    }
+    if (id === "Roles" && option === "Roles") {
+      setActiveModal({ type: "ROLE" });
+    }
+    if (id === "Charges") {
+      if (option === "Category") setActiveModal({ type: "CHARGE_CATEGORY" });
+      if (option === "Tax") setActiveModal({ type: "CHARGE_TAX" });
+      if (option === "Unit") setActiveModal({ type: "CHARGE_UNIT" });
+    }
+  };
+
+  /* -------------------- API Clients -------------------- */
+  const queryClient = useQueryClient();
+  const departmentApi = authToken ? createDepartmentApiClient({ authToken }) : null;
+  const wardApi = authToken ? createWardApiClient({}) : null;
+  const roleApi = createRoleApiClient({});
+  const otApi = createOperationTheatreApiClient({ baseUrl: undefined });
+
+  /* -------------------- Mutations (Departments) -------------------- */
+  const createDeptMutation = useMutation({
+    mutationFn: async (payload: any) => departmentApi!.createDepartment(payload),
+    onSuccess: () => {
+      toast.success("Department added successfully");
+      queryClient.invalidateQueries({ queryKey: ["departments"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  /* -------------------- Mutations (Wards/Beds) -------------------- */
+  // NOTE: Assuming createWardApiClient has methods like createWard, createBed, etc.
+  // If not, we might need to verify the API client structure.
+
+  const createWardMutation = useMutation({
+    mutationFn: async (payload: any) => wardApi!.createWard(payload),
+    onSuccess: () => {
+      toast.success("Ward added successfully");
+      queryClient.invalidateQueries({ queryKey: ["wards"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createBedMutation = useMutation({
+    mutationFn: async (payload: any) => wardApi!.createBed(payload),
+    onSuccess: () => {
+      toast.success("Bed added successfully");
+      queryClient.invalidateQueries({ queryKey: ["beds"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createBedTypeMutation = useMutation({
+    mutationFn: async (payload: any) => wardApi!.createBedType(payload),
+    onSuccess: () => {
+      toast.success("Bed Type added successfully");
+      queryClient.invalidateQueries({ queryKey: ["bedTypes"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createFloorMutation = useMutation({
+    mutationFn: async (payload: any) => wardApi!.createFloor(payload),
+    onSuccess: () => {
+      toast.success("Floor added successfully");
+      queryClient.invalidateQueries({ queryKey: ["floors"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createOTMutation = useMutation({
+    mutationFn: async (payload: any) => otApi.create(payload),
+    onSuccess: () => {
+      toast.success("Operation Theatre added successfully");
+      queryClient.invalidateQueries({ queryKey: ["operationTheatres"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createRoleMutation = useMutation({
+    mutationFn: async (payload: any) => roleApi.createRole(payload),
+    onSuccess: () => {
+      toast.success("Role added successfully");
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      setActiveModal(null);
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+
+  /* ------------------------------------------------------------
+      Render
+  ------------------------------------------------------------ */
   return (
     <main className="min-h-svh w-full">
-      <Header />
-
       <div className="p-6 space-y-0 bg-gradient-to-br from-[#ECF3FF] to-[#D9FFFF] min-h-screen">
 
         {/* Floating Search Box */}
@@ -599,7 +748,7 @@ export default function MastersPage() {
 
         {/* Loading Skeleton */}
         {loading ? (
-          <div className="space-y-10">
+          <div className="space-y-10 mt-10">
             {[1, 2, 3].map((section) => (
               <div key={section} className="space-y-4">
                 <Skeleton className="h-6 w-48 bg-gray-200" />
@@ -613,10 +762,132 @@ export default function MastersPage() {
           </div>
         ) : (
           Object.entries(grouped).map(([category, items]) => (
-            <DashboardSection key={category} title={category} id={category} items={items} />
+            <DashboardSection
+              key={category}
+              title={category}
+              id={category}
+              items={items}
+              onAction={handleAction}
+            />
           ))
         )}
       </div>
+
+      {/* DEPARTMENT MODAL */}
+      {activeModal?.type === "DEPARTMENT" && (
+        <AddDepartmentModal
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(departments) => {
+            departments.forEach((d) =>
+              createDeptMutation.mutate({
+                department_name: d.name,
+                status: d.active ? "active" : "inactive",
+              })
+            );
+          }}
+        />
+      )}
+
+      {/* WARD MODAL */}
+      {activeModal?.type === "WARD" && (
+        <AddWardDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(v) => createWardMutation.mutate(v)}
+          wardTypes={[]} // TODO: Fetch ward types
+          floors={[]}    // TODO: Fetch floors
+        />
+      )}
+
+      {/* BED MODAL */}
+      {activeModal?.type === "BED" && (
+        <AddBedDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(v) => createBedMutation.mutate(v)}
+        />
+      )}
+
+      {/* BED TYPE MODAL */}
+      {activeModal?.type === "BED_TYPE" && (
+        <AddBedTypeDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(v) => createBedTypeMutation.mutate(v)}
+        />
+      )}
+
+      {/* FLOOR MODAL */}
+      {activeModal?.type === "FLOOR" && (
+        <AddFloorDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(v) => createFloorMutation.mutate(v)}
+        />
+      )}
+
+      {/* OPERATION THEATRE MODAL */}
+      {activeModal?.type === "OT" && (
+        <AddOperationTheatreDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          onSave={(v) => createOTMutation.mutate(v)}
+        />
+      )}
+
+      {/* USER MODAL */}
+      {activeModal?.type === "USER" && (
+        <AddUserDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          mode="users"
+          onSave={() => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            setActiveModal(null);
+          }}
+        />
+      )}
+
+      {/* OPERATION MODAL */}
+      {(activeModal?.type === "OPERATION" || activeModal?.type === "OPERATION_CATEGORY") && (
+        <AddOperationDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          mode={activeModal.type === "OPERATION" ? "operation" : "operationCategory"}
+          onSave={() => {
+            // AddDialog handles mutation internally but calls onSave
+            queryClient.invalidateQueries({ queryKey: ["operations"] });
+            setActiveModal(null);
+          }}
+        />
+      )}
+
+      {/* ROLE MODAL */}
+      {activeModal?.type === "ROLE" && (
+        <AddRoleDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          mode="add"
+          onSave={(v) => createRoleMutation.mutate({ ...v, status: v.active ? "active" : "inactive" })}
+        />
+      )}
+
+      {/* CHARGE MODAL */}
+      {(activeModal?.type === "CHARGE_CATEGORY" || activeModal?.type === "CHARGE_TAX" || activeModal?.type === "CHARGE_UNIT") && (
+        <AddChargeDialog
+          open={true}
+          onClose={() => setActiveModal(null)}
+          mode={
+            activeModal.type === "CHARGE_CATEGORY" ? "category" :
+              activeModal.type === "CHARGE_TAX" ? "tax" : "unit"
+          }
+          onSaved={() => {
+            queryClient.invalidateQueries({ queryKey: ["charges"] });
+            setActiveModal(null);
+          }}
+        />
+      )}
     </main>
   );
 }

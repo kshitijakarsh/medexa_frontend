@@ -83,6 +83,7 @@ export default function DoctorDashboardPage() {
     return (
         <div className="space-y-6 p-4">
             <DoctorHeader />
+
             <div className="bg-white rounded-xl border space-y-4">
 
                 {/* 🔵 Top Tabs with DynamicTabs */}

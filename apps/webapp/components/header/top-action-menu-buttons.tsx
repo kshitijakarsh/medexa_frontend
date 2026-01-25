@@ -28,8 +28,9 @@ import { logoutCognitoUser } from "@/app/utils/auth"
 import { usePathname, useRouter } from "next/navigation"
 import { getProfileRoute } from "@/app/utils/get-profile-route"
 import { getLocale } from "@/i18n/get-locale"
-import {LanguageSwitcher } from "./LanguageSwitcher"
+import { LanguageSwitcher } from "./LanguageSwitcher"
 import { useDictionary } from "@/i18n/use-dictionary"
+import { ChangePasswordDialog } from "../common/change-password-dialog"
 
 
 interface UserProfile {
@@ -40,10 +41,10 @@ interface UserProfile {
   accountStatus: "Active" | "Inactive"
   lastLogin: string
   hospital: {
-    name: string
-    contact: string
-    email: string
-    address: string
+    name?: string
+    contact?: string
+    email?: string
+    address?: string
     logo?: string
   }
 }
@@ -55,6 +56,7 @@ interface TopActionButtonsProps {
 
 export function TopActionButtons({ user }: TopActionButtonsProps) {
   const [open, setOpen] = React.useState(false)
+  const [changePasswordOpen, setChangePasswordOpen] = React.useState(false)
   const handleLogout = () => {
     logoutCognitoUser()
     window.location.href = "/login" // full page reload
@@ -75,9 +77,9 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
   return (
     <div className="flex items-center gap-3">
       {/* Quick Actions */}
-      <button className="text-blue-500 font-medium text-sm flex items-center gap-1 hover:text-blue-600 transition-colors">
+      {/* <button className="text-blue-500 font-medium text-sm flex items-center gap-1 hover:text-blue-600 transition-colors">
         {t.quickActions} <span className="text-base font-bold">+</span>
-      </button>
+      </button> */}
 
       {/* Language Selector */}
       <LanguageSwitcher />
@@ -85,13 +87,36 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
       {/* Menu Button + Sheet */}
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className="bg-green-500 hover:bg-green-600 rounded-full p-2 shadow-sm transition-all"
           >
             <Menu className="h-4 w-4 text-white" />
+          </Button> */}
+
+          <Button
+            variant="ghost"
+            className="bg-blue-50 hover:bg-blue-100 text-gray-700 rounded-full h-10 px-1.5 pr-4 flex items-center gap-2 shadow-sm transition-all group"
+          >
+            <Image
+              src={user.avatar || "/avatar.png"}
+              alt="Profile"
+              width={34}
+              height={34}
+              className="rounded-full object-cover border-2 border-green-500 shadow-sm"
+            />
+
+            <div className="flex flex-col items-start text-left">
+              <span className="hidden md:block text-sm font-semibold text-slate-900 leading-tight">
+                {user.name}
+              </span>
+              <span className="text-[11px] text-slate-500 font-medium leading-none">
+                {user.role}
+              </span>
+            </div>
           </Button>
+
         </SheetTrigger>
 
         <SheetContent
@@ -138,6 +163,7 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
             <Button
               variant="outline"
               className="flex-1 border-green-100 hover:bg-green-50"
+              onClick={() => setChangePasswordOpen(true)}
             >
               <Lock className="h-4 w-4 mr-2 text-green-600" />
               {t?.changePassword}
@@ -150,9 +176,9 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
               {t?.accountStatus}:{" "}
               <span
                 className={
-                  user.accountStatus === "Active"
+                  (user.accountStatus.toLowerCase() === "active"
                     ? "text-green-600 font-medium"
-                    : "text-red-500 font-medium"
+                    : "text-red-500 font-medium") + " capitalize"
                 }
               >
                 {user.accountStatus}
@@ -212,6 +238,11 @@ export function TopActionButtons({ user }: TopActionButtonsProps) {
           </div>
         </SheetContent>
       </Sheet>
+
+      <ChangePasswordDialog
+        open={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
     </div>
   )
 }

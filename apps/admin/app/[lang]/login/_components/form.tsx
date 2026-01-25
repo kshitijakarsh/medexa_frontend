@@ -587,7 +587,7 @@ import {
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
-import { User, Lock, Eye, EyeOff, Fingerprint } from "lucide-react";
+import { User, Lock, Eye, EyeOff, Fingerprint, AlertCircle } from "lucide-react";
 import { Label } from "@workspace/ui/components/label";
 import { loginUserCognito } from "@/lib/api";
 
@@ -602,6 +602,7 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<LoginFormValues>({
@@ -611,6 +612,7 @@ export function LoginForm() {
   });
 
   const handleLogin = async (values: LoginFormValues) => {
+    setErrorMessage(null);
     startTransition(async () => {
       try {
         const res = await loginUserCognito(
@@ -641,12 +643,12 @@ export function LoginForm() {
           });
           // router.push("/dashboard");
           setShowNewPassword(false);
+        } else {
+          setErrorMessage("Invalid Credentials");
         }
       } catch (err: any) {
         console.error("Login error:", err);
-        toast.error("Login failed", {
-          description: err.message || "Unexpected error, try again later.",
-        });
+        setErrorMessage("Invalid Credentials");
       }
     });
   };
@@ -658,6 +660,14 @@ export function LoginForm() {
         className="space-y-5 animate-fade-in"
         aria-label="Login form"
       >
+        {/* Error Message */}
+        {errorMessage && (
+          <div className="p-3 mb-4 text-sm text-red-800 rounded-lg bg-red-50 flex items-center gap-2">
+            <AlertCircle className="h-4 w-4" />
+            <span className="font-medium">{errorMessage}</span>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-start items-center">
           <Fingerprint className="h-8 w-8 text-green-600" />

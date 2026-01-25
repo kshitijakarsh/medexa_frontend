@@ -168,6 +168,8 @@ class WardApiClient {
     };
   }
 
+  /* ----- Ward Methods ----- */
+
   /**
    * Get paginated / filtered list of wards
    */
@@ -252,6 +254,39 @@ class WardApiClient {
           `Delete ward error: ${error.response?.data?.message || error.message}`
         );
       }
+      throw error;
+    }
+  }
+
+  /* ----- Bed Methods ----- */
+  async createBed(payload: any): Promise<AxiosResponse<any>> {
+    try {
+      const config = await this.getConfig();
+      return axios.post(`${this.baseUrl}/api/v1/beds`, payload, config);
+    } catch (error) {
+      if (axios.isAxiosError(error)) throw new Error(error.response?.data?.message || error.message);
+      throw error;
+    }
+  }
+
+  /* ----- Bed Type Methods ----- */
+  async createBedType(payload: any): Promise<AxiosResponse<any>> {
+    try {
+      const config = await this.getConfig();
+      return axios.post(`${this.baseUrl}/api/v1/bed-types`, payload, config);
+    } catch (error) {
+      if (axios.isAxiosError(error)) throw new Error(error.response?.data?.message || error.message);
+      throw error;
+    }
+  }
+
+  /* ----- Floor Methods ----- */
+  async createFloor(payload: any): Promise<AxiosResponse<any>> {
+    try {
+      const config = await this.getConfig();
+      return axios.post(`${this.baseUrl}/api/v1/floors`, payload, config);
+    } catch (error) {
+      if (axios.isAxiosError(error)) throw new Error(error.response?.data?.message || error.message);
       throw error;
     }
   }

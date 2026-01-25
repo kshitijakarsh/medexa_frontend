@@ -31,9 +31,11 @@ type AddOTForm = z.infer<typeof addOTSchema>;
 export function AddOperationTheatreDialog({
     open,
     onClose,
+    onSave,
 }: {
     open: boolean;
     onClose: () => void;
+    onSave: (values: AddOTForm) => void;
 }) {
     const [isLoading, setLoading] = useState<boolean>(false)
     const dict = useDictionary();
@@ -48,7 +50,8 @@ export function AddOperationTheatreDialog({
     });
 
     const handleSave = (values: AddOTForm) => {
-        console.log("Operation Theatre saved:", values);
+        //console.log("Operation Theatre saved:", values);
+        onSave(values);
         onClose();
     };
 

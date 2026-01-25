@@ -284,19 +284,19 @@ const Payment = ({
           createMutation.isError ||
           updateMutation.isError ||
           deleteMutation.isError) && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <p className="text-red-600 text-sm">
-              {error ||
-                (createMutation.error instanceof Error
-                  ? createMutation.error.message
-                  : updateMutation.error instanceof Error
-                    ? updateMutation.error.message
-                    : deleteMutation.error instanceof Error
-                      ? deleteMutation.error.message
-                      : "An error occurred")}
-            </p>
-          </div>
-        )}
+            <div className="bg-red-50 border border-red-200 rounded-md p-4">
+              <p className="text-red-600 text-sm">
+                {error ||
+                  (createMutation.error instanceof Error
+                    ? createMutation.error.message
+                    : updateMutation.error instanceof Error
+                      ? updateMutation.error.message
+                      : deleteMutation.error instanceof Error
+                        ? deleteMutation.error.message
+                        : "An error occurred")}
+              </p>
+            </div>
+          )}
 
         {/* Payment Configs List */}
         <div className="space-y-4">

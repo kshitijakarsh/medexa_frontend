@@ -18,7 +18,12 @@ export const step1Schema = z.object({
     .int()
     .min(1, "Regulatory authority is required"),
   license_number: z.string().min(1, "License number is required"),
-  license_expiry: z.string().min(1, "License expiry is required"),
+  license_expiry: z
+    .string()
+    .min(1, "License expiry is required")
+    .refine((val) => new Date(val) > new Date(), {
+      message: "License expiry date must be in the future",
+    }),
   license_type: z.string().min(1, "License type is required"),
   commercial_reg_no: z
     .string()
@@ -79,9 +84,17 @@ export const step4Schema = z.object({
   seats: z.coerce.number().int().min(0, "Seats is required"),
   storage_quota_mb: z.coerce.number().int().min(0, "Storage quota is required"),
   start_date: z.string().min(1, "Start date is required"),
-  end_date: z.string().min(1, "End date is required"),
+  end_date: z
+    .string()
+    .min(1, "End date is required")
+    .refine((val) => new Date(val) > new Date(), {
+      message: "End date must be in the future",
+    }),
   auto_renew: z.boolean(),
   status: z.string().min(1, "Status is required"),
+}).refine((data) => new Date(data.end_date) > new Date(data.start_date), {
+  message: "End date must be after start date",
+  path: ["end_date"],
 })
 
 // Define the type with the correct output types (what we want in the form)
@@ -101,7 +114,12 @@ export const step5Schema = z.object({
   authority_id: z.coerce.number().int().min(1, "Authority ID is required"),
   doc_number: z.string().min(1, "Document number is required"),
   issue_date: z.string().min(1, "Issue date is required"),
-  expiry_date: z.string().min(1, "Expiry date is required"),
+  expiry_date: z
+    .string()
+    .min(1, "Expiry date is required")
+    .refine((val) => new Date(val) > new Date(), {
+      message: "Expiry date must be in the future",
+    }),
   file_url: z.string().min(1, "File is required"),
   status: z.string().optional(),
   notes: z.string().optional(),

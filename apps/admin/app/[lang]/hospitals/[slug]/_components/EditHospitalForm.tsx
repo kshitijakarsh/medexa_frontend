@@ -72,8 +72,8 @@ export function EditHospitalForm({ tenantId, dict }: EditHospitalFormProps) {
         external_id: tenantData.external_id || "",
         name_en: tenantData.name_en || "",
         name_local: tenantData.name_local || "",
-        country_id: tenantData.country_id || 0,
-        regulatory_authority_id: tenantData.regulatory_authority_id || 0,
+        country_id: tenantData.country_id || tenantData.country?.id || 0,
+        regulatory_authority_id: tenantData.regulatory_authority_id || tenantData.regulatory_authority?.id || 0,
         license_number: tenantData.license_number || "",
         license_expiry: isoToDatetimeLocal(tenantData.license_expiry || ""),
         license_type: tenantData.license_type || "",
@@ -82,7 +82,7 @@ export function EditHospitalForm({ tenantId, dict }: EditHospitalFormProps) {
         primary_admin_email: tenantData.primary_admin_email || "",
         primary_admin_id_no: tenantData.primary_admin_id_no || "",
         primary_admin_password: "", // Don't pre-fill password
-        currency_code: tenantData.currency_code || "",
+        currency_code: tenantData.currency_code || tenantData.country?.currency_code || "",
         vat_registered: tenantData.vat_registered ?? false,
         vat_number: tenantData.vat_number || "",
       })
@@ -113,14 +113,14 @@ export function EditHospitalForm({ tenantId, dict }: EditHospitalFormProps) {
     try {
       const date = new Date(isoString)
       if (isNaN(date.getTime())) return ""
-      
+
       // Format as YYYY-MM-DDTHH:mm
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, "0")
       const day = String(date.getDate()).padStart(2, "0")
       const hours = String(date.getHours()).padStart(2, "0")
       const minutes = String(date.getMinutes()).padStart(2, "0")
-      
+
       return `${year}-${month}-${day}T${hours}:${minutes}`
     } catch {
       return ""

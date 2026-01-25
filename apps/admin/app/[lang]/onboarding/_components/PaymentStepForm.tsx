@@ -49,6 +49,8 @@ import { useOnboardingStore } from "@/stores/onboarding"
 import { getIdToken } from "@/lib/api"
 import { cn } from "@workspace/ui/lib/utils"
 
+import { toast } from "@workspace/ui/lib/sonner"
+
 const defaultValues: Step3Values = {
   gateway_id: 0,
   merchant_id: "",
@@ -62,11 +64,12 @@ const defaultValues: Step3Values = {
   active: true,
 }
 
-export function PaymentStepForm({ dict }: { dict: Dictionary }){
+export function PaymentStepForm({ dict }: { dict: Dictionary }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const params = useParams<{ lang: string }>()
   const queryClient = useQueryClient()
+  // const dict = useDictionary();
   const t = dict.pages.onboarding.payment
   const common = dict.common
 
@@ -196,6 +199,10 @@ export function PaymentStepForm({ dict }: { dict: Dictionary }){
       queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
       setIsDialogOpen(false)
       form.reset(defaultValues)
+      toast.success("Payment configuration added successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to add payment configuration")
     },
   })
 
@@ -216,6 +223,10 @@ export function PaymentStepForm({ dict }: { dict: Dictionary }){
       setIsDialogOpen(false)
       setEditingItem(null)
       form.reset(defaultValues)
+      toast.success("Payment configuration updated successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update payment configuration")
     },
   })
 
@@ -225,6 +236,10 @@ export function PaymentStepForm({ dict }: { dict: Dictionary }){
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
+      toast.success("Payment configuration deleted successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to delete payment configuration")
     },
   })
 
@@ -392,16 +407,16 @@ export function PaymentStepForm({ dict }: { dict: Dictionary }){
         {(createMutation.isError ||
           updateMutation.isError ||
           deleteMutation.isError) && (
-          <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
-            {deleteMutation.error instanceof Error
-              ? deleteMutation.error.message
-              : createMutation.error instanceof Error
-                ? createMutation.error.message
-                : updateMutation.error instanceof Error
-                  ? updateMutation.error.message
-                  : common.error}
-          </div>
-        )}
+            <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
+              {deleteMutation.error instanceof Error
+                ? deleteMutation.error.message
+                : createMutation.error instanceof Error
+                  ? createMutation.error.message
+                  : updateMutation.error instanceof Error
+                    ? updateMutation.error.message
+                    : common.error}
+            </div>
+          )}
 
         {!isEditMode && (
           <div className="flex gap-3 items-center">
@@ -596,19 +611,21 @@ export function PaymentStepForm({ dict }: { dict: Dictionary }){
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="vat_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Label>{t.vatNumber.label}</Label>
-                      <FormControl>
-                        <Input placeholder={t.vatNumber.placeholder} {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {form.watch("vat_registered") && (
+                  <FormField
+                    control={form.control}
+                    name="vat_number"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>{t.vatNumber.label}</Label>
+                        <FormControl>
+                          <Input placeholder={t.vatNumber.placeholder} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               <FormField

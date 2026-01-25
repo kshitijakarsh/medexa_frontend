@@ -126,11 +126,22 @@ function StatusBadge({ status }: { status: AuditLog["status"] }) {
   )
 }
 
+import { useSearchParams } from "next/navigation"
+
+import { DateRangeFilter } from "./date-range-filter"
+
 export function AuditLogTable() {
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState<AuditLog | null>(null)
 
-  const { data: logs = [], isLoading } = useQuery<AuditLog[]>({
+  const searchParams = useSearchParams()
+  const range = searchParams.get("range") || "all"
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
+  const { data: logs = [], isLoading, isError } = useQuery<AuditLog[]>({
     queryKey: ["audit-logs"],
     queryFn: async () => {
       const client = createAuditLogsApiClient({ authToken: "dev-token" })
@@ -139,9 +150,46 @@ export function AuditLogTable() {
     },
   })
 
+  // Filter logs based on range
+  const filteredLogs = logs.filter((log) => {
+    if (range === "all") return true
+
+    const logDate = new Date(log.created_at)
+    const now = new Date()
+
+    if (range === "today") {
+      const startOfToday = new Date()
+      startOfToday.setHours(0, 0, 0, 0)
+      return logDate >= startOfToday
+    }
+
+    if (range === "7days") {
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      return logDate >= sevenDaysAgo
+    }
+
+    if (range === "30days") {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      return logDate >= thirtyDaysAgo
+    }
+
+    return true
+  })
+
   // Sort descending by created_at
-  const sortedLogs = logs.slice().sort(
+  const sortedLogs = filteredLogs.slice().sort(
     (a, b) => +new Date(b.created_at) - +new Date(a.created_at)
+  )
+
+  // Calculate pagination
+  const totalData = sortedLogs.length
+  const totalPages = Math.max(1, Math.ceil(totalData / itemsPerPage))
+
+  const paginatedLogs = sortedLogs.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   )
 
   return (
@@ -149,19 +197,11 @@ export function AuditLogTable() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Activity Log</h2>
         <div className="flex items-center gap-4">
+          <DateRangeFilter />
           <FilterInput placeholder="Search" />
         </div>
       </div>
 
-      {/* {isLoading ? (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="animate-spin h-10 w-10 text-blue-500" />
-        </div>
-      ) : sortedLogs.length === 0 ? (
-        <div className="flex justify-center items-center h-64 text-gray-500 text-sm">
-          No audit logs found.
-        </div>
-      ) : ( */}
       <Table>
         <TableHeader className="bg-background [&_tr]:border-none">
           <TableRow className="hover:bg-transparent">
@@ -177,24 +217,32 @@ export function AuditLogTable() {
         <TableBody className="[&_td:first-child]:rounded-l-lg [&_td:last-child]:rounded-r-lg">
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-8">
+              <TableCell colSpan={7} className="text-center py-8">
                 <div className="flex items-center justify-center gap-2">
                   <Loader2 className="h-5 w-5 animate-spin" />
                   <span>Loading Activity logs...</span>
                 </div>
               </TableCell>
             </TableRow>
-          ) : sortedLogs.length === 0 ? (
+          ) : isError ? (
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-8 text-red-600 bg-red-50">
+                <div className="flex items-center justify-center gap-2">
+                  <span>Failed to load activity logs. Please try again.</span>
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : paginatedLogs.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={7}
                 className="text-center py-8 text-muted-foreground"
               >
                 No activity logs found.
               </TableCell>
             </TableRow>
           ) : (
-            sortedLogs.map((log) => (
+            paginatedLogs.map((log) => (
               <TableRow
                 key={log.id}
                 className="odd:bg-muted/50 odd:hover:bg-muted/50 border-none hover:bg-transparent"
@@ -223,14 +271,42 @@ export function AuditLogTable() {
                     }}
                     className="cursor-pointer text-sidebar "
                   >
-                    <EyeIcon className="w-4 h-4 "/>
+                    <EyeIcon className="w-4 h-4 " />
                   </Button>
                 </TableCell>
               </TableRow>
             )))}
         </TableBody>
       </Table>
-      {/* )} */}
+
+      <div className="flex items-center justify-between pt-4">
+        <div className="text-sm text-muted-foreground">
+          Showing {Math.min(itemsPerPage, totalData - (currentPage - 1) * itemsPerPage)} of {totalData}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <div className="text-sm">
+            Page {currentPage} of {totalPages}
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setCurrentPage((p) => Math.min(totalPages, p + 1))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
 
       <LogSheet open={open} onOpenChange={setOpen} log={selected} />
     </div>

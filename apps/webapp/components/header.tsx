@@ -10,28 +10,49 @@ import { format, formatRelative } from "@workspace/ui/hooks/use-date-fns"
 import { useDictionary } from "@/i18n/use-dictionary"
 
 
+import { useQuery } from "@tanstack/react-query"
+import { createTenantApiClient } from "@/lib/api/tenant"
+import { getIdToken } from "@/app/utils/auth"
+
 export const Header = () => {
   // const handleLogout = () => {
   //   logoutCognitoUser();
   //   window.location.href = "/login"; // full page reload
   // };
   const user = useUserStore((s) => s.user);
+  console.log("DEBUG: Header User Data:", user);
+
+  // Fetch full tenant details to get the name and other info
+  const { data: tenant } = useQuery({
+    queryKey: ['tenant', user?.tenant_id],
+    queryFn: async () => {
+      if (!user?.tenant_id) return null;
+      const token = await getIdToken();
+      // Use cast or fix path if needed, assuming the import works as verified
+      const client = createTenantApiClient({ authToken: token || '' });
+      const res = await client.getTenantById(String(user.tenant_id));
+      return res.data.data;
+    },
+    enabled: !!user?.tenant_id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
   // ⭐ CLEAN & SAFE MAPPING
   const userData = {
-    name: user?.name ?? "Dr. Ahmed Al-Mansouri",
-    role: user?.role?.name ?? "HOSPITAL ADMIN",
-    employeeId: "EMP-2024-1847", // Static – update if needed
+    name: user?.name ?? "",
+    role: user?.role?.name ?? "",
+    employeeId: String(user?.id) || "",
     accountStatus: (user?.status ?? "Active") as "Active" | "Inactive",
     lastLogin: user?.updated_at
       ? formatRelative(new Date(user.updated_at), new Date())
-      : "Today at 09:42 AM",
+      : "",
     avatar: "/images/user.svg",
     hospital: {
-      name: user?.hospital?.name ?? "Hamad Medical Center",
-      contact: user?.phone ?? "+974 4488 1122",
-      email: user?.email ?? "info@hamad.qa",
-      address: user?.address ?? "Doha, Qatar",
-      logo: user?.logo ?? "/images/user.svg",
+      name: tenant?.name_en,
+      contact: tenant?.primary_admin_email,
+      email: tenant?.primary_admin_email,
+      // address: tenant?.address,
+      // logo: tenant?.logo,
     },
   };
 
@@ -60,7 +81,7 @@ export const Header = () => {
         <LogOutIcon onClick={handleLogout} className="h-4 w-4" />
       </button> */}
       <div>
-        <TopActionButtons user={userData}/>
+        <TopActionButtons user={userData} />
       </div>
     </div>
   )

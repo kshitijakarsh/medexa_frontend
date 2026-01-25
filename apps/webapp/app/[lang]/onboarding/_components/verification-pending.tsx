@@ -32,7 +32,7 @@ const VerificationPending = ({ onLogout }: VerificationPendingProps) => {
             <li>Our compliance team will review your documents</li>
             <li>You may be contacted if additional information is needed</li>
             <li>Once approved, all features will be unlocked</li>
-            <li>You'll receive an email and SMS notification</li>
+
           </ol>
         </div>
 

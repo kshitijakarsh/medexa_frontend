@@ -552,7 +552,7 @@ function RolesPageContent() {
       label: rolesDict.columns.status,
       render: (r: any) => (
         <span
-          className={r.status === "active" ? "text-green-600" : "text-red-500"}
+          className={`${r.status === "active" ? "text-green-600" : "text-red-500"} capitalize`}
         >
           {r.status}
         </span>

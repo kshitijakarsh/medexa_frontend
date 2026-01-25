@@ -84,14 +84,14 @@ export function LoginForm() {
             description: "Redirecting to your dashboard...",
           })
           // Redirect to tenant dashboard
-          router.push(`/dashboard`)
+          router.push(`/administration/dashboard`)
           setShowNewPassword(false)
         } else if (res.success) {
           // Success but no tokens (shouldn't happen, but handle gracefully)
           toast.success(res.message || "Login successful", {
             description: "Redirecting to your dashboard...",
           })
-          router.push(`/dashboard`)
+          router.push(`/administration/dashboard`)
           setShowNewPassword(false)
         }
       } catch (err: any) {

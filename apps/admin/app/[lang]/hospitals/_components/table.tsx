@@ -364,7 +364,7 @@ export default function HospitalsTable({ dict }: { dict: DictionaryType }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {tenant.status.toLowerCase() === "pending" && (
+            {tenant.status.toLowerCase() === "pending" && ( 
               <DropdownMenuItem asChild>
                 <LocaleLink
                   href={`/onboarding/modules?hospitalId=${tenant.id}`}

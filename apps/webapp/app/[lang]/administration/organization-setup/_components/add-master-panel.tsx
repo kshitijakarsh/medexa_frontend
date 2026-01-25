@@ -112,13 +112,17 @@ import { Plus, PlusCircle } from "lucide-react";
 
 interface AddMasterPanelProps {
   options: string[];
+  onOptionSelect?: (option: string) => void;
 }
 
-export function AddMasterPanel({ options }: AddMasterPanelProps) {
+export function AddMasterPanel({ options, onOptionSelect }: AddMasterPanelProps) {
   const [active, setActive] = useState<string | null>(null);
 
   const handleAdd = (item: string) => {
     setActive(item);
+    if (onOptionSelect) {
+      onOptionSelect(item);
+    }
     console.log("Adding:", item); // in real use-case, open dialog or navigate
   };
 
@@ -145,11 +149,10 @@ export function AddMasterPanel({ options }: AddMasterPanelProps) {
               <button
                 key={item}
                 onClick={() => handleAdd(item)}
-                className={`w-full flex items-center justify-between text-sm font-medium rounded-lg px-3 py-2 transition cursor-pointer ${
-                  active === item
+                className={`w-full flex items-center justify-between text-sm font-medium rounded-lg px-3 py-2 transition cursor-pointer ${active === item
                     ? "bg-green-500 text-white hover:bg-green-600"
                     : "bg-green-50 text-gray-800 hover:bg-green-100"
-                }`}
+                  }`}
               >
                 {item}
                 <Plus className="h-4 w-4" />

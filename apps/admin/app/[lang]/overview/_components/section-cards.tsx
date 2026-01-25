@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Banknote,
   CalendarSync,
@@ -18,10 +20,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card"
+import { useTenants } from "@/hooks/useTenants"
 
 export function SectionCards() {
+  const { data: tenantsData, isLoading } = useTenants({
+    initialParams: { limit: 1 },
+  })
+
+  const { data: semiOnboardedData, isLoading: isLoadingSemi } = useTenants({
+    initialParams: { limit: 1, status: "semi_onboarded" },
+  })
+
+  const { data: pendingVerificationData, isLoading: isLoadingPending } = useTenants({
+    initialParams: { limit: 1, status: "pending_verification" },
+  })
+
+  const { data: activeTenantsData, isLoading: isLoadingActive } = useTenants({
+    initialParams: { limit: 1, status: "active" },
+  })
+
+  const pendingCount = (semiOnboardedData?.pagination?.totalData ?? 0) + (pendingVerificationData?.pagination?.totalData ?? 0)
+  const isLoadingPendingTotal = isLoadingSemi || isLoadingPending
+
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-5">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @4xl/main:grid-cols-3">
       <Card className="@container/card gap-2 py-4">
         <CardHeader className="px-4">
           <CardDescription className="flex items-center gap-2 text-lg text-primary font-semibold">
@@ -31,7 +53,7 @@ export function SectionCards() {
             <span>Total Hospitals</span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl mt-2">
-            30
+            {isLoading ? "..." : tenantsData?.pagination?.totalData ?? 0}
           </CardTitle>
           <CardAction></CardAction>
         </CardHeader>
@@ -51,10 +73,10 @@ export function SectionCards() {
             <div className="size-9 rounded-md bg-primary/10 flex items-center justify-center">
               <CalendarSync className="size-5" />
             </div>
-            <span>Subscriptions</span>
+            <span>Onboarded Hospitals</span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl mt-2">
-            30
+            {isLoadingActive ? "..." : activeTenantsData?.pagination?.totalData ?? 0}
           </CardTitle>
           <CardAction></CardAction>
         </CardHeader>
@@ -72,12 +94,12 @@ export function SectionCards() {
         <CardHeader className="px-4">
           <CardDescription className="flex items-center gap-2 text-lg text-primary font-semibold">
             <div className="size-9 rounded-md bg-primary/10 flex items-center justify-center">
-              <Banknote className="size-5" />
+              <MonitorCog className="size-5" />
             </div>
-            <span>Monthly Revenue</span>
+            <span>Pending Hospitals</span>
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl mt-2">
-            $1,250.00
+            {isLoadingPendingTotal ? "..." : pendingCount}
           </CardTitle>
           <CardAction></CardAction>
         </CardHeader>
@@ -87,11 +109,11 @@ export function SectionCards() {
             +12.5%
           </Badge>
           <div className="line-clamp-1 flex gap-2 font-medium text-sm">
-            +$125.00 vs last month
+            Pending actions
           </div>
         </CardFooter>
       </Card>
-      <Card className="@container/card gap-2 py-4">
+      {/* <Card className="@container/card gap-2 py-4">
         <CardHeader className="px-4">
           <CardDescription className="flex items-center gap-2 text-lg text-primary font-semibold">
             <div className="size-9 rounded-md bg-primary/10 flex items-center justify-center">
@@ -136,7 +158,7 @@ export function SectionCards() {
             +12 new this month
           </div>
         </CardFooter>
-      </Card>
+      </Card> */}
     </div>
   )
 }

@@ -898,6 +898,30 @@
         "failedToCreateVisit": "Failed to create visit"
       }
     },
+    "administration": {
+      "profile": {
+        "tabs": {
+          "overview": "Overview",
+          "settings": "Settings"
+        },
+        "components": {
+          "header": {
+            "active": "Active",
+            "employeeId": "Employee ID",
+            "email": "Email",
+            "contact": "Contact",
+            "joinedOn": "Joined On"
+          },
+          "overview": {
+            "totalUsers": "Total Users",
+            "activeDepartments": "Active Departments",
+            "insurancePartners": "Insurance Partners",
+            "wardOccupancy": "Ward Occupancy",
+            "totalRoles": "Total Roles"
+          }
+        }
+      }
+    },
     "doctor": {
       "appointment": {
         "tabs": {

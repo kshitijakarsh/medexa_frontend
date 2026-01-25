@@ -538,7 +538,7 @@ const DefaultIcon = Cog
 
 // Map moduleKey → landing route
 const moduleLandingPath: Record<string, string> = {
-  administration: "/organization-setup",
+  administration: "/administration/organization-setup",
   doctor: "/doctor/dashboard",
   nurse: "/nurse/dashboard",
   frontoffice: "/frontoffice/dashboard",

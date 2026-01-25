@@ -98,8 +98,51 @@ export function AppSidebar({ }) {
             withLocale(ROUTES.ADMINISTRATION_CHARGES),
             withLocale(ROUTES.ADMINISTRATION_CHARGES_ADD),
           ],
+
+          items : [
+            {
+              title : "Departments",
+              url : [withLocale(ROUTES.ADMINISTRATION_DEPARTMENT)]
+            },
+            {
+              title : "Wards / Beds",
+              url : [withLocale(ROUTES.ADMINISTRATION_UNITS_WARDS_BEDS)]
+            },
+            {
+              title : "Users",
+              url : [withLocale(ROUTES.ADMINISTRATION_USER)]
+            },
+            {
+              title : "Charges",
+              url : [withLocale(ROUTES.ADMINISTRATION_CHARGES)]
+            },
+            {
+              title : "Patients",
+              url : [withLocale(ROUTES.ADMINISTRATION_PATIENTS)]
+            },
+          ],
           icon: Settings,
         },
+        {
+          title: "Staff & Roles",
+          icon : UserCog,
+          items : [
+            {
+              title : "Roles",
+              url : [withLocale(ROUTES.ADMINISTRATION_ROLES)]
+            }
+          ]
+        },
+        {
+          title : "Services",
+          icon : Settings,
+          items : [
+            {
+              title : "Insurance",
+              url : [withLocale(ROUTES.ADMINISTRATION_INSURANCE)]
+            }
+          ]
+        }
       ]
       : []),
 

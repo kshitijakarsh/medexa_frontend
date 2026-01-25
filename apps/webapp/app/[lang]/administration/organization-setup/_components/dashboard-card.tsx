@@ -151,8 +151,6 @@
 
 
 
-"use client";
-
 import {
   Card,
   CardHeader,
@@ -172,9 +170,10 @@ interface DashboardCardProps {
   title: string;
   subtitle: string;
   active: number;
+  onAction?: (id: string, option: string) => void;
 }
 
-export function DashboardCard({ title, subtitle, active, id }: DashboardCardProps) {
+export function DashboardCard({ title, subtitle, active, id, onAction }: DashboardCardProps) {
   const router = useRouter();
   const config = masterConfig[id];
   const params = useParams<{ lang?: string }>();
@@ -184,8 +183,14 @@ export function DashboardCard({ title, subtitle, active, id }: DashboardCardProp
   const handleCardClick = () => {
     // console.log("Card clicked:", id);
     if (config?.route) {
-      console.log("Navigating to:", config.route);
+      //console.log("Navigating to:", config.route);
       router.push(`/${lang}${config.route}`);
+    }
+  };
+
+  const handleOptionSelect = (option: string) => {
+    if (onAction) {
+      onAction(id, option);
     }
   };
 
@@ -211,8 +216,11 @@ export function DashboardCard({ title, subtitle, active, id }: DashboardCardProp
           <Newspaper className="h-5 w-5" /> {active} Active
         </Badge>
 
-        {/* Pass dynamic options */}
-        <AddMasterPanel options={config?.addOptions || []} />
+        {/* Pass dynamic options and handler */}
+        <AddMasterPanel
+          options={config?.addOptions || []}
+          onOptionSelect={handleOptionSelect}
+        />
       </CardFooter>
     </Card>
   );

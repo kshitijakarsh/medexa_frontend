@@ -898,6 +898,30 @@
         "failedToCreateVisit": "فشل إنشاء الزيارة"
       }
     },
+    "administration": {
+      "profile": {
+        "tabs": {
+          "overview": "نظرة عامة",
+          "settings": "إعدادات"
+        },
+        "components": {
+          "header": {
+            "active": "نشط",
+            "employeeId": "معرف الموظف",
+            "email": "البريد الإلكتروني",
+            "contact": "الاتصال",
+            "joinedOn": "تاريخ الانضمام"
+          },
+          "overview": {
+            "totalUsers": "إجمالي المستخدمين",
+            "activeDepartments": "الأقسام النشطة",
+            "insurancePartners": "شركاء التأمين",
+            "wardOccupancy": "إشغال الأجنحة",
+            "totalRoles": "إجمالي الأدوار"
+          }
+        }
+      }
+    },
     "doctor": {
       "appointment": {
         "tabs": {

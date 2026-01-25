@@ -22,9 +22,11 @@ type AddBedForm = z.infer<typeof addBedSchema>;
 export function AddBedDialog({
     open,
     onClose,
+    onSave,
 }: {
     open: boolean;
     onClose: () => void;
+    onSave: (values: AddBedForm) => void;
 }) {
     const form = useForm<AddBedForm>({
         resolver: zodResolver(addBedSchema),
@@ -38,7 +40,8 @@ export function AddBedDialog({
     });
 
     const handleSave = (values: AddBedForm) => {
-        console.log("Bed saved:", values);
+        // console.log("Bed saved:", values);
+        onSave(values);
         onClose();
     };
 

@@ -36,6 +36,8 @@ interface Tenant {
   tenant_payment_configs?: PaymentConfig[]
   tenant_license_history?: License[]
   tenant_regulatory_documents?: Document[]
+  country?: { id: number; name_en: string; currency_code: string }
+  regulatory_authority?: { id: number; name_en: string }
 }
 
 interface PaginationMeta {
@@ -98,6 +100,8 @@ interface CreateTenantParams {
   vat_number: string
   // user_full_name: string
   // user_password: string
+  logo?: File | null
+  regulatory_doc?: File | null
 }
 
 interface UpdateTenantParams {
@@ -165,8 +169,7 @@ class TenantApiClient {
       })
 
       return await axios.get<TenantsListResponse>(
-        `${this.baseUrl}/api/v1/tenants${
-          queryParams.toString() ? `?${queryParams.toString()}` : ""
+        `${this.baseUrl}/api/v1/tenants${queryParams.toString() ? `?${queryParams.toString()}` : ""
         }`,
         await this.getJsonRequestConfig()
       )
@@ -208,6 +211,27 @@ class TenantApiClient {
     params: CreateTenantParams
   ): Promise<AxiosResponse<TenantResponse>> {
     try {
+      if (params.logo) {
+        const formData = new FormData()
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            formData.append(key, value as string | Blob)
+          }
+        })
+        const config = await this.getJsonRequestConfig()
+        return await axios.post<TenantResponse>(
+          `${this.baseUrl}/api/v1/tenants`,
+          formData,
+          {
+            ...config,
+            headers: {
+              ...config.headers,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+      }
+
       return await axios.post<TenantResponse>(
         `${this.baseUrl}/api/v1/tenants`,
         params,

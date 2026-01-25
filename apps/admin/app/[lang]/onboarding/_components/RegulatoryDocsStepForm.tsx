@@ -47,7 +47,11 @@ import {
 } from "@workspace/ui/components/select"
 import { cn } from "@workspace/ui/lib/utils"
 import type { Dictionary } from "@/i18n/get-dictionary"
+import { useFileUpload } from "@/app/hooks/useFileUpload"
 
+
+
+import { toast } from "@workspace/ui/lib/sonner"
 
 const defaultValues: Step5Values = {
   doc_type: "",
@@ -59,6 +63,7 @@ const defaultValues: Step5Values = {
   status: "pending",
   notes: "",
 }
+
 
 export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
   const router = useRouter()
@@ -88,6 +93,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
   const [docPreview, setDocPreview] = useState<string | null>(null)
   const [isActivating, setIsActivating] = useState(false)
   const [activationError, setActivationError] = useState<string | null>(null)
+  const { uploadFile, isUploading } = useFileUpload()
   const [authToken, setAuthToken] = useState<string>("")
 
   // Retrieve token on component mount
@@ -165,6 +171,10 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
       form.reset(defaultValues)
       setDocFile(null)
       setDocPreview(null)
+      toast.success("Document added successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to add document")
     },
   })
 
@@ -186,6 +196,10 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
       form.reset(defaultValues)
       setDocFile(null)
       setDocPreview(null)
+      toast.success("Document updated successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to update document")
     },
   })
 
@@ -197,6 +211,10 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tenant", hospitalId] })
+      toast.success("Document deleted successfully")
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Failed to delete document")
     },
   })
 
@@ -260,14 +278,32 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
       reader.onload = (event) => {
         const url = event.target?.result as string
         setDocPreview(url)
-        form.setValue("file_url", "https://google.com/file")
+        // form.setValue("file_url", "https://google.com/file") // Removed mock
+        form.setValue("file_url", "PENDING_UPLOAD")
       }
       reader.readAsDataURL(file)
     }
   }
 
   const handleSaveItem = async (values: Step5Values) => {
-    const fileUrl = "https://google.com/file"
+    //console.log("handleSaveItem invoked", values);
+    let fileUrl = values.file_url
+
+    if (docFile) {
+      // console.log("Starting upload for file:", docFile.name);
+      try {
+        fileUrl = await uploadFile(docFile, "regulatory_documents")
+        // console.log("Upload successful, URL:", fileUrl);
+      } catch (error) {
+        console.error("Upload failed", error)
+        toast.error("File upload failed. Please try again.")
+        return
+      }
+    } else if (!fileUrl) {
+      // If no file selected AND no existing url (mock or real), handle error?
+      // Schema validation handles required check if applicable, but optional otherwise
+    }
+
 
     // Convert dates to ISO datetime format (YYYY-MM-DDTHH:MM:SSZ)
     const formatDateToISO = (dateString: string) => {
@@ -312,6 +348,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
       saveRegulatory()
       resetAll()
 
+      toast.success("Onboarding completed successfully!")
       router.push(`/${lang}/hospitals`)
     } catch (error) {
       const errorMessage =
@@ -326,7 +363,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
     return null
   }
 
-  const isPending = createMutation.isPending || updateMutation.isPending
+  const isPending = createMutation.isPending || updateMutation.isPending || isUploading
 
   return (
     <div className="space-y-4">
@@ -418,17 +455,17 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
           updateMutation.isError ||
           deleteMutation.isError ||
           activationError) && (
-          <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
-            {activationError ||
-              (deleteMutation.error instanceof Error
-                ? deleteMutation.error.message
-                : createMutation.error instanceof Error
-                  ? createMutation.error.message
-                  : updateMutation.error instanceof Error
-                    ? updateMutation.error.message
-                    : common.error)}
-          </div>
-        )}
+            <div className="absolute left-1/2 transform -translate-x-1/2 text-sm text-red-600">
+              {activationError ||
+                (deleteMutation.error instanceof Error
+                  ? deleteMutation.error.message
+                  : createMutation.error instanceof Error
+                    ? createMutation.error.message
+                    : updateMutation.error instanceof Error
+                      ? updateMutation.error.message
+                      : common.error)}
+            </div>
+          )}
 
         {!isEditMode && (
           <div className="flex gap-3 items-center">
@@ -440,7 +477,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
             >
               <Link href={`${licenceHistoryPath}?hospitalId=${hospitalId}`}>
                 <ArrowLeft className="size-4" />
-               {common.back}
+                {common.back}
               </Link>
             </Button>
           </div>
@@ -477,7 +514,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
 
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(handleSaveItem)}
+              onSubmit={form.handleSubmit(handleSaveItem, (errors) => console.log("Validation errors:", errors))}
               className="space-y-4"
             >
               <FormField
@@ -536,7 +573,7 @@ export function RegulatoryDocsStepForm({ dict }: { dict: Dictionary }) {
                           }
                         >
                           <SelectTrigger className="w-full max-w-full truncate">
-                            <SelectValue placeholder={t.form.authority.placeholder}/>
+                            <SelectValue placeholder={t.form.authority.placeholder} />
                           </SelectTrigger>
                           <SelectContent className="w-[var(--radix-select-trigger-width)]">
                             {isLoadingAuthorites ? (

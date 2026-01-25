@@ -79,7 +79,7 @@ export default function OperationTheatresPage() {
               <FilterButton onClick={() => setIsFilterDialogOpen(true)}
                 inverted={true}
               />
-              <SearchInput value={search} onChange={setSearch} placeholder= {dict.common.search} />
+              <SearchInput value={search} onChange={setSearch} placeholder={dict.common.search} />
               <QuickActions />
               <Can
                 permission={PERMISSIONS.OPERATION_THEATRES.CREATE}
@@ -100,6 +100,10 @@ export default function OperationTheatresPage() {
       <AddOperationTheatreDialog
         open={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
+        onSave={(data) => {
+          console.log("Saving OT:", data);
+          setIsAddDialogOpen(false);
+        }}
       />
       <FilterDialog open={isFilterDialogOpen} onClose={() => setIsFilterDialogOpen(false)} isLoading={false} />
     </>

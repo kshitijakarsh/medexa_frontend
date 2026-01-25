@@ -1,39 +1,106 @@
 import { ROUTES } from "@/lib/routes";
 import { Dictionary as DictionaryType } from "@/i18n/get-dictionary";
-import { Key } from "lucide-react";
+import { createDepartmentApiClient } from "@/lib/api/administration/department";
+import { createWardApiClient } from "@/lib/api/administration/wards";
+import { createOperationApiClient } from "@/lib/api/administration/operation";
+import { createUserApiClient } from "@/lib/api/administration/users";
+import { createEmployeeApiClient } from "@/lib/api/employees";
+import { createChargesApiClient } from "@/lib/api/administration/charges";
+import { createPatientCategoryApiClient } from "@/lib/api/administration/patients";
+import { createRoleApiClient } from "@/lib/api/administration/roles";
+import { createInsuranceApiClient } from "@/lib/api/administration/insurance";
+import { createMedicineApiClient } from "@/lib/api/medicine-api";
 
-// Simulated API call
+// API Clients - Initialize with empty config as they get token internally
+const deptApi = createDepartmentApiClient({ authToken: "" });
+const wardApi = createWardApiClient();
+const opApi = createOperationApiClient();
+const userApi = createUserApiClient();
+const empApi = createEmployeeApiClient({ authToken: "" });
+const chargesApi = createChargesApiClient({});
+const patientCatApi = createPatientCategoryApiClient();
+const roleApi = createRoleApiClient();
+const insuranceApi = createInsuranceApiClient({ authToken: "" });
+const medicineApi = createMedicineApiClient({});
+
 export async function fetchMasters({ dict }: { dict: DictionaryType }) {
-
   const t = dict.pages.organizationSetupCards;
-  // await new Promise((res) => setTimeout(res, 800)); // simulate delay
+
+  // Fetch all counts in parallel with active filter
+  const results = await Promise.allSettled([
+    deptApi.getDepartments({ limit: 1, status: "active" }), // 0
+    wardApi.getWards({ limit: 1, status: "active" }),      // 1
+    opApi.getAll({ limit: 1, status: "active" }),          // 2
+    userApi.getUsers({ limit: 10 }), // 3: Test without filter and more limit
+    empApi.getEmployees({ limit: 1, status: "active" }),   // 4
+    chargesApi.getCharges({ limit: 1, status: "active" }), // 5
+    patientCatApi.getPatientCategories({ limit: 1, status: "active" }), // 6
+    roleApi.getRoles({ limit: 1, status: "active" }),      // 7
+    insuranceApi.getInsuranceProviders({ limit: 1, status: "active" }), // 8
+    medicineApi.getAll({ limit: 1, status: "active" }),    // 9
+  ]);
+
+  // Helper to extract count from PromiseSettledResult
+  const getCount = (index: number, defaultVal: number = 0, label?: string) => {
+    const res = results[index];
+    if (res && res.status === "fulfilled") {
+      const data = res.value.data as any;
+      if (label === "User") {
+        console.log("User API Response Details:", {
+          success: data?.success,
+          hasPagination: !!data?.pagination,
+          paginationTotal: data?.pagination?.totalData ?? data?.pagination?.total,
+          dataLength: Array.isArray(data?.data) ? data.data.length : 'not an array'
+        });
+      }
+      if (data && data.success) {
+        const pagination = data.pagination;
+        // 1. Try pagination object (preferred)
+        const countFromPagination = pagination?.totalData ?? pagination?.total;
+        if (typeof countFromPagination === "number") return countFromPagination;
+
+        // 2. Try root level total fields
+        const countFromRoot = data.totalData ?? data.total ?? data.total_records;
+        if (typeof countFromRoot === "number") return countFromRoot;
+
+        // 3. Fallback to data array length
+        if (Array.isArray(data.data)) {
+          return data.data.length;
+        }
+      }
+    } else if (res && res.status === "rejected") {
+      console.error(`API ${label || index} failed:`, res.reason);
+    }
+    return defaultVal;
+  };
+
   return [
     {
       id: "Departments",
       title: t.items.departments.title,
       subtitle: t.items.departments.subtitle,
-      active: 120,
+      active: getCount(0, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Ward/ Beds",
       title: t.items.wardsBeds.title,
       subtitle: t.items.wardsBeds.subtitle,
-      active: 130,
+      active: getCount(1, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Operation Theatres / Procedure Rooms",
       title: t.items.operationTheatres.title,
       subtitle: t.items.operationTheatres.subtitle,
-      active: 120,
+      active: getCount(2, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "User",
       title: t.items.users.title,
       subtitle: t.items.users.subtitle,
-      active: 10,
+      active: getCount(3, 0, "User"),
       category: t.categories.organizationSetup,
     },
     // {
@@ -46,42 +113,42 @@ export async function fetchMasters({ dict }: { dict: DictionaryType }) {
       id: "Employees",
       title: t.items.employees.title,
       subtitle: t.items.employees.subtitle,
-      active: 10,
+      active: getCount(4, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Charges",
       title: t.items.charges.title,
       subtitle: t.items.charges.subtitle,
-      active: 10,
+      active: getCount(5, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Patients",
       title: t.items.patients.title,
       subtitle: t.items.patients.subtitle,
-      active: 120,
+      active: getCount(6, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Operation / Operation Category",
       title: t.items.operationCategory.title,
       subtitle: t.items.operationCategory.subtitle,
-      active: 120,
+      active: getCount(2, 0),
       category: t.categories.organizationSetup,
     },
     {
       id: "Human Resource",
       title: t.items.humanResource.title,
       subtitle: t.items.humanResource.subtitle,
-      active: 100,
+      active: getCount(4, 0), // Use same as Employees
       category: t.categories.staffRoles,
     },
     {
       id: "Roles",
       title: t.items.roles.title,
       subtitle: t.items.roles.subtitle,
-      active: 100,
+      active: getCount(7, 0),
       category: t.categories.staffRoles,
     },
     {
@@ -95,10 +162,9 @@ export async function fetchMasters({ dict }: { dict: DictionaryType }) {
       id: "Insurance",
       title: t.items.insurance.title,
       subtitle: t.items.insurance.subtitle,
-      active: 90,
+      active: getCount(8, 0),
       category: t.categories.servicesProcedure,
     },
-
     {
       id: "Medical Procedure / Treatment Master",
       title: t.items.medicalProcedure.title,
@@ -152,7 +218,7 @@ export async function fetchMasters({ dict }: { dict: DictionaryType }) {
       id: "Medicine / Drug Master",
       title: t.items.medicine.title,
       subtitle: t.items.medicine.subtitle,
-      active: 120,
+      active: getCount(9, 0),
       category: t.categories.inventoryPharmacy,
     },
     {
@@ -167,7 +233,7 @@ export async function fetchMasters({ dict }: { dict: DictionaryType }) {
 
 export const masterConfig: Record<
   string,
-  { route: string; addOptions: string[], submoduleKeys?: string[]; }
+  { route: string; addOptions?: string[], submoduleKeys?: string[]; }
 > = {
   "Departments": {
     route: ROUTES.ADMINISTRATION_DEPARTMENT,
@@ -188,7 +254,7 @@ export const masterConfig: Record<
   },
   "Insurance": {
     route: ROUTES.ADMINISTRATION_INSURANCE,
-    addOptions: ["Insurance"],
+    // addOptions: ["Insurance"],
     submoduleKeys: ["insurance"]
 
   },
@@ -205,7 +271,7 @@ export const masterConfig: Record<
   },
   "Human Resource": {
     route: "/employee-configuration",
-    addOptions: ["Doctor", "Nurse", "Designation", "Role"],
+    // addOptions: ["Doctor", "Nurse", "Designation", "Role"],
   },
 
   "Roles": {
@@ -216,53 +282,53 @@ export const masterConfig: Record<
   },
   "Shifts & Attendance Configuration": {
     route: "/masters/shifts",
-    addOptions: ["Shift", "Attendance Type"],
+    // addOptions: ["Shift", "Attendance Type"],
   },
   "Medical Procedure / Treatment Master": {
     route: "/masters/procedures",
-    addOptions: ["Treatment Type", "Specialization"],
+    // addOptions: ["Treatment Type", "Specialization"],
   },
   "Lab Test Master": {
     route: "/masters/lab-test",
-    addOptions: ["Test Category", "Test Type"],
+    // addOptions: ["Test Category", "Test Type"],
   },
   "Radiology / Imaging Test Master": {
     route: "/masters/radiology",
-    addOptions: ["Imaging Test", "Modality"],
+    // addOptions: ["Imaging Test", "Modality"],
   },
   "Package / Scheme / Policy Setup": {
     route: "/masters/packages",
-    addOptions: ["Package", "Scheme", "Policy"],
+    // addOptions: ["Package", "Scheme", "Policy"],
   },
   "Charges": {
     route: ROUTES.ADMINISTRATION_CHARGES,
-    addOptions: ["Service", "Category", "Tax", "Unit"],
+    addOptions: ["Category", "Tax", "Unit"], // Removed "Service"
     submoduleKeys: ["charge", "chargeCategory", "taxCategory", "chargeUnit"]
   },
   "Patients": {
     route: ROUTES.ADMINISTRATION_PATIENTS,
-    addOptions: ["Patient Category"],
+    // addOptions: ["Patient Category"],
     submoduleKeys: ["patientCategory"]
   },
   "Tariff / Pricing / Service Charges": {
     route: "/masters/tariff",
-    addOptions: ["Service", "Charge"],
+    // addOptions: ["Service", "Charge"],
   },
   "Inventory / Consumables Master": {
     route: "/masters/inventory",
-    addOptions: ["Consumable", "Category"],
+    // addOptions: ["Consumable", "Category"],
   },
   "Equipment / Asset Master": {
     route: "/masters/equipment",
-    addOptions: ["Equipment", "Asset Type"],
+    // addOptions: ["Equipment", "Asset Type"],
   },
   "Medicine / Drug Master": {
     route: "/masters/medicine",
-    addOptions: ["Medicine", "Drug Type"],
+    // addOptions: ["Medicine", "Drug Type"],
   },
   "Supplier / Vendor Master": {
     route: "/masters/suppliers",
-    addOptions: ["Supplier", "Vendor"],
+    // addOptions: ["Supplier", "Vendor"],
   },
 };
 

@@ -9,6 +9,16 @@ interface ApiConfig {
    Response / Payload Types
 ------------------------------------------- */
 
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface PasswordResponse {
+  success: boolean;
+  message: string;
+}
+
 export interface UserItem {
   id: number
   sub: string
@@ -173,6 +183,50 @@ class UserApiClient {
       }
       throw error
     }
+  }
+
+  /* ------------------------------------------
+     CHANGE Password
+  ------------------------------------------- */
+  async changePassword(
+    payload: ChangePasswordPayload
+  ): Promise<AxiosResponse<PasswordResponse>> {
+    // MOCK IMPLEMENTATION
+    console.log("Mock API Call: POST /api/v1/users/change-password", payload)
+
+    // Simulate network delay
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+
+    // Simulate success
+    return {
+      data: {
+        success: true,
+        message: "Password changed successfully",
+      },
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {} as any,
+    }
+
+    /* 
+    // REAL IMPLEMENTATION
+    try {
+      const config = await this.getConfig();
+      return axios.post<PasswordResponse>(
+        `${this.baseUrl}/api/v1/users/change-password`,
+        payload,
+        config
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        throw new Error(
+          `Change password error: ${error.response?.data?.message || error.message}`
+        );
+      }
+      throw error;
+    }
+    */
   }
 }
 
